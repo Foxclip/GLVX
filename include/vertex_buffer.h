@@ -15,6 +15,7 @@ namespace glvis {
         std::size_t getVertexCount() const;
         bool update(const std::vector<Vertex>& newVertices);
         bool resize(std::size_t newSize);
+        void append(const Vertex& vertex);
         void clear();
         PrimitiveType getPrimitiveType() const;
         void setPrimitiveType(PrimitiveType type);

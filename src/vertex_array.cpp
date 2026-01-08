@@ -34,11 +34,11 @@ namespace glvis {
     }
 
     void VertexArray::resize(unsigned int newSize) {
-        
+        vertexBuffer.resize(newSize);
     }
 
     void VertexArray::append(const Vertex& vertex) {
-        // TODO
+        vertexBuffer.append(vertex);
     }
 
     void VertexArray::setPrimitiveType(PrimitiveType type) {

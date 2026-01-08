@@ -67,6 +67,11 @@ bool VertexBuffer::create(std::size_t vertexCount) {
         return true;
     }
 
+    void VertexBuffer::append(const Vertex& vertex) {
+        vertices.push_back(vertex);
+        update(vertices);
+    }
+
     void VertexBuffer::recreateBuffer(const std::vector<Vertex>& data) {
         if (VBO != 0) {
             GL_CALL(glDeleteBuffers(1, &VBO));
