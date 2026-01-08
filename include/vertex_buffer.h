@@ -14,10 +14,14 @@ namespace glvis {
         bool create(std::size_t vertexCount);
         std::size_t getVertexCount() const;
         bool update(const std::vector<Vertex>& newVertices);
+        bool resize(std::size_t newSize);
+        void clear();
         PrimitiveType getPrimitiveType() const;
         void setPrimitiveType(PrimitiveType type);
         unsigned int getVAO() const;
         void render(const glm::mat4& view, const glm::mat4& projection) const;
+        Vertex& operator[](std::size_t index);
+        const Vertex& operator[](unsigned int index) const;
 
     private:
         PrimitiveType type = PrimitiveType::Triangles;

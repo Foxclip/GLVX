@@ -33,9 +33,9 @@ int main() {
 
     return 0;
     
-    // TODO: replace try and catch in functions with macros
     // TODO: vertex array
     // TODO: change enum to enum class
+    // TODO: add tests
     // TODO: Drawable class
     // TODO: text rendering
     // TODO: transparent texture rendering

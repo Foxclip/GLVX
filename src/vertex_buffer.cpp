@@ -65,6 +65,26 @@ bool VertexBuffer::create(std::size_t vertexCount) {
         return true;
     }
 
+    bool VertexBuffer::resize(std::size_t newSize) {
+        std::size_t oldSize = this->vertices.size();
+        this->vertices.resize(newSize);
+        if (newSize != oldSize) {
+            if (VBO != 0) {
+                GL_CALL(glDeleteBuffers(1, &VBO));
+                VBO = 0;
+            }
+            GL_CALL(glGenBuffers(1, &VBO));
+            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
+            GL_CALL(glBufferData(GL_ARRAY_BUFFER, newSize * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW));
+            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+        }
+        return true;
+    }
+
+    void VertexBuffer::clear() {
+        update(std::vector<Vertex>());
+    }
+
     PrimitiveType VertexBuffer::getPrimitiveType() const {
         return type;
     }
@@ -80,5 +100,13 @@ bool VertexBuffer::create(std::size_t vertexCount) {
     void VertexBuffer::render(const glm::mat4& view, const glm::mat4& projection) const {
         GL_CALL(glBindVertexArray(VAO));
         GL_CALL(glDrawArrays(static_cast<GLenum>(type), 0, static_cast<GLsizei>(getVertexCount())));
+    }
+
+    Vertex& VertexBuffer::operator[](std::size_t index) {
+        return vertices[index];
+    }
+
+    const Vertex& VertexBuffer::operator[](unsigned int index) const {
+        return vertices[index];
     }
 }

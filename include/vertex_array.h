@@ -1,0 +1,31 @@
+#pragma once
+
+#include <vector>
+#include <glm/glm.hpp>
+#include "vertex.h"
+#include "vertex_buffer.h"
+
+namespace glvis {
+
+
+    class VertexArray {
+    public:
+        VertexArray();
+        VertexArray(PrimitiveType type, std::size_t vertexCount = 0);
+        std::size_t getVertexCount() const;
+        PrimitiveType getPrimitiveType() const;
+        glm::vec2 getBoundsMin() const;
+        glm::vec2 getBoundsMax() const;
+        Vertex& operator[](std::size_t index);
+        const Vertex& operator[](unsigned int index) const;
+        void clear();
+        void resize(unsigned int newSize);
+        void append(const Vertex& vertex);
+        void setPrimitiveType(PrimitiveType type);
+        void render(const glm::mat4& view, const glm::mat4& projection) const;
+
+    private:
+        VertexBuffer vertexBuffer;
+    };
+
+}
