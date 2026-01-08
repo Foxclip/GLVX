@@ -52,15 +52,8 @@ bool VertexBuffer::create(std::size_t vertexCount) {
             GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, newVertices.size() * sizeof(Vertex), newVertices.data()));
             GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
         } else {
-            if (VBO != 0) {
-                GL_CALL(glDeleteBuffers(1, &VBO));
-                VBO = 0;
-            }
             this->vertices = newVertices;
-            GL_CALL(glGenBuffers(1, &VBO));
-            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-            GL_CALL(glBufferData(GL_ARRAY_BUFFER, newVertices.size() * sizeof(Vertex), newVertices.data(), GL_STATIC_DRAW));
-            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+            recreateBuffer(newVertices);
         }
         return true;
     }
@@ -69,16 +62,20 @@ bool VertexBuffer::create(std::size_t vertexCount) {
         std::size_t oldSize = this->vertices.size();
         this->vertices.resize(newSize);
         if (newSize != oldSize) {
-            if (VBO != 0) {
-                GL_CALL(glDeleteBuffers(1, &VBO));
-                VBO = 0;
-            }
-            GL_CALL(glGenBuffers(1, &VBO));
-            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-            GL_CALL(glBufferData(GL_ARRAY_BUFFER, newSize * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW));
-            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+            recreateBuffer(vertices);
         }
         return true;
+    }
+
+    void VertexBuffer::recreateBuffer(const std::vector<Vertex>& data) {
+        if (VBO != 0) {
+            GL_CALL(glDeleteBuffers(1, &VBO));
+            VBO = 0;
+        }
+        GL_CALL(glGenBuffers(1, &VBO));
+        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
+        GL_CALL(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), data.data(), GL_STATIC_DRAW));
+        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
     }
 
     void VertexBuffer::clear() {

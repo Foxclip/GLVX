@@ -24,6 +24,7 @@ namespace glvis {
         const Vertex& operator[](unsigned int index) const;
 
     private:
+        void recreateBuffer(const std::vector<Vertex>& data);
         PrimitiveType type = PrimitiveType::Triangles;
         std::vector<Vertex> vertices;
         unsigned int VAO = 0;
