@@ -1,11 +1,11 @@
-#include "circle.h"
+#include "glvis/circle.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <corecrt_math_defines.h>
-#include "glvis_common.h"
-#include "texture.h"
-#include "shader.h"
+#include "glvis/glvis_common.h"
+#include "glvis/texture.h"
+#include "glvis/shader.h"
 #include <iostream>
 
 namespace glvis {

@@ -1,4 +1,4 @@
-#include "shape.h"
+#include "glvis/shape.h"
 
 namespace glvis {
 

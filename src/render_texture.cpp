@@ -1,7 +1,7 @@
-#include "render_texture.h"
+#include "glvis/render_texture.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "glvis_common.h"
+#include "glvis/glvis_common.h"
 
 namespace glvis {
 

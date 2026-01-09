@@ -1,4 +1,4 @@
-#include "color.h"
+#include "glvis/color.h"
 
 namespace glvis {
 

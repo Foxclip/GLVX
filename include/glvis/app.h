@@ -6,11 +6,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <map>
-#include "rectangle.h"
-#include "circle.h"
-#include "texture.h"
-#include "render_texture.h"
-#include "camera.h"
+#include "glvis/rectangle.h"
+#include "glvis/circle.h"
+#include "glvis/texture.h"
+#include "glvis/render_texture.h"
+#include "glvis/camera.h"
 
 namespace glvis {
 

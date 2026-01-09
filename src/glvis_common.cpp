@@ -1,4 +1,4 @@
-#include "glvis_common.h"
+#include "glvis/glvis_common.h"
 
 namespace glvis {
 

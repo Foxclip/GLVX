@@ -1,7 +1,7 @@
 #pragma once
 
 #include <filesystem>
-#include "abstract_texture.h"
+#include "glvis/abstract_texture.h"
 
 namespace glvis {
 

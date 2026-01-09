@@ -1,4 +1,4 @@
-#include "angle.h"
+#include "glvis/angle.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 

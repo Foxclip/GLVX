@@ -1,5 +1,5 @@
 #include <iostream>
-#include "app.h"
+#include "glvis/app.h"
 
 int main() {
 

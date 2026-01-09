@@ -1,8 +1,8 @@
 #include <iostream>
-#include "utils.h"
-#include "app.h"
-#include "shader.h"
-#include "glvis_common.h"
+#include "glvis/utils.h"
+#include "glvis/app.h"
+#include "glvis/shader.h"
+#include "glvis/glvis_common.h"
 
 namespace glvis {
 

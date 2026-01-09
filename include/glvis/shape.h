@@ -1,8 +1,8 @@
 #pragma once
 
-#include "vector.h"
+#include "glvis/vector.h"
 #include <glm/glm.hpp>
-#include "angle.h"
+#include "glvis/angle.h"
 
 namespace glvis {
 

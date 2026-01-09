@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "shader.h"
+#include "glvis/shader.h"
 #include <iostream>
 
 namespace glvis {

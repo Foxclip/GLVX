@@ -1,9 +1,9 @@
 #pragma once
 
-#include "shape.h"
+#include "glvis/shape.h"
 #include <glm/glm.hpp>
-#include "texture.h"
-#include "vertex_buffer.h"
+#include "glvis/texture.h"
+#include "glvis/vertex_buffer.h"
 
 namespace glvis {
 

@@ -1,7 +1,7 @@
-#include "shader.h"
-#include "utils.h"
+#include "glvis/shader.h"
+#include "glvis/utils.h"
 #include <glad/glad.h>
-#include "glvis_common.h"
+#include "glvis/glvis_common.h"
 
 namespace glvis {
 

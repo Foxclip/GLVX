@@ -1,7 +1,7 @@
 #pragma once
 
-#include "vector.h"
-#include "color.h"
+#include "glvis/vector.h"
+#include "glvis/color.h"
 
 namespace glvis {
 

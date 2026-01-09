@@ -1,8 +1,8 @@
-#include "vertex_buffer.h"
+#include "glvis/vertex_buffer.h"
 #include <stdexcept>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "vertex.h"
+#include "glvis/vertex.h"
 
 namespace glvis {
 

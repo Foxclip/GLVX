@@ -1,4 +1,4 @@
-#include "camera.h"
+#include "glvis/camera.h"
 
 namespace glvis {
 

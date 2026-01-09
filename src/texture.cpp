@@ -1,9 +1,9 @@
-#include "texture.h"
+#include "glvis/texture.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-#include "glvis_common.h"
+#include "glvis/stb_image.h"
+#include "glvis/glvis_common.h"
 
 namespace glvis {
 

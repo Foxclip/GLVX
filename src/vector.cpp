@@ -1,4 +1,4 @@
-#include "vector.h"
+#include "glvis/vector.h"
 
 Vector2::Vector2() {
     this->x = 0;
