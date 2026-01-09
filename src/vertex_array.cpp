@@ -1,4 +1,4 @@
-#include "vertex_array.h"
+#include "glvis/vertex_array.h"
 #include <algorithm>
 #include <limits>
 #include <glad/glad.h>
