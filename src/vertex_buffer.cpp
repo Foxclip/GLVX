@@ -52,17 +52,39 @@ bool VertexBuffer::create(std::size_t vertexCount) {
             GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, newVertices.size() * sizeof(Vertex), newVertices.data()));
             GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
         } else {
-            if (VBO != 0) {
-                GL_CALL(glDeleteBuffers(1, &VBO));
-                VBO = 0;
-            }
             this->vertices = newVertices;
-            GL_CALL(glGenBuffers(1, &VBO));
-            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-            GL_CALL(glBufferData(GL_ARRAY_BUFFER, newVertices.size() * sizeof(Vertex), newVertices.data(), GL_STATIC_DRAW));
-            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+            recreateBuffer(newVertices);
         }
         return true;
+    }
+
+    bool VertexBuffer::resize(std::size_t newSize) {
+        std::size_t oldSize = this->vertices.size();
+        this->vertices.resize(newSize);
+        if (newSize != oldSize) {
+            recreateBuffer(vertices);
+        }
+        return true;
+    }
+
+    void VertexBuffer::append(const Vertex& vertex) {
+        vertices.push_back(vertex);
+        update(vertices);
+    }
+
+    void VertexBuffer::recreateBuffer(const std::vector<Vertex>& data) {
+        if (VBO != 0) {
+            GL_CALL(glDeleteBuffers(1, &VBO));
+            VBO = 0;
+        }
+        GL_CALL(glGenBuffers(1, &VBO));
+        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
+        GL_CALL(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), data.data(), GL_STATIC_DRAW));
+        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    }
+
+    void VertexBuffer::clear() {
+        update(std::vector<Vertex>());
     }
 
     PrimitiveType VertexBuffer::getPrimitiveType() const {
@@ -80,5 +102,13 @@ bool VertexBuffer::create(std::size_t vertexCount) {
     void VertexBuffer::render(const glm::mat4& view, const glm::mat4& projection) const {
         GL_CALL(glBindVertexArray(VAO));
         GL_CALL(glDrawArrays(static_cast<GLenum>(type), 0, static_cast<GLsizei>(getVertexCount())));
+    }
+
+    Vertex& VertexBuffer::operator[](std::size_t index) {
+        return vertices[index];
+    }
+
+    const Vertex& VertexBuffer::operator[](unsigned int index) const {
+        return vertices[index];
     }
 }
