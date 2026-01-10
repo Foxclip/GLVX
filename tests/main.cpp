@@ -27,12 +27,12 @@ int main() {
         circle1->setTexture(boxTexture);
 
         glvis::VertexArray* va = app.addVertexArray(glvis::PrimitiveType::Triangles, 0);
-        va->append(glvis::Vertex(Vector2(0.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f)));
-        va->append(glvis::Vertex(Vector2(100.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f)));
-        va->append(glvis::Vertex(Vector2(100.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f)));
-        va->append(glvis::Vertex(Vector2(0.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f)));
-        va->append(glvis::Vertex(Vector2(100.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f)));
-        va->append(glvis::Vertex(Vector2(0.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(glvis::Vector2(0.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(glvis::Vector2(100.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(glvis::Vector2(100.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(glvis::Vector2(0.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(glvis::Vector2(100.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(glvis::Vector2(0.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 0.0f)));
 
         app.start();
 
@@ -44,10 +44,10 @@ int main() {
 
     return 0;
     
-    // TODO: move vector in glvis namespace
     // TODO: don't throw exception in END_TRY in release mode
     // TODO: rename glvis_common.h to common.h
     // TODO: change enum to enum class
+    // TODO: VertexArray: textures
     // TODO: add tests
     // TODO: Drawable class
     // TODO: text rendering
