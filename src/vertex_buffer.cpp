@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glvis/vertex.h"
+#include "glvis/vertex_buffer.h"
 
 namespace glvis {
 
@@ -23,22 +24,9 @@ namespace glvis {
     }
 
 bool VertexBuffer::create(std::size_t vertexCount) {
-        GL_CALL(glGenBuffers(1, &VBO));
+        vertices.resize(vertexCount);
         GL_CALL(glGenVertexArrays(1, &VAO));
-        GL_CALL(glBindVertexArray(VAO));
-        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-        GL_CALL(glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(Vertex), nullptr, GL_STATIC_DRAW));
-        GL_CALL(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0));
-        GL_CALL(glEnableVertexAttribArray(0));
-        GL_CALL(glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color)));
-        GL_CALL(glEnableVertexAttribArray(1));
-        GL_CALL(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords)));
-        GL_CALL(glEnableVertexAttribArray(2));
-        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
-        GL_CALL(glBindVertexArray(0));
-        
-        this->vertices.resize(vertexCount);
-        return true;
+        return syncBuffer();
     }
 
     std::size_t VertexBuffer::getVertexCount() const {
@@ -46,30 +34,29 @@ bool VertexBuffer::create(std::size_t vertexCount) {
     }
 
     bool VertexBuffer::update(const std::vector<Vertex>& newVertices) {
-        if (newVertices.size() == this->vertices.size()) {
-            this->vertices = newVertices;
-            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-            GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, newVertices.size() * sizeof(Vertex), newVertices.data()));
-            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
-        } else {
-            this->vertices = newVertices;
-            recreateBuffer(newVertices);
-        }
-        return true;
+        vertices = newVertices;
+        return syncBuffer();
     }
 
     bool VertexBuffer::resize(std::size_t newSize) {
-        std::size_t oldSize = this->vertices.size();
-        this->vertices.resize(newSize);
-        if (newSize != oldSize) {
+        vertices.resize(newSize);
+        return syncBuffer();
+    }
+
+    bool VertexBuffer::append(const Vertex& vertex) {
+        vertices.push_back(vertex);
+        return syncBuffer();
+    }
+
+    bool VertexBuffer::syncBuffer() {
+        if (isInitialized && vertices.size() == gpuBuffferSize) {
+            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
+            GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data()));
+            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+        } else {
             recreateBuffer(vertices);
         }
         return true;
-    }
-
-    void VertexBuffer::append(const Vertex& vertex) {
-        vertices.push_back(vertex);
-        update(vertices);
     }
 
     void VertexBuffer::recreateBuffer(const std::vector<Vertex>& data) {
@@ -78,9 +65,19 @@ bool VertexBuffer::create(std::size_t vertexCount) {
             VBO = 0;
         }
         GL_CALL(glGenBuffers(1, &VBO));
+        GL_CALL(glBindVertexArray(VAO));
         GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
         GL_CALL(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), data.data(), GL_STATIC_DRAW));
+        GL_CALL(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0));
+        GL_CALL(glEnableVertexAttribArray(0));
+        GL_CALL(glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color)));
+        GL_CALL(glEnableVertexAttribArray(1));
+        GL_CALL(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords)));
+        GL_CALL(glEnableVertexAttribArray(2));
         GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+        GL_CALL(glBindVertexArray(0));
+        isInitialized = true;
+        gpuBuffferSize = data.size();
     }
 
     void VertexBuffer::clear() {

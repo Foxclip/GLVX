@@ -8,6 +8,7 @@
 #include <map>
 #include "glvis/rectangle.h"
 #include "glvis/circle.h"
+#include "glvis/vertex_array.h"
 #include "glvis/texture.h"
 #include "glvis/render_texture.h"
 #include "glvis/camera.h"
@@ -26,6 +27,7 @@ namespace glvis {
         void removeTexture(const std::filesystem::path& path);
         Rectangle* addRectangle(float width, float height);
         Circle* addCircle(float radius = 0.0f, size_t numSegments = 30);
+        VertexArray* addVertexArray(PrimitiveType type, std::size_t vertexCount = 0);
 
     private:
         GLFWwindow* window = nullptr;
@@ -41,6 +43,7 @@ namespace glvis {
         bool rightMousePressed = false;
         std::unique_ptr<Rectangle> screenRectangle = nullptr;
         std::vector<std::unique_ptr<Shape>> shapes;
+        std::vector<std::unique_ptr<VertexArray>> vertexArrays;
         std::unique_ptr<Shader> defaultShaderUptr = nullptr;
         std::unique_ptr<Shader> screenShaderUptr = nullptr;
         std::unique_ptr<RenderTexture> screenTextureUptr = nullptr;

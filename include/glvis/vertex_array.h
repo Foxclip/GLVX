@@ -7,6 +7,7 @@
 
 namespace glvis {
 
+    class Shader;
 
     class VertexArray {
     public:
@@ -22,10 +23,12 @@ namespace glvis {
         void resize(unsigned int newSize);
         void append(const Vertex& vertex);
         void setPrimitiveType(PrimitiveType type);
+        void setShader(Shader* shader);
         void render(const glm::mat4& view, const glm::mat4& projection) const;
 
     private:
         VertexBuffer vertexBuffer;
+        Shader* shader = nullptr;
     };
 
 }

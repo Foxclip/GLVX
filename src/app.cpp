@@ -19,6 +19,7 @@ namespace glvis {
 
         screenRectangle.reset();
         shapes.clear();
+        vertexArrays.clear();
         screenShaderUptr.reset();
         defaultShaderUptr.reset();
         screenTextureUptr.reset();
@@ -72,6 +73,13 @@ namespace glvis {
         Circle* circlePtr = circle.get();
         shapes.push_back(std::move(circle));
         return circlePtr;
+    }
+
+    VertexArray* App::addVertexArray(PrimitiveType type, std::size_t vertexCount) {
+        std::unique_ptr<VertexArray> va = std::make_unique<VertexArray>(type, vertexCount);
+        VertexArray* vaPtr = va.get();
+        vertexArrays.push_back(std::move(va));
+        return vaPtr;
     }
 
     GLFWwindow* App::init(int width, int height) {
@@ -143,6 +151,10 @@ namespace glvis {
             for (int i = 0; i < shapes.size(); i++) {
                 Shape* shape = shapes[i].get();
                 shape->render(view, projection);
+            }
+
+            for (auto& va : vertexArrays) {
+                va->render(view, projection);
             }
 
             GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));

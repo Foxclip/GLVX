@@ -10,18 +10,29 @@ int main() {
         app.getCamera().setPosition(glm::vec2(400.0f, 300.0f));
 
         glvis::Texture* boxTexture = app.addTexture("box.jpg");
+
         glvis::Rectangle* rect1 = app.addRectangle(100.0f, 100.0f);
         rect1->setTexture(boxTexture);
         rect1->setOrigin(50.0f, 50.0f);
         rect1->setPosition(0.0f, 0.0f);
+
         glvis::Rectangle* rect2 = app.addRectangle(100.0f, 100.0f);
         rect2->setTexture(boxTexture);
         rect2->setPosition(200.0f, 0.0f);
         rect2->setRotation(glvis::degrees(10.0f));
+
         glvis::Circle* circle1 = app.addCircle(50.0f, 30);
         circle1->setOrigin(50.0f, 50.0f);
         circle1->setPosition(400.0f, 0.0f);
         circle1->setTexture(boxTexture);
+
+        glvis::VertexArray* va = app.addVertexArray(glvis::PrimitiveType::Triangles, 0);
+        va->append(glvis::Vertex(Vector2(0.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(Vector2(100.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(Vector2(100.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(Vector2(0.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(Vector2(100.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(Vector2(0.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), Vector2(0.0f, 0.0f)));
 
         app.start();
 
@@ -33,7 +44,9 @@ int main() {
 
     return 0;
     
-    // TODO: vertex array
+    // TODO: move vector in glvis namespace
+    // TODO: don't throw exception in END_TRY in release mode
+    // TODO: rename glvis_common.h to common.h
     // TODO: change enum to enum class
     // TODO: add tests
     // TODO: Drawable class

@@ -15,7 +15,7 @@ namespace glvis {
         std::size_t getVertexCount() const;
         bool update(const std::vector<Vertex>& newVertices);
         bool resize(std::size_t newSize);
-        void append(const Vertex& vertex);
+        bool append(const Vertex& vertex);
         void clear();
         PrimitiveType getPrimitiveType() const;
         void setPrimitiveType(PrimitiveType type);
@@ -25,11 +25,15 @@ namespace glvis {
         const Vertex& operator[](unsigned int index) const;
 
     private:
-        void recreateBuffer(const std::vector<Vertex>& data);
+        bool isInitialized = false;
+        size_t gpuBuffferSize = 0;
         PrimitiveType type = PrimitiveType::Triangles;
         std::vector<Vertex> vertices;
-        unsigned int VAO = 0;
         unsigned int VBO = 0;
+        unsigned int VAO = 0;
+
+        bool syncBuffer();
+        void recreateBuffer(const std::vector<Vertex>& data);
 
     };
 

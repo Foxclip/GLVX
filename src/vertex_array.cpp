@@ -3,14 +3,19 @@
 #include <limits>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "glvis/shader.h"
+#include "glvis/glvis_common.h"
 
 namespace glvis {
 
-    VertexArray::VertexArray() { }
+    VertexArray::VertexArray() { 
+        shader = common::defaultShader;
+    }
 
     VertexArray::VertexArray(PrimitiveType type, std::size_t vertexCount) {
         vertexBuffer.create(vertexCount);
         vertexBuffer.setPrimitiveType(type);
+        shader = common::defaultShader;
     }
 
     std::size_t VertexArray::getVertexCount() const {
@@ -45,7 +50,19 @@ namespace glvis {
         vertexBuffer.setPrimitiveType(type);
     }
 
+    void VertexArray::setShader(Shader* shader) {
+        this->shader = shader;
+    }
+
     void VertexArray::render(const glm::mat4& view, const glm::mat4& projection) const {
+        if (shader == nullptr) return;
+        glm::mat4 modelMatrix = glm::mat4(1.0f);
+        shader->use();
+        shader->setMat4("model", modelMatrix);
+        shader->setMat4("view", view);
+        shader->setMat4("projection", projection);
+        shader->setInt("tex", 0);
+        shader->setBool("hasTexture", false);
         vertexBuffer.render(view, projection);
     }
 
