@@ -7,8 +7,8 @@ namespace glvis {
 
     Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
         START_TRY
-            unsigned int vertexShader = compileShader(VERTEX, vertexPath);
-            unsigned int fragmentShader = compileShader(FRAGMENT, fragmentPath);
+            unsigned int vertexShader = compileShader(ShaderType::VERTEX, vertexPath);
+            unsigned int fragmentShader = compileShader(ShaderType::FRAGMENT, fragmentPath);
             ID = GL_CALL(glCreateProgram());
             GL_CALL(glAttachShader(ID, vertexShader));
             GL_CALL(glAttachShader(ID, fragmentShader));
@@ -57,7 +57,7 @@ namespace glvis {
         START_TRY
             std::string source = file_to_str(path);
             const char* sourceCstr = source.c_str();
-            unsigned int shader = GL_CALL(glCreateShader(type == VERTEX ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER));
+            unsigned int shader = GL_CALL(glCreateShader(type == ShaderType::VERTEX ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER));
             GL_CALL(glShaderSource(shader, 1, &sourceCstr, NULL));
             GL_CALL(glCompileShader(shader));
             int success;
@@ -65,7 +65,7 @@ namespace glvis {
             GL_CALL(glGetShaderiv(shader, GL_COMPILE_STATUS, &success));
             if (!success) {
                 GL_CALL(glGetShaderInfoLog(shader, 8192, NULL, infoLog));
-                std::string typeStr = type == VERTEX ? "Vertex" : "Fragment";
+                std::string typeStr = type == ShaderType::VERTEX ? "Vertex" : "Fragment";
                 throw std::runtime_error(std::format("{} shader compilation failed: {}\n{}", typeStr, path, infoLog));
             }
             return shader;

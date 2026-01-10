@@ -44,9 +44,6 @@ int main() {
 
     return 0;
     
-    // TODO: don't throw exception in END_TRY in release mode
-    // TODO: rename glvis_common.h to common.h
-    // TODO: change enum to enum class
     // TODO: VertexArray: textures
     // TODO: add tests
     // TODO: Drawable class

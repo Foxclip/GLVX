@@ -7,7 +7,7 @@
 
 namespace glvis {
 
-    enum ShaderType {
+    enum class ShaderType {
         VERTEX,
         FRAGMENT
     };
