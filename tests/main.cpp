@@ -45,8 +45,8 @@ int main() {
 
     return 0;
     
+    // TODO: do not indent code in namespaces
     // TODO: add tests
-    // TODO: Drawable class
     // TODO: text rendering
     // TODO: transparent texture rendering
 }

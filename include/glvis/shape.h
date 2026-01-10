@@ -3,12 +3,13 @@
 #include "glvis/vector.h"
 #include <glm/glm.hpp>
 #include "glvis/angle.h"
+#include "glvis/drawable.h"
 
 namespace glvis {
 
     class Shader;
 
-    class Shape {
+    class Shape : public Drawable {
     public:
         float getX() const;
         float getY() const;
@@ -16,6 +17,7 @@ namespace glvis {
         const Angle& getRotation() const;
         const Vector2& getScale() const;
         const Vector2& getOrigin() const;
+        glm::mat4 getModelMatrix() const;
         void setPosition(float x, float y);
         void setPosition(const Vector2& position);
         void setRotation(const Angle& rotation);

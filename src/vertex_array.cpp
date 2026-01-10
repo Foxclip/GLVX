@@ -60,20 +60,20 @@ namespace glvis {
 
     void VertexArray::render(const glm::mat4& view, const glm::mat4& projection) const {
         if (shader == nullptr) return;
-        glm::mat4 modelMatrix = glm::mat4(1.0f);
+        auto modelMatrix = getModelMatrix();
         shader->use();
         shader->setMat4("model", modelMatrix);
         shader->setMat4("view", view);
         shader->setMat4("projection", projection);
-        if (texture) {
-            shader->setInt("tex", 0);
-            shader->setBool("hasTexture", true);
-            texture->bind();
-        } else {
-            shader->setInt("tex", -1);
-            shader->setBool("hasTexture", false);
-        }
-        vertexBuffer.render(view, projection);
+        renderBase(shader, texture, view, projection);
+    }
+
+    const VertexBuffer& VertexArray::getVertexBuffer() const {
+        return vertexBuffer;
+    }
+
+    glm::mat4 VertexArray::getModelMatrix() const {
+        return glm::mat4(1.0f);
     }
 
 }

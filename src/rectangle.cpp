@@ -69,27 +69,16 @@ namespace glvis {
     void Rectangle::render(const glm::mat4& view, const glm::mat4& projection) const {
         START_TRY
             if (shader == nullptr) throw std::runtime_error("Shader not set");
-            glm::mat4 modelMatrix = glm::mat4(1.0f);
-            modelMatrix = glm::translate(modelMatrix, glm::vec3(position.x, position.y, 0.0f));
-            modelMatrix = glm::rotate(modelMatrix, rotation.asRadians(), glm::vec3(0.0f, 0.0f, -1.0f));
-            modelMatrix = glm::scale(modelMatrix, glm::vec3(scale.x, scale.y, 1.0f));
-            modelMatrix = glm::translate(modelMatrix, glm::vec3(-origin.x, -origin.y, 0.0f));
+            auto modelMatrix = getModelMatrix();
             shader->use();
-            // No GL_CALL needed here as it's a method call
             shader->setMat4("model", modelMatrix);
             shader->setMat4("view", view);
             shader->setMat4("projection", projection);
-            // Commented out the color override to use vertex colors
-            // shader->setVec4("color", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-            if (texture) {
-                shader->setInt("tex", 0);
-                shader->setBool("hasTexture", true);
-                texture->bind();
-            } else {
-                shader->setInt("tex", -1);
-                shader->setBool("hasTexture", false);
-            }
-            vertexBuffer.render(view, projection);
+            renderBase(shader, texture, view, projection);
         END_TRY
+    }
+
+    const VertexBuffer& Rectangle::getVertexBuffer() const {
+        return vertexBuffer;
     }
 }

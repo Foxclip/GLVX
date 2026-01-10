@@ -5,12 +5,13 @@
 #include "vertex.h"
 #include "vertex_buffer.h"
 #include "abstract_texture.h"
+#include "drawable.h"
 
 namespace glvis {
 
     class Shader;
 
-    class VertexArray {
+    class VertexArray : public Drawable {
     public:
         VertexArray();
         VertexArray(PrimitiveType type, std::size_t vertexCount = 0);
@@ -27,6 +28,8 @@ namespace glvis {
         void setShader(Shader* shader);
         void setTexture(AbstractTexture* texture);
         void render(const glm::mat4& view, const glm::mat4& projection) const;
+        const VertexBuffer& getVertexBuffer() const override;
+        glm::mat4 getModelMatrix() const override;
 
     private:
         VertexBuffer vertexBuffer;

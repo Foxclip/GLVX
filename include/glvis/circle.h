@@ -13,6 +13,7 @@ namespace glvis {
         ~Circle();
         void setTexture(AbstractTexture* texture);
         void render(const glm::mat4& view, const glm::mat4& projection) const override;
+        const VertexBuffer& getVertexBuffer() const override;
 
     private:
         AbstractTexture* texture = nullptr;
