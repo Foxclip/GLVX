@@ -16,7 +16,11 @@ namespace glvis {
                 default:                               error_str = "Unknown OpenGL error";
             }
             if (error != GL_NO_ERROR) {
+#ifndef NDEBUG
                 throw std::runtime_error("OpenGL error: " + error_str);
+#else
+                std::cerr << "OpenGL error: " << error_str << std::endl;
+#endif
             }
         END_TRY
     }
