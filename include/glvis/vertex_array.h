@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include "vertex.h"
 #include "vertex_buffer.h"
+#include "abstract_texture.h"
 
 namespace glvis {
 
@@ -24,11 +25,13 @@ namespace glvis {
         void append(const Vertex& vertex);
         void setPrimitiveType(PrimitiveType type);
         void setShader(Shader* shader);
+        void setTexture(AbstractTexture* texture);
         void render(const glm::mat4& view, const glm::mat4& projection) const;
 
     private:
         VertexBuffer vertexBuffer;
         Shader* shader = nullptr;
+        AbstractTexture* texture = nullptr;
     };
 
 }

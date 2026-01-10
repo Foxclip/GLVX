@@ -54,6 +54,10 @@ namespace glvis {
         this->shader = shader;
     }
 
+    void VertexArray::setTexture(AbstractTexture* texture) {
+        this->texture = texture;
+    }
+
     void VertexArray::render(const glm::mat4& view, const glm::mat4& projection) const {
         if (shader == nullptr) return;
         glm::mat4 modelMatrix = glm::mat4(1.0f);
@@ -61,8 +65,14 @@ namespace glvis {
         shader->setMat4("model", modelMatrix);
         shader->setMat4("view", view);
         shader->setMat4("projection", projection);
-        shader->setInt("tex", 0);
-        shader->setBool("hasTexture", false);
+        if (texture) {
+            shader->setInt("tex", 0);
+            shader->setBool("hasTexture", true);
+            texture->bind();
+        } else {
+            shader->setInt("tex", -1);
+            shader->setBool("hasTexture", false);
+        }
         vertexBuffer.render(view, projection);
     }
 

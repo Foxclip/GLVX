@@ -28,11 +28,12 @@ int main() {
 
         glvis::VertexArray* va = app.addVertexArray(glvis::PrimitiveType::Triangles, 0);
         va->append(glvis::Vertex(glvis::Vector2(0.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 0.0f)));
-        va->append(glvis::Vertex(glvis::Vector2(100.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 0.0f)));
-        va->append(glvis::Vertex(glvis::Vector2(100.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(glvis::Vector2(100.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(1.0f, 0.0f)));
+        va->append(glvis::Vertex(glvis::Vector2(100.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(1.0f, 1.0f)));
         va->append(glvis::Vertex(glvis::Vector2(0.0f, 200.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 0.0f)));
-        va->append(glvis::Vertex(glvis::Vector2(100.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 0.0f)));
-        va->append(glvis::Vertex(glvis::Vector2(0.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 0.0f)));
+        va->append(glvis::Vertex(glvis::Vector2(100.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(1.0f, 1.0f)));
+        va->append(glvis::Vertex(glvis::Vector2(0.0f, 300.0f), glvis::Color(1.0f, 1.0f, 1.0f), glvis::Vector2(0.0f, 1.0f)));
+        va->setTexture(boxTexture);
 
         app.start();
 
@@ -44,7 +45,6 @@ int main() {
 
     return 0;
     
-    // TODO: VertexArray: textures
     // TODO: add tests
     // TODO: Drawable class
     // TODO: text rendering
