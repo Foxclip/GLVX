@@ -45,7 +45,8 @@ int main() {
 
     return 0;
     
-    // TODO: do not indent code in namespaces
+    // TODO: add some preset colors in Color class
+    // TODO: render all Drawable objects in App
     // TODO: add tests
     // TODO: text rendering
     // TODO: transparent texture rendering

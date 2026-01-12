@@ -5,20 +5,20 @@
 
 namespace glvis {
 
-    struct Vertex {
-        Vector2 position;
-        Color color;
-        Vector2 texCoords;
-    };
+struct Vertex {
+    Vector2 position;
+    Color color;
+    Vector2 texCoords;
+};
 
-    enum class PrimitiveType {
-        Points,
-        Lines,
-        LineStrip,
-        LineLoop,
-        Triangles,
-        TriangleStrip,
-        TriangleFan
-    };
+enum class PrimitiveType {
+    Points,
+    Lines,
+    LineStrip,
+    LineLoop,
+    Triangles,
+    TriangleStrip,
+    TriangleFan
+};
 
 }

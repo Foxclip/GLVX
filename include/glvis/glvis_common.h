@@ -7,24 +7,23 @@
 
 namespace glvis {
 
-    void check_opengl_errors();
+void check_opengl_errors();
 
-    namespace common {
-        extern Shader* defaultShader;
+namespace common {
+    extern Shader* defaultShader;
+}
+
+template<typename FuncType>
+auto glCall(FuncType&& f) {
+    if constexpr (std::is_same_v<decltype(f()), void>) {
+        f();
+        check_opengl_errors();
+    } else {
+        auto result = f();
+        check_opengl_errors();
+        return result;
     }
-
-    template<typename FuncType>
-    auto glCall(FuncType&& f) {
-        if constexpr (std::is_same_v<decltype(f()), void>) {
-            f();
-            check_opengl_errors();
-        } else {
-            auto result = f();
-            check_opengl_errors();
-            return result;
-        }
-    }
-
+}
 
 #ifdef NDEBUG
     #define GL_CALL(x) x
