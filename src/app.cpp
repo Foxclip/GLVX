@@ -18,8 +18,7 @@ App::App(int width, int height) {
 App::~App() {
 
     screenRectangle.reset();
-    shapes.clear();
-    vertexArrays.clear();
+    drawables.clear();
     screenShaderUptr.reset();
     defaultShaderUptr.reset();
     screenTextureUptr.reset();
@@ -64,21 +63,21 @@ void App::removeTexture(const std::filesystem::path& path) {
 Rectangle* App::addRectangle(float width, float height) {
     std::unique_ptr<Rectangle> rect = std::make_unique<Rectangle>(width, height);
     Rectangle* rectPtr = rect.get();
-    shapes.push_back(std::move(rect));
+    drawables.push_back(std::move(rect));
     return rectPtr;
 }
 
 Circle* App::addCircle(float radius, size_t numSegments) {
     std::unique_ptr<Circle> circle = std::make_unique<Circle>(radius, numSegments);
     Circle* circlePtr = circle.get();
-    shapes.push_back(std::move(circle));
+    drawables.push_back(std::move(circle));
     return circlePtr;
 }
 
 VertexArray* App::addVertexArray(PrimitiveType type, std::size_t vertexCount) {
     std::unique_ptr<VertexArray> va = std::make_unique<VertexArray>(type, vertexCount);
     VertexArray* vaPtr = va.get();
-    vertexArrays.push_back(std::move(va));
+    drawables.push_back(std::move(va));
     return vaPtr;
 }
 
@@ -148,13 +147,8 @@ void App::mainLoop() {
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::ortho(0.0f, (float)currentWindowWidth, 0.0f, (float)currentWindowHeight, -1.0f, 1.0f);
 
-        for (int i = 0; i < shapes.size(); i++) {
-            Shape* shape = shapes[i].get();
-            shape->render(view, projection);
-        }
-
-        for (auto& va : vertexArrays) {
-            va->render(view, projection);
+        for (auto& drawable : drawables) {
+            drawable->render(view, projection);
         }
 
         GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));

@@ -26,7 +26,6 @@ public:
     void setOrigin(float x, float y);
     void setOrigin(const Vector2& origin);
     void setShader(Shader* shader);
-    virtual void render(const glm::mat4& view, const glm::mat4& projection) const = 0;
 
 protected:
     Shader* shader = nullptr;

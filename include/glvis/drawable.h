@@ -14,6 +14,7 @@ public:
 
     virtual glm::mat4 getModelMatrix() const;
     virtual const VertexBuffer& getVertexBuffer() const = 0;
+    virtual void render(const glm::mat4& view, const glm::mat4& projection) const = 0;
     void renderBase(Shader* shader, AbstractTexture* texture, const glm::mat4& view, const glm::mat4& projection) const;
 };
 

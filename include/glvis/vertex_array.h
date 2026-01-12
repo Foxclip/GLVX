@@ -27,7 +27,7 @@ public:
     void setPrimitiveType(PrimitiveType type);
     void setShader(Shader* shader);
     void setTexture(AbstractTexture* texture);
-    void render(const glm::mat4& view, const glm::mat4& projection) const;
+    void render(const glm::mat4& view, const glm::mat4& projection) const override;
     const VertexBuffer& getVertexBuffer() const override;
     glm::mat4 getModelMatrix() const override;
 

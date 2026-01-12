@@ -45,8 +45,6 @@ int main() {
 
     return 0;
     
-    // TODO: add some preset colors in Color class
-    // TODO: render all Drawable objects in App
     // TODO: add tests
     // TODO: text rendering
     // TODO: transparent texture rendering

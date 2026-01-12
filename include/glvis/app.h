@@ -42,8 +42,7 @@ private:
     bool leftMousePressed = false;
     bool rightMousePressed = false;
     std::unique_ptr<Rectangle> screenRectangle = nullptr;
-    std::vector<std::unique_ptr<Shape>> shapes;
-    std::vector<std::unique_ptr<VertexArray>> vertexArrays;
+    std::vector<std::unique_ptr<Drawable>> drawables;
     std::unique_ptr<Shader> defaultShaderUptr = nullptr;
     std::unique_ptr<Shader> screenShaderUptr = nullptr;
     std::unique_ptr<RenderTexture> screenTextureUptr = nullptr;
