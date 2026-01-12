@@ -72,4 +72,8 @@ namespace glvis {
         END_TRY
     }
 
+    Shader::~Shader() {
+        GL_CALL(glDeleteProgram(ID));
+    }
+
 }
