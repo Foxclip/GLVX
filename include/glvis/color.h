@@ -5,6 +5,12 @@ namespace glvis {
     
 class Color {
 public:
+    static const Color White;
+    static const Color Black;
+    static const Color Red;
+    static const Color Green;
+    static const Color Blue;
+
     std::uint8_t r = 0;
     std::uint8_t g = 0;
     std::uint8_t b = 0;

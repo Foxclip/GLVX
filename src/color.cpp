@@ -16,4 +16,10 @@ Color::Color(float r, float g, float b, float a) {
     this->a = static_cast<std::uint8_t>(a * 255.0f);
 }
 
+const Color Color::White(1.0f, 1.0f, 1.0f);
+const Color Color::Black(0.0f, 0.0f, 0.0f);
+const Color Color::Red(1.0f, 0.0f, 0.0f);
+const Color Color::Green(0.0f, 1.0f, 0.0f);
+const Color Color::Blue(0.0f, 0.0f, 1.0f);
+
 }
