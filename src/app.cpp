@@ -8,10 +8,10 @@ namespace glvis {
 
 App::App(int width, int height) {
     START_TRY
-        window = init(width, height);
-        if (!window) {
-            throw std::runtime_error("Failed to initialize GLFW window");
-        }
+    window = init(width, height);
+    if (!window) {
+        throw std::runtime_error("Failed to initialize GLFW window");
+    }
     END_TRY
 }
 
@@ -39,7 +39,7 @@ App::~App() {
 
 void App::start() {
     START_TRY
-        mainLoop();
+    mainLoop();
     END_TRY
 }
 

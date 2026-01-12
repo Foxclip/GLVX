@@ -53,14 +53,14 @@ void Circle::setTexture(AbstractTexture* texture) {
 
 void Circle::render(const glm::mat4& view, const glm::mat4& projection) const {
     START_TRY
-        if (shader == nullptr) throw std::runtime_error("Shader not set");
-        auto modelMatrix = getModelMatrix();
-        shader->use();
-        shader->setMat4("model", modelMatrix);
-        shader->setMat4("view", view);
-        shader->setMat4("projection", projection);
-        shader->setVec4("color", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-        renderBase(shader, texture, view, projection);
+    if (shader == nullptr) throw std::runtime_error("Shader not set");
+    auto modelMatrix = getModelMatrix();
+    shader->use();
+    shader->setMat4("model", modelMatrix);
+    shader->setMat4("view", view);
+    shader->setMat4("projection", projection);
+    shader->setVec4("color", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    renderBase(shader, texture, view, projection);
     END_TRY
 }
 
