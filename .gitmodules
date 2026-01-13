@@ -4,6 +4,6 @@
 [submodule "glm"]
 	path = glm
 	url = https://github.com/g-truc/glm.git
-[submodule "tests/cpp-test-lib"]
-	path = tests/cpp-test-lib
+[submodule "glvis_tests/cpp-test-lib"]
+	path = glvis_tests/cpp-test-lib
 	url = https://github.com/Foxclip/cpp-test-lib.git

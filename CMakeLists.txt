@@ -14,7 +14,7 @@ set(GLM_BUILD_INSTALL OFF CACHE INTERNAL "" FORCE)
 add_subdirectory(glfw)
 add_subdirectory(glad)
 add_subdirectory(glm)
-add_subdirectory(tests)
+add_subdirectory(glvis_tests)
 
 add_library(${PROJECT_NAME})
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
