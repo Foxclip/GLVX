@@ -23,7 +23,6 @@ set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/abstract_texture.cpp
     ${SRC_DIR}/angle.cpp
-    ${SRC_DIR}/app.cpp
     ${SRC_DIR}/camera.cpp
     ${SRC_DIR}/circle.cpp
     ${SRC_DIR}/color.cpp

@@ -96,7 +96,7 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Core");
     root.run();
 
-    // TODO: rename tests folder to glvis_tests
+    // TODO: make rendering tests
     // TODO: text rendering
     // TODO: transparent texture rendering
 
