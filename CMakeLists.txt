@@ -37,6 +37,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/vector.cpp
     ${SRC_DIR}/vertex_array.cpp
     ${SRC_DIR}/vertex_buffer.cpp
+    ${SRC_DIR}/window.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${INCLUDE_DIR}
