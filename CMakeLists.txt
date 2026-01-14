@@ -38,7 +38,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/vertex_array.cpp
     ${SRC_DIR}/vertex_buffer.cpp
 )
-target_include_directories(${PROJECT_NAME} PRIVATE
+target_include_directories(${PROJECT_NAME} PUBLIC
     ${INCLUDE_DIR}
 )
 if(WIN32)
