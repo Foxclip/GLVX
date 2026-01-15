@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <filesystem>
 
 namespace glvis {
 
@@ -16,7 +17,7 @@ class Shader {
 public:
     unsigned int ID;
 
-    Shader(const std::string& vertexPath, const std::string& fragmentPath);
+    Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath);
     ~Shader();
     void use();
     void setBool(const std::string& name, bool value) const;  
@@ -27,7 +28,7 @@ public:
     void setMat4(const std::string& name, const glm::mat4& value) const;
 
 private:
-    int compileShader(ShaderType type, const std::string& path);
+    int compileShader(ShaderType type, const std::filesystem::path& path);
 
 };
 
