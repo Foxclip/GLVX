@@ -2,6 +2,7 @@
 #include "glvis/utils.h"
 #include <glad/glad.h>
 #include "glvis/glvis_common.h"
+#include <vector>
 
 namespace glvis {
 
@@ -16,9 +17,11 @@ Shader::Shader(const std::filesystem::path& vertexPath, const std::filesystem::p
     int success;
     GL_CALL(glGetProgramiv(ID, GL_LINK_STATUS, &success));
     if (!success) {
-        char infoLog[8192];
-        GL_CALL(glGetProgramInfoLog(ID, 8192, NULL, infoLog));
-        throw std::format("Linking failed\n{}", infoLog);
+        int length;
+        GL_CALL(glGetProgramiv(ID, GL_INFO_LOG_LENGTH, &length));
+        std::vector<char> infoLog(length);
+        GL_CALL(glGetProgramInfoLog(ID, length, NULL, infoLog.data()));
+        throw std::format("Linking failed\n{}", std::string(infoLog.data()));
     }
     GL_CALL(glDeleteShader(vertexShader));
     GL_CALL(glDeleteShader(fragmentShader));
@@ -61,12 +64,14 @@ int Shader::compileShader(ShaderType type, const std::filesystem::path& path) {
     GL_CALL(glShaderSource(shader, 1, &sourceCstr, NULL));
     GL_CALL(glCompileShader(shader));
     int success;
-    char infoLog[8192];
     GL_CALL(glGetShaderiv(shader, GL_COMPILE_STATUS, &success));
     if (!success) {
-        GL_CALL(glGetShaderInfoLog(shader, 8192, NULL, infoLog));
+        int length;
+        GL_CALL(glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length));
+        std::vector<char> infoLog(length);
+        GL_CALL(glGetShaderInfoLog(shader, length, NULL, infoLog.data()));
         std::string typeStr = type == ShaderType::VERTEX ? "Vertex" : "Fragment";
-        throw std::runtime_error(std::format("{} shader compilation failed: {}\n{}", typeStr, path.string(), infoLog));
+        throw std::runtime_error(std::format("{} shader compilation failed: {}\n{}", typeStr, path.string(), std::string(infoLog.data())));
     }
     return shader;
     END_TRY
