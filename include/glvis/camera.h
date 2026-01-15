@@ -14,6 +14,9 @@ class Camera {
     float getZoom() const;
     void setPosition(const glm::vec2& pos);
     void setZoom(float zoom);
+    glm::mat4 getViewMatrix(float width, float height) const;
+    glm::mat4 getInvViewMatrix(float width, float height) const;
+    glm::mat4 getProjectionMatrix(float width, float height) const;
     
     private:
     glm::vec2 pos = glm::vec2(0.0f, 0.0f);
