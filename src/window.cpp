@@ -108,18 +108,6 @@ glm::vec2 Window::screenToWorld(int x, int y) const {
     return result;
 }
 
-void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height) {
-    if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        window->processWindowSize(width, height);
-    }
-}
-
-void Window::processWindowSize(int width, int height) {
-    currentWidth = width;
-    currentHeight = height;
-    screenTextureUptr->resize(width, height);
-}
-
 void Window::setMouseCallback(const mouseCallbackFuncType& callback) {
     mouseMoveCallback = callback;
 }
@@ -130,6 +118,18 @@ void Window::setMouseButtonCallback(const mouseButtonCallbackFuncType& callback)
 
 void Window::setScrollCallback(const scrollCallbackFuncType& callback) {
     scrollCallback = callback;
+}
+
+void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height) {
+    if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        window->processWindowSize(width, height);
+    }
+}
+
+void Window::processWindowSize(int width, int height) {
+    currentWidth = width;
+    currentHeight = height;
+    screenTextureUptr->resize(width, height);
 }
 
 void Window::mouseMoveCallbackGLFW(GLFWwindow* glfwWindow, double xpos, double ypos) {
