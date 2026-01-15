@@ -40,9 +40,21 @@ private:
     glm::mat4 invView;
     glm::mat4 projection;
 
+    using mouseCallbackFuncType = std::function<void(double xpos, double ypos)>;
+    using mouseButtonCallbackFuncType = std::function<void(int button, int action, int mods)>;
+    using scrollCallbackFuncType = std::function<void(double xoffset, double yoffset)>;
+    mouseCallbackFuncType mouseMoveCallback = [](double xpos, double ypos) { };
+    mouseButtonCallbackFuncType mouseButtonCallback = [](int button, int action, int mods) { };
+    scrollCallbackFuncType scrollCallback = [](double xoffset, double yoffset) { };
+
     static void framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height);
     void processWindowSize(int width, int height);
-
+    void setMouseCallback(const mouseCallbackFuncType& callback);
+    void setMouseButtonCallback(const mouseButtonCallbackFuncType& callback);
+    void setScrollCallback(const scrollCallbackFuncType& callback);
+    static void mouseMoveCallbackGLFW(GLFWwindow* window, double xpos, double ypos);
+    static void mouseButtonCallbackGLFW(GLFWwindow* window, int button, int action, int mods);
+    static void scrollCallbackGLFW(GLFWwindow* window, double x, double y);
 
 };
 

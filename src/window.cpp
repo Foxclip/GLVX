@@ -46,9 +46,9 @@ void Window::create(int width, int height, const char* title) {
     glfwSetWindowUserPointer(window, this);
     
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetMouseButtonCallback(window, mouse_button_callback);
-    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetCursorPosCallback(window, mouseMoveCallbackGLFW);
+    glfwSetMouseButtonCallback(window, mouseButtonCallbackGLFW);
+    glfwSetScrollCallback(window, scrollCallbackGLFW);
 
     defaultShaderUptr = std::make_unique<Shader>("shaders/simple.vert", "shaders/simple.frag");
     common::defaultShader = defaultShaderUptr.get();
@@ -118,6 +118,36 @@ void Window::processWindowSize(int width, int height) {
     currentWidth = width;
     currentHeight = height;
     screenTextureUptr->resize(width, height);
+}
+
+void Window::setMouseCallback(const mouseCallbackFuncType& callback) {
+    mouseMoveCallback = callback;
+}
+
+void Window::setMouseButtonCallback(const mouseButtonCallbackFuncType& callback) {
+    mouseButtonCallback = callback;
+}
+
+void Window::setScrollCallback(const scrollCallbackFuncType& callback) {
+    scrollCallback = callback;
+}
+
+void Window::mouseMoveCallbackGLFW(GLFWwindow* glfwWindow, double xpos, double ypos) {
+    if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        window->mouseMoveCallback(xpos, ypos);
+    }
+}
+
+void Window::mouseButtonCallbackGLFW(GLFWwindow* glfwWindow, int button, int action, int mods) {
+    if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        window->mouseButtonCallback(button, action, mods);
+    }
+}
+
+void Window::scrollCallbackGLFW(GLFWwindow* glfwWindow, double xoffset, double yoffset) {
+    if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        window->scrollCallback(xoffset, yoffset);
+    }
 }
 
 }
