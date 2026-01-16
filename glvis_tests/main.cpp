@@ -3,6 +3,7 @@
 #include "glvis/vector.h"
 #include "glvis/color.h"
 #include "glvis/vertex.h"
+#include "glvis/rectangle.h"
 #include "glvis/window.h"
 
 class GlvisTestModule : public test::TestModule {
@@ -11,6 +12,7 @@ public:
 
 private:
     void basicTest(test::Test& test);
+    void rectangleTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -21,6 +23,13 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
 void GlvisTestModule::basicTest(test::Test& test) {
     glvis::Window window;
     window.create(800, 600, "GLVis Test");
+}
+
+void GlvisTestModule::rectangleTest(test::Test& test) {
+    glvis::Window window;
+    window.create(800, 600, "GLVis Test");
+    glvis::Rectangle rect(10.0f, 10.0f);
+    window.draw(rect);
 }
 
 int main() {

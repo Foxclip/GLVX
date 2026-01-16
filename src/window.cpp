@@ -6,6 +6,7 @@
 #include "glvis/shader.h"
 #include <stdexcept>
 #include <filesystem>
+#include "window.h"
 
 namespace glvis {
 
@@ -97,6 +98,12 @@ void Window::display() const {
 
     glfwSwapBuffers(window);
     glfwPollEvents();
+}
+
+std::vector<unsigned char> Window::readPixels() const {
+    std::vector<unsigned char> pixels(currentWidth * currentHeight * 3);
+    GL_CALL(glReadPixels(0, 0, currentWidth, currentHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()));
+    return pixels;
 }
 
 glm::vec2 Window::worldToScreen(float x, float y) const {
