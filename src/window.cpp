@@ -3,6 +3,7 @@
 #include "glvis/render_texture.h"
 #include "glvis/rectangle.h"
 #include "glvis/window.h"
+#include "glvis/shader.h"
 #include <stdexcept>
 #include <filesystem>
 

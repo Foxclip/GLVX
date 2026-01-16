@@ -2,10 +2,11 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "glvis/shader.h"
 #include <iostream>
 
 namespace glvis {
+
+class Shader;
 
 void check_opengl_errors();
 

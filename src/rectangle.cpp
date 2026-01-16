@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include "glvis/glvis_common.h"
 #include "glvis/texture.h"
+#include "glvis/shader.h"
 
 namespace glvis {
 

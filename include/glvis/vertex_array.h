@@ -4,12 +4,12 @@
 #include <glm/glm.hpp>
 #include "vertex.h"
 #include "vertex_buffer.h"
-#include "abstract_texture.h"
 #include "drawable.h"
 
 namespace glvis {
 
 class Shader;
+class AbstractTexture;
 
 class VertexArray : public Drawable {
 public:
