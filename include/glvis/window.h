@@ -5,13 +5,12 @@
 #include "glvis/glvis_common.h"
 #include "glvis/camera.h"
 #include "glvis/drawable.h"
+#include "glvis/rectangle.h"
+#include "glvis/shader.h"
+#include "glvis/render_texture.h"
 #include <memory>
 
 namespace glvis {
-
-class Rectangle;
-class Shader;
-class RenderTexture;
 
 const int DEFAULT_WINDOW_WIDTH = 800;
 const int DEFAULT_WINDOW_HEIGHT = 600;
