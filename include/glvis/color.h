@@ -15,6 +15,7 @@ public:
     std::uint8_t g = 0;
     std::uint8_t b = 0;
 
+    ColorRGB() = default;
     ColorRGB(float r, float g, float b);
 };
 
@@ -31,6 +32,7 @@ public:
     std::uint8_t b = 0;
     std::uint8_t a = 255;
 
+    ColorRGBA() = default;
     ColorRGBA(float r, float g, float b, float a = 1.0f);
 
 };

@@ -98,10 +98,10 @@ void Window::display() const {
     glfwPollEvents();
 }
 
-Image Window::readPixels() const {
+Image<ColorRGB> Window::readPixels() const {
     std::vector<unsigned char> pixels(currentWidth * currentHeight * 3);
     GL_CALL(glReadPixels(0, 0, currentWidth, currentHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()));
-    return Image(currentWidth, currentHeight, std::move(pixels));
+    return Image<ColorRGB>(currentWidth, currentHeight, std::move(pixels));
 }
 
 glm::vec2 Window::worldToScreen(float x, float y) const {

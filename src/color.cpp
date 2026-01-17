@@ -1,5 +1,4 @@
 #include "glvis/color.h"
-#include "color.h"
 
 namespace glvis {
 
