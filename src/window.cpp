@@ -1,12 +1,10 @@
 #include "glvis/window.h"
-#include "glvis/window.h"
 #include "glvis/render_texture.h"
 #include "glvis/rectangle.h"
-#include "glvis/window.h"
 #include "glvis/shader.h"
+#include "glvis/image.h"
 #include <stdexcept>
 #include <filesystem>
-#include "window.h"
 
 namespace glvis {
 
@@ -100,10 +98,10 @@ void Window::display() const {
     glfwPollEvents();
 }
 
-std::vector<unsigned char> Window::readPixels() const {
+Image Window::readPixels() const {
     std::vector<unsigned char> pixels(currentWidth * currentHeight * 3);
     GL_CALL(glReadPixels(0, 0, currentWidth, currentHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()));
-    return pixels;
+    return Image(currentWidth, currentHeight, std::move(pixels));
 }
 
 glm::vec2 Window::worldToScreen(float x, float y) const {

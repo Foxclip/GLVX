@@ -2,22 +2,36 @@
 #include <cstdint>
 
 namespace glvis {
-    
-class Color {
+
+class ColorRGB {
 public:
-    static const Color White;
-    static const Color Black;
-    static const Color Red;
-    static const Color Green;
-    static const Color Blue;
+    static const ColorRGB White;
+    static const ColorRGB Black;
+    static const ColorRGB Red;
+    static const ColorRGB Green;
+    static const ColorRGB Blue;
+
+    std::uint8_t r = 0;
+    std::uint8_t g = 0;
+    std::uint8_t b = 0;
+
+    ColorRGB(float r, float g, float b);
+};
+
+class ColorRGBA {
+public:
+    static const ColorRGBA White;
+    static const ColorRGBA Black;
+    static const ColorRGBA Red;
+    static const ColorRGBA Green;
+    static const ColorRGBA Blue;
 
     std::uint8_t r = 0;
     std::uint8_t g = 0;
     std::uint8_t b = 0;
     std::uint8_t a = 255;
 
-    Color();
-    Color(float r, float g, float b, float a = 1.0f);
+    ColorRGBA(float r, float g, float b, float a = 1.0f);
 
 };
 

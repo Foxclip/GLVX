@@ -7,7 +7,7 @@ namespace glvis {
 
 struct Vertex {
     Vector2 position;
-    Color color;
+    ColorRGBA color;
     Vector2 texCoords;
 };
 
