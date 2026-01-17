@@ -1,5 +1,7 @@
 #pragma once
+
 #include <cstdint>
+#include <string>
 
 namespace glvis {
 
@@ -17,6 +19,8 @@ public:
 
     ColorRGB() = default;
     ColorRGB(float r, float g, float b);
+    static std::string toString(const ColorRGB& color);
+    bool operator==(const ColorRGB& other) const;
 };
 
 class ColorRGBA {
@@ -34,7 +38,8 @@ public:
 
     ColorRGBA() = default;
     ColorRGBA(float r, float g, float b, float a = 1.0f);
-
+    static std::string toString(const ColorRGBA& color);
+    bool operator==(const ColorRGBA& other) const;
 };
 
 }

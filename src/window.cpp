@@ -68,15 +68,23 @@ bool Window::isOpen() const {
     return !glfwWindowShouldClose(window);
 }
 
+int Window::getWidth() const {
+    return currentWidth;
+}
+
+int Window::getHeight() const {
+    return currentHeight;
+}
+
 void glvis::Window::setCamera(const Camera& camera) {
     view = camera.getViewMatrix((float)currentWidth, (float)currentHeight);
     invView = camera.getInvViewMatrix((float)currentWidth, (float)currentHeight);
     projection = camera.getProjectionMatrix((float)currentWidth, (float)currentHeight);
 }
 
-void Window::clear() const {
+void Window::clear(const ColorRGBA& color) const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
-    GL_CALL(glClearColor(0.2f, 0.3f, 0.8f, 1.0f));
+    GL_CALL(glClearColor(color.r, color.g, color.b, color.a));
     GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
     GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
 }
@@ -100,6 +108,8 @@ void Window::display() const {
 
 Image<ColorRGB> Window::readPixels() const {
     std::vector<unsigned char> pixels(currentWidth * currentHeight * 3);
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+    GL_CALL(glReadBuffer(GL_FRONT));
     GL_CALL(glReadPixels(0, 0, currentWidth, currentHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()));
     return Image<ColorRGB>(currentWidth, currentHeight, std::move(pixels));
 }
