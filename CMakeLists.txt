@@ -28,6 +28,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/color.cpp
     ${SRC_DIR}/drawable.cpp
     ${SRC_DIR}/glvis_common.cpp
+    ${SRC_DIR}/image.cpp
     ${SRC_DIR}/rectangle.cpp
     ${SRC_DIR}/render_texture.cpp
     ${SRC_DIR}/shader.cpp

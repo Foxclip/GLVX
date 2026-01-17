@@ -8,6 +8,7 @@
 #include "glvis/rectangle.h"
 #include "glvis/shader.h"
 #include "glvis/render_texture.h"
+#include "glvis/image.h"
 #include <memory>
 
 namespace glvis {
@@ -20,10 +21,13 @@ public:
     ~Window();
     void create(int width = DEFAULT_WINDOW_WIDTH, int height = DEFAULT_WINDOW_HEIGHT, const char* title = "GLVis window");
     bool isOpen() const;
+    int getWidth() const;
+    int getHeight() const;
     void setCamera(const Camera& camera);
-    void clear() const;
+    void clear(const ColorRGBA& color) const;
     void draw(const Drawable& drawable) const;
     void display() const;
+    Image<ColorRGB> readPixels() const;
     glm::vec2 worldToScreen(float x, float y) const;
     glm::vec2 screenToWorld(int x, int y) const;
 

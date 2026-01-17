@@ -1,9 +1,8 @@
 #include "glvis/window.h"
-#include "glvis/window.h"
 #include "glvis/render_texture.h"
 #include "glvis/rectangle.h"
-#include "glvis/window.h"
 #include "glvis/shader.h"
+#include "glvis/image.h"
 #include <stdexcept>
 #include <filesystem>
 
@@ -69,15 +68,23 @@ bool Window::isOpen() const {
     return !glfwWindowShouldClose(window);
 }
 
+int Window::getWidth() const {
+    return currentWidth;
+}
+
+int Window::getHeight() const {
+    return currentHeight;
+}
+
 void glvis::Window::setCamera(const Camera& camera) {
     view = camera.getViewMatrix((float)currentWidth, (float)currentHeight);
     invView = camera.getInvViewMatrix((float)currentWidth, (float)currentHeight);
     projection = camera.getProjectionMatrix((float)currentWidth, (float)currentHeight);
 }
 
-void Window::clear() const {
+void Window::clear(const ColorRGBA& color) const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
-    GL_CALL(glClearColor(0.2f, 0.3f, 0.8f, 1.0f));
+    GL_CALL(glClearColor(color.r, color.g, color.b, color.a));
     GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
     GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
 }
@@ -97,6 +104,25 @@ void Window::display() const {
 
     glfwSwapBuffers(window);
     glfwPollEvents();
+}
+
+Image<ColorRGB> Window::readPixels() const {
+    std::vector<unsigned char> pixels(currentWidth * currentHeight * 3);
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+    GL_CALL(glReadBuffer(GL_FRONT));
+    GL_CALL(glReadPixels(0, 0, currentWidth, currentHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()));
+
+    // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have top-left
+    std::vector<unsigned char> flippedPixels(currentWidth * currentHeight * 3);
+    size_t rowSize = currentWidth * 3;
+    for (int y = 0; y < currentHeight; ++y) {
+        int srcY = currentHeight - 1 - y;
+        std::copy(pixels.begin() + srcY * rowSize,
+                  pixels.begin() + (srcY + 1) * rowSize,
+                  flippedPixels.begin() + y * rowSize);
+    }
+
+    return Image<ColorRGB>(currentWidth, currentHeight, std::move(flippedPixels));
 }
 
 glm::vec2 Window::worldToScreen(float x, float y) const {
