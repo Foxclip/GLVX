@@ -111,7 +111,18 @@ Image<ColorRGB> Window::readPixels() const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     GL_CALL(glReadBuffer(GL_FRONT));
     GL_CALL(glReadPixels(0, 0, currentWidth, currentHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()));
-    return Image<ColorRGB>(currentWidth, currentHeight, std::move(pixels));
+
+    // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have top-left
+    std::vector<unsigned char> flippedPixels(currentWidth * currentHeight * 3);
+    size_t rowSize = currentWidth * 3;
+    for (int y = 0; y < currentHeight; ++y) {
+        int srcY = currentHeight - 1 - y;
+        std::copy(pixels.begin() + srcY * rowSize,
+                  pixels.begin() + (srcY + 1) * rowSize,
+                  flippedPixels.begin() + y * rowSize);
+    }
+
+    return Image<ColorRGB>(currentWidth, currentHeight, std::move(flippedPixels));
 }
 
 glm::vec2 Window::worldToScreen(float x, float y) const {

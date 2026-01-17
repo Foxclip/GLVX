@@ -35,12 +35,15 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
     camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
     window.clear(ColorRGBA::Black);
+
     Rectangle rect(10.0f, 10.0f);
     rect.setColor(ColorRGBA::Red);
     window.draw(rect);
     window.display();
     Image<ColorRGB> image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), ColorRGB::Red, &ColorRGB::toString);
+    T_COMPARE(image.getPixel(9, 9), ColorRGB::Red, &ColorRGB::toString);
+    T_COMPARE(image.getPixel(10, 10), ColorRGB::Black, &ColorRGB::toString);
 }
 
 int main() {
