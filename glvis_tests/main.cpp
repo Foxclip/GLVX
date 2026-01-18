@@ -73,6 +73,7 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
+    // TODO: add destructor to Texture class
     // TODO: make rendering tests
     // TODO: text rendering
     // TODO: transparent texture rendering
