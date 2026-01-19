@@ -4,6 +4,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "glvis/stb_image.h"
 #include "glvis/glvis_common.h"
+#include <memory>
 
 namespace glvis {
 
@@ -20,12 +21,17 @@ Texture::Texture(unsigned char* data, int width, int height) {
 Texture::Texture(const std::filesystem::path& path) {
     START_TRY
     int width, height, nrChannels;
-    unsigned char* data = stbi_load(path.string().c_str(), &width, &height, &nrChannels, 4);
+    std::unique_ptr<unsigned char, decltype(&stbi_image_free)> data(
+        stbi_load(path.string().c_str(), &width, &height, &nrChannels, 4),
+        stbi_image_free
+    );
     if (!data) {
         throw std::runtime_error("Failed to load texture: " + path.string() + "\n");
     }
-    create(data);
-    stbi_image_free(data);
+    this->width = width;
+    this->height = height;
+    this->path = path;
+    create(data.get());
     END_TRY
 }
 
