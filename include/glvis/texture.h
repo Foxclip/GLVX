@@ -14,7 +14,6 @@ public:
     const std::filesystem::path& getPath() const;
     
 private:
-    void create(unsigned char* data);
     std::filesystem::path path;
 
 };

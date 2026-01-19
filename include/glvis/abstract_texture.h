@@ -19,7 +19,7 @@ protected:
     unsigned int ID = 0;
     int width = 0;
     int height = 0;
-    void createEmptyTexture(int width, int height);
+    void createTexture(int width, int height, unsigned char* data = nullptr);
     void resizeTexture(int newWidth, int newHeight);
 
 };

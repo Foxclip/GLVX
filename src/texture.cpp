@@ -9,13 +9,11 @@
 namespace glvis {
 
 Texture::Texture(int width, int height) {
-    createEmptyTexture(width, height);
+    createTexture(width, height);
 }
 
 Texture::Texture(unsigned char* data, int width, int height) {
-    this->width = width;
-    this->height = height;
-    create(data);
+    createTexture(width, height, data);
 }
 
 Texture::Texture(const std::filesystem::path& path) {
@@ -28,30 +26,13 @@ Texture::Texture(const std::filesystem::path& path) {
     if (!data) {
         throw std::runtime_error("Failed to load texture: " + path.string() + "\n");
     }
-    this->width = width;
-    this->height = height;
     this->path = path;
-    create(data.get());
+    createTexture(width, height, data.get());
     END_TRY
 }
 
 const std::filesystem::path& Texture::getPath() const {
     return path;
-}
-
-void Texture::create(unsigned char* data) {
-    START_TRY
-    assert(data);
-    if (glfwGetCurrentContext() == nullptr) {
-        throw std::runtime_error("Texture::create called outside of GLFW context");
-    }
-    GL_CALL(glGenTextures(1, &ID));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
-    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
-    END_TRY
 }
 
 }

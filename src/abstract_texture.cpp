@@ -46,15 +46,20 @@ AbstractTexture::~AbstractTexture() {
     GL_CALL(glDeleteTextures(1, &ID));
 }
 
-void AbstractTexture::createEmptyTexture(int width, int height) {
+void AbstractTexture::createTexture(int width, int height, unsigned char* data) {
+    START_TRY
+    if (data && glfwGetCurrentContext() == nullptr) {
+        throw std::runtime_error("Texture::create called outside of GLFW context");
+    }
     GL_CALL(glGenTextures(1, &ID));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
-    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
+    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     this->width = width;
     this->height = height;
+    END_TRY
 }
 
 void AbstractTexture::resizeTexture(int newWidth, int newHeight) {
