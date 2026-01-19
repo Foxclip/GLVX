@@ -106,15 +106,15 @@ void Window::display() const {
     glfwPollEvents();
 }
 
-Image<ColorRGB> Window::readPixels() const {
-    std::vector<unsigned char> pixels(currentWidth * currentHeight * 3);
+Image<ColorRGBA> Window::readPixels() const {
+    std::vector<unsigned char> pixels(currentWidth * currentHeight * 4);
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     GL_CALL(glReadBuffer(GL_FRONT));
-    GL_CALL(glReadPixels(0, 0, currentWidth, currentHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels.data()));
+    GL_CALL(glReadPixels(0, 0, currentWidth, currentHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data()));
 
     // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have top-left
-    std::vector<unsigned char> flippedPixels(currentWidth * currentHeight * 3);
-    size_t rowSize = currentWidth * 3;
+    std::vector<unsigned char> flippedPixels(currentWidth * currentHeight * 4);
+    size_t rowSize = currentWidth * 4;
     for (int y = 0; y < currentHeight; ++y) {
         int srcY = currentHeight - 1 - y;
         std::copy(pixels.begin() + srcY * rowSize,
@@ -122,7 +122,7 @@ Image<ColorRGB> Window::readPixels() const {
                   flippedPixels.begin() + y * rowSize);
     }
 
-    return Image<ColorRGB>(currentWidth, currentHeight, std::move(flippedPixels));
+    return Image<ColorRGBA>(currentWidth, currentHeight, std::move(flippedPixels));
 }
 
 glm::vec2 Window::worldToScreen(float x, float y) const {
