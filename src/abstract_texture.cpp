@@ -41,6 +41,8 @@ void AbstractTexture::createEmptyTexture(int width, int height) {
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+    this->width = width;
+    this->height = height;
 }
 
 void AbstractTexture::resizeTexture(int newWidth, int newHeight) {
@@ -49,6 +51,8 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight) {
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+    this->width = newWidth;
+    this->height = newHeight;
 }
 
 }
