@@ -114,6 +114,45 @@ void GlvisTestModule::textureResizeTest(test::Test& test) {
     tex.resize(4, 4);
     T_COMPARE(tex.getWidth(), 4);
     T_COMPARE(tex.getHeight(), 4);
+
+    // Verify interpolation by reading back texture data
+    unsigned char resizedData[64]; // 4*4*4
+    tex.bind();
+    GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, resizedData));
+    tex.unbind();
+
+    // Check corners remain the same
+
+    // Top left (0,0)
+    T_COMPARE(resizedData[0], 1); // (0,0) R
+    T_COMPARE(resizedData[1], 2); // (0,0) G
+    T_COMPARE(resizedData[2], 3); // (0,0) B
+    T_COMPARE(resizedData[3], 4); // (0,0) A
+    // Top right (3,0)
+    int idx = (0 * 4 + 3) * 4;
+    T_COMPARE(resizedData[idx], 5);     // (3,0) R
+    T_COMPARE(resizedData[idx + 1], 6); // (3,0) G
+    T_COMPARE(resizedData[idx + 2], 7); // (3,0) B
+    T_COMPARE(resizedData[idx + 3], 8); // (3,0) A
+    // Bottom left (0,3)
+    idx = (3 * 4 + 0) * 4;
+    T_COMPARE(resizedData[idx], 9);      // (0,3) R
+    T_COMPARE(resizedData[idx + 1], 10); // (0,3) G
+    T_COMPARE(resizedData[idx + 2], 11); // (0,3) B
+    T_COMPARE(resizedData[idx + 3], 12); // (0,3) A
+    // Bottom right (3,3)
+    idx = (3 * 4 + 3) * 4;
+    T_COMPARE(resizedData[idx], 13);     // (3,3) R
+    T_COMPARE(resizedData[idx + 1], 14); // (3,3) G
+    T_COMPARE(resizedData[idx + 2], 15); // (3,3) B
+    T_COMPARE(resizedData[idx + 3], 16); // (3,3) A
+
+    // Check an interpolated pixel (1,1)
+    idx = (1 * 4 + 1) * 4;
+    T_COMPARE(resizedData[idx], 5);     // (1,1) R
+    T_COMPARE(resizedData[idx + 1], 6); // (1,1) G
+    T_COMPARE(resizedData[idx + 2], 7); // (1,1) B
+    T_COMPARE(resizedData[idx + 3], 8); // (1,1) A
 }
 
 int main() {
