@@ -10,9 +10,10 @@ uniform bool hasTexture;
 uniform vec4 color;
   
 void main() {
+    vec4 colorNormalized = color / 255.0;
     if (hasTexture) {
-        FragColor = texture(tex, TexCoords) * VertexColor * color;
+        FragColor = texture(tex, TexCoords) * VertexColor * colorNormalized;
     } else {
-        FragColor = VertexColor * color;
+        FragColor = VertexColor * colorNormalized;
     }
 }
