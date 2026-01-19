@@ -5,7 +5,6 @@
 
 namespace glvis {
 
-template<typename ColorType>
 class Image {
 public:
     Image(int width, int height, std::vector<unsigned char> data);
@@ -13,7 +12,7 @@ public:
     int getWidth() const;
     int getHeight() const;
     const std::vector<unsigned char>& getData() const;
-    ColorType getPixel(int x, int y) const;
+    ColorRGBA getPixel(int x, int y) const;
 
 private:
     int width;

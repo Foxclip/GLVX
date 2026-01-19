@@ -106,7 +106,7 @@ void Window::display() const {
     glfwPollEvents();
 }
 
-Image<ColorRGBA> Window::readPixels() const {
+Image Window::readPixels() const {
     std::vector<unsigned char> pixels(currentWidth * currentHeight * 4);
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     GL_CALL(glReadBuffer(GL_FRONT));
@@ -122,7 +122,7 @@ Image<ColorRGBA> Window::readPixels() const {
                   flippedPixels.begin() + y * rowSize);
     }
 
-    return Image<ColorRGBA>(currentWidth, currentHeight, std::move(flippedPixels));
+    return Image(currentWidth, currentHeight, std::move(flippedPixels));
 }
 
 glm::vec2 Window::worldToScreen(float x, float y) const {

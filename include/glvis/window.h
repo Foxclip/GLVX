@@ -27,7 +27,7 @@ public:
     void clear(const ColorRGBA& color) const;
     void draw(const Drawable& drawable) const;
     void display() const;
-    Image<ColorRGBA> readPixels() const;
+    Image readPixels() const;
     glm::vec2 worldToScreen(float x, float y) const;
     glm::vec2 screenToWorld(int x, int y) const;
 

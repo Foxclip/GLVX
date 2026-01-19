@@ -17,28 +17,28 @@ Rectangle::Rectangle(float width, float height) {
     std::vector<Vertex> vertices(6);
     // First triangle (0, height), (0, 0), (width, height)
     vertices[0].position = Vector2(0.0f, height);
-    vertices[0].color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
+    vertices[0].color = ColorRGBA(255, 255, 255, 255);
     vertices[0].texCoords = Vector2(0.0f, 1.0f);
     
     vertices[1].position = Vector2(0.0f, 0.0f);
-    vertices[1].color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
+    vertices[1].color = ColorRGBA(255, 255, 255, 255);
     vertices[1].texCoords = Vector2(0.0f, 0.0f);
     
     vertices[2].position = Vector2(width, height);
-    vertices[2].color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
+    vertices[2].color = ColorRGBA(255, 255, 255, 255);
     vertices[2].texCoords = Vector2(1.0f, 1.0f);
     
     // Second triangle (width, height), (0, 0), (width, 0)
     vertices[3].position = Vector2(width, height);
-    vertices[3].color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
+    vertices[3].color = ColorRGBA(255, 255, 255, 255);
     vertices[3].texCoords = Vector2(1.0f, 1.0f);
     
     vertices[4].position = Vector2(0.0f, 0.0f);
-    vertices[4].color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
+    vertices[4].color = ColorRGBA(255, 255, 255, 255);
     vertices[4].texCoords = Vector2(0.0f, 0.0f);
     
     vertices[5].position = Vector2(width, 0.0f);
-    vertices[5].color = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
+    vertices[5].color = ColorRGBA(255, 255, 255, 255);
     vertices[5].texCoords = Vector2(1.0f, 0.0f);
 
     // Initialize vertex buffer with 6 vertices

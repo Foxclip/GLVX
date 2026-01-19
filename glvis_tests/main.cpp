@@ -46,7 +46,7 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
     rect.setColor(ColorRGBA::Red);
     window.draw(rect);
     window.display();
-    Image<ColorRGBA> image = window.readPixels();
+    Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), ColorRGBA::Red, &ColorRGBA::toString);
     T_COMPARE(image.getPixel(9, 9), ColorRGBA::Red, &ColorRGBA::toString);
     T_COMPARE(image.getPixel(10, 10), ColorRGBA::Black, &ColorRGBA::toString);
@@ -64,7 +64,7 @@ void GlvisTestModule::circleTest(test::Test& test) {
     circle.setColor(ColorRGBA::Red);
     window.draw(circle);
     window.display();
-    Image<ColorRGBA> image = window.readPixels();
+    Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), ColorRGBA::Black, &ColorRGBA::toString);
     T_COMPARE(image.getPixel(5, 5), ColorRGBA::Red, &ColorRGBA::toString);
     T_COMPARE(image.getPixel(9, 9), ColorRGBA::Black, &ColorRGBA::toString);
@@ -89,11 +89,11 @@ void GlvisTestModule::textureTest(test::Test& test) {
     rect.setTexture(&tex);
     window.draw(rect);
     window.display();
-    Image<ColorRGBA> image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), ColorRGBA{1, 2, 3, 4}, &ColorRGBA::toString);
-    T_COMPARE(image.getPixel(1, 0), ColorRGBA{5, 6, 7, 8}, &ColorRGBA::toString);
-    T_COMPARE(image.getPixel(0, 1), ColorRGBA{9, 10, 11, 12}, &ColorRGBA::toString);
-    T_COMPARE(image.getPixel(1, 1), ColorRGBA{13, 14, 15, 16}, &ColorRGBA::toString);
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), ColorRGBA(1, 2, 3, 4), &ColorRGBA::toString);
+    T_COMPARE(image.getPixel(1, 0), ColorRGBA(5, 6, 7, 8), &ColorRGBA::toString);
+    T_COMPARE(image.getPixel(0, 1), ColorRGBA(9, 10, 11, 12), &ColorRGBA::toString);
+    T_COMPARE(image.getPixel(1, 1), ColorRGBA(13, 14, 15, 16), &ColorRGBA::toString);
     T_COMPARE(image.getPixel(2, 2), ColorRGBA::Black, &ColorRGBA::toString);
 }
 

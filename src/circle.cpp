@@ -20,7 +20,7 @@ Circle::Circle(float radius, size_t numSegments) {
     // Add center vertex
     vertices.push_back(Vertex {
         Vector2(radius, radius), // position
-        ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f), // color
+        ColorRGBA(255, 255, 255, 255), // color
         Vector2(0.5f, 0.5f) // texCoords
     });
     for (size_t i = 0; i <= numSegments; i++) {
@@ -32,7 +32,7 @@ Circle::Circle(float radius, size_t numSegments) {
         float texY = (y / radius + 1.0f) / 2.0f;
         vertices.push_back(Vertex {
             Vector2(x_shifted, y_shifted), // position
-            ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f), // color
+            ColorRGBA(255, 255, 255, 255), // color
             Vector2(texX, texY) // texCoords
         });
     }
