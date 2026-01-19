@@ -44,16 +44,16 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
     Camera camera;
     camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
-    window.clear(ColorRGBA::Black);
+    window.clear(Color::Black);
 
     Rectangle rect(10.0f, 10.0f);
-    rect.setColor(ColorRGBA::Red);
+    rect.setColor(Color::Red);
     window.draw(rect);
     window.display();
     Image image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), ColorRGBA::Red, &ColorRGBA::toString);
-    T_COMPARE(image.getPixel(9, 9), ColorRGBA::Red, &ColorRGBA::toString);
-    T_COMPARE(image.getPixel(10, 10), ColorRGBA::Black, &ColorRGBA::toString);
+    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::circleTest(test::Test& test) {
@@ -62,16 +62,16 @@ void GlvisTestModule::circleTest(test::Test& test) {
     Camera camera;
     camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
-    window.clear(ColorRGBA::Black);
+    window.clear(Color::Black);
 
     Circle circle(5.0f);
-    circle.setColor(ColorRGBA::Red);
+    circle.setColor(Color::Red);
     window.draw(circle);
     window.display();
     Image image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), ColorRGBA::Black, &ColorRGBA::toString);
-    T_COMPARE(image.getPixel(5, 5), ColorRGBA::Red, &ColorRGBA::toString);
-    T_COMPARE(image.getPixel(9, 9), ColorRGBA::Black, &ColorRGBA::toString);
+    T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(5, 5), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(9, 9), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::textureTest(test::Test& test) {
@@ -80,7 +80,7 @@ void GlvisTestModule::textureTest(test::Test& test) {
     Camera camera;
     camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
-    window.clear(ColorRGBA::Black);
+    window.clear(Color::Black);
 
     unsigned char data[16] = {
         1, 2, 3, 4,
@@ -94,11 +94,11 @@ void GlvisTestModule::textureTest(test::Test& test) {
     window.draw(rect);
     window.display();
     Image image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), ColorRGBA(1, 2, 3, 4), &ColorRGBA::toString);
-    T_COMPARE(image.getPixel(1, 0), ColorRGBA(5, 6, 7, 8), &ColorRGBA::toString);
-    T_COMPARE(image.getPixel(0, 1), ColorRGBA(9, 10, 11, 12), &ColorRGBA::toString);
-    T_COMPARE(image.getPixel(1, 1), ColorRGBA(13, 14, 15, 16), &ColorRGBA::toString);
-    T_COMPARE(image.getPixel(2, 2), ColorRGBA::Black, &ColorRGBA::toString);
+    T_COMPARE(image.getPixel(0, 0), Color(1, 2, 3, 4), &Color::toString);
+    T_COMPARE(image.getPixel(1, 0), Color(5, 6, 7, 8), &Color::toString);
+    T_COMPARE(image.getPixel(0, 1), Color(9, 10, 11, 12), &Color::toString);
+    T_COMPARE(image.getPixel(1, 1), Color(13, 14, 15, 16), &Color::toString);
+    T_COMPARE(image.getPixel(2, 2), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::textureResizeUpTest(test::Test& test) {
@@ -119,12 +119,12 @@ void GlvisTestModule::textureResizeUpTest(test::Test& test) {
 
     Image img = tex.readPixels();
     // Check corners remain the same
-    T_COMPARE(img.getPixel(0, 0), ColorRGBA(1, 2, 3, 4), &ColorRGBA::toString);
-    T_COMPARE(img.getPixel(3, 0), ColorRGBA(5, 6, 7, 8), &ColorRGBA::toString);
-    T_COMPARE(img.getPixel(0, 3), ColorRGBA(9, 10, 11, 12), &ColorRGBA::toString);
-    T_COMPARE(img.getPixel(3, 3), ColorRGBA(13, 14, 15, 16), &ColorRGBA::toString);
+    T_COMPARE(img.getPixel(0, 0), Color(1, 2, 3, 4), &Color::toString);
+    T_COMPARE(img.getPixel(3, 0), Color(5, 6, 7, 8), &Color::toString);
+    T_COMPARE(img.getPixel(0, 3), Color(9, 10, 11, 12), &Color::toString);
+    T_COMPARE(img.getPixel(3, 3), Color(13, 14, 15, 16), &Color::toString);
     // Check an interpolated pixel
-    T_COMPARE(img.getPixel(1, 1), ColorRGBA(5, 6, 7, 8), &ColorRGBA::toString);
+    T_COMPARE(img.getPixel(1, 1), Color(5, 6, 7, 8), &Color::toString);
 }
 
 void GlvisTestModule::textureResizeDownTest(test::Test& test) {
@@ -143,10 +143,10 @@ void GlvisTestModule::textureResizeDownTest(test::Test& test) {
 
     Image img = tex.readPixels();
     // Check corners
-    T_COMPARE(img.getPixel(0, 0), ColorRGBA(1, 1, 1, 1), &ColorRGBA::toString);
-    T_COMPARE(img.getPixel(1, 0), ColorRGBA(4, 4, 4, 4), &ColorRGBA::toString);
-    T_COMPARE(img.getPixel(0, 1), ColorRGBA(13, 13, 13, 13), &ColorRGBA::toString);
-    T_COMPARE(img.getPixel(1, 1), ColorRGBA(16, 16, 16, 16), &ColorRGBA::toString);
+    T_COMPARE(img.getPixel(0, 0), Color(1, 1, 1, 1), &Color::toString);
+    T_COMPARE(img.getPixel(1, 0), Color(4, 4, 4, 4), &Color::toString);
+    T_COMPARE(img.getPixel(0, 1), Color(13, 13, 13, 13), &Color::toString);
+    T_COMPARE(img.getPixel(1, 1), Color(16, 16, 16, 16), &Color::toString);
 }
 
 int main() {
@@ -155,7 +155,8 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: make rendering tests
+    // TODO: make color uniform tinting test
+    // TODO: make RenderTexture tests
     // TODO: text rendering
     // TODO: transparent texture rendering
 

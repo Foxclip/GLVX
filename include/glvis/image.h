@@ -12,7 +12,7 @@ public:
     int getWidth() const;
     int getHeight() const;
     const std::vector<unsigned char>& getData() const;
-    ColorRGBA getPixel(int x, int y) const;
+    Color getPixel(int x, int y) const;
 
 private:
     int width;

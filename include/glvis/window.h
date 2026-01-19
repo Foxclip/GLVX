@@ -24,7 +24,7 @@ public:
     int getWidth() const;
     int getHeight() const;
     void setCamera(const Camera& camera);
-    void clear(const ColorRGBA& color) const;
+    void clear(const Color& color) const;
     void draw(const Drawable& drawable) const;
     void display() const;
     Image readPixels() const;

@@ -15,15 +15,15 @@ public:
 
     virtual glm::mat4 getModelMatrix() const;
     virtual const VertexBuffer& getVertexBuffer() const = 0;
-    ColorRGBA getColor() const;
-    void setColor(const ColorRGBA& color);
+    Color getColor() const;
+    void setColor(const Color& color);
     virtual void render(const glm::mat4& view, const glm::mat4& projection) const = 0;
     
 protected:
     void renderBase(Shader* shader, AbstractTexture* texture, const glm::mat4& view, const glm::mat4& projection) const;
 
 private:
-    ColorRGBA color = ColorRGBA::White;
+    Color color = Color::White;
 
 };
 

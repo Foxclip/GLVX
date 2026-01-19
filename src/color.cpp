@@ -2,14 +2,14 @@
 
 namespace glvis {
 
-ColorRGBA::ColorRGBA(int r, int g, int b, int a) {
+Color::Color(int r, int g, int b, int a) {
     this->r = static_cast<std::uint8_t>(r);
     this->g = static_cast<std::uint8_t>(g);
     this->b = static_cast<std::uint8_t>(b);
     this->a = static_cast<std::uint8_t>(a);
 }
 
-std::string ColorRGBA::toString(const ColorRGBA& color) {
+std::string Color::toString(const Color& color) {
     return "("
         + std::to_string(color.r) + " "
         + std::to_string(color.g) + " "
@@ -18,14 +18,14 @@ std::string ColorRGBA::toString(const ColorRGBA& color) {
     + ")";
 }
 
-bool ColorRGBA::operator==(const ColorRGBA& other) const {
+bool Color::operator==(const Color& other) const {
     return r == other.r && g == other.g && b == other.b && a == other.a;
 }
 
-const ColorRGBA ColorRGBA::White(255, 255, 255);
-const ColorRGBA ColorRGBA::Black(0, 0, 0);
-const ColorRGBA ColorRGBA::Red(255, 0, 0);
-const ColorRGBA ColorRGBA::Green(0, 255, 0);
-const ColorRGBA ColorRGBA::Blue(0, 0, 255);
+const Color Color::White(255, 255, 255);
+const Color Color::Black(0, 0, 0);
+const Color Color::Red(255, 0, 0);
+const Color Color::Green(0, 255, 0);
+const Color Color::Blue(0, 0, 255);
 
 }

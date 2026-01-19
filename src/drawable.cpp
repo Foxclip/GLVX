@@ -11,11 +11,11 @@ glm::mat4 Drawable::getModelMatrix() const {
     return glm::mat4(1.0f);
 }
 
-ColorRGBA Drawable::getColor() const {
+Color Drawable::getColor() const {
     return color;
 }
 
-void Drawable::setColor(const ColorRGBA& color) {
+void Drawable::setColor(const Color& color) {
     this->color = color;
 }
 

@@ -82,7 +82,7 @@ void glvis::Window::setCamera(const Camera& camera) {
     projection = camera.getProjectionMatrix((float)currentWidth, (float)currentHeight);
 }
 
-void Window::clear(const ColorRGBA& color) const {
+void Window::clear(const Color& color) const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
     GL_CALL(glClearColor(color.r, color.g, color.b, color.a));
     GL_CALL(glClear(GL_COLOR_BUFFER_BIT));

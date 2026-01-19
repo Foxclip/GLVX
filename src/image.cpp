@@ -18,9 +18,9 @@ const std::vector<unsigned char>& Image::getData() const {
     return data;
 }
 
-ColorRGBA Image::getPixel(int x, int y) const {
+Color Image::getPixel(int x, int y) const {
     size_t index = (y * width + x) * 4;
-    return ColorRGBA(data[index], data[index + 1], data[index + 2], data[index + 3]);
+    return Color(data[index], data[index + 1], data[index + 2], data[index + 3]);
 }
 
 }
