@@ -6,26 +6,6 @@
 
 namespace glvis {
 
-class ColorRGB {
-public:
-    static const ColorRGB White;
-    static const ColorRGB Black;
-    static const ColorRGB Red;
-    static const ColorRGB Green;
-    static const ColorRGB Blue;
-
-    std::uint8_t r = 0;
-    std::uint8_t g = 0;
-    std::uint8_t b = 0;
-
-    ColorRGB() = default;
-    ColorRGB(int r, int g, int b);
-    ColorRGB(std::initializer_list<int> list);
-    explicit ColorRGB(float r, float g, float b);
-    static std::string toString(const ColorRGB& color);
-    bool operator==(const ColorRGB& other) const;
-};
-
 class ColorRGBA {
 public:
     static const ColorRGBA White;

@@ -44,7 +44,6 @@ ColorType Image<ColorType>::getPixel(int x, int y) const {
     }
 }
 
-template class Image<ColorRGB>;
 template class Image<ColorRGBA>;
 
 }
