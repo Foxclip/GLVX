@@ -28,8 +28,10 @@ auto glCall(FuncType&& f) {
 
 #ifdef NDEBUG
     #define GL_CALL(x) x
+    #define GL_CALL_DEBUG(x)
 #else
     #define GL_CALL(x) glCall([&] { return x; })
+    #define GL_CALL_DEBUG(x) glCall([&] { return x; })
 #endif
 
 #define START_TRY try {
