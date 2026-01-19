@@ -40,6 +40,7 @@ void Texture::create(unsigned char* data) {
     }
     GL_CALL(glGenTextures(1, &ID));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
+    GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); // use 1 byte alignment for RGB data
     GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
