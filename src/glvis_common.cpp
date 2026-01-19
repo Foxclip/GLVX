@@ -16,10 +16,9 @@ void check_opengl_errors() {
         default:                               error_str = "Unknown OpenGL error";
     }
     if (error != GL_NO_ERROR) {
+        std::cerr << "OpenGL error: " << error_str << std::endl;
 #ifndef NDEBUG
         throw std::runtime_error("OpenGL error: " + error_str);
-#else
-        std::cerr << "OpenGL error: " << error_str << std::endl;
 #endif
     }
     END_TRY
