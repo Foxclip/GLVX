@@ -114,7 +114,7 @@ Image<ColorRGBA> Window::readPixels() const {
 
     // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have top-left
     std::vector<unsigned char> flippedPixels(currentWidth * currentHeight * 4);
-    size_t rowSize = currentWidth * 3;
+    size_t rowSize = currentWidth * 4;
     for (int y = 0; y < currentHeight; ++y) {
         int srcY = currentHeight - 1 - y;
         std::copy(pixels.begin() + srcY * rowSize,
