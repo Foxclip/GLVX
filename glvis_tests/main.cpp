@@ -117,42 +117,14 @@ void GlvisTestModule::textureResizeUpTest(test::Test& test) {
     T_COMPARE(tex.getWidth(), 4);
     T_COMPARE(tex.getHeight(), 4);
 
-    // Verify interpolation by reading back texture data
     Image img = tex.readPixels();
-    const auto& resizedData = img.getData();
-
     // Check corners remain the same
-
-    // Top left (0,0)
-    T_COMPARE(resizedData[0], 1); // (0,0) R
-    T_COMPARE(resizedData[1], 2); // (0,0) G
-    T_COMPARE(resizedData[2], 3); // (0,0) B
-    T_COMPARE(resizedData[3], 4); // (0,0) A
-    // Top right (3,0)
-    int idx = (0 * 4 + 3) * 4;
-    T_COMPARE(resizedData[idx], 5);     // (3,0) R
-    T_COMPARE(resizedData[idx + 1], 6); // (3,0) G
-    T_COMPARE(resizedData[idx + 2], 7); // (3,0) B
-    T_COMPARE(resizedData[idx + 3], 8); // (3,0) A
-    // Bottom left (0,3)
-    idx = (3 * 4 + 0) * 4;
-    T_COMPARE(resizedData[idx], 9);      // (0,3) R
-    T_COMPARE(resizedData[idx + 1], 10); // (0,3) G
-    T_COMPARE(resizedData[idx + 2], 11); // (0,3) B
-    T_COMPARE(resizedData[idx + 3], 12); // (0,3) A
-    // Bottom right (3,3)
-    idx = (3 * 4 + 3) * 4;
-    T_COMPARE(resizedData[idx], 13);     // (3,3) R
-    T_COMPARE(resizedData[idx + 1], 14); // (3,3) G
-    T_COMPARE(resizedData[idx + 2], 15); // (3,3) B
-    T_COMPARE(resizedData[idx + 3], 16); // (3,3) A
-
-    // Check an interpolated pixel (1,1)
-    idx = (1 * 4 + 1) * 4;
-    T_COMPARE(resizedData[idx], 5);     // (1,1) R
-    T_COMPARE(resizedData[idx + 1], 6); // (1,1) G
-    T_COMPARE(resizedData[idx + 2], 7); // (1,1) B
-    T_COMPARE(resizedData[idx + 3], 8); // (1,1) A
+    T_COMPARE(img.getPixel(0, 0), ColorRGBA(1, 2, 3, 4), &ColorRGBA::toString);
+    T_COMPARE(img.getPixel(3, 0), ColorRGBA(5, 6, 7, 8), &ColorRGBA::toString);
+    T_COMPARE(img.getPixel(0, 3), ColorRGBA(9, 10, 11, 12), &ColorRGBA::toString);
+    T_COMPARE(img.getPixel(3, 3), ColorRGBA(13, 14, 15, 16), &ColorRGBA::toString);
+    // Check an interpolated pixel
+    T_COMPARE(img.getPixel(1, 1), ColorRGBA(5, 6, 7, 8), &ColorRGBA::toString);
 }
 
 void GlvisTestModule::textureResizeDownTest(test::Test& test) {
@@ -169,35 +141,12 @@ void GlvisTestModule::textureResizeDownTest(test::Test& test) {
     T_COMPARE(tex.getWidth(), 2);
     T_COMPARE(tex.getHeight(), 2);
 
-    // Verify by reading back texture data
     Image img = tex.readPixels();
-    const auto& resizedData = img.getData();
-
     // Check corners
-
-    // Top left (0,0)
-    T_COMPARE(resizedData[0], 1); // (0,0) R
-    T_COMPARE(resizedData[1], 1); // (0,0) G
-    T_COMPARE(resizedData[2], 1); // (0,0) B
-    T_COMPARE(resizedData[3], 1); // (0,0) A
-    // Top right (1,0)
-    int idx = (0 * 2 + 1) * 4;
-    T_COMPARE(resizedData[idx], 4);     // (1,0) R
-    T_COMPARE(resizedData[idx + 1], 4); // (1,0) G
-    T_COMPARE(resizedData[idx + 2], 4); // (1,0) B
-    T_COMPARE(resizedData[idx + 3], 4); // (1,0) A
-    // Bottom left (0,1)
-    idx = (1 * 2 + 0) * 4;
-    T_COMPARE(resizedData[idx], 13);     // (0,1) R
-    T_COMPARE(resizedData[idx + 1], 13); // (0,1) G
-    T_COMPARE(resizedData[idx + 2], 13); // (0,1) B
-    T_COMPARE(resizedData[idx + 3], 13); // (0,1) A
-    // Bottom right (1,1)
-    idx = (1 * 2 + 1) * 4;
-    T_COMPARE(resizedData[idx], 16);     // (1,1) R
-    T_COMPARE(resizedData[idx + 1], 16); // (1,1) G
-    T_COMPARE(resizedData[idx + 2], 16); // (1,1) B
-    T_COMPARE(resizedData[idx + 3], 16); // (1,1) A
+    T_COMPARE(img.getPixel(0, 0), ColorRGBA(1, 1, 1, 1), &ColorRGBA::toString);
+    T_COMPARE(img.getPixel(1, 0), ColorRGBA(4, 4, 4, 4), &ColorRGBA::toString);
+    T_COMPARE(img.getPixel(0, 1), ColorRGBA(13, 13, 13, 13), &ColorRGBA::toString);
+    T_COMPARE(img.getPixel(1, 1), ColorRGBA(16, 16, 16, 16), &ColorRGBA::toString);
 }
 
 int main() {
