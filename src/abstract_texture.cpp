@@ -18,6 +18,7 @@ int AbstractTexture::getHeight() const {
 }
 
 void AbstractTexture::bind() {
+    GL_CALL(glActiveTexture(GL_TEXTURE0));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
 }
 

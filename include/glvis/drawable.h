@@ -23,7 +23,7 @@ protected:
     void renderBase(Shader* shader, AbstractTexture* texture, const glm::mat4& view, const glm::mat4& projection) const;
 
 private:
-    ColorRGBA color;
+    ColorRGBA color = ColorRGBA::White;
 
 };
 

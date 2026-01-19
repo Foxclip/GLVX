@@ -6,6 +6,7 @@
 #include "glvis/rectangle.h"
 #include "glvis/circle.h"
 #include "glvis/window.h"
+#include "glvis/texture.h"
 
 using namespace glvis;
 
@@ -17,6 +18,7 @@ private:
     void basicTest(test::Test& test);
     void rectangleTest(test::Test& test);
     void circleTest(test::Test& test);
+    void textureTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -24,6 +26,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     addTest("basic", [&](test::Test& test) { basicTest(test); });
     addTest("rectangle", [&](test::Test& test) { rectangleTest(test); });
     addTest("circle", [&](test::Test& test) { circleTest(test); });
+    addTest("texture", [&](test::Test& test) { textureTest(test); });
 }
 
 void GlvisTestModule::basicTest(test::Test& test) {
@@ -67,12 +70,41 @@ void GlvisTestModule::circleTest(test::Test& test) {
     T_COMPARE(image.getPixel(9, 9), ColorRGB::Black, &ColorRGB::toString);
 }
 
+void GlvisTestModule::textureTest(test::Test& test) {
+    Window window;
+    window.create(100, 100, "GLVis Test");
+    Camera camera;
+    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setCamera(camera);
+    window.clear(ColorRGBA::Black);
+
+    unsigned char data[12] = {
+        1, 2, 3,
+        4, 5, 6,
+        7, 8, 9,
+        10, 11, 12
+    };
+    Texture tex(data, 2, 2);
+    Rectangle rect(2.0f, 2.0f);
+    rect.setTexture(&tex);
+    window.draw(rect);
+    window.display();
+    Image<ColorRGB> image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), ColorRGB{1, 2, 3}, &ColorRGB::toString);
+    T_COMPARE(image.getPixel(1, 0), ColorRGB{4, 5, 6}, &ColorRGB::toString);
+    T_COMPARE(image.getPixel(0, 1), ColorRGB{7, 8, 9}, &ColorRGB::toString);
+    T_COMPARE(image.getPixel(1, 1), ColorRGB{10, 11, 12}, &ColorRGB::toString);
+    T_COMPARE(image.getPixel(2, 2), ColorRGB::Black, &ColorRGB::toString);
+}
+
 int main() {
     test::TestModule root("GLVis Tests", nullptr);
     root.print_summary_enabled = true;
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
+    // TODO: create ImageRGB typedef
+    // TODO: add destructor to Texture class
     // TODO: make rendering tests
     // TODO: text rendering
     // TODO: transparent texture rendering

@@ -11,25 +11,41 @@ Texture::Texture(int width, int height) {
     createEmptyTexture(width, height);
 }
 
-Texture::Texture(const std::filesystem::path &path) {
+Texture::Texture(unsigned char* data, int width, int height) {
+    this->width = width;
+    this->height = height;
+    create(data);
+}
+
+Texture::Texture(const std::filesystem::path& path) {
     START_TRY
-    GL_CALL(glGenTextures(1, &ID));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
     int width, height, nrChannels;
     unsigned char* data = stbi_load(path.string().c_str(), &width, &height, &nrChannels, 0);
-    if (data) {
-        GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
-        GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
-    } else {
-        throw std::runtime_error("Failed to load texture: " + path.string() + "\n");;
+    if (!data) {
+        throw std::runtime_error("Failed to load texture: " + path.string() + "\n");
     }
+    create(data);
     stbi_image_free(data);
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     END_TRY
 }
 
 const std::filesystem::path& Texture::getPath() const {
     return path;
+}
+
+void Texture::create(unsigned char* data) {
+    START_TRY
+    if (!data) {
+        throw std::runtime_error("Failed to create texture");
+    }
+    GL_CALL(glGenTextures(1, &ID));
+    GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
+    GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); // use 1 byte alignment for RGB data
+    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+    END_TRY
 }
 
 }

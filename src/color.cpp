@@ -8,6 +8,26 @@ ColorRGB::ColorRGB(float r, float g, float b) {
     this->b = static_cast<std::uint8_t>(b * 255.0f);
 }
 
+ColorRGB::ColorRGB(int r, int g, int b) {
+    this->r = static_cast<std::uint8_t>(r);
+    this->g = static_cast<std::uint8_t>(g);
+    this->b = static_cast<std::uint8_t>(b);
+}
+
+ColorRGB::ColorRGB(std::initializer_list<int> list) {
+    if (list.size() != 3) {
+        // handle error, but for now assume 3
+        this->r = 0;
+        this->g = 0;
+        this->b = 0;
+    } else {
+        auto it = list.begin();
+        this->r = static_cast<std::uint8_t>(*it++);
+        this->g = static_cast<std::uint8_t>(*it++);
+        this->b = static_cast<std::uint8_t>(*it);
+    }
+}
+
 std::string ColorRGB::toString(const ColorRGB& color) {
     return "("
         + std::to_string(color.r) + " "
@@ -18,6 +38,34 @@ std::string ColorRGB::toString(const ColorRGB& color) {
 
 bool ColorRGB::operator==(const ColorRGB& other) const {
     return r == other.r && g == other.g && b == other.b;
+}
+
+ColorRGBA::ColorRGBA(int r, int g, int b, int a) {
+    this->r = static_cast<std::uint8_t>(r);
+    this->g = static_cast<std::uint8_t>(g);
+    this->b = static_cast<std::uint8_t>(b);
+    this->a = static_cast<std::uint8_t>(a);
+}
+
+ColorRGBA::ColorRGBA(std::initializer_list<int> list) {
+    if (list.size() == 3) {
+        auto it = list.begin();
+        this->r = static_cast<std::uint8_t>(*it++);
+        this->g = static_cast<std::uint8_t>(*it++);
+        this->b = static_cast<std::uint8_t>(*it);
+        this->a = 255;
+    } else if (list.size() == 4) {
+        auto it = list.begin();
+        this->r = static_cast<std::uint8_t>(*it++);
+        this->g = static_cast<std::uint8_t>(*it++);
+        this->b = static_cast<std::uint8_t>(*it++);
+        this->a = static_cast<std::uint8_t>(*it);
+    } else {
+        this->r = 0;
+        this->g = 0;
+        this->b = 0;
+        this->a = 255;
+    }
 }
 
 ColorRGBA::ColorRGBA(float r, float g, float b, float a) {

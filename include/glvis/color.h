@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <initializer_list>
 
 namespace glvis {
 
@@ -18,7 +19,9 @@ public:
     std::uint8_t b = 0;
 
     ColorRGB() = default;
-    ColorRGB(float r, float g, float b);
+    ColorRGB(int r, int g, int b);
+    ColorRGB(std::initializer_list<int> list);
+    explicit ColorRGB(float r, float g, float b);
     static std::string toString(const ColorRGB& color);
     bool operator==(const ColorRGB& other) const;
 };
@@ -37,7 +40,9 @@ public:
     std::uint8_t a = 255;
 
     ColorRGBA() = default;
-    ColorRGBA(float r, float g, float b, float a = 1.0f);
+    ColorRGBA(int r, int g, int b, int a = 255);
+    ColorRGBA(std::initializer_list<int> list);
+    explicit ColorRGBA(float r, float g, float b, float a = 1.0f);
     static std::string toString(const ColorRGBA& color);
     bool operator==(const ColorRGBA& other) const;
 };
