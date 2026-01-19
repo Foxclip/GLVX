@@ -19,7 +19,8 @@ private:
     void rectangleTest(test::Test& test);
     void circleTest(test::Test& test);
     void textureTest(test::Test& test);
-    void textureResizeTest(test::Test& test);
+    void textureResizeUpTest(test::Test& test);
+    void textureResizeDownTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -28,7 +29,8 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     addTest("rectangle", [&](test::Test& test) { rectangleTest(test); });
     addTest("circle", [&](test::Test& test) { circleTest(test); });
     addTest("texture", [&](test::Test& test) { textureTest(test); });
-    addTest("texture_resize", [&](test::Test& test) { textureResizeTest(test); });
+    addTest("texture_resize_up", [&](test::Test& test) { textureResizeUpTest(test); });
+    addTest("texture_resize_down", [&](test::Test& test) { textureResizeDownTest(test); });
 }
 
 void GlvisTestModule::basicTest(test::Test& test) {
@@ -99,7 +101,7 @@ void GlvisTestModule::textureTest(test::Test& test) {
     T_COMPARE(image.getPixel(2, 2), ColorRGBA::Black, &ColorRGBA::toString);
 }
 
-void GlvisTestModule::textureResizeTest(test::Test& test) {
+void GlvisTestModule::textureResizeUpTest(test::Test& test) {
     Window window;
     window.create(100, 100, "GLVis Test");
     unsigned char data[16] = {
@@ -151,6 +153,51 @@ void GlvisTestModule::textureResizeTest(test::Test& test) {
     T_COMPARE(resizedData[idx + 1], 6); // (1,1) G
     T_COMPARE(resizedData[idx + 2], 7); // (1,1) B
     T_COMPARE(resizedData[idx + 3], 8); // (1,1) A
+}
+
+void GlvisTestModule::textureResizeDownTest(test::Test& test) {
+    Window window;
+    window.create(100, 100, "GLVis Test");
+    unsigned char data[64];
+    for (int i = 0; i < 64; i++) {
+        data[i] = ((i / 4) + 1);
+    }
+    Texture tex(data, 4, 4);
+    T_COMPARE(tex.getWidth(), 4);
+    T_COMPARE(tex.getHeight(), 4);
+    tex.resize(2, 2);
+    T_COMPARE(tex.getWidth(), 2);
+    T_COMPARE(tex.getHeight(), 2);
+
+    // Verify by reading back texture data
+    Image img = tex.readPixels();
+    const auto& resizedData = img.getData();
+
+    // Check corners
+
+    // Top left (0,0)
+    T_COMPARE(resizedData[0], 1); // (0,0) R
+    T_COMPARE(resizedData[1], 1); // (0,0) G
+    T_COMPARE(resizedData[2], 1); // (0,0) B
+    T_COMPARE(resizedData[3], 1); // (0,0) A
+    // Top right (1,0)
+    int idx = (0 * 2 + 1) * 4;
+    T_COMPARE(resizedData[idx], 4);     // (1,0) R
+    T_COMPARE(resizedData[idx + 1], 4); // (1,0) G
+    T_COMPARE(resizedData[idx + 2], 4); // (1,0) B
+    T_COMPARE(resizedData[idx + 3], 4); // (1,0) A
+    // Bottom left (0,1)
+    idx = (1 * 2 + 0) * 4;
+    T_COMPARE(resizedData[idx], 13);     // (0,1) R
+    T_COMPARE(resizedData[idx + 1], 13); // (0,1) G
+    T_COMPARE(resizedData[idx + 2], 13); // (0,1) B
+    T_COMPARE(resizedData[idx + 3], 13); // (0,1) A
+    // Bottom right (1,1)
+    idx = (1 * 2 + 1) * 4;
+    T_COMPARE(resizedData[idx], 16);     // (1,1) R
+    T_COMPARE(resizedData[idx + 1], 16); // (1,1) G
+    T_COMPARE(resizedData[idx + 2], 16); // (1,1) B
+    T_COMPARE(resizedData[idx + 3], 16); // (1,1) A
 }
 
 int main() {
