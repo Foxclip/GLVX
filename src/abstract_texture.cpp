@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <vector>
 
 namespace glvis {
 
@@ -20,13 +21,21 @@ int AbstractTexture::getHeight() const {
     return height;
 }
 
-void AbstractTexture::bind() {
+void AbstractTexture::bind() const {
     GL_CALL(glActiveTexture(GL_TEXTURE0));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
 }
 
-void AbstractTexture::unbind() {
+void AbstractTexture::unbind() const {
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+Image AbstractTexture::readPixels() const {
+    std::vector<unsigned char> data(width * height * 4);
+    bind();
+    GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data()));
+    unbind();
+    return Image(width, height, std::move(data));
 }
 
 void AbstractTexture::resize(int newWidth, int newHeight) {

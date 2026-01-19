@@ -116,10 +116,8 @@ void GlvisTestModule::textureResizeTest(test::Test& test) {
     T_COMPARE(tex.getHeight(), 4);
 
     // Verify interpolation by reading back texture data
-    unsigned char resizedData[64]; // 4*4*4
-    tex.bind();
-    GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, resizedData));
-    tex.unbind();
+    Image img = tex.readPixels();
+    const auto& resizedData = img.getData();
 
     // Check corners remain the same
 
@@ -161,8 +159,6 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: create ImageRGB typedef
-    // TODO: add destructor to Texture class
     // TODO: make rendering tests
     // TODO: text rendering
     // TODO: transparent texture rendering
