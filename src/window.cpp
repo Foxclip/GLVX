@@ -90,6 +90,7 @@ void Window::clear(const Color& color) const {
 }
 
 void Window::draw(const Drawable& drawable) const {
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
     drawable.render(view, projection);
 }
 
@@ -108,8 +109,8 @@ void Window::display() const {
 
 Image Window::readPixels() const {
     std::vector<unsigned char> pixels(currentWidth * currentHeight * 4);
-    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-    GL_CALL(glReadBuffer(GL_FRONT));
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
+    GL_CALL(glReadBuffer(GL_COLOR_ATTACHMENT0));
     GL_CALL(glReadPixels(0, 0, currentWidth, currentHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data()));
 
     // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have top-left
