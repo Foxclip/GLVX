@@ -35,8 +35,9 @@ const std::filesystem::path& Texture::getPath() const {
 
 void Texture::create(unsigned char* data) {
     START_TRY
-    if (!data) {
-        throw std::runtime_error("Failed to create texture");
+    assert(data);
+    if (glfwGetCurrentContext() == nullptr) {
+        throw std::runtime_error("Texture::create called outside of GLFW context");
     }
     GL_CALL(glGenTextures(1, &ID));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
