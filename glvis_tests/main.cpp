@@ -19,6 +19,7 @@ private:
     void rectangleTest(test::Test& test);
     void circleTest(test::Test& test);
     void textureTest(test::Test& test);
+    void textureResizeTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -27,6 +28,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     addTest("rectangle", [&](test::Test& test) { rectangleTest(test); });
     addTest("circle", [&](test::Test& test) { circleTest(test); });
     addTest("texture", [&](test::Test& test) { textureTest(test); });
+    addTest("texture_resize", [&](test::Test& test) { textureResizeTest(test); });
 }
 
 void GlvisTestModule::basicTest(test::Test& test) {
@@ -97,6 +99,23 @@ void GlvisTestModule::textureTest(test::Test& test) {
     T_COMPARE(image.getPixel(2, 2), ColorRGBA::Black, &ColorRGBA::toString);
 }
 
+void GlvisTestModule::textureResizeTest(test::Test& test) {
+    Window window;
+    window.create(100, 100, "GLVis Test");
+    unsigned char data[16] = {
+        1, 2, 3, 4,
+        5, 6, 7, 8,
+        9, 10, 11, 12,
+        13, 14, 15, 16
+    };
+    Texture tex(data, 2, 2);
+    T_COMPARE(tex.getWidth(), 2);
+    T_COMPARE(tex.getHeight(), 2);
+    tex.resize(4, 4);
+    T_COMPARE(tex.getWidth(), 4);
+    T_COMPARE(tex.getHeight(), 4);
+}
+
 int main() {
     test::TestModule root("GLVis Tests", nullptr);
     root.print_summary_enabled = true;
@@ -105,7 +124,6 @@ int main() {
 
     // TODO: create ImageRGB typedef
     // TODO: add destructor to Texture class
-    // TODO: texture resize test
     // TODO: make rendering tests
     // TODO: text rendering
     // TODO: transparent texture rendering
