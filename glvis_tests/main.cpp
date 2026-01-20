@@ -25,6 +25,7 @@ private:
     void textureResizeUpTest(test::Test& test);
     void textureResizeDownTest(test::Test& test);
     void textureResizeInterpolationTest(test::Test& test);
+    void windowResizeTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -38,6 +39,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto texture_resize_up_test = addTest("texture_resize_up", { texture_test }, [&](test::Test& test) { textureResizeUpTest(test); });
     auto texture_resize_down_test = addTest("texture_resize_down", { texture_test }, [&](test::Test& test) { textureResizeDownTest(test); });
     auto texture_resize_interpolation_test = addTest("texture_resize_interpolation", { texture_test }, [&](test::Test& test) { textureResizeInterpolationTest(test); });
+    auto window_resize_test = addTest("window_resize", { rectangle_test }, [&](test::Test& test) { windowResizeTest(test); });
 }
 
 void GlvisTestModule::clearTest(test::Test& test) {
@@ -211,13 +213,57 @@ void GlvisTestModule::textureResizeInterpolationTest(test::Test& test) {
     T_COMPARE(img.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
 }
 
+void GlvisTestModule::windowResizeTest(test::Test& test) {
+    window.setSize(100, 100);
+    window.setTitle("window resize");
+    Camera camera;
+    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setCamera(camera);
+    window.clear(Color::Black);
+
+    Rectangle rect(10.0f, 10.0f);
+    rect.setColor(Color::Red);
+    window.draw(rect);
+    window.display();
+    Image initialImage = window.readPixels();
+
+    // Resize to 200x200
+    window.setSize(200, 200);
+    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setCamera(camera);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    Image resizedImage = window.readPixels();
+
+    // Resize back to 100x100
+    window.setSize(100, 100);
+    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setCamera(camera);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    Image finalImage = window.readPixels();
+
+    // Compare initial and final images pixel by pixel
+    bool failed = false;
+    for (int x = 0; x < 100; ++x) {
+        for (int y = 0; y < 100; ++y) {
+            if (!T_COMPARE(finalImage.getPixel(x, y), initialImage.getPixel(x, y), &Color::toString)) {
+                failed = true;
+                break;
+            }
+        }
+        if (failed) break;
+    }
+}
+
 int main() {
     test::TestModule root("glvis tests", nullptr);
     root.print_summary_enabled = true;
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: add window resize test
     // TODO: make RenderTexture tests
     // TODO: text rendering
     // TODO: transparent texture rendering
