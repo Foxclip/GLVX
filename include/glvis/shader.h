@@ -18,6 +18,7 @@ public:
     unsigned int ID;
 
     Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath);
+    Shader(const char* vertexSource, const char* fragmentSource);
     ~Shader();
     void use();
     void setBool(const std::string& name, bool value) const;  
@@ -29,6 +30,7 @@ public:
 
 private:
     int compileShader(ShaderType type, const std::filesystem::path& path);
+    int compileShader(ShaderType type, const char* source);
 
 };
 

@@ -2,6 +2,10 @@
 #include "glvis/render_texture.h"
 #include "glvis/rectangle.h"
 #include "glvis/shader.h"
+#include "glvis/simple_vert.h"
+#include "glvis/simple_frag.h"
+#include "glvis/screen_vert.h"
+#include "glvis/screen_frag.h"
 #include "glvis/image.h"
 #include <stdexcept>
 #include <filesystem>
@@ -51,10 +55,9 @@ void Window::create(int width, int height, const char* title) {
     glfwSetMouseButtonCallback(window, mouseButtonCallbackGLFW);
     glfwSetScrollCallback(window, scrollCallbackGLFW);
 
-    std::filesystem::path shadersDir = std::filesystem::path(__FILE__).parent_path().parent_path() / "shaders";
-    defaultShaderUptr = std::make_unique<Shader>(shadersDir / "simple.vert", shadersDir / "simple.frag");
+    defaultShaderUptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag);
     common::defaultShader = defaultShaderUptr.get();
-    screenShaderUptr = std::make_unique<Shader>(shadersDir / "screen.vert", shadersDir / "screen.frag");
+    screenShaderUptr = std::make_unique<Shader>(shaders::screen_vert, shaders::screen_frag);
     
     screenTextureUptr = std::make_unique<RenderTexture>(width, height);
 

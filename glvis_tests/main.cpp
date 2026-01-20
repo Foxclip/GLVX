@@ -185,7 +185,6 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: include shader files in code with #include instead of loading from files
     // TODO: make RenderTexture tests
     // TODO: text rendering
     // TODO: transparent texture rendering
