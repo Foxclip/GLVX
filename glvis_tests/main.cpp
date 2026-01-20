@@ -16,6 +16,7 @@ public:
 
 private:
     void basicTest(test::Test& test);
+    void clearTest(test::Test& test);
     void rectangleTest(test::Test& test);
     void circleTest(test::Test& test);
     void textureTest(test::Test& test);
@@ -27,6 +28,7 @@ private:
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
     : test::TestModule(name, parent, required_nodes) {
     addTest("basic", [&](test::Test& test) { basicTest(test); });
+    addTest("clear", [&](test::Test& test) { clearTest(test); });
     addTest("rectangle", [&](test::Test& test) { rectangleTest(test); });
     addTest("circle", [&](test::Test& test) { circleTest(test); });
     addTest("texture", [&](test::Test& test) { textureTest(test); });
@@ -38,6 +40,17 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
 void GlvisTestModule::basicTest(test::Test& test) {
     Window window;
     window.create(800, 600, "GLVis Test");
+}
+
+void GlvisTestModule::clearTest(test::Test& test) {
+    Window window;
+    window.create(100, 100, "GLVis Test");
+    window.clear(Color::Red);
+    window.display();
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(50, 50), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(99, 99), Color::Red, &Color::toString);
 }
 
 void GlvisTestModule::rectangleTest(test::Test& test) {
@@ -185,7 +198,6 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: add clear test
     // TODO: add linear interpolation test
     // TODO: make RenderTexture tests
     // TODO: text rendering
