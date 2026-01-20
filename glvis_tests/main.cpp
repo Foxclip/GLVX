@@ -217,8 +217,7 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: keep the same window for all tests
-    // TODO: move shader .h files to shaders folder
+    // TODO: add window resize test
     // TODO: make RenderTexture tests
     // TODO: text rendering
     // TODO: transparent texture rendering

@@ -2,10 +2,10 @@
 #include "glvis/render_texture.h"
 #include "glvis/rectangle.h"
 #include "glvis/shader.h"
-#include "glvis/simple_vert.h"
-#include "glvis/simple_frag.h"
-#include "glvis/screen_vert.h"
-#include "glvis/screen_frag.h"
+#include "glvis/shaders/simple_vert.h"
+#include "glvis/shaders/simple_frag.h"
+#include "glvis/shaders/screen_vert.h"
+#include "glvis/shaders/screen_frag.h"
 #include "glvis/image.h"
 #include <stdexcept>
 #include <filesystem>
