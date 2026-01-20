@@ -54,8 +54,8 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data) 
     GL_CALL(glGenTextures(1, &ID));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
     GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     this->width = width;
     this->height = height;

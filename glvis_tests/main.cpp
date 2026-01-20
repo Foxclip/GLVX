@@ -186,6 +186,7 @@ int main() {
     root.run();
 
     // TODO: add clear test
+    // TODO: add linear interpolation test
     // TODO: make RenderTexture tests
     // TODO: text rendering
     // TODO: transparent texture rendering
