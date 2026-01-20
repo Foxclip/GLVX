@@ -21,6 +21,7 @@ private:
     void textureTest(test::Test& test);
     void textureResizeUpTest(test::Test& test);
     void textureResizeDownTest(test::Test& test);
+    void textureColorMultiplyTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -31,6 +32,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     addTest("texture", [&](test::Test& test) { textureTest(test); });
     addTest("texture_resize_up", [&](test::Test& test) { textureResizeUpTest(test); });
     addTest("texture_resize_down", [&](test::Test& test) { textureResizeDownTest(test); });
+    addTest("texture_color_multiply", [&](test::Test& test) { textureColorMultiplyTest(test); });
 }
 
 void GlvisTestModule::basicTest(test::Test& test) {
@@ -149,13 +151,41 @@ void GlvisTestModule::textureResizeDownTest(test::Test& test) {
     T_COMPARE(img.getPixel(1, 1), Color(16, 16, 16, 16), &Color::toString);
 }
 
+void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
+    Window window;
+    window.create(100, 100, "GLVis Test");
+    Camera camera;
+    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setCamera(camera);
+    window.clear(Color::Black);
+
+    unsigned char data[16] = {
+        1, 2, 3, 4,
+        5, 6, 7, 8,
+        9, 10, 11, 12,
+        13, 14, 15, 16
+    };
+    Texture tex(data, 2, 2);
+    Rectangle rect(2.0f, 2.0f);
+    rect.setTexture(&tex);
+    rect.setColor(Color(64, 128, 192, 32));
+    window.draw(rect);
+    window.display();
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), Color(0, 1, 2, 0), &Color::toString);
+    T_COMPARE(image.getPixel(1, 0), Color(1, 3, 5, 1), &Color::toString);
+    T_COMPARE(image.getPixel(0, 1), Color(2, 5, 8, 1), &Color::toString);
+    T_COMPARE(image.getPixel(1, 1), Color(3, 7, 11, 2), &Color::toString);
+    T_COMPARE(image.getPixel(2, 2), Color::Black, &Color::toString);
+}
+
 int main() {
     test::TestModule root("GLVis Tests", nullptr);
     root.print_summary_enabled = true;
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: make color uniform tinting test
+    // TODO: include shader files in code with #include instead of loading from files
     // TODO: make RenderTexture tests
     // TODO: text rendering
     // TODO: transparent texture rendering
