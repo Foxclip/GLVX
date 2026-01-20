@@ -87,9 +87,8 @@ void glvis::Window::setCamera(const Camera& camera) {
 
 void Window::clear(const Color& color) const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
-    GL_CALL(glClearColor(color.r, color.g, color.b, color.a));
+    GL_CALL(glClearColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f));
     GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
-    GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
 }
 
 void Window::draw(const Drawable& drawable) const {
@@ -104,7 +103,7 @@ void Window::display() const {
     GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
     GL_CALL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
     GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
-    draw(*screenRectangleUptr);
+    screenRectangleUptr->render(view, projection);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -112,8 +111,8 @@ void Window::display() const {
 
 Image Window::readPixels() const {
     std::vector<unsigned char> pixels(currentWidth * currentHeight * 4);
-    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
-    GL_CALL(glReadBuffer(GL_COLOR_ATTACHMENT0));
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+    GL_CALL(glReadBuffer(GL_FRONT));
     GL_CALL(glReadPixels(0, 0, currentWidth, currentHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data()));
 
     // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have top-left
