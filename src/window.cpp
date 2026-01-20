@@ -79,6 +79,16 @@ int Window::getHeight() const {
     return currentHeight;
 }
 
+void glvis::Window::setSize(int width, int height) {
+    glfwSetWindowSize(window, width, height);
+    currentWidth = width;
+    currentHeight = height;
+}
+
+void glvis::Window::setTitle(const std::string& title) const {
+    glfwSetWindowTitle(window, title.c_str());
+}
+
 void glvis::Window::setCamera(const Camera& camera) {
     view = camera.getViewMatrix((float)currentWidth, (float)currentHeight);
     invView = camera.getInvViewMatrix((float)currentWidth, (float)currentHeight);
@@ -152,16 +162,16 @@ void Window::setScrollCallback(const scrollCallbackFuncType& callback) {
     scrollCallback = callback;
 }
 
-void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height) {
-    if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        window->processWindowSize(width, height);
-    }
-}
-
 void Window::processWindowSize(int width, int height) {
     currentWidth = width;
     currentHeight = height;
     screenTextureUptr->resize(width, height);
+}
+
+void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height) {
+    if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        window->processWindowSize(width, height);
+    }
 }
 
 void Window::mouseMoveCallbackGLFW(GLFWwindow* glfwWindow, double xpos, double ypos) {

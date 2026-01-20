@@ -23,6 +23,8 @@ public:
     bool isOpen() const;
     int getWidth() const;
     int getHeight() const;
+    void setSize(int width, int height);
+    void setTitle(const std::string& title) const;
     void setCamera(const Camera& camera);
     void clear(const Color& color) const;
     void draw(const Drawable& drawable) const;
@@ -54,8 +56,8 @@ private:
     mouseButtonCallbackFuncType mouseButtonCallback = [](int button, int action, int mods) { };
     scrollCallbackFuncType scrollCallback = [](double xoffset, double yoffset) { };
 
-    static void framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height);
     void processWindowSize(int width, int height);
+    static void framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height);
     static void mouseMoveCallbackGLFW(GLFWwindow* window, double xpos, double ypos);
     static void mouseButtonCallbackGLFW(GLFWwindow* window, int button, int action, int mods);
     static void scrollCallbackGLFW(GLFWwindow* window, double x, double y);

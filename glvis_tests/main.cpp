@@ -15,7 +15,8 @@ public:
     GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes = { });
 
 private:
-    void basicTest(test::Test& test);
+    Window window;
+
     void clearTest(test::Test& test);
     void rectangleTest(test::Test& test);
     void circleTest(test::Test& test);
@@ -28,8 +29,8 @@ private:
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
     : test::TestModule(name, parent, required_nodes) {
-    auto basic_test = addTest("basic", [&](test::Test& test) { basicTest(test); });
-    auto clear_test = addTest("clear", { basic_test }, [&](test::Test& test) { clearTest(test); });
+    window.create(100, 100, "glvis tests");
+    auto clear_test = addTest("clear", [&](test::Test& test) { clearTest(test); });
     auto rectangle_test = addTest("rectangle", { clear_test }, [&](test::Test& test) { rectangleTest(test); });
     auto circle_test = addTest("circle", { clear_test }, [&](test::Test& test) { circleTest(test); });
     auto texture_test = addTest("texture", { rectangle_test }, [&](test::Test& test) { textureTest(test); });
@@ -39,14 +40,9 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto texture_resize_interpolation_test = addTest("texture_resize_interpolation", { texture_test }, [&](test::Test& test) { textureResizeInterpolationTest(test); });
 }
 
-void GlvisTestModule::basicTest(test::Test& test) {
-    Window window;
-    window.create(800, 600, "basic");
-}
-
 void GlvisTestModule::clearTest(test::Test& test) {
-    Window window;
-    window.create(100, 100, "clear");
+    window.setSize(100, 100);
+    window.setTitle("clear");
     window.clear(Color::Red);
     window.display();
     Image image = window.readPixels();
@@ -56,8 +52,8 @@ void GlvisTestModule::clearTest(test::Test& test) {
 }
 
 void GlvisTestModule::rectangleTest(test::Test& test) {
-    Window window;
-    window.create(100, 100, "rectangle");
+    window.setSize(100, 100);
+    window.setTitle("rectangle");
     Camera camera;
     camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
@@ -74,8 +70,8 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
 }
 
 void GlvisTestModule::circleTest(test::Test& test) {
-    Window window;
-    window.create(100, 100, "circle");
+    window.setSize(100, 100);
+    window.setTitle("circle");
     Camera camera;
     camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
@@ -92,8 +88,8 @@ void GlvisTestModule::circleTest(test::Test& test) {
 }
 
 void GlvisTestModule::textureTest(test::Test& test) {
-    Window window;
-    window.create(100, 100, "texture");
+    window.setSize(100, 100);
+    window.setTitle("texture");
     Camera camera;
     camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
@@ -119,8 +115,8 @@ void GlvisTestModule::textureTest(test::Test& test) {
 }
 
 void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
-    Window window;
-    window.create(100, 100, "texture color multiply");
+    window.setSize(100, 100);
+    window.setTitle("texture color multiply");
     Camera camera;
     camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
@@ -147,8 +143,8 @@ void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
 }
 
 void GlvisTestModule::textureResizeUpTest(test::Test& test) {
-    Window window;
-    window.create(100, 100, "texture resize up");
+    window.setSize(100, 100);
+    window.setTitle("texture resize up");
     unsigned char data[16] = {
         1, 2, 3, 4,
         5, 6, 7, 8,
@@ -173,8 +169,8 @@ void GlvisTestModule::textureResizeUpTest(test::Test& test) {
 }
 
 void GlvisTestModule::textureResizeDownTest(test::Test& test) {
-    Window window;
-    window.create(100, 100, "texture resize down");
+    window.setSize(100, 100);
+    window.setTitle("texture resize down");
     unsigned char data[64];
     for (int i = 0; i < 64; i++) {
         data[i] = ((i / 4) + 1);
@@ -195,8 +191,8 @@ void GlvisTestModule::textureResizeDownTest(test::Test& test) {
 }
 
 void GlvisTestModule::textureResizeInterpolationTest(test::Test& test) {
-    Window window;
-    window.create(100, 100, "texture resize interpolation");
+    window.setSize(100, 100);
+    window.setTitle("texture resize interpolation");
     unsigned char data[8] = {
         0, 0, 0, 0,
         255, 255, 255, 255
@@ -222,6 +218,7 @@ int main() {
     root.run();
 
     // TODO: keep the same window for all tests
+    // TODO: move shader .h files to shaders folder
     // TODO: make RenderTexture tests
     // TODO: text rendering
     // TODO: transparent texture rendering
