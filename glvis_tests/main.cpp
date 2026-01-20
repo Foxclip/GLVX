@@ -23,6 +23,7 @@ private:
     void textureColorMultiplyTest(test::Test& test);
     void textureResizeUpTest(test::Test& test);
     void textureResizeDownTest(test::Test& test);
+    void textureResizeInterpolationTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -35,6 +36,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
     auto texture_resize_up_test = addTest("texture_resize_up", { texture_test }, [&](test::Test& test) { textureResizeUpTest(test); });
     auto texture_resize_down_test = addTest("texture_resize_down", { texture_test }, [&](test::Test& test) { textureResizeDownTest(test); });
+    auto texture_resize_interpolation_test = addTest("texture_resize_interpolation", { texture_test }, [&](test::Test& test) { textureResizeInterpolationTest(test); });
 }
 
 void GlvisTestModule::basicTest(test::Test& test) {
@@ -192,13 +194,33 @@ void GlvisTestModule::textureResizeDownTest(test::Test& test) {
     T_COMPARE(img.getPixel(1, 1), Color(16, 16, 16, 16), &Color::toString);
 }
 
+void GlvisTestModule::textureResizeInterpolationTest(test::Test& test) {
+    Window window;
+    window.create(100, 100, "texture resize interpolation");
+    unsigned char data[8] = {
+        0, 0, 0, 0,
+        255, 255, 255, 255
+    };
+    Texture tex(data, 2, 1);
+    T_COMPARE(tex.getWidth(), 2);
+    T_COMPARE(tex.getHeight(), 1);
+    tex.resize(3, 1);
+    T_COMPARE(tex.getWidth(), 3);
+    T_COMPARE(tex.getHeight(), 1);
+
+    Image img = tex.readPixels();
+    // Check bilinear interpolation (linear in this case since height=1)
+    T_COMPARE(img.getPixel(0, 0), Color(0, 0, 0, 0), &Color::toString);
+    T_COMPARE(img.getPixel(1, 0), Color(127, 127, 127, 127), &Color::toString);
+    T_COMPARE(img.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+}
+
 int main() {
     test::TestModule root("glvis tests", nullptr);
     root.print_summary_enabled = true;
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: add linear interpolation test
     // TODO: keep the same window for all tests
     // TODO: make RenderTexture tests
     // TODO: text rendering
