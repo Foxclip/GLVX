@@ -39,12 +39,12 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
 
 void GlvisTestModule::basicTest(test::Test& test) {
     Window window;
-    window.create(800, 600, "GLVis Test");
+    window.create(800, 600, "basic");
 }
 
 void GlvisTestModule::clearTest(test::Test& test) {
     Window window;
-    window.create(100, 100, "GLVis Test");
+    window.create(100, 100, "clear");
     window.clear(Color::Red);
     window.display();
     Image image = window.readPixels();
@@ -55,7 +55,7 @@ void GlvisTestModule::clearTest(test::Test& test) {
 
 void GlvisTestModule::rectangleTest(test::Test& test) {
     Window window;
-    window.create(100, 100, "GLVis Test");
+    window.create(100, 100, "rectangle");
     Camera camera;
     camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
@@ -73,7 +73,7 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
 
 void GlvisTestModule::circleTest(test::Test& test) {
     Window window;
-    window.create(100, 100, "GLVis Test");
+    window.create(100, 100, "circle");
     Camera camera;
     camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
@@ -91,7 +91,7 @@ void GlvisTestModule::circleTest(test::Test& test) {
 
 void GlvisTestModule::textureTest(test::Test& test) {
     Window window;
-    window.create(100, 100, "GLVis Test");
+    window.create(100, 100, "texture");
     Camera camera;
     camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
@@ -118,7 +118,7 @@ void GlvisTestModule::textureTest(test::Test& test) {
 
 void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
     Window window;
-    window.create(100, 100, "GLVis Test");
+    window.create(100, 100, "texture color multiply");
     Camera camera;
     camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
@@ -146,7 +146,7 @@ void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
 
 void GlvisTestModule::textureResizeUpTest(test::Test& test) {
     Window window;
-    window.create(100, 100, "GLVis Test");
+    window.create(100, 100, "texture resize up");
     unsigned char data[16] = {
         1, 2, 3, 4,
         5, 6, 7, 8,
@@ -172,7 +172,7 @@ void GlvisTestModule::textureResizeUpTest(test::Test& test) {
 
 void GlvisTestModule::textureResizeDownTest(test::Test& test) {
     Window window;
-    window.create(100, 100, "GLVis Test");
+    window.create(100, 100, "texture resize down");
     unsigned char data[64];
     for (int i = 0; i < 64; i++) {
         data[i] = ((i / 4) + 1);
@@ -193,7 +193,7 @@ void GlvisTestModule::textureResizeDownTest(test::Test& test) {
 }
 
 int main() {
-    test::TestModule root("GLVis Tests", nullptr);
+    test::TestModule root("glvis tests", nullptr);
     root.print_summary_enabled = true;
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
