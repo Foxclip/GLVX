@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glvis/glvis_common.h"
+#include "glvis/utils.h"
 #include <algorithm>
 #include <cmath>
 #include <memory>
@@ -68,33 +69,11 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight) {
         GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
         return;
     }
-    // Read old data
     std::unique_ptr<unsigned char[]> oldData(new unsigned char[width * height * 4]);
     GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, oldData.get()));
-    // Create new data with bilinear interpolation
-    std::unique_ptr<unsigned char[]> newData(new unsigned char[newWidth * newHeight * 4]);
-    for (int y = 0; y < newHeight; ++y) {
-        for (int x = 0; x < newWidth; ++x) {
-            float srcX = (newWidth == 1) ? 0.0f : (x * (width - 1.0f) / (newWidth - 1.0f));
-            float srcY = (newHeight == 1) ? 0.0f : (y * (height - 1.0f) / (newHeight - 1.0f));
-            int x0 = static_cast<int>(floor(srcX));
-            int y0 = static_cast<int>(floor(srcY));
-            int x1 = std::min(x0 + 1, width - 1);
-            int y1 = std::min(y0 + 1, height - 1);
-            float factorX = srcX - x0;
-            float factorY = srcY - y0;
-            for (int channel = 0; channel < 4; channel++) {
-                float v00 = oldData[(y0 * width + x0) * 4 + channel];
-                float v01 = oldData[(y0 * width + x1) * 4 + channel];
-                float v10 = oldData[(y1 * width + x0) * 4 + channel];
-                float v11 = oldData[(y1 * width + x1) * 4 + channel];
-                float v0 = v00 * (1.0f - factorX) + v01 * factorX;
-                float v1 = v10 * (1.0f - factorX) + v11 * factorX;
-                newData[(y * newWidth + x) * 4 + channel] = static_cast<unsigned char>(v0 * (1.0f - factorY) + v1 * factorY);
-            }
-        }
-    }
-    // Upload new data
+    std::unique_ptr<unsigned char[]> newData = bilinearInterpolate(
+        oldData.get(), width, height, newWidth, newHeight
+    );
     GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, newData.get()));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
