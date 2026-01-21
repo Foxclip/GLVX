@@ -14,8 +14,4 @@ std::string file_to_str(const std::filesystem::path& path);
 glm::vec2 to_glmVec2(const Vector2& v);
 glm::vec3 to_glmVec3(const Vector2 & v);
 
-std::unique_ptr<unsigned char[]> bilinearInterpolate(
-    const unsigned char* oldData, int oldWidth, int oldHeight, int newWidth, int newHeight
-);
-
 }
