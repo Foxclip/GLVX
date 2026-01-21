@@ -170,8 +170,8 @@ void GlvisTestModule::textureResizeTest(test::Test& test) {
     tex_down.resize(2, 1);
     Image img_down = tex_down.readPixels();
     // Check linear downsampling
-    T_COMPARE(img_down.getPixel(0, 0), Color(0, 0, 0, 0), &Color::toString);
-    T_COMPARE(img_down.getPixel(1, 0), Color(191, 191, 191, 191), &Color::toString);
+    T_COMPARE(img_down.getPixel(0, 0), Color(32, 32, 32, 32), &Color::toString);
+    T_COMPARE(img_down.getPixel(1, 0), Color(223, 223, 223, 223), &Color::toString);
 }
 
 void GlvisTestModule::windowResizeTest(test::Test& test) {
