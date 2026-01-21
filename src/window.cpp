@@ -81,8 +81,7 @@ int Window::getHeight() const {
 
 void glvis::Window::setSize(int width, int height) {
     glfwSetWindowSize(window, width, height);
-    currentWidth = width;
-    currentHeight = height;
+    processWindowSize(width, height);
 }
 
 void glvis::Window::setTitle(const std::string& title) const {
@@ -166,6 +165,7 @@ void Window::processWindowSize(int width, int height) {
     currentWidth = width;
     currentHeight = height;
     screenTextureUptr->resize(width, height);
+    GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
 }
 
 void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height) {
