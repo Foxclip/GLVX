@@ -22,9 +22,7 @@ private:
     void circleTest(test::Test& test);
     void textureTest(test::Test& test);
     void textureColorMultiplyTest(test::Test& test);
-    void textureResizeUpTest(test::Test& test);
-    void textureResizeDownTest(test::Test& test);
-    void textureResizeInterpolationTest(test::Test& test);
+    void textureResizeTest(test::Test& test);
     void windowResizeTest(test::Test& test);
 };
 
@@ -36,9 +34,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto circle_test = addTest("circle", { clear_test }, [&](test::Test& test) { circleTest(test); });
     auto texture_test = addTest("texture", { rectangle_test }, [&](test::Test& test) { textureTest(test); });
     auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
-    auto texture_resize_up_test = addTest("texture_resize_up", { texture_test }, [&](test::Test& test) { textureResizeUpTest(test); });
-    auto texture_resize_down_test = addTest("texture_resize_down", { texture_test }, [&](test::Test& test) { textureResizeDownTest(test); });
-    auto texture_resize_interpolation_test = addTest("texture_resize_interpolation", { texture_test }, [&](test::Test& test) { textureResizeInterpolationTest(test); });
+    auto texture_resize_up_test = addTest("texture_resize", { texture_test }, [&](test::Test& test) { textureResizeTest(test); });
     auto window_resize_test = addTest("window_resize", { rectangle_test }, [&](test::Test& test) { windowResizeTest(test); });
 }
 
@@ -144,55 +140,7 @@ void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
     T_COMPARE(image.getPixel(2, 2), Color::Black, &Color::toString);
 }
 
-void GlvisTestModule::textureResizeUpTest(test::Test& test) {
-    window.setSize(100, 100);
-    window.setTitle("texture resize up");
-    unsigned char data[16] = {
-        1, 2, 3, 4,
-        5, 6, 7, 8,
-        9, 10, 11, 12,
-        13, 14, 15, 16
-    };
-    Texture tex(data, 2, 2);
-    T_COMPARE(tex.getWidth(), 2);
-    T_COMPARE(tex.getHeight(), 2);
-    tex.resize(4, 4);
-    T_COMPARE(tex.getWidth(), 4);
-    T_COMPARE(tex.getHeight(), 4);
-
-    Image img = tex.readPixels();
-    // Check corners remain the same
-    T_COMPARE(img.getPixel(0, 0), Color(1, 2, 3, 4), &Color::toString);
-    T_COMPARE(img.getPixel(3, 0), Color(5, 6, 7, 8), &Color::toString);
-    T_COMPARE(img.getPixel(0, 3), Color(9, 10, 11, 12), &Color::toString);
-    T_COMPARE(img.getPixel(3, 3), Color(13, 14, 15, 16), &Color::toString);
-    // Check an interpolated pixel
-    T_COMPARE(img.getPixel(1, 1), Color(5, 6, 7, 8), &Color::toString);
-}
-
-void GlvisTestModule::textureResizeDownTest(test::Test& test) {
-    window.setSize(100, 100);
-    window.setTitle("texture resize down");
-    unsigned char data[64];
-    for (int i = 0; i < 64; i++) {
-        data[i] = ((i / 4) + 1);
-    }
-    Texture tex(data, 4, 4);
-    T_COMPARE(tex.getWidth(), 4);
-    T_COMPARE(tex.getHeight(), 4);
-    tex.resize(2, 2);
-    T_COMPARE(tex.getWidth(), 2);
-    T_COMPARE(tex.getHeight(), 2);
-
-    Image img = tex.readPixels();
-    // Check corners
-    T_COMPARE(img.getPixel(0, 0), Color(1, 1, 1, 1), &Color::toString);
-    T_COMPARE(img.getPixel(1, 0), Color(4, 4, 4, 4), &Color::toString);
-    T_COMPARE(img.getPixel(0, 1), Color(13, 13, 13, 13), &Color::toString);
-    T_COMPARE(img.getPixel(1, 1), Color(16, 16, 16, 16), &Color::toString);
-}
-
-void GlvisTestModule::textureResizeInterpolationTest(test::Test& test) {
+void GlvisTestModule::textureResizeTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("texture resize interpolation");
     unsigned char data[8] = {
@@ -207,10 +155,23 @@ void GlvisTestModule::textureResizeInterpolationTest(test::Test& test) {
     T_COMPARE(tex.getHeight(), 1);
 
     Image img = tex.readPixels();
-    // Check bilinear interpolation (linear in this case since height=1)
+    // Check linear interpolation
     T_COMPARE(img.getPixel(0, 0), Color(0, 0, 0, 0), &Color::toString);
     T_COMPARE(img.getPixel(1, 0), Color(127, 127, 127, 127), &Color::toString);
     T_COMPARE(img.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+
+    // Test resizing down from 3x1 to 2x1
+    unsigned char data_down[12] = {
+        0, 0, 0, 0,
+        127, 127, 127, 127,
+        255, 255, 255, 255
+    };
+    Texture tex_down(data_down, 3, 1);
+    tex_down.resize(2, 1);
+    Image img_down = tex_down.readPixels();
+    // Check linear downsampling
+    T_COMPARE(img_down.getPixel(0, 0), Color(0, 0, 0, 0), &Color::toString);
+    T_COMPARE(img_down.getPixel(1, 0), Color(191, 191, 191, 191), &Color::toString);
 }
 
 void GlvisTestModule::windowResizeTest(test::Test& test) {
