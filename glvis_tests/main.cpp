@@ -210,6 +210,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
     bool failed = false;
     for (int x = 0; x < 100; ++x) {
         for (int y = 0; y < 100; ++y) {
+            T_CONTAINER(std::format("x: {}, y: {}", x, y));
             if (!T_COMPARE(finalImage.getPixel(x, y), initialImage.getPixel(x, y), &Color::toString)) {
                 failed = true;
                 break;
