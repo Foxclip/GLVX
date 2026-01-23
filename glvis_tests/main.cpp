@@ -41,12 +41,22 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
 void GlvisTestModule::clearTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("clear");
+
     window.clear(Color::Red);
     window.display();
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(50, 50), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(99, 99), Color::Red, &Color::toString);
+
+    window.setSize(200, 200);
+
+    window.clear(Color::Green);
+    window.display();
+    image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), Color::Green, &Color::toString);
+    T_COMPARE(image.getPixel(50, 50), Color::Green, &Color::toString);
+    T_COMPARE(image.getPixel(99, 99), Color::Green, &Color::toString);
 }
 
 void GlvisTestModule::rectangleTest(test::Test& test) {
