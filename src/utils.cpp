@@ -27,4 +27,12 @@ glm::vec3 to_glmVec3(const Vector2 & v) {
     return glm::vec3(v.x, v.y, 0.0f);
 }
 
+glm::mat4 to_glmMat4(const Matrix4& m) {
+    return glm::make_mat4(m.getData());
+}
+
+Matrix4 from_glmMat4(const glm::mat4& m) {
+    return Matrix4(glm::value_ptr(m));
+}
+
 }

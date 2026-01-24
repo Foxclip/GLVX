@@ -3,7 +3,7 @@
 #include <vector>
 #include "glvis/glvis_common.h"
 #include "glvis/vertex.h"
-#include <glm/glm.hpp>
+#include "glvis/matrix.h"
 
 namespace glvis {
     
@@ -20,7 +20,7 @@ public:
     PrimitiveType getPrimitiveType() const;
     void setPrimitiveType(PrimitiveType type);
     unsigned int getVAO() const;
-    void render(const glm::mat4& view, const glm::mat4& projection) const;
+    void render(const Matrix4& view, const Matrix4& projection) const;
     Vertex& operator[](std::size_t index);
     const Vertex& operator[](unsigned int index) const;
 

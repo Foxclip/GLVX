@@ -74,8 +74,8 @@ void Shader::setVec4(const std::string &name, const glm::vec4& value) const {
     GL_CALL(glUniform4fv(GL_CALL(glGetUniformLocation(ID, name.c_str())), 1, glm::value_ptr(value)));
 }
 
-void Shader::setMat4(const std::string& name, const glm::mat4& value) const {
-    GL_CALL(glUniformMatrix4fv(GL_CALL(glGetUniformLocation(ID, name.c_str())), 1, GL_FALSE, glm::value_ptr(value)));
+void Shader::setMat4(const std::string& name, const Matrix4& value) const {
+    GL_CALL(glUniformMatrix4fv(GL_CALL(glGetUniformLocation(ID, name.c_str())), 1, GL_FALSE, value.getData()));
 }
 
 int Shader::compileShader(ShaderType type, const std::filesystem::path& path) {

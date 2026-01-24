@@ -7,6 +7,7 @@
 #include "glvis/shaders/screen_vert.h"
 #include "glvis/shaders/screen_frag.h"
 #include "glvis/image.h"
+#include "glvis/utils.h"
 #include <stdexcept>
 #include <filesystem>
 
@@ -112,7 +113,7 @@ void Window::display() const {
     GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
     GL_CALL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
     GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
-    screenRectangleUptr->render(glm::mat4(1.0f), projection);
+    screenRectangleUptr->render(from_glmMat4(glm::mat4(1.0f)), projection);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -138,13 +139,13 @@ Image Window::readPixels() const {
 }
 
 glm::vec2 Window::worldToScreen(float x, float y) const {
-    glm::vec4 point = view * glm::vec4(x, y, 0.0f, 1.0f);
+    glm::vec4 point = to_glmMat4(view) * glm::vec4(x, y, 0.0f, 1.0f);
     glm::vec2 result = glm::vec2(point.x, currentHeight - point.y);
     return result;
 }
 
 glm::vec2 Window::screenToWorld(int x, int y) const {
-    glm::vec4 point = invView * glm::vec4(x, currentHeight - y, 0.0f, 1.0f);
+    glm::vec4 point = to_glmMat4(invView) * glm::vec4(x, currentHeight - y, 0.0f, 1.0f);
     glm::vec2 result = glm::vec2(point.x, point.y);
     return result;
 }

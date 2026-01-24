@@ -67,7 +67,7 @@ void Rectangle::setTexture(AbstractTexture* texture) {
     this->texture = texture;
 }
 
-void Rectangle::render(const glm::mat4& view, const glm::mat4& projection) const {
+void Rectangle::render(const Matrix4& view, const Matrix4& projection) const {
     START_TRY
     if (shader == nullptr) throw std::runtime_error("Shader not set");
     auto modelMatrix = getModelMatrix();

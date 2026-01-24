@@ -58,7 +58,7 @@ void VertexArray::setTexture(AbstractTexture* texture) {
     this->texture = texture;
 }
 
-void VertexArray::render(const glm::mat4& view, const glm::mat4& projection) const {
+void VertexArray::render(const Matrix4& view, const Matrix4& projection) const {
     if (shader == nullptr) return;
     auto modelMatrix = getModelMatrix();
     shader->use();
@@ -72,8 +72,18 @@ const VertexBuffer& VertexArray::getVertexBuffer() const {
     return vertexBuffer;
 }
 
-glm::mat4 VertexArray::getModelMatrix() const {
-    return glm::mat4(1.0f);
+Vector2 VertexArray::getBoundsMin() const {
+    // TODO: Implement bounds calculation
+    return Vector2(0.0f, 0.0f);
+}
+
+Vector2 VertexArray::getBoundsMax() const {
+    // TODO: Implement bounds calculation
+    return Vector2(0.0f, 0.0f);
+}
+
+Matrix4 VertexArray::getModelMatrix() const {
+    return Matrix4(); // Identity
 }
 
 }

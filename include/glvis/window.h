@@ -48,9 +48,9 @@ private:
     std::unique_ptr<Shader> defaultShaderUptr = nullptr;
     std::unique_ptr<Shader> screenShaderUptr = nullptr;
     std::unique_ptr<RenderTexture> screenTextureUptr = nullptr;
-    glm::mat4 view;
-    glm::mat4 invView;
-    glm::mat4 projection;
+    Matrix4 view;
+    Matrix4 invView;
+    Matrix4 projection;
 
     mouseCallbackFuncType mouseMoveCallback = [](double xpos, double ypos) { };
     mouseButtonCallbackFuncType mouseButtonCallback = [](int button, int action, int mods) { };

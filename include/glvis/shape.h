@@ -1,9 +1,9 @@
 #pragma once
 
 #include "glvis/vector.h"
-#include <glm/glm.hpp>
 #include "glvis/angle.h"
 #include "glvis/drawable.h"
+#include "glvis/matrix.h"
 
 namespace glvis {
 
@@ -17,7 +17,7 @@ public:
     const Angle& getRotation() const;
     const Vector2& getScale() const;
     const Vector2& getOrigin() const;
-    glm::mat4 getModelMatrix() const;
+    Matrix4 getModelMatrix() const;
     void setPosition(float x, float y);
     void setPosition(const Vector2& position);
     void setRotation(const Angle& rotation);

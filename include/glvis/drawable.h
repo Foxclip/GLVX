@@ -1,7 +1,7 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include "glvis/color.h"
+#include "glvis/matrix.h"
 
 namespace glvis {
 
@@ -13,14 +13,14 @@ class Drawable {
 public:
     virtual ~Drawable() = default;
 
-    virtual glm::mat4 getModelMatrix() const;
+    virtual Matrix4 getModelMatrix() const;
     virtual const VertexBuffer& getVertexBuffer() const = 0;
     Color getColor() const;
     void setColor(const Color& color);
-    virtual void render(const glm::mat4& view, const glm::mat4& projection) const = 0;
-    
+    virtual void render(const Matrix4& view, const Matrix4& projection) const = 0;
+
 protected:
-    void renderBase(Shader* shader, AbstractTexture* texture, const glm::mat4& view, const glm::mat4& projection) const;
+    void renderBase(Shader* shader, AbstractTexture* texture, const Matrix4& view, const Matrix4& projection) const;
 
 private:
     Color color = Color::White;

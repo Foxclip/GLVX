@@ -16,7 +16,7 @@ public:
     float getHeight() const;
     Vector2 getSize() const;
     void setTexture(AbstractTexture* texture);
-    void render(const glm::mat4& view, const glm::mat4& projection) const override;
+    void render(const Matrix4& view, const Matrix4& projection) const override;
     const VertexBuffer& getVertexBuffer() const override;
 
 private:

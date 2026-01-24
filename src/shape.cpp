@@ -1,6 +1,7 @@
 #include "glvis/shape.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "glvis/utils.h"
 
 namespace glvis {
 
@@ -63,13 +64,13 @@ void Shape::setShader(Shader* shader) {
     this->shader = shader;
 }
 
-glm::mat4 Shape::getModelMatrix() const {
+Matrix4 Shape::getModelMatrix() const {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));
     model = glm::rotate(model, rotation.asRadians(), glm::vec3(0.0f, 0.0f, -1.0f));
     model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.0f));
     model = glm::translate(model, glm::vec3(-origin.x, -origin.y, 0.0f));
-    return model;
+    return from_glmMat4(model);
 }
 
 }

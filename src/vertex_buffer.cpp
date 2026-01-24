@@ -95,7 +95,7 @@ unsigned int VertexBuffer::getVAO() const {
     return VAO;
 }
 
-void VertexBuffer::render(const glm::mat4& view, const glm::mat4& projection) const {
+void VertexBuffer::render(const Matrix4& view, const Matrix4& projection) const {
     GL_CALL(glBindVertexArray(VAO));
     GL_CALL(glDrawArrays(static_cast<GLenum>(type), 0, static_cast<GLsizei>(getVertexCount())));
 }

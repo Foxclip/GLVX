@@ -305,6 +305,7 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
+    // TODO: replace glm::vec2 uses in public API with Vector2
     // TODO: text rendering
     // TODO: transparent texture rendering
 

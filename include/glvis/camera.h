@@ -1,9 +1,7 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include "glvis/vector.h"
+#include "glvis/matrix.h"
 
 namespace glvis {
 
@@ -15,9 +13,9 @@ class Camera {
     float getZoom() const;
     void setPosition(const Vector2& pos);
     void setZoom(float zoom);
-    glm::mat4 getViewMatrix(float width, float height) const;
-    glm::mat4 getInvViewMatrix(float width, float height) const;
-    glm::mat4 getProjectionMatrix(float width, float height) const;
+    Matrix4 getViewMatrix(float width, float height) const;
+    Matrix4 getInvViewMatrix(float width, float height) const;
+    Matrix4 getProjectionMatrix(float width, float height) const;
 
     private:
     Vector2 pos = Vector2(0.0f, 0.0f);
