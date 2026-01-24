@@ -112,7 +112,7 @@ void Window::display() const {
     GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
     GL_CALL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
     GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
-    screenRectangleUptr->render(view, projection);
+    screenRectangleUptr->render(glm::mat4(1.0f), projection);
 
     glfwSwapBuffers(window);
     glfwPollEvents();

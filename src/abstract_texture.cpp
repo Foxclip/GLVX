@@ -2,7 +2,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glvis/glvis_common.h"
-#include "glvis/utils.h"
 #include <algorithm>
 #include <cmath>
 #include <memory>
@@ -64,20 +63,43 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data) 
 }
 
 void AbstractTexture::resizeTexture(int newWidth, int newHeight) {
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
     if (newWidth == width && newHeight == height) {
-        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
         return;
     }
-    std::unique_ptr<unsigned char[]> oldData(new unsigned char[width * height * 4]);
-    GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, oldData.get()));
-    std::unique_ptr<unsigned char[]> newData = bilinearInterpolate(
-        oldData.get(), width, height, newWidth, newHeight
-    );
-    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, newData.get()));
+
+    // Create a new texture with the desired size
+    GLuint newTextureID;
+    GL_CALL(glGenTextures(1, &newTextureID));
+    GL_CALL(glBindTexture(GL_TEXTURE_2D, newTextureID));
+    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+
+    // Create framebuffers
+    GLuint srcFBO, dstFBO;
+    GL_CALL(glGenFramebuffers(1, &srcFBO));
+    GL_CALL(glGenFramebuffers(1, &dstFBO));
+
+    // Attach original texture to source FBO
+    GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFBO));
+    GL_CALL(glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0));
+
+    // Attach new texture to destination FBO
+    GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFBO));
+    GL_CALL(glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newTextureID, 0));
+
+    // Blit with bilinear interpolation
+    GL_CALL(glBlitFramebuffer(0, 0, width, height, 0, 0, newWidth, newHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR));
+
+    // Clean up
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+    GL_CALL(glDeleteFramebuffers(1, &srcFBO));
+    GL_CALL(glDeleteFramebuffers(1, &dstFBO));
+
+    // Replace the old texture
+    GL_CALL(glDeleteTextures(1, &ID));
+    ID = newTextureID;
     this->width = newWidth;
     this->height = newHeight;
 }

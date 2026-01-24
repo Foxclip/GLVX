@@ -23,7 +23,10 @@ unsigned int RenderTexture::getFBO() const {
 
 void RenderTexture::resize(int newWidth, int newHeight) {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, FBO));
+    GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
     resizeTexture(newWidth, newHeight);
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, FBO));
+    GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0));
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
