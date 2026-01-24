@@ -9,6 +9,7 @@
 #include "glvis/shader.h"
 #include "glvis/render_texture.h"
 #include "glvis/image.h"
+#include "glvis/vector.h"
 #include <memory>
 
 namespace glvis {
@@ -30,8 +31,8 @@ public:
     void draw(const Drawable& drawable) const;
     void display() const;
     Image readPixels() const;
-    glm::vec2 worldToScreen(float x, float y) const;
-    glm::vec2 screenToWorld(int x, int y) const;
+    Vector2 worldToScreen(float x, float y) const;
+    Vector2 screenToWorld(int x, int y) const;
 
     using mouseCallbackFuncType = std::function<void(double xpos, double ypos)>;
     using mouseButtonCallbackFuncType = std::function<void(int button, int action, int mods)>;
