@@ -68,7 +68,7 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("rectangle");
     Camera camera;
-    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
 
@@ -86,7 +86,7 @@ void GlvisTestModule::circleTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("circle");
     Camera camera;
-    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
 
@@ -104,7 +104,7 @@ void GlvisTestModule::textureTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("texture");
     Camera camera;
-    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
 
@@ -131,7 +131,7 @@ void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("texture color multiply");
     Camera camera;
-    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
 
@@ -193,7 +193,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("window resize");
     Camera camera;
-    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
 
@@ -205,7 +205,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
 
     // Resize to 200x200
     window.setSize(200, 200);
-    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
     window.draw(rect);
@@ -214,7 +214,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
 
     // Resize back to 100x100
     window.setSize(100, 100);
-    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
     window.draw(rect);
@@ -239,7 +239,7 @@ void GlvisTestModule::cameraPanTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("rectangle");
     Camera camera;
-    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
 
@@ -254,8 +254,8 @@ void GlvisTestModule::cameraPanTest(test::Test& test) {
     T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 
     // move camera 10 pixels up and left
-    glm::vec2 camera_pos = camera.getPosition();
-    camera.setPosition(camera.getPosition() + glm::vec2(-10.0f, -10.0f));
+    Vector2 camera_pos = camera.getPosition();
+    camera.setPosition(camera.getPosition() + Vector2(-10.0f, -10.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
     window.draw(rect);
@@ -272,7 +272,7 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("camera zoom");
     Camera camera;
-    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
 
@@ -288,7 +288,7 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
 
     // zoom in by factor 2
     camera.setZoom(2.0f);
-    camera.setPosition(glm::vec2(25.0f, 25.0f));
+    camera.setPosition(Vector2(25.0f, 25.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
     window.draw(rect);
@@ -305,7 +305,6 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: use Vector2 in Camera class
     // TODO: text rendering
     // TODO: transparent texture rendering
 
