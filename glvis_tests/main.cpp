@@ -1,4 +1,5 @@
 #include <iostream>
+#include <glm/glm.hpp>
 #include "test_lib/test.h"
 #include "glvis/vector.h"
 #include "glvis/color.h"
@@ -24,6 +25,7 @@ private:
     void textureColorMultiplyTest(test::Test& test);
     void textureResizeTest(test::Test& test);
     void windowResizeTest(test::Test& test);
+    void cameraPanTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -36,6 +38,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
     auto texture_resize_up_test = addTest("texture_resize", { texture_test }, [&](test::Test& test) { textureResizeTest(test); });
     auto window_resize_test = addTest("window_resize", { rectangle_test }, [&](test::Test& test) { windowResizeTest(test); });
+    auto camera_pan_test = addTest("camera pan", { rectangle_test }, [&](test::Test& test) { cameraPanTest(test); });
 }
 
 void GlvisTestModule::clearTest(test::Test& test) {
@@ -230,13 +233,46 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
     }
 }
 
+void GlvisTestModule::cameraPanTest(test::Test& test) {
+    window.setSize(100, 100);
+    window.setTitle("rectangle");
+    Camera camera;
+    camera.setPosition(glm::vec2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setCamera(camera);
+    window.clear(Color::Black);
+
+    // render rect
+    Rectangle rect(10.0f, 10.0f);
+    rect.setColor(Color::Red);
+    window.draw(rect);
+    window.display();
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
+
+    // move camera 10 pixels up and left
+    glm::vec2 camera_pos = camera.getPosition();
+    camera.setPosition(camera.getPosition() + glm::vec2(-10.0f, -10.0f));
+    window.setCamera(camera);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(9, 9), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(10, 10), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(19, 19), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(20, 20), Color::Black, &Color::toString);
+}
+
 int main() {
     test::TestModule root("glvis tests", nullptr);
     root.print_summary_enabled = true;
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: make RenderTexture tests
+    // TODO: use Vector2 in Camera class
     // TODO: text rendering
     // TODO: transparent texture rendering
 
