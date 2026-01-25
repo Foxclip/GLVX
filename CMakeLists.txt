@@ -35,6 +35,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/shader.cpp
     ${SRC_DIR}/shape.cpp
     ${SRC_DIR}/texture.cpp
+    ${SRC_DIR}/transformable.cpp
     ${SRC_DIR}/utils.cpp
     ${SRC_DIR}/vector.cpp
     ${SRC_DIR}/vertex_array.cpp
