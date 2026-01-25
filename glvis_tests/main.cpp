@@ -18,6 +18,8 @@ public:
 private:
     Window window;
 
+    bool checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor);
+
     void clearTest(test::Test& test);
     void rectangleTest(test::Test& test);
     void circleTest(test::Test& test);
@@ -49,6 +51,18 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto camera_pan_test = addTest("camera pan", { rectangle_test }, [&](test::Test& test) { cameraPanTest(test); });
     auto camera_zoom_test = addTest("camera zoom", { rectangle_test }, [&](test::Test& test) { cameraZoomTest(test); });
     auto camera_rotation_test = addTest("camera rotation", { rectangle_test }, [&](test::Test& test) { cameraRotationTest(test); });
+}
+
+bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor) {
+    for (int x = startX; x < endX; ++x) {
+        for (int y = startY; y < endY; ++y) {
+            T_CONTAINER(std::format("x: {}, y: {}", x, y));
+            if (!T_COMPARE(image.getPixel(x, y), expectedColor, &Color::toString)) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 void GlvisTestModule::clearTest(test::Test& test) {
@@ -199,7 +213,7 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("scale");
     Camera camera;
-    camera.setPosition(Vector2(5.0f, 5.0f));
+    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
 
@@ -209,7 +223,9 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     window.draw(rect);
     window.display();
     Image image = window.readPixels();
-    T_COMPARE(image.getPixel(50, 50), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 
     // scale rect by factor 2
     camera.setPosition(Vector2());
@@ -222,17 +238,7 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     image = window.readPixels();
 
     // check pixels from 40 to 59 are red
-    bool failed = false;
-    for (int x = 40; x < 60; ++x) {
-        for (int y = 40; y < 60; ++y) {
-            T_CONTAINER(std::format("x: {}, y: {}", x, y));
-            if (!T_COMPARE(image.getPixel(x, y), Color::Red, &Color::toString)) {
-                failed = true;
-                break;
-            }
-        }
-        if (failed) break;
-    }
+    T_WRAP_CONTAINER(checkPixelColor(test, image, 40, 40, 60, 60, Color::Red));
 
     // check outside
     T_COMPARE(image.getPixel(39, 39), Color::Black, &Color::toString);
@@ -388,7 +394,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
 
 void GlvisTestModule::cameraPanTest(test::Test& test) {
     window.setSize(100, 100);
-    window.setTitle("rectangle");
+    window.setTitle("camera pan");
     Camera camera;
     camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setCamera(camera);
@@ -432,8 +438,10 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
     rect.setColor(Color::Red);
     window.draw(rect);
     window.display();
+
+    // check pixels from 45 to 54 are red
     Image image = window.readPixels();
-    T_COMPARE(image.getPixel(50, 50), Color::Red, &Color::toString);
+    T_WRAP_CONTAINER(checkPixelColor(test, image, 45, 45, 55, 55, Color::Red));
 
     // zoom in by factor 2
     camera.setZoom(2.0f);
@@ -444,17 +452,7 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
     image = window.readPixels();
 
     // check pixels from 40 to 59 are red
-    bool failed = false;
-    for (int x = 40; x < 60; ++x) {
-        for (int y = 40; y < 60; ++y) {
-            T_CONTAINER(std::format("x: {}, y: {}", x, y));
-            if (!T_COMPARE(image.getPixel(x, y), Color::Red, &Color::toString)) {
-                failed = true;
-                break;
-            }
-        }
-        if (failed) break;
-    }
+    T_WRAP_CONTAINER(checkPixelColor(test, image, 40, 40, 60, 60, Color::Red));
 
     // check outside
     T_COMPARE(image.getPixel(39, 39), Color::Black, &Color::toString);
