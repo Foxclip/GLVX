@@ -1,7 +1,6 @@
 #pragma once
 
 #include "glvis/shape.h"
-#include <glm/glm.hpp>
 #include "glvis/texture.h"
 #include "glvis/vertex_buffer.h"
 

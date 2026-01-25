@@ -59,7 +59,7 @@ void Circle::render(const Matrix4& view, const Matrix4& projection) const {
     shader->setMat4("model", modelMatrix);
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
-    shader->setVec4("color", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    shader->setVec4("color", Vector4(1.0f, 0.0f, 0.0f, 1.0f));
     renderBase(shader, texture, view, projection);
     END_TRY
 }

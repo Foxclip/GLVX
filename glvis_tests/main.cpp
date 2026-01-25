@@ -1,5 +1,4 @@
 #include <iostream>
-#include <glm/glm.hpp>
 #include "test_lib/test.h"
 #include "glvis/vector.h"
 #include "glvis/color.h"

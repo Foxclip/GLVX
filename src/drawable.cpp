@@ -20,7 +20,7 @@ void Drawable::setColor(const Color& color) {
 }
 
 void Drawable::renderBase(Shader* shader, AbstractTexture* texture, const Matrix4& view, const Matrix4& projection) const {
-    shader->setVec4("color", glm::vec4(color.r, color.g, color.b, color.a));
+    shader->setVec4("color", Vector4(color.r, color.g, color.b, color.a));
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
     shader->setInt("tex", 0);

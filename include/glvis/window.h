@@ -11,6 +11,7 @@
 #include "glvis/image.h"
 #include "glvis/vector.h"
 #include <memory>
+#include <functional>
 
 namespace glvis {
 

@@ -27,8 +27,8 @@ Vector2 from_glmVec2(const glm::vec2& v) {
     return Vector2(v.x, v.y);
 }
 
-glm::vec3 to_glmVec3(const Vector2 & v) {
-    return glm::vec3(v.x, v.y, 0.0f);
+Vector3 toVector3(const Vector2 & v) {
+    return Vector3(v.x, v.y, 0.0f);
 }
 
 glm::mat4 to_glmMat4(const Matrix4& m) {
