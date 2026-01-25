@@ -155,6 +155,8 @@ void GlvisTestModule::moveTest(test::Test& test) {
    window.draw(rect);
    window.display();
    image = window.readPixels();
+
+   // check that the rectangle has moved 10 pixels right and down
    T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
    T_COMPARE(image.getPixel(9, 9), Color::Black, &Color::toString);
    T_COMPARE(image.getPixel(10, 10), Color::Red, &Color::toString);
@@ -237,7 +239,7 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     window.display();
     image = window.readPixels();
 
-    // check pixels from 40 to 59 are red
+    // check that the rectangle has scaled by factor 2
     T_WRAP_CONTAINER(checkPixelColor(test, image, 40, 40, 60, 60, Color::Red));
 
     // check outside
@@ -418,6 +420,8 @@ void GlvisTestModule::cameraPanTest(test::Test& test) {
     window.draw(rect);
     window.display();
     image = window.readPixels();
+
+    // check that the camera has panned 10 pixels up and left
     T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
     T_COMPARE(image.getPixel(9, 9), Color::Black, &Color::toString);
     T_COMPARE(image.getPixel(10, 10), Color::Red, &Color::toString);
@@ -439,7 +443,7 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
     window.draw(rect);
     window.display();
 
-    // check pixels from 45 to 54 are red
+    // check initial rectangle position
     Image image = window.readPixels();
     T_WRAP_CONTAINER(checkPixelColor(test, image, 45, 45, 55, 55, Color::Red));
 
@@ -451,7 +455,7 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
     window.display();
     image = window.readPixels();
 
-    // check pixels from 40 to 59 are red
+    // check that the camera has zoomed in
     T_WRAP_CONTAINER(checkPixelColor(test, image, 40, 40, 60, 60, Color::Red));
 
     // check outside
@@ -509,7 +513,6 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: scale test
     // TODO: add move method to Transformable
     // TODO: draw lines
     // TODO: VertexArray test
