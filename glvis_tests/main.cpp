@@ -23,6 +23,7 @@ private:
     void circleTest(test::Test& test);
     void moveTest(test::Test& test);
     void rotateTest(test::Test& test);
+    void scaleTest(test::Test& test);
     void textureTest(test::Test& test);
     void textureColorMultiplyTest(test::Test& test);
     void textureResizeTest(test::Test& test);
@@ -40,6 +41,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto circle_test = addTest("circle", { clear_test }, [&](test::Test& test) { circleTest(test); });
     auto move_test = addTest("move", { rectangle_test }, [&](test::Test& test) { moveTest(test); });
     auto rotate_test = addTest("rotate", { rectangle_test }, [&](test::Test& test) { rotateTest(test); });
+    auto scale_test = addTest("scale", { rectangle_test }, [&](test::Test& test) { scaleTest(test); });
     auto texture_test = addTest("texture", { rectangle_test }, [&](test::Test& test) { textureTest(test); });
     auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
     auto texture_resize_up_test = addTest("texture_resize", { texture_test }, [&](test::Test& test) { textureResizeTest(test); });
@@ -191,6 +193,50 @@ void GlvisTestModule::rotateTest(test::Test& test) {
     T_COMPARE(image.getPixel(center.x - offset,     center.y + offset - 1), Color::Black, &Color::toString);
     // check center
     T_COMPARE(image.getPixel(window_width / 2, window_height / 2), Color::Red, &Color::toString);
+}
+
+void GlvisTestModule::scaleTest(test::Test& test) {
+    window.setSize(100, 100);
+    window.setTitle("scale");
+    Camera camera;
+    camera.setPosition(Vector2(5.0f, 5.0f));
+    window.setCamera(camera);
+    window.clear(Color::Black);
+
+    // render rect
+    Rectangle rect(10.0f, 10.0f);
+    rect.setColor(Color::Red);
+    window.draw(rect);
+    window.display();
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(50, 50), Color::Red, &Color::toString);
+
+    // scale rect by factor 2
+    camera.setPosition(Vector2());
+    window.setCamera(camera);
+    rect.setOrigin(5.0f, 5.0f);
+    rect.setScale(Vector2(2.0f, 2.0f));
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    image = window.readPixels();
+
+    // check pixels from 40 to 59 are red
+    bool failed = false;
+    for (int x = 40; x < 60; ++x) {
+        for (int y = 40; y < 60; ++y) {
+            T_CONTAINER(std::format("x: {}, y: {}", x, y));
+            if (!T_COMPARE(image.getPixel(x, y), Color::Red, &Color::toString)) {
+                failed = true;
+                break;
+            }
+        }
+        if (failed) break;
+    }
+
+    // check outside
+    T_COMPARE(image.getPixel(39, 39), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(60, 60), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::textureTest(test::Test& test) {
@@ -465,9 +511,8 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: add move method to Transformable
-    // TODO: rotate test
     // TODO: scale test
+    // TODO: add move method to Transformable
     // TODO: draw lines
     // TODO: VertexArray test
     // TODO: text rendering
