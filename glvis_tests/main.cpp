@@ -8,6 +8,7 @@
 #include "glvis/circle.h"
 #include "glvis/window.h"
 #include "glvis/texture.h"
+#include "glvis/angle.h"
 
 using namespace glvis;
 
@@ -27,6 +28,7 @@ private:
     void windowResizeTest(test::Test& test);
     void cameraPanTest(test::Test& test);
     void cameraZoomTest(test::Test& test);
+    void cameraRotationTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -41,6 +43,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto window_resize_test = addTest("window_resize", { rectangle_test }, [&](test::Test& test) { windowResizeTest(test); });
     auto camera_pan_test = addTest("camera pan", { rectangle_test }, [&](test::Test& test) { cameraPanTest(test); });
     auto camera_zoom_test = addTest("camera zoom", { rectangle_test }, [&](test::Test& test) { cameraZoomTest(test); });
+    auto camera_rotation_test = addTest("camera rotation", { rectangle_test }, [&](test::Test& test) { cameraRotationTest(test); });
 }
 
 void GlvisTestModule::clearTest(test::Test& test) {
@@ -299,13 +302,57 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
     T_COMPARE(image.getPixel(20, 20), Color::Black, &Color::toString);
 }
 
+void GlvisTestModule::cameraRotationTest(test::Test& test) {
+    window.setSize(100, 100);
+    window.setTitle("camera rotation");
+    Camera camera;
+    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setCamera(camera);
+    window.clear(Color::Black);
+
+    // render rect
+    Rectangle rect(10.0f, 10.0f);
+    rect.setColor(Color::Red);
+    window.draw(rect);
+    window.display();
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
+
+    // rotate camera 45 degrees
+    camera.setPosition(Vector2(5.0f, 5.0f));
+    camera.setRotation(degrees(45.0f));
+    window.setCamera(camera);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    image = window.readPixels();
+    // check pixels around screen center
+    const int window_width = window.getWidth();
+    const int window_height = window.getHeight();
+    Vector2i center = Vector2i(window_width / 2, window_height / 2);
+    const int offset = 5;
+    // check top left
+    T_COMPARE(image.getPixel(center.x - offset,     center.y - offset    ), Color::Black, &Color::toString);
+    // check top right
+    T_COMPARE(image.getPixel(center.x + offset - 1, center.y - offset    ), Color::Black, &Color::toString);
+    // check bottom right
+    T_COMPARE(image.getPixel(center.x + offset - 1, center.y + offset - 1), Color::Black, &Color::toString);
+    // check bottom left
+    T_COMPARE(image.getPixel(center.x - offset,     center.y + offset - 1), Color::Black, &Color::toString);
+    // check center
+    T_COMPARE(image.getPixel(window_width / 2, window_height / 2), Color::Red, &Color::toString);
+}
+
 int main() {
     test::TestModule root("glvis tests", nullptr);
     root.print_summary_enabled = true;
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: replace glm::vec2 uses in public API with Vector2
+    // TODO: move test, rotate test, scale test
+    // TODO: VertexArray test
     // TODO: text rendering
     // TODO: transparent texture rendering
 
