@@ -169,6 +169,7 @@ void GlvisTestModule::rotateTest(test::Test& test) {
     // rotate rect 45 degrees
     camera.setPosition(Vector2(5.0f, 5.0f));
     window.setCamera(camera);
+    rect.setOrigin(5.0f, 5.0f);
     rect.setRotation(degrees(45.0f));
     window.clear(Color::Black);
     window.draw(rect);
