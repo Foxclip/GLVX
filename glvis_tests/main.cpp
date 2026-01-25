@@ -19,6 +19,7 @@ private:
     Window window;
 
     bool checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor);
+    bool checkPixelColor(test::Test& test, const Image& image1, const Image& image2);
 
     void clearTest(test::Test& test);
     void rectangleTest(test::Test& test);
@@ -58,6 +59,24 @@ bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image, int 
         for (int y = startY; y < endY; ++y) {
             T_CONTAINER(std::format("x: {}, y: {}", x, y));
             if (!T_COMPARE(image.getPixel(x, y), expectedColor, &Color::toString)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image1, const Image& image2) {
+    int width = image1.getWidth();
+    int height = image1.getHeight();
+    if (image2.getWidth() != width || image2.getHeight() != height) {
+        T_MESSAGE("Images have different dimensions");
+        return false;
+    }
+    for (int x = 0; x < width; ++x) {
+        for (int y = 0; y < height; ++y) {
+            T_CONTAINER(std::format("x: {}, y: {}", x, y));
+            if (!T_COMPARE(image1.getPixel(x, y), image2.getPixel(x, y), &Color::toString)) {
                 return false;
             }
         }
@@ -381,17 +400,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
     Image finalImage = window.readPixels();
 
     // Compare initial and final images pixel by pixel
-    bool failed = false;
-    for (int x = 0; x < 100; ++x) {
-        for (int y = 0; y < 100; ++y) {
-            T_CONTAINER(std::format("x: {}, y: {}", x, y));
-            if (!T_COMPARE(finalImage.getPixel(x, y), initialImage.getPixel(x, y), &Color::toString)) {
-                failed = true;
-                break;
-            }
-        }
-        if (failed) break;
-    }
+    T_WRAP_CONTAINER(checkPixelColor(test, finalImage, initialImage));
 }
 
 void GlvisTestModule::cameraPanTest(test::Test& test) {
