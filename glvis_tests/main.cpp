@@ -19,7 +19,7 @@ private:
     Window window;
 
     bool checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor);
-    bool checkPixelColor(test::Test& test, const Image& image1, const Image& image2);
+    bool compareImages(test::Test& test, const Image& image1, const Image& image2);
 
     void clearTest(test::Test& test);
     void rectangleTest(test::Test& test);
@@ -66,7 +66,7 @@ bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image, int 
     return true;
 }
 
-bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image1, const Image& image2) {
+bool GlvisTestModule::compareImages(test::Test& test, const Image& image1, const Image& image2) {
     int width = image1.getWidth();
     int height = image1.getHeight();
     if (image2.getWidth() != width || image2.getHeight() != height) {
@@ -400,7 +400,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
     Image finalImage = window.readPixels();
 
     // Compare initial and final images pixel by pixel
-    T_WRAP_CONTAINER(checkPixelColor(test, finalImage, initialImage));
+    T_WRAP_CONTAINER(compareImages(test, finalImage, initialImage));
 }
 
 void GlvisTestModule::cameraPanTest(test::Test& test) {
