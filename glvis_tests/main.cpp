@@ -22,6 +22,7 @@ private:
     void rectangleTest(test::Test& test);
     void circleTest(test::Test& test);
     void moveTest(test::Test& test);
+    void rotateTest(test::Test& test);
     void textureTest(test::Test& test);
     void textureColorMultiplyTest(test::Test& test);
     void textureResizeTest(test::Test& test);
@@ -38,6 +39,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto rectangle_test = addTest("rectangle", { clear_test }, [&](test::Test& test) { rectangleTest(test); });
     auto circle_test = addTest("circle", { clear_test }, [&](test::Test& test) { circleTest(test); });
     auto move_test = addTest("move", { rectangle_test }, [&](test::Test& test) { moveTest(test); });
+    auto rotate_test = addTest("rotate", { rectangle_test }, [&](test::Test& test) { rotateTest(test); });
     auto texture_test = addTest("texture", { rectangle_test }, [&](test::Test& test) { textureTest(test); });
     auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
     auto texture_resize_up_test = addTest("texture_resize", { texture_test }, [&](test::Test& test) { textureResizeTest(test); });
@@ -142,6 +144,52 @@ void GlvisTestModule::moveTest(test::Test& test) {
    T_COMPARE(image.getPixel(10, 10), Color::Red, &Color::toString);
    T_COMPARE(image.getPixel(19, 19), Color::Red, &Color::toString);
    T_COMPARE(image.getPixel(20, 20), Color::Black, &Color::toString);
+}
+
+void GlvisTestModule::rotateTest(test::Test& test) {
+    window.setSize(100, 100);
+    window.setTitle("rotate");
+    Camera camera;
+    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setCamera(camera);
+    window.clear(Color::Black);
+
+    // render rect
+    Rectangle rect(10.0f, 10.0f);
+    rect.setColor(Color::Red);
+    window.draw(rect);
+    window.display();
+
+    // check pixels around screen center
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
+
+    // rotate rect 45 degrees
+    camera.setPosition(Vector2(5.0f, 5.0f));
+    window.setCamera(camera);
+    rect.setRotation(degrees(45.0f));
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    
+    // check pixels around screen center
+    image = window.readPixels();
+    const int window_width = window.getWidth();
+    const int window_height = window.getHeight();
+    Vector2i center = Vector2i(window_width / 2, window_height / 2);
+    const int offset = 5;
+    // check top left
+    T_COMPARE(image.getPixel(center.x - offset,     center.y - offset    ), Color::Black, &Color::toString);
+    // check top right
+    T_COMPARE(image.getPixel(center.x + offset - 1, center.y - offset    ), Color::Black, &Color::toString);
+    // check bottom right
+    T_COMPARE(image.getPixel(center.x + offset - 1, center.y + offset - 1), Color::Black, &Color::toString);
+    // check bottom left
+    T_COMPARE(image.getPixel(center.x - offset,     center.y + offset - 1), Color::Black, &Color::toString);
+    // check center
+    T_COMPARE(image.getPixel(window_width / 2, window_height / 2), Color::Red, &Color::toString);
 }
 
 void GlvisTestModule::textureTest(test::Test& test) {
@@ -416,10 +464,10 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: Transformable class
-    // TODO: add move method to Shape
+    // TODO: add move method to Transformable
     // TODO: rotate test
     // TODO: scale test
+    // TODO: draw lines
     // TODO: VertexArray test
     // TODO: text rendering
     // TODO: transparent texture rendering
