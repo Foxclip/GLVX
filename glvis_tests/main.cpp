@@ -50,6 +50,7 @@ void GlvisTestModule::clearTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("clear");
 
+    // Clear the window with red
     window.clear(Color::Red);
     window.display();
     Image image = window.readPixels();
@@ -57,8 +58,10 @@ void GlvisTestModule::clearTest(test::Test& test) {
     T_COMPARE(image.getPixel(50, 50), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(99, 99), Color::Red, &Color::toString);
 
+    // Resize the window
     window.setSize(200, 200);
 
+    // Clear the window with green
     window.clear(Color::Green);
     window.display();
     image = window.readPixels();
@@ -75,10 +78,13 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
     window.setCamera(camera);
     window.clear(Color::Black);
 
+    // Render a rectangle
     Rectangle rect(10.0f, 10.0f);
     rect.setColor(Color::Red);
     window.draw(rect);
     window.display();
+
+    // Check that the rectangle is rendered correctly
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
@@ -93,10 +99,13 @@ void GlvisTestModule::circleTest(test::Test& test) {
     window.setCamera(camera);
     window.clear(Color::Black);
 
+    // Render a circle
     Circle circle(5.0f);
     circle.setColor(Color::Red);
     window.draw(circle);
     window.display();
+
+    // Check that the circle is rendered correctly
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
     T_COMPARE(image.getPixel(5, 5), Color::Red, &Color::toString);
@@ -111,22 +120,27 @@ void GlvisTestModule::textureTest(test::Test& test) {
     window.setCamera(camera);
     window.clear(Color::Black);
 
-    unsigned char data[16] = {
+    // Create a 2x2 texture
+    unsigned char texture_data[16] = {
         1, 2, 3, 4,
         5, 6, 7, 8,
         9, 10, 11, 12,
         13, 14, 15, 16
     };
-    Texture tex(data, 2, 2);
+    Texture tex(texture_data, 2, 2);
     Rectangle rect(2.0f, 2.0f);
     rect.setTexture(&tex);
     window.draw(rect);
     window.display();
+
+    // Check that the texture is rendered correctly
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color(1, 2, 3, 4), &Color::toString);
     T_COMPARE(image.getPixel(1, 0), Color(5, 6, 7, 8), &Color::toString);
     T_COMPARE(image.getPixel(0, 1), Color(9, 10, 11, 12), &Color::toString);
     T_COMPARE(image.getPixel(1, 1), Color(13, 14, 15, 16), &Color::toString);
+
+    // Check outside of the texture
     T_COMPARE(image.getPixel(2, 2), Color::Black, &Color::toString);
 }
 
@@ -138,18 +152,21 @@ void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
     window.setCamera(camera);
     window.clear(Color::Black);
 
-    unsigned char data[16] = {
+    // Render a rectangle with a texture
+    unsigned char texture_data[16] = {
         1, 2, 3, 4,
         5, 6, 7, 8,
         9, 10, 11, 12,
         13, 14, 15, 16
     };
-    Texture tex(data, 2, 2);
+    Texture tex(texture_data, 2, 2);
     Rectangle rect(2.0f, 2.0f);
     rect.setTexture(&tex);
     rect.setColor(Color(64, 128, 192, 32));
     window.draw(rect);
     window.display();
+
+    // Test that the color of the texture is multiplied by the color of the rectangle
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color(0, 1, 2, 0), &Color::toString);
     T_COMPARE(image.getPixel(1, 0), Color(1, 3, 5, 1), &Color::toString);
@@ -161,19 +178,21 @@ void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
 void GlvisTestModule::textureResizeTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("texture resize interpolation");
-    unsigned char data[8] = {
+
+    // Test resizing up from 2x1 to 3x1
+    unsigned char texture_data[8] = {
         0, 0, 0, 0,
         255, 255, 255, 255
     };
-    Texture tex(data, 2, 1);
+    Texture tex(texture_data, 2, 1);
     T_COMPARE(tex.getWidth(), 2);
     T_COMPARE(tex.getHeight(), 1);
     tex.resize(3, 1);
     T_COMPARE(tex.getWidth(), 3);
     T_COMPARE(tex.getHeight(), 1);
-
-    Image img = tex.readPixels();
+    
     // Check linear interpolation
+    Image img = tex.readPixels();
     T_COMPARE(img.getPixel(0, 0), Color(0, 0, 0, 0), &Color::toString);
     T_COMPARE(img.getPixel(1, 0), Color(127, 127, 127, 127), &Color::toString);
     T_COMPARE(img.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
@@ -186,8 +205,9 @@ void GlvisTestModule::textureResizeTest(test::Test& test) {
     };
     Texture tex_down(data_down, 3, 1);
     tex_down.resize(2, 1);
-    Image img_down = tex_down.readPixels();
+    
     // Check linear downsampling
+    Image img_down = tex_down.readPixels();
     T_COMPARE(img_down.getPixel(0, 0), Color(32, 32, 32, 32), &Color::toString);
     T_COMPARE(img_down.getPixel(1, 0), Color(223, 223, 223, 223), &Color::toString);
 }
@@ -200,6 +220,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
     window.setCamera(camera);
     window.clear(Color::Black);
 
+    // Draw a 10x10 red rectangle
     Rectangle rect(10.0f, 10.0f);
     rect.setColor(Color::Red);
     window.draw(rect);
@@ -294,6 +315,7 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
     window.draw(rect);
     window.display();
     image = window.readPixels();
+
     // check pixels from 40 to 59 are red
     bool failed = false;
     for (int x = 40; x < 60; ++x) {
@@ -306,6 +328,7 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
         }
         if (failed) break;
     }
+
     // check outside
     T_COMPARE(image.getPixel(39, 39), Color::Black, &Color::toString);
     T_COMPARE(image.getPixel(60, 60), Color::Black, &Color::toString);
@@ -337,6 +360,7 @@ void GlvisTestModule::cameraRotationTest(test::Test& test) {
     window.draw(rect);
     window.display();
     image = window.readPixels();
+
     // check pixels around screen center
     const int window_width = window.getWidth();
     const int window_height = window.getHeight();
