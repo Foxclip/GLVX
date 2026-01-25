@@ -28,4 +28,30 @@ Vector2 Vector2::operator/(float scalar) const {
     return Vector2(x / scalar, y / scalar);
 }
 
+Vector2i::Vector2i() {
+    this->x = 0;
+    this->y = 0;
+}
+
+Vector2i::Vector2i(int x, int y) {
+    this->x = x;
+    this->y = y;
+}
+
+Vector2i Vector2i::operator+(const Vector2i& other) const {
+    return Vector2i(x + other.x, y + other.y);
+}
+
+Vector2i Vector2i::operator-(const Vector2i& other) const {
+    return Vector2i(x - other.x, y - other.y);
+}
+
+Vector2i Vector2i::operator*(int scalar) const {
+    return Vector2i(x * scalar, y * scalar);
+}
+
+Vector2i Vector2i::operator/(int scalar) const {
+    return Vector2i(x / scalar, y / scalar);
+}
+
 }
