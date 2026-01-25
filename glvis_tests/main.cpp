@@ -275,7 +275,7 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("camera zoom");
     Camera camera;
-    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    camera.setPosition(Vector2(5.0f, 5.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
 
@@ -285,21 +285,30 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
     window.draw(rect);
     window.display();
     Image image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(50, 50), Color::Red, &Color::toString);
 
     // zoom in by factor 2
     camera.setZoom(2.0f);
-    camera.setPosition(Vector2(25.0f, 25.0f));
     window.setCamera(camera);
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
     image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(19, 19), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(20, 20), Color::Black, &Color::toString);
+    // check pixels from 40 to 59 are red
+    bool failed = false;
+    for (int x = 40; x < 60; ++x) {
+        for (int y = 40; y < 60; ++y) {
+            T_CONTAINER(std::format("x: {}, y: {}", x, y));
+            if (!T_COMPARE(image.getPixel(x, y), Color::Red, &Color::toString)) {
+                failed = true;
+                break;
+            }
+        }
+        if (failed) break;
+    }
+    // check outside
+    T_COMPARE(image.getPixel(39, 39), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(60, 60), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::cameraRotationTest(test::Test& test) {
