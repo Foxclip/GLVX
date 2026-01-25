@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "glvis/color.h"
+#include "glvis/vector.h"
 
 namespace glvis {
 
@@ -13,6 +14,7 @@ public:
     int getHeight() const;
     const std::vector<unsigned char>& getData() const;
     Color getPixel(int x, int y) const;
+    Color getPixel(const Vector2i& pos) const;
 
 private:
     int width;

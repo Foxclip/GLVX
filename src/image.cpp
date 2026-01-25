@@ -1,5 +1,6 @@
 #include "glvis/image.h"
 #include "glvis/color.h"
+#include "glvis/vector.h"
 
 namespace glvis {
 
@@ -21,6 +22,10 @@ const std::vector<unsigned char>& Image::getData() const {
 Color Image::getPixel(int x, int y) const {
     size_t index = (y * width + x) * 4;
     return Color(data[index], data[index + 1], data[index + 2], data[index + 3]);
+}
+
+Color Image::getPixel(const Vector2i& pos) const {
+    return getPixel(pos.x, pos.y);
 }
 
 }
