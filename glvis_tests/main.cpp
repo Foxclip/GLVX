@@ -167,7 +167,7 @@ void GlvisTestModule::rotateTest(test::Test& test) {
     T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 
     // rotate rect 45 degrees
-    camera.setPosition(Vector2(5.0f, 5.0f));
+    camera.setPosition(Vector2());
     window.setCamera(camera);
     rect.setOrigin(5.0f, 5.0f);
     rect.setRotation(degrees(45.0f));
