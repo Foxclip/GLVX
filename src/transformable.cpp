@@ -60,6 +60,15 @@ void Transformable::setOrigin(const Vector2& origin) {
     this->origin = origin;
 }
 
+void Transformable::move(float dx, float dy) {
+    position.x += dx;
+    position.y += dy;
+}
+
+void Transformable::move(const Vector2& offset) {
+    position += offset;
+}
+
 Matrix4 Transformable::getModelMatrix() const {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));

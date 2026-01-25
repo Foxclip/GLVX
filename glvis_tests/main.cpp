@@ -169,7 +169,7 @@ void GlvisTestModule::moveTest(test::Test& test) {
    T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 
    // move rect 10 pixels right and down
-   rect.setPosition(rect.getPosition() + Vector2(10.0f, 10.0f));
+   rect.move(10.0f, 10.0f);
    window.clear(Color::Black);
    window.draw(rect);
    window.display();

@@ -22,6 +22,8 @@ public:
     void setScale(const Vector2& scale);
     void setOrigin(float x, float y);
     void setOrigin(const Vector2& origin);
+    void move(float dx, float dy);
+    void move(const Vector2& offset);
 
 protected:
     Vector2 position;
