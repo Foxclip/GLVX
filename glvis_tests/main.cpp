@@ -532,6 +532,7 @@ void GlvisTestModule::vertexArrayTest(test::Test& test) {
    triangle[0] = Vertex{Vector2(0, 0), Color::Red, Vector2(0, 0)};
    triangle[1] = Vertex{Vector2(10, 0), Color::Red, Vector2(0, 0)};
    triangle[2] = Vertex{Vector2(5, 10), Color::Red, Vector2(0, 0)};
+   triangle.syncBuffer();
    window.draw(triangle);
    window.display();
 
@@ -551,6 +552,7 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
+    // TODO: add usage hints to VertexBuffer
     // TODO: text rendering
     // TODO: transparent texture rendering
 
