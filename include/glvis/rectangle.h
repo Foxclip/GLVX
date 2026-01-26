@@ -11,6 +11,7 @@ class AbstractTexture;
 class Rectangle : public Shape {
 public:
     Rectangle(float width, float height);
+    Rectangle(const Vector2f& size);
     ~Rectangle();
     float getWidth() const;
     float getHeight() const;

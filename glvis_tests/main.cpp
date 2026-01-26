@@ -128,9 +128,8 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
     window.clear(Color::Black);
 
     // Render a rectangle
-    const float rect_width = 10.0f;
-    const float rect_height = 10.0f;
-    Rectangle rect(rect_width, rect_height);
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    Rectangle rect(rect_size);
     rect.setColor(Color::Red);
     window.draw(rect);
     window.display();
@@ -138,8 +137,8 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
     // Check that the rectangle is rendered correctly
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel((int)rect_width - 1, (int)rect_height - 1), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel((int)rect_width, (int)rect_height), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel((int)rect_size.x - 1, (int)rect_size.y - 1), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel((int)rect_size.x, (int)rect_size.y), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::circleTest(test::Test& test) {

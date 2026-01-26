@@ -47,6 +47,8 @@ Rectangle::Rectangle(float width, float height) {
     vertexBuffer.setPrimitiveType(PrimitiveType::Triangles);
 }
 
+Rectangle::Rectangle(const Vector2f& size) : Rectangle(size.x, size.y) {}
+
 Rectangle::~Rectangle() {
     // VertexBuffer destructor will handle cleanup
 }
