@@ -258,27 +258,32 @@ void GlvisTestModule::rotateTest(test::Test& test) {
 }
 
 void GlvisTestModule::scaleTest(test::Test& test) {
-    window.setSize(100, 100);
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
     window.setTitle("scale");
     View view;
-    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
 
     // render rect
-    Rectangle rect(10.0f, 10.0f);
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    const Vector2f rect_half_size = rect_size / 2.0f;
+    Rectangle rect(rect_size);
     rect.setColor(Color::Red);
     window.draw(rect);
     window.display();
     Image image = window.readPixels();
+    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
 
     // scale rect by factor 2
     view.setPosition(Vector2f());
     window.setView(view);
-    rect.setOrigin(5.0f, 5.0f);
+    rect.setOrigin(rect_half_size);
     rect.setScale(Vector2f(2.0f, 2.0f));
     window.clear(Color::Black);
     window.draw(rect);
@@ -286,18 +291,22 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     image = window.readPixels();
 
     // check that the rectangle has scaled by factor 2
-    T_WRAP_CONTAINER(checkPixelColor(test, image, 40, 40, 60, 60, Color::Red));
+    const Vector2i scaled_rect_start = Vector2i(40, 40);
+    const Vector2i scaled_rect_end = Vector2i(60, 60);
+    T_WRAP_CONTAINER(checkPixelColor(test, image, scaled_rect_start.x, scaled_rect_start.y, scaled_rect_end.x, scaled_rect_end.y, Color::Red));
 
     // check outside
-    T_COMPARE(image.getPixel(39, 39), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(60, 60), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(scaled_rect_start - Vector2i(1, 1)), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(scaled_rect_end), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::textureTest(test::Test& test) {
-    window.setSize(100, 100);
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
     window.setTitle("texture");
     View view;
-    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
 
@@ -308,8 +317,10 @@ void GlvisTestModule::textureTest(test::Test& test) {
         9, 10, 11, 12,
         13, 14, 15, 16
     };
-    Texture tex(texture_data, 2, 2);
-    Rectangle rect(2.0f, 2.0f);
+    const Vector2i texture_size = Vector2i(2, 2);
+    Texture tex(texture_data, texture_size.x, texture_size.y);
+    const Vector2f rect_size = Vector2f(static_cast<float>(texture_size.x), static_cast<float>(texture_size.y));
+    Rectangle rect(rect_size);
     rect.setTexture(&tex);
     window.draw(rect);
     window.display();
@@ -322,14 +333,16 @@ void GlvisTestModule::textureTest(test::Test& test) {
     T_COMPARE(image.getPixel(1, 1), Color(13, 14, 15, 16), &Color::toString);
 
     // Check outside of the texture
-    T_COMPARE(image.getPixel(2, 2), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
-    window.setSize(100, 100);
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
     window.setTitle("texture color multiply");
     View view;
-    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
 
@@ -340,8 +353,10 @@ void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
         9, 10, 11, 12,
         13, 14, 15, 16
     };
-    Texture tex(texture_data, 2, 2);
-    Rectangle rect(2.0f, 2.0f);
+    const Vector2i texture_size = Vector2i(2, 2);
+    Texture tex(texture_data, texture_size.x, texture_size.y);
+    const Vector2f rect_size = Vector2f(static_cast<float>(texture_size.x), static_cast<float>(texture_size.y));
+    Rectangle rect(rect_size);
     rect.setTexture(&tex);
     rect.setColor(Color(64, 128, 192, 32));
     window.draw(rect);
@@ -353,24 +368,27 @@ void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
     T_COMPARE(image.getPixel(1, 0), Color(1, 3, 5, 1), &Color::toString);
     T_COMPARE(image.getPixel(0, 1), Color(2, 5, 8, 1), &Color::toString);
     T_COMPARE(image.getPixel(1, 1), Color(3, 7, 11, 2), &Color::toString);
-    T_COMPARE(image.getPixel(2, 2), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::textureResizeTest(test::Test& test) {
-    window.setSize(100, 100);
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
     window.setTitle("texture resize interpolation");
 
     // Test resizing up from 2x1 to 3x1
+    const Vector2i initial_texture_size = Vector2i(2, 1);
     unsigned char texture_data[8] = {
         0, 0, 0, 0,
         255, 255, 255, 255
     };
-    Texture tex(texture_data, 2, 1);
-    T_COMPARE(tex.getWidth(), 2);
-    T_COMPARE(tex.getHeight(), 1);
-    tex.resize(3, 1);
-    T_COMPARE(tex.getWidth(), 3);
-    T_COMPARE(tex.getHeight(), 1);
+    Texture tex(texture_data, initial_texture_size.x, initial_texture_size.y);
+    T_COMPARE(tex.getWidth(), initial_texture_size.x);
+    T_COMPARE(tex.getHeight(), initial_texture_size.y);
+    const Vector2i resized_texture_size = Vector2i(3, 1);
+    tex.resize(resized_texture_size.x, resized_texture_size.y);
+    T_COMPARE(tex.getWidth(), resized_texture_size.x);
+    T_COMPARE(tex.getHeight(), resized_texture_size.y);
     
     // Check linear interpolation
     Image img = tex.readPixels();
@@ -379,13 +397,15 @@ void GlvisTestModule::textureResizeTest(test::Test& test) {
     T_COMPARE(img.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
 
     // Test resizing down from 3x1 to 2x1
+    const Vector2i down_initial_size = Vector2i(3, 1);
     unsigned char data_down[12] = {
         0, 0, 0, 0,
         127, 127, 127, 127,
         255, 255, 255, 255
     };
-    Texture tex_down(data_down, 3, 1);
-    tex_down.resize(2, 1);
+    Texture tex_down(data_down, down_initial_size.x, down_initial_size.y);
+    const Vector2i down_resized_size = Vector2i(2, 1);
+    tex_down.resize(down_resized_size.x, down_resized_size.y);
     
     // Check linear downsampling
     Image img_down = tex_down.readPixels();
@@ -394,23 +414,28 @@ void GlvisTestModule::textureResizeTest(test::Test& test) {
 }
 
 void GlvisTestModule::windowResizeTest(test::Test& test) {
-    window.setSize(100, 100);
+    const Vector2i initial_window_size = Vector2i(100, 100);
+    window.setSize(initial_window_size);
     window.setTitle("window resize");
     View view;
-    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
 
     // Draw a 10x10 red rectangle
-    Rectangle rect(10.0f, 10.0f);
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    Rectangle rect(rect_size);
     rect.setColor(Color::Red);
     window.draw(rect);
     window.display();
     Image initialImage = window.readPixels();
 
     // Resize to 200x200
-    window.setSize(200, 200);
-    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    const Vector2i resized_window_size = Vector2i(200, 200);
+    window.setSize(resized_window_size);
+    window_center = window.getCenter();
+    view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
@@ -418,8 +443,9 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
     Image resizedImage = window.readPixels();
 
     // Resize back to 100x100
-    window.setSize(100, 100);
-    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setSize(initial_window_size);
+    window_center = window.getCenter();
+    view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
@@ -431,26 +457,30 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
 }
 
 void GlvisTestModule::viewPanTest(test::Test& test) {
-    window.setSize(100, 100);
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
     window.setTitle("view pan");
     View view;
-    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
 
     // render rect
-    Rectangle rect(10.0f, 10.0f);
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    Rectangle rect(rect_size);
     rect.setColor(Color::Red);
     window.draw(rect);
     window.display();
     Image image = window.readPixels();
+    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
 
     // move View 10 pixels up and left
-    Vector2f camera_pos = view.getPosition();
-    view.setPosition(view.getPosition() + Vector2f(-10.0f, -10.0f));
+    const Vector2f pan_offset = Vector2f(-10.0f, -10.0f);
+    view.setPosition(view.getPosition() + pan_offset);
     window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
@@ -458,33 +488,41 @@ void GlvisTestModule::viewPanTest(test::Test& test) {
     image = window.readPixels();
 
     // check that the View has panned 10 pixels up and left
+    const Vector2i panned_rect_start = Vector2i(10, 10);
+    const Vector2i panned_rect_end = panned_rect_start + rect_size_int;
     T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(9, 9), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(10, 10), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(19, 19), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(20, 20), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(panned_rect_start - Vector2i(1, 1)), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(panned_rect_start), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(panned_rect_end - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(panned_rect_end), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::viewZoomTest(test::Test& test) {
-    window.setSize(100, 100);
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
     window.setTitle("view zoom");
     View view;
-    view.setPosition(Vector2f(5.0f, 5.0f));
+    const Vector2f initial_view_pos = Vector2f(5.0f, 5.0f);
+    view.setPosition(initial_view_pos);
     window.setView(view);
     window.clear(Color::Black);
 
     // render rect
-    Rectangle rect(10.0f, 10.0f);
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    Rectangle rect(rect_size);
     rect.setColor(Color::Red);
     window.draw(rect);
     window.display();
 
     // check initial rectangle position
     Image image = window.readPixels();
-    T_WRAP_CONTAINER(checkPixelColor(test, image, 45, 45, 55, 55, Color::Red));
+    const Vector2i initial_check_start = Vector2i(45, 45);
+    const Vector2i initial_check_end = Vector2i(55, 55);
+    T_WRAP_CONTAINER(checkPixelColor(test, image, initial_check_start.x, initial_check_start.y, initial_check_end.x, initial_check_end.y, Color::Red));
 
     // zoom in by factor 2
-    view.setZoom(2.0f);
+    const float zoom_factor = 2.0f;
+    view.setZoom(zoom_factor);
     window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
@@ -492,34 +530,42 @@ void GlvisTestModule::viewZoomTest(test::Test& test) {
     image = window.readPixels();
 
     // check that the View has zoomed in
-    T_WRAP_CONTAINER(checkPixelColor(test, image, 40, 40, 60, 60, Color::Red));
+    const Vector2i zoomed_check_start = Vector2i(40, 40);
+    const Vector2i zoomed_check_end = Vector2i(60, 60);
+    T_WRAP_CONTAINER(checkPixelColor(test, image, zoomed_check_start.x, zoomed_check_start.y, zoomed_check_end.x, zoomed_check_end.y, Color::Red));
 
     // check outside
-    T_COMPARE(image.getPixel(39, 39), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(60, 60), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(zoomed_check_start - Vector2i(1, 1)), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(zoomed_check_end), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::viewRotateTest(test::Test& test) {
-    window.setSize(100, 100);
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
     window.setTitle("view rotation");
     View view;
-    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
 
     // render rect
-    Rectangle rect(10.0f, 10.0f);
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    Rectangle rect(rect_size);
     rect.setColor(Color::Red);
     window.draw(rect);
     window.display();
     Image image = window.readPixels();
+    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
 
     // rotate View 45 degrees
-    view.setPosition(Vector2f(5.0f, 5.0f));
-    view.setRotation(degrees(45.0f));
+    const Vector2f rotated_view_pos = Vector2f(5.0f, 5.0f);
+    view.setPosition(rotated_view_pos);
+    const Angle rotation_angle = degrees(45.0f);
+    view.setRotation(rotation_angle);
     window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
@@ -527,78 +573,100 @@ void GlvisTestModule::viewRotateTest(test::Test& test) {
     image = window.readPixels();
 
     // check pixels around screen center
-    const int window_width = window.getWidth();
-    const int window_height = window.getHeight();
-    Vector2i center = Vector2i(window_width / 2, window_height / 2);
+    window_center = window.getCenter();
+    const Vector2i center = static_cast<Vector2i>(window_center);
     const int offset = 5;
-    // check top left
-    T_COMPARE(image.getPixel(center.x - offset,     center.y - offset    ), Color::Black, &Color::toString);
-    // check top right
-    T_COMPARE(image.getPixel(center.x + offset - 1, center.y - offset    ), Color::Black, &Color::toString);
-    // check bottom right
-    T_COMPARE(image.getPixel(center.x + offset - 1, center.y + offset - 1), Color::Black, &Color::toString);
-    // check bottom left
-    T_COMPARE(image.getPixel(center.x - offset,     center.y + offset - 1), Color::Black, &Color::toString);
-    // check center
-    T_COMPARE(image.getPixel(window_width / 2, window_height / 2), Color::Red, &Color::toString);
+    const Vector2i top_left     = center + Vector2i(-offset,     -offset    );
+    const Vector2i top_right    = center + Vector2i( offset - 1, -offset    );
+    const Vector2i bottom_right = center + Vector2i( offset - 1,  offset - 1);
+    const Vector2i bottom_left  = center + Vector2i(-offset,      offset - 1);
+    T_COMPARE(image.getPixel(top_left), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(top_right), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(bottom_right), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(bottom_left), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(center), Color::Red, &Color::toString);
 }
 
 void GlvisTestModule::vertexArrayTriangleTest(test::Test& test) {
-   window.setSize(100, 100);
+   const Vector2i window_size = Vector2i(100, 100);
+   window.setSize(window_size);
    window.setTitle("vertex array triangle");
    View view;
-   view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+   Vector2f window_center = window.getCenter();
+   view.setPosition(window_center);
    window.setView(view);
    window.clear(Color::Black);
 
    // Render a triangle
-   VertexArray triangle(PrimitiveType::Triangles, 3);
-   triangle[0] = Vertex(Vector2f(0, 0), Color::Red, Vector2f(0, 0));
-   triangle[1] = Vertex(Vector2f(10, 0), Color::Red, Vector2f(0, 0));
-   triangle[2] = Vertex(Vector2f(5, 10), Color::Red, Vector2f(0, 0));
+   const int triangle_vertex_count = 3;
+   VertexArray triangle(PrimitiveType::Triangles, triangle_vertex_count);
+   const Vector2f triangle_base_left = Vector2f(0, 0);
+   const Vector2f triangle_base_right = Vector2f(10, 0);
+   const Vector2f triangle_top = Vector2f(5, 10);
+   triangle[0] = Vertex(triangle_base_left, Color::Red, Vector2f(0, 0));
+   triangle[1] = Vertex(triangle_base_right, Color::Red, Vector2f(0, 0));
+   triangle[2] = Vertex(triangle_top, Color::Red, Vector2f(0, 0));
    triangle.syncBuffer();
    window.draw(triangle);
    window.display();
 
    // Check that the triangle is rendered correctly
    Image image = window.readPixels();
-   T_COMPARE(image.getPixel(5, 5), Color::Red, &Color::toString);
-   T_COMPARE(image.getPixel(2, 2), Color::Red, &Color::toString);
-   T_COMPARE(image.getPixel(8, 2), Color::Red, &Color::toString);
-   T_COMPARE(image.getPixel(0, 10), Color::Black, &Color::toString);
-   T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
-   T_COMPARE(image.getPixel(15, 15), Color::Black, &Color::toString);
+   const Vector2i triangle_center_check = Vector2i(5, 5);
+   const Vector2i triangle_left_check = static_cast<Vector2i>(triangle_base_left + Vector2f(2, 2));
+   const Vector2i triangle_right_check = static_cast<Vector2i>(triangle_base_right - Vector2f(2, 0) + Vector2f(0, 2));
+   const Vector2i outside_left = static_cast<Vector2i>(triangle_base_left + Vector2f(0, 10));
+   const Vector2i outside_right = static_cast<Vector2i>(triangle_base_right);
+   const Vector2i outside_far = Vector2i(15, 15);
+   T_COMPARE(image.getPixel(triangle_center_check), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(triangle_left_check), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(triangle_right_check), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(outside_left), Color::Black, &Color::toString);
+   T_COMPARE(image.getPixel(outside_right), Color::Black, &Color::toString);
+   T_COMPARE(image.getPixel(outside_far), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::vertexArrayLineTest(test::Test& test) {
-   window.setSize(100, 100);
+   const Vector2i window_size = Vector2i(100, 100);
+   window.setSize(window_size);
    window.setTitle("vertex array line");
    View view;
-   view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+   Vector2f window_center = window.getCenter();
+   view.setPosition(window_center);
    window.setView(view);
    window.clear(Color::Black);
 
    // Render a line
-   VertexArray line(PrimitiveType::Lines, 2);
-   line[0] = Vertex(Vector2f(10, 50), Color::Red, Vector2f(0, 0));
-   line[1] = Vertex(Vector2f(90, 50), Color::Red, Vector2f(0, 0));
+   const int line_vertex_count = 2;
+   VertexArray line(PrimitiveType::Lines, line_vertex_count);
+   const Vector2f line_start = Vector2f(10, 50);
+   const Vector2f line_end = Vector2f(90, 50);
+   line[0] = Vertex(line_start, Color::Red, Vector2f(0, 0));
+   line[1] = Vertex(line_end, Color::Red, Vector2f(0, 0));
    line.syncBuffer();
    window.draw(line);
    window.display();
 
    // Check line pixels
    Image image = window.readPixels();
-   T_COMPARE(image.getPixel(10, 50), Color::Red, &Color::toString);
-   T_COMPARE(image.getPixel(50, 50), Color::Red, &Color::toString);
-   T_COMPARE(image.getPixel(89, 50), Color::Red, &Color::toString);
+   const Vector2i line_start_int = static_cast<Vector2i>(line_start);
+   const Vector2i line_mid = static_cast<Vector2i>((line_start + line_end) / 2.0f);
+   const Vector2i line_end_int = static_cast<Vector2i>(line_end) - Vector2i(1, 0);
+   T_COMPARE(image.getPixel(line_start_int), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(line_mid), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(line_end_int), Color::Red, &Color::toString);
 
    // Check line edges on the outside
-   T_COMPARE(image.getPixel(9, 50), Color::Black, &Color::toString);
-   T_COMPARE(image.getPixel(90, 50), Color::Black, &Color::toString);
+   const Vector2i outside_start = line_start_int - Vector2i(1, 0);
+   const Vector2i outside_end = static_cast<Vector2i>(line_end);
+   T_COMPARE(image.getPixel(outside_start), Color::Black, &Color::toString);
+   T_COMPARE(image.getPixel(outside_end), Color::Black, &Color::toString);
 
    // Check above and below
-   T_COMPARE(image.getPixel(50, 49), Color::Black, &Color::toString);
-   T_COMPARE(image.getPixel(50, 51), Color::Black, &Color::toString);
+   const Vector2i above_line = line_mid - Vector2i(0, 1);
+   const Vector2i below_line = line_mid + Vector2i(0, 1);
+   T_COMPARE(image.getPixel(above_line), Color::Black, &Color::toString);
+   T_COMPARE(image.getPixel(below_line), Color::Black, &Color::toString);
 }
 
 int main() {
@@ -607,10 +675,11 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: replace hardcoded values in tests
     // TODO: test adding vertices to VertexArray
     // TODO: add usage hints to VertexBuffer
     // TODO: add .editorconfig
+    // TODO: put each shader in shaders/ folder into a single file
+    // TODO: shader tests
     // TODO: text rendering
     // TODO: transparent texture rendering
 
