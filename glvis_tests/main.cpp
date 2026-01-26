@@ -207,29 +207,37 @@ void GlvisTestModule::moveTest(test::Test& test) {
 }
 
 void GlvisTestModule::rotateTest(test::Test& test) {
-    window.setSize(100, 100);
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
     window.setTitle("rotate");
     View view;
-    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    Vector2f window_center = window.getCenter();
+    Vector2i window_center_int = static_cast<Vector2i>(window_center);
+    view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
 
     // render rect
-    Rectangle rect(10.0f, 10.0f);
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    const Vector2f rect_half_size = rect_size / 2.0f;
+    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
+    Rectangle rect(rect_size);
     rect.setColor(Color::Red);
     window.draw(rect);
     window.display();
 
-    // check pixels around screen center
+    // check initial rectangle position
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
 
-    // rotate rect 45 degrees
+    // center rect on the screen
     view.setPosition(Vector2f());
     window.setView(view);
-    rect.setOrigin(5.0f, 5.0f);
+
+    // rotate rect 45 degrees
+    rect.setOrigin(rect_half_size);
     rect.setRotation(degrees(45.0f));
     window.clear(Color::Black);
     window.draw(rect);
@@ -237,20 +245,16 @@ void GlvisTestModule::rotateTest(test::Test& test) {
     
     // check pixels around screen center
     image = window.readPixels();
-    const int window_width = window.getWidth();
-    const int window_height = window.getHeight();
-    Vector2i center = Vector2i(window_width / 2, window_height / 2);
     const int offset = 5;
-    // check top left
-    T_COMPARE(image.getPixel(center.x - offset,     center.y - offset    ), Color::Black, &Color::toString);
-    // check top right
-    T_COMPARE(image.getPixel(center.x + offset - 1, center.y - offset    ), Color::Black, &Color::toString);
-    // check bottom right
-    T_COMPARE(image.getPixel(center.x + offset - 1, center.y + offset - 1), Color::Black, &Color::toString);
-    // check bottom left
-    T_COMPARE(image.getPixel(center.x - offset,     center.y + offset - 1), Color::Black, &Color::toString);
-    // check center
-    T_COMPARE(image.getPixel(window_width / 2, window_height / 2), Color::Red, &Color::toString);
+    const Vector2i top_left     = window_center_int + Vector2i(-offset    , -offset    );
+    const Vector2i top_right    = window_center_int + Vector2i( offset - 1, -offset    );
+    const Vector2i bottom_right = window_center_int + Vector2i( offset - 1,  offset - 1);
+    const Vector2i bottom_left  = window_center_int + Vector2i(-offset    ,  offset - 1);
+    T_COMPARE(image.getPixel(top_left), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(top_right), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(bottom_right), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(bottom_left), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(window_center_int), Color::Red, &Color::toString);
 }
 
 void GlvisTestModule::scaleTest(test::Test& test) {
