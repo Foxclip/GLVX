@@ -581,13 +581,14 @@ void GlvisTestModule::vertexArrayLineTest(test::Test& test) {
 
 int main() {
     test::TestModule root("glvis tests", nullptr);
-    root.print_summary_enabled = true;
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
+    root.printSummary();
 
     // TODO: replace hardcoded values in tests
     // TODO: test adding vertices to VertexArray
     // TODO: add usage hints to VertexBuffer
+    // TODO: add .editorconfig
     // TODO: text rendering
     // TODO: transparent texture rendering
 
