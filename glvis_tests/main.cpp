@@ -293,7 +293,15 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     // check that the rectangle has scaled by factor 2
     const Vector2i scaled_rect_start = Vector2i(40, 40);
     const Vector2i scaled_rect_end = Vector2i(60, 60);
-    T_WRAP_CONTAINER(checkPixelColor(test, image, scaled_rect_start.x, scaled_rect_start.y, scaled_rect_end.x, scaled_rect_end.y, Color::Red));
+    T_WRAP_CONTAINER(checkPixelColor(
+        test,
+        image,
+        scaled_rect_start.x,
+        scaled_rect_start.y,
+        scaled_rect_end.x,
+        scaled_rect_end.y,
+        Color::Red
+    ));
 
     // check outside
     T_COMPARE(image.getPixel(scaled_rect_start - Vector2i(1, 1)), Color::Black, &Color::toString);
@@ -518,7 +526,15 @@ void GlvisTestModule::viewZoomTest(test::Test& test) {
     Image image = window.readPixels();
     const Vector2i initial_check_start = Vector2i(45, 45);
     const Vector2i initial_check_end = Vector2i(55, 55);
-    T_WRAP_CONTAINER(checkPixelColor(test, image, initial_check_start.x, initial_check_start.y, initial_check_end.x, initial_check_end.y, Color::Red));
+    T_WRAP_CONTAINER(checkPixelColor(
+        test,
+        image,
+        initial_check_start.x,
+        initial_check_start.y,
+        initial_check_end.x,
+        initial_check_end.y,
+        Color::Red
+    ));
 
     // zoom in by factor 2
     const float zoom_factor = 2.0f;
@@ -532,7 +548,15 @@ void GlvisTestModule::viewZoomTest(test::Test& test) {
     // check that the View has zoomed in
     const Vector2i zoomed_check_start = Vector2i(40, 40);
     const Vector2i zoomed_check_end = Vector2i(60, 60);
-    T_WRAP_CONTAINER(checkPixelColor(test, image, zoomed_check_start.x, zoomed_check_start.y, zoomed_check_end.x, zoomed_check_end.y, Color::Red));
+    T_WRAP_CONTAINER(checkPixelColor(
+        test,
+        image,
+        zoomed_check_start.x,
+        zoomed_check_start.y,
+        zoomed_check_end.x,
+        zoomed_check_end.y,
+        Color::Red
+    ));
 
     // check outside
     T_COMPARE(image.getPixel(zoomed_check_start - Vector2i(1, 1)), Color::Black, &Color::toString);
