@@ -66,7 +66,14 @@ void VertexBuffer::recreateBuffer(const std::vector<Vertex>& data) {
     GL_CALL(glGenBuffers(1, &VBO));
     GL_CALL(glBindVertexArray(VAO));
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-    GL_CALL(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), data.data(), GL_STATIC_DRAW));
+    GLenum usageGLenum;
+    switch (usage) {
+        case Usage::StaticDraw: usageGLenum = GL_STATIC_DRAW; break;
+        case Usage::DynamicDraw: usageGLenum = GL_DYNAMIC_DRAW; break;
+        case Usage::StreamDraw: usageGLenum = GL_STREAM_DRAW; break;
+        default: throw std::invalid_argument("Invalid usage hint");
+    }
+    GL_CALL(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), data.data(), usageGLenum));
     GL_CALL(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0));
     GL_CALL(glEnableVertexAttribArray(0));
     GL_CALL(glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color)));
@@ -89,6 +96,10 @@ PrimitiveType VertexBuffer::getPrimitiveType() const {
 
 void VertexBuffer::setPrimitiveType(PrimitiveType type) {
     this->type = type;
+}
+
+void VertexBuffer::setUsage(Usage usage) {
+    this->usage = usage;
 }
 
 unsigned int VertexBuffer::getVAO() const {

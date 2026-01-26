@@ -703,11 +703,11 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: test adding vertices to VertexArray
     // TODO: add usage hints to VertexBuffer
     // TODO: add .editorconfig
     // TODO: put each shader in shaders/ folder into a single file
     // TODO: shader tests
+    // TODO: make VertexArray upload data on every render and remove syncBuffer
     // TODO: text rendering
     // TODO: transparent texture rendering
 
