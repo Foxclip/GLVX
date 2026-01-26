@@ -8,6 +8,7 @@
 #include "glvis/window.h"
 #include "glvis/texture.h"
 #include "glvis/angle.h"
+#include "glvis/vertex_array.h"
 
 using namespace glvis;
 
@@ -34,6 +35,7 @@ private:
     void viewPanTest(test::Test& test);
     void viewZoomTest(test::Test& test);
     void viewRotateTest(test::Test& test);
+    void vertexArrayTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -52,6 +54,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto view_pan_test = addTest("view_pan", { rectangle_test }, [&](test::Test& test) { viewPanTest(test); });
     auto view_zoom_test = addTest("view_zoom", { rectangle_test }, [&](test::Test& test) { viewZoomTest(test); });
     auto view_rotate_test = addTest("view_rotate", { rectangle_test }, [&](test::Test& test) { viewRotateTest(test); });
+    auto vertex_array_test = addTest("vertex_array", { clear_test }, [&](test::Test& test) { vertexArrayTest(test); });
 }
 
 bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor) {
@@ -516,14 +519,38 @@ void GlvisTestModule::viewRotateTest(test::Test& test) {
     T_COMPARE(image.getPixel(window_width / 2, window_height / 2), Color::Red, &Color::toString);
 }
 
+void GlvisTestModule::vertexArrayTest(test::Test& test) {
+   window.setSize(100, 100);
+   window.setTitle("vertex_array");
+   View view;
+   view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+   window.setView(view);
+   window.clear(Color::Black);
+
+   // Render a triangle
+   VertexArray triangle(PrimitiveType::Triangles, 3);
+   triangle[0] = Vertex{Vector2(0, 0), Color::Red, Vector2(0, 0)};
+   triangle[1] = Vertex{Vector2(10, 0), Color::Red, Vector2(0, 0)};
+   triangle[2] = Vertex{Vector2(5, 10), Color::Red, Vector2(0, 0)};
+   window.draw(triangle);
+   window.display();
+
+   // Check that the triangle is rendered correctly
+   Image image = window.readPixels();
+   T_COMPARE(image.getPixel(5, 5), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(2, 2), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(8, 2), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(0, 10), Color::Black, &Color::toString);
+   T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
+   T_COMPARE(image.getPixel(15, 15), Color::Black, &Color::toString);
+}
+
 int main() {
     test::TestModule root("glvis tests", nullptr);
     root.print_summary_enabled = true;
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: draw lines
-    // TODO: VertexArray test
     // TODO: text rendering
     // TODO: transparent texture rendering
 
