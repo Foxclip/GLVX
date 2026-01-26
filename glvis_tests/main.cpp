@@ -143,15 +143,18 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
 }
 
 void GlvisTestModule::circleTest(test::Test& test) {
-    window.setSize(100, 100);
+    const int window_width = 100;
+    const int window_height = 100;
+    window.setSize(window_width, window_height);
     window.setTitle("circle");
     View view;
-    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    view.setPosition(window.getCenter());
     window.setView(view);
     window.clear(Color::Black);
 
     // Render a circle
-    Circle circle(5.0f);
+    const float circle_radius = 5.0f;
+    Circle circle(circle_radius);
     circle.setColor(Color::Red);
     window.draw(circle);
     window.display();
@@ -159,8 +162,8 @@ void GlvisTestModule::circleTest(test::Test& test) {
     // Check that the circle is rendered correctly
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(5, 5), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(9, 9), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel((int)circle_radius, (int)circle_radius), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel((int)(circle_radius * 2) - 1, (int)(circle_radius * 2) - 1), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::moveTest(test::Test& test) {
