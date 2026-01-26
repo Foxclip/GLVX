@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "vertex.h"
-#include "vertex_buffer.h"
-#include "drawable.h"
+#include "glvis/vertex.h"
+#include "glvis/vertex_buffer.h"
+#include "glvis/drawable.h"
 
 namespace glvis {
 
