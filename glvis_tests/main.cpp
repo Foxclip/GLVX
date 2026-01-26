@@ -651,16 +651,14 @@ void GlvisTestModule::vertexArrayLineTest(test::Test& test) {
    Image image = window.readPixels();
    const Vector2i line_start_int = static_cast<Vector2i>(line_start);
    const Vector2i line_mid = static_cast<Vector2i>((line_start + line_end) / 2.0f);
-   const Vector2i line_end_int = static_cast<Vector2i>(line_end) - Vector2i(1, 0);
+   const Vector2i line_end_int = static_cast<Vector2i>(line_end);
    T_COMPARE(image.getPixel(line_start_int), Color::Red, &Color::toString);
    T_COMPARE(image.getPixel(line_mid), Color::Red, &Color::toString);
-   T_COMPARE(image.getPixel(line_end_int), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(line_end_int - Vector2i(1, 0)), Color::Red, &Color::toString);
 
    // Check line edges on the outside
-   const Vector2i outside_start = line_start_int - Vector2i(1, 0);
-   const Vector2i outside_end = static_cast<Vector2i>(line_end);
-   T_COMPARE(image.getPixel(outside_start), Color::Black, &Color::toString);
-   T_COMPARE(image.getPixel(outside_end), Color::Black, &Color::toString);
+   T_COMPARE(image.getPixel(line_start_int - Vector2i(1, 0)), Color::Black, &Color::toString);
+   T_COMPARE(image.getPixel(line_end_int), Color::Black, &Color::toString);
 
    // Check above and below
    const Vector2i above_line = line_mid - Vector2i(0, 1);
