@@ -638,7 +638,7 @@ void GlvisTestModule::vertexArrayTriangleTest(test::Test& test) {
    Image image = window.readPixels();
    const Vector2i triangle_center_check = Vector2i(5, 5);
    const Vector2i triangle_left_check = static_cast<Vector2i>(triangle_base_left + Vector2f(2, 2));
-   const Vector2i triangle_right_check = static_cast<Vector2i>(triangle_base_right - Vector2f(2, 0) + Vector2f(0, 2));
+   const Vector2i triangle_right_check = static_cast<Vector2i>(triangle_base_right + Vector2f(-2, 2));
    const Vector2i outside_left = static_cast<Vector2i>(triangle_base_left + Vector2f(0, 10));
    const Vector2i outside_right = static_cast<Vector2i>(triangle_base_right);
    const Vector2i outside_far = Vector2i(15, 15);
