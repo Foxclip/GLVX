@@ -16,8 +16,8 @@ public:
     VertexArray(PrimitiveType type, std::size_t vertexCount = 0);
     std::size_t getVertexCount() const;
     PrimitiveType getPrimitiveType() const;
-    Vector2 getBoundsMin() const;
-    Vector2 getBoundsMax() const;
+    Vector2f getBoundsMin() const;
+    Vector2f getBoundsMax() const;
     Vertex& operator[](std::size_t index);
     const Vertex& operator[](unsigned int index) const;
     void clear();

@@ -170,7 +170,7 @@ void GlvisTestModule::moveTest(test::Test& test) {
    window.setSize(100, 100);
    window.setTitle("move");
    View view;
-   view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+   view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
    window.setView(view);
    window.clear(Color::Black);
 
@@ -203,7 +203,7 @@ void GlvisTestModule::rotateTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("rotate");
     View view;
-    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setView(view);
     window.clear(Color::Black);
 
@@ -220,7 +220,7 @@ void GlvisTestModule::rotateTest(test::Test& test) {
     T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 
     // rotate rect 45 degrees
-    view.setPosition(Vector2());
+    view.setPosition(Vector2f());
     window.setView(view);
     rect.setOrigin(5.0f, 5.0f);
     rect.setRotation(degrees(45.0f));
@@ -250,7 +250,7 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("scale");
     View view;
-    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setView(view);
     window.clear(Color::Black);
 
@@ -265,10 +265,10 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 
     // scale rect by factor 2
-    view.setPosition(Vector2());
+    view.setPosition(Vector2f());
     window.setView(view);
     rect.setOrigin(5.0f, 5.0f);
-    rect.setScale(Vector2(2.0f, 2.0f));
+    rect.setScale(Vector2f(2.0f, 2.0f));
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
@@ -286,7 +286,7 @@ void GlvisTestModule::textureTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("texture");
     View view;
-    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setView(view);
     window.clear(Color::Black);
 
@@ -318,7 +318,7 @@ void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("texture color multiply");
     View view;
-    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setView(view);
     window.clear(Color::Black);
 
@@ -386,7 +386,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("window resize");
     View view;
-    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setView(view);
     window.clear(Color::Black);
 
@@ -399,7 +399,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
 
     // Resize to 200x200
     window.setSize(200, 200);
-    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
@@ -408,7 +408,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
 
     // Resize back to 100x100
     window.setSize(100, 100);
-    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
@@ -423,7 +423,7 @@ void GlvisTestModule::viewPanTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("view pan");
     View view;
-    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setView(view);
     window.clear(Color::Black);
 
@@ -438,8 +438,8 @@ void GlvisTestModule::viewPanTest(test::Test& test) {
     T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 
     // move View 10 pixels up and left
-    Vector2 camera_pos = view.getPosition();
-    view.setPosition(view.getPosition() + Vector2(-10.0f, -10.0f));
+    Vector2f camera_pos = view.getPosition();
+    view.setPosition(view.getPosition() + Vector2f(-10.0f, -10.0f));
     window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
@@ -458,7 +458,7 @@ void GlvisTestModule::viewZoomTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("view zoom");
     View view;
-    view.setPosition(Vector2(5.0f, 5.0f));
+    view.setPosition(Vector2f(5.0f, 5.0f));
     window.setView(view);
     window.clear(Color::Black);
 
@@ -492,7 +492,7 @@ void GlvisTestModule::viewRotateTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("view rotation");
     View view;
-    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setView(view);
     window.clear(Color::Black);
 
@@ -507,7 +507,7 @@ void GlvisTestModule::viewRotateTest(test::Test& test) {
     T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 
     // rotate View 45 degrees
-    view.setPosition(Vector2(5.0f, 5.0f));
+    view.setPosition(Vector2f(5.0f, 5.0f));
     view.setRotation(degrees(45.0f));
     window.setView(view);
     window.clear(Color::Black);
@@ -536,15 +536,15 @@ void GlvisTestModule::vertexArrayTriangleTest(test::Test& test) {
    window.setSize(100, 100);
    window.setTitle("vertex array triangle");
    View view;
-   view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+   view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
    window.setView(view);
    window.clear(Color::Black);
 
    // Render a triangle
    VertexArray triangle(PrimitiveType::Triangles, 3);
-   triangle[0] = Vertex(Vector2(0, 0), Color::Red, Vector2(0, 0));
-   triangle[1] = Vertex(Vector2(10, 0), Color::Red, Vector2(0, 0));
-   triangle[2] = Vertex(Vector2(5, 10), Color::Red, Vector2(0, 0));
+   triangle[0] = Vertex(Vector2f(0, 0), Color::Red, Vector2f(0, 0));
+   triangle[1] = Vertex(Vector2f(10, 0), Color::Red, Vector2f(0, 0));
+   triangle[2] = Vertex(Vector2f(5, 10), Color::Red, Vector2f(0, 0));
    triangle.syncBuffer();
    window.draw(triangle);
    window.display();
@@ -563,14 +563,14 @@ void GlvisTestModule::vertexArrayLineTest(test::Test& test) {
    window.setSize(100, 100);
    window.setTitle("vertex array line");
    View view;
-   view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+   view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
    window.setView(view);
    window.clear(Color::Black);
 
    // Render a line
    VertexArray line(PrimitiveType::Lines, 2);
-   line[0] = Vertex(Vector2(10, 50), Color::Red, Vector2(0, 0));
-   line[1] = Vertex(Vector2(90, 50), Color::Red, Vector2(0, 0));
+   line[0] = Vertex(Vector2f(10, 50), Color::Red, Vector2f(0, 0));
+   line[1] = Vertex(Vector2f(90, 50), Color::Red, Vector2f(0, 0));
    line.syncBuffer();
    window.draw(line);
    window.display();

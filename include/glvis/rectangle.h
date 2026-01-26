@@ -14,7 +14,7 @@ public:
     ~Rectangle();
     float getWidth() const;
     float getHeight() const;
-    Vector2 getSize() const;
+    Vector2f getSize() const;
     void setTexture(AbstractTexture* texture);
     void render(const Matrix4& view, const Matrix4& projection) const override;
     const VertexBuffer& getVertexBuffer() const override;

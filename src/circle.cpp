@@ -19,9 +19,9 @@ Circle::Circle(float radius, size_t numSegments) {
     std::vector<Vertex> vertices;
     // Add center vertex
     vertices.push_back(Vertex {
-        Vector2(radius, radius), // position
+        Vector2f(radius, radius), // position
         Color(255, 255, 255, 255), // color
-        Vector2(0.5f, 0.5f) // texCoords
+        Vector2f(0.5f, 0.5f) // texCoords
     });
     for (size_t i = 0; i <= numSegments; i++) {
         float x = radius * cos(theta * i);
@@ -31,9 +31,9 @@ Circle::Circle(float radius, size_t numSegments) {
         float texX = (x / radius + 1.0f) / 2.0f;
         float texY = (y / radius + 1.0f) / 2.0f;
         vertices.push_back(Vertex {
-            Vector2(x_shifted, y_shifted), // position
+            Vector2f(x_shifted, y_shifted), // position
             Color(255, 255, 255, 255), // color
-            Vector2(texX, texY) // texCoords
+            Vector2f(texX, texY) // texCoords
         });
     }
 

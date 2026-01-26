@@ -10,26 +10,26 @@ class Transformable {
 public:
     float getX() const;
     float getY() const;
-    const Vector2& getPosition() const;
+    const Vector2f& getPosition() const;
     const Angle& getRotation() const;
-    const Vector2& getScale() const;
-    const Vector2& getOrigin() const;
+    const Vector2f& getScale() const;
+    const Vector2f& getOrigin() const;
     Matrix4 getModelMatrix() const;
     void setPosition(float x, float y);
-    void setPosition(const Vector2& position);
+    void setPosition(const Vector2f& position);
     void setRotation(const Angle& rotation);
     void setScale(float x, float y);
-    void setScale(const Vector2& scale);
+    void setScale(const Vector2f& scale);
     void setOrigin(float x, float y);
-    void setOrigin(const Vector2& origin);
+    void setOrigin(const Vector2f& origin);
     void move(float dx, float dy);
-    void move(const Vector2& offset);
+    void move(const Vector2f& offset);
 
 protected:
-    Vector2 position;
+    Vector2f position;
     Angle rotation;
-    Vector2 scale = Vector2(1.0f, 1.0f);
-    Vector2 origin = Vector2(0.0f, 0.0f);
+    Vector2f scale = Vector2f(1.0f, 1.0f);
+    Vector2f origin = Vector2f(0.0f, 0.0f);
 };
 
 }

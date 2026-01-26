@@ -6,7 +6,7 @@
 
 namespace glvis {
 
-const Vector2& View::getPosition() const {
+const Vector2f& View::getPosition() const {
     return pos;
 }
 
@@ -14,7 +14,7 @@ float View::getZoom() const {
     return zoom;
 }
 
-void View::setPosition(const Vector2& pos) {
+void View::setPosition(const Vector2f& pos) {
     this->pos = pos;
 }
 

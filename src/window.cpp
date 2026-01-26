@@ -80,8 +80,8 @@ int Window::getHeight() const {
     return currentHeight;
 }
 
-Vector2 glvis::Window::getCenter() const {
-    return Vector2((float)currentWidth / 2.0f, (float)currentHeight / 2.0f);
+Vector2f glvis::Window::getCenter() const {
+    return Vector2f((float)currentWidth / 2.0f, (float)currentHeight / 2.0f);
 }
 
 void glvis::Window::setSize(int width, int height) {
@@ -142,13 +142,13 @@ Image Window::readPixels() const {
     return Image(currentWidth, currentHeight, std::move(flippedPixels));
 }
 
-Vector2 Window::worldToScreen(float x, float y) const {
+Vector2f Window::worldToScreen(float x, float y) const {
     glm::vec4 point = to_glmMat4(view) * glm::vec4(x, y, 0.0f, 1.0f);
     glm::vec2 result = glm::vec2(point.x, currentHeight - point.y);
     return from_glmVec2(result);
 }
 
-Vector2 Window::screenToWorld(int x, int y) const {
+Vector2f Window::screenToWorld(int x, int y) const {
     glm::vec4 point = to_glmMat4(invView) * glm::vec4(x, currentHeight - y, 0.0f, 1.0f);
     glm::vec2 result = glm::vec2(point.x, point.y);
     return from_glmVec2(result);

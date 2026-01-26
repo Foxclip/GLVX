@@ -2,18 +2,18 @@
 
 namespace glvis {
 
-class Vector2 {
+class Vector2f {
 public:
-    Vector2();
-    Vector2(float x, float y);
+    Vector2f();
+    Vector2f(float x, float y);
     float x = 0;
     float y = 0;
 
-    Vector2 operator+(const Vector2& other) const;
-    Vector2 operator-(const Vector2& other) const;
-    Vector2 operator*(float scalar) const;
-    Vector2 operator/(float scalar) const;
-    Vector2& operator+=(const Vector2& other);
+    Vector2f operator+(const Vector2f& other) const;
+    Vector2f operator-(const Vector2f& other) const;
+    Vector2f operator*(float scalar) const;
+    Vector2f operator/(float scalar) const;
+    Vector2f& operator+=(const Vector2f& other);
 
 private:
 };

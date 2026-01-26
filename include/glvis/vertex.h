@@ -6,9 +6,9 @@
 namespace glvis {
 
 struct Vertex {
-    Vector2 position;
+    Vector2f position;
     Color color;
-    Vector2 texCoords;
+    Vector2f texCoords;
 };
 
 enum class PrimitiveType {

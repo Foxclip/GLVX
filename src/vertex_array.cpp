@@ -76,14 +76,14 @@ const VertexBuffer& VertexArray::getVertexBuffer() const {
     return vertexBuffer;
 }
 
-Vector2 VertexArray::getBoundsMin() const {
+Vector2f VertexArray::getBoundsMin() const {
     // TODO: Implement bounds calculation
-    return Vector2(0.0f, 0.0f);
+    return Vector2f(0.0f, 0.0f);
 }
 
-Vector2 VertexArray::getBoundsMax() const {
+Vector2f VertexArray::getBoundsMax() const {
     // TODO: Implement bounds calculation
-    return Vector2(0.0f, 0.0f);
+    return Vector2f(0.0f, 0.0f);
 }
 
 Matrix4 VertexArray::getModelMatrix() const {

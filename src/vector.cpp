@@ -2,33 +2,33 @@
 
 namespace glvis {
 
-Vector2::Vector2() {
+Vector2f::Vector2f() {
     this->x = 0;
     this->y = 0;
 }
 
-Vector2::Vector2(float x, float y) {
+Vector2f::Vector2f(float x, float y) {
     this->x = x;
     this->y = y;
 }
 
-Vector2 Vector2::operator+(const Vector2& other) const {
-    return Vector2(x + other.x, y + other.y);
+Vector2f Vector2f::operator+(const Vector2f& other) const {
+    return Vector2f(x + other.x, y + other.y);
 }
 
-Vector2 Vector2::operator-(const Vector2& other) const {
-    return Vector2(x - other.x, y - other.y);
+Vector2f Vector2f::operator-(const Vector2f& other) const {
+    return Vector2f(x - other.x, y - other.y);
 }
 
-Vector2 Vector2::operator*(float scalar) const {
-    return Vector2(x * scalar, y * scalar);
+Vector2f Vector2f::operator*(float scalar) const {
+    return Vector2f(x * scalar, y * scalar);
 }
 
-Vector2 Vector2::operator/(float scalar) const {
-    return Vector2(x / scalar, y / scalar);
+Vector2f Vector2f::operator/(float scalar) const {
+    return Vector2f(x / scalar, y / scalar);
 }
 
-Vector2& Vector2::operator+=(const Vector2& other) {
+Vector2f& Vector2f::operator+=(const Vector2f& other) {
     x += other.x;
     y += other.y;
     return *this;

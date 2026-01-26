@@ -25,7 +25,7 @@ public:
     bool isOpen() const;
     int getWidth() const;
     int getHeight() const;
-    Vector2 getCenter() const;
+    Vector2f getCenter() const;
     void setSize(int width, int height);
     void setTitle(const std::string& title) const;
     void setView(const View& view);
@@ -33,8 +33,8 @@ public:
     void draw(const Drawable& drawable) const;
     void display() const;
     Image readPixels() const;
-    Vector2 worldToScreen(float x, float y) const;
-    Vector2 screenToWorld(int x, int y) const;
+    Vector2f worldToScreen(float x, float y) const;
+    Vector2f screenToWorld(int x, int y) const;
 
     using mouseCallbackFuncType = std::function<void(double xpos, double ypos)>;
     using mouseButtonCallbackFuncType = std::function<void(int button, int action, int mods)>;

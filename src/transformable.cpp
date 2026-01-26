@@ -13,7 +13,7 @@ float Transformable::getY() const {
     return position.y;
 }
 
-const Vector2& Transformable::getPosition() const {
+const Vector2f& Transformable::getPosition() const {
     return position;
 }
 
@@ -21,11 +21,11 @@ const Angle& Transformable::getRotation() const {
     return rotation;
 }
 
-const Vector2& Transformable::getScale() const {
+const Vector2f& Transformable::getScale() const {
     return scale;
 }
 
-const Vector2& Transformable::getOrigin() const {
+const Vector2f& Transformable::getOrigin() const {
     return origin;
 }
 
@@ -34,7 +34,7 @@ void Transformable::setPosition(float x, float y) {
     position.y = y;
 }
 
-void Transformable::setPosition(const Vector2& position) {
+void Transformable::setPosition(const Vector2f& position) {
     this->position = position;
 }
 
@@ -47,7 +47,7 @@ void Transformable::setScale(float x, float y) {
     scale.y = y;
 }
 
-void Transformable::setScale(const Vector2& scale) {
+void Transformable::setScale(const Vector2f& scale) {
     this->scale = scale;
 }
 
@@ -56,7 +56,7 @@ void Transformable::setOrigin(float x, float y) {
     origin.y = y;
 }
 
-void Transformable::setOrigin(const Vector2& origin) {
+void Transformable::setOrigin(const Vector2f& origin) {
     this->origin = origin;
 }
 
@@ -65,7 +65,7 @@ void Transformable::move(float dx, float dy) {
     position.y += dy;
 }
 
-void Transformable::move(const Vector2& offset) {
+void Transformable::move(const Vector2f& offset) {
     position += offset;
 }
 
