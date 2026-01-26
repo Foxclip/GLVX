@@ -195,7 +195,7 @@ void GlvisTestModule::moveTest(test::Test& test) {
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
-    
+
     // check that the rectangle has moved 10 pixels right and down
     image = window.readPixels();
     Vector2i new_pos_int = static_cast<Vector2i>(new_pos);
@@ -242,7 +242,7 @@ void GlvisTestModule::rotateTest(test::Test& test) {
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
-    
+
     // check pixels around screen center
     image = window.readPixels();
     const int offset = 5;
@@ -403,7 +403,7 @@ void GlvisTestModule::textureResizeTest(test::Test& test) {
     tex.resize(resized_texture_size.x, resized_texture_size.y);
     T_COMPARE(tex.getWidth(), resized_texture_size.x);
     T_COMPARE(tex.getHeight(), resized_texture_size.y);
-    
+
     // Check linear interpolation
     Image img = tex.readPixels();
     T_COMPARE(img.getPixel(0, 0), Color(0, 0, 0, 0), &Color::toString);
@@ -420,7 +420,7 @@ void GlvisTestModule::textureResizeTest(test::Test& test) {
     Texture tex_down(data_down, down_initial_size.x, down_initial_size.y);
     const Vector2i down_resized_size = Vector2i(2, 1);
     tex_down.resize(down_resized_size.x, down_resized_size.y);
-    
+
     // Check linear downsampling
     Image img_down = tex_down.readPixels();
     T_COMPARE(img_down.getPixel(0, 0), Color(32, 32, 32, 32), &Color::toString);
@@ -703,8 +703,6 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: add usage hints to VertexBuffer
-    // TODO: add .editorconfig
     // TODO: put each shader in shaders/ folder into a single file
     // TODO: shader tests
     // TODO: make VertexArray upload data on every render and remove syncBuffer
