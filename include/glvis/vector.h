@@ -2,10 +2,13 @@
 
 namespace glvis {
 
+class Vector2i;
+
 class Vector2f {
 public:
     Vector2f();
     Vector2f(float x, float y);
+    explicit Vector2f(const Vector2i& v);
     float x = 0;
     float y = 0;
 

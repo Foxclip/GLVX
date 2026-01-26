@@ -12,6 +12,11 @@ Vector2f::Vector2f(float x, float y) {
     this->y = y;
 }
 
+Vector2f::Vector2f(const Vector2i& v) {
+    this->x = static_cast<float>(v.x);
+    this->y = static_cast<float>(v.y);
+}
+
 Vector2f Vector2f::operator+(const Vector2f& other) const {
     return Vector2f(x + other.x, y + other.y);
 }
