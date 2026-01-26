@@ -100,7 +100,8 @@ void GlvisTestModule::clearTest(test::Test& test) {
     window.display();
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(window_width / 2, window_height / 2), Color::Red, &Color::toString);
+    Vector2i center = Vector2i(window.getCenter());
+    T_COMPARE(image.getPixel(center.x, center.y), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(window_width - 1, window_height - 1), Color::Red, &Color::toString);
 
     // Resize the window
@@ -113,7 +114,8 @@ void GlvisTestModule::clearTest(test::Test& test) {
     window.display();
     image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Green, &Color::toString);
-    T_COMPARE(image.getPixel(new_window_width / 2, new_window_height / 2), Color::Green, &Color::toString);
+    Vector2i new_center = Vector2i(window.getCenter());
+    T_COMPARE(image.getPixel(new_center.x, new_center.y), Color::Green, &Color::toString);
     T_COMPARE(image.getPixel(new_window_width - 1, new_window_height - 1), Color::Green, &Color::toString);
 }
 
@@ -129,6 +131,7 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
 
     // Render a rectangle
     const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    const Vector2i rect_size_int(rect_size);
     Rectangle rect(rect_size);
     rect.setColor(Color::Red);
     window.draw(rect);
@@ -137,8 +140,8 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
     // Check that the rectangle is rendered correctly
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel((int)rect_size.x - 1, (int)rect_size.y - 1), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel((int)rect_size.x, (int)rect_size.y), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int.x - 1, rect_size_int.y - 1), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int.x, rect_size_int.y), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::circleTest(test::Test& test) {

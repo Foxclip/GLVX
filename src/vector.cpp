@@ -44,6 +44,11 @@ Vector2i::Vector2i(int x, int y) {
     this->y = y;
 }
 
+Vector2i::Vector2i(const Vector2f& v) {
+    this->x = static_cast<int>(v.x);
+    this->y = static_cast<int>(v.y);
+}
+
 Vector2i Vector2i::operator+(const Vector2i& other) const {
     return Vector2i(x + other.x, y + other.y);
 }

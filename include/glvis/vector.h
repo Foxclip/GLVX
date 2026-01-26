@@ -22,6 +22,7 @@ class Vector2i {
 public:
     Vector2i();
     Vector2i(int x, int y);
+    explicit Vector2i(const Vector2f& v);
     int x = 0;
     int y = 0;
 
