@@ -8,6 +8,7 @@
 #include "glvis/window.h"
 #include "glvis/texture.h"
 #include "glvis/angle.h"
+#include "glvis/vertex_array.h"
 
 using namespace glvis;
 
@@ -34,6 +35,8 @@ private:
     void viewPanTest(test::Test& test);
     void viewZoomTest(test::Test& test);
     void viewRotateTest(test::Test& test);
+    void vertexArrayTriangleTest(test::Test& test);
+    void vertexArrayLineTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -52,6 +55,8 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto view_pan_test = addTest("view_pan", { rectangle_test }, [&](test::Test& test) { viewPanTest(test); });
     auto view_zoom_test = addTest("view_zoom", { rectangle_test }, [&](test::Test& test) { viewZoomTest(test); });
     auto view_rotate_test = addTest("view_rotate", { rectangle_test }, [&](test::Test& test) { viewRotateTest(test); });
+    auto vertex_array_triangle_test = addTest("vertex_array_triangle", { clear_test }, [&](test::Test& test) { vertexArrayTriangleTest(test); });
+    auto vertex_array_line_test = addTest("vertex_array_line", { clear_test }, [&](test::Test& test) { vertexArrayLineTest(test); });
 }
 
 bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor) {
@@ -405,7 +410,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
 
 void GlvisTestModule::viewPanTest(test::Test& test) {
     window.setSize(100, 100);
-    window.setTitle("View pan");
+    window.setTitle("view pan");
     View view;
     view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setView(view);
@@ -440,7 +445,7 @@ void GlvisTestModule::viewPanTest(test::Test& test) {
 
 void GlvisTestModule::viewZoomTest(test::Test& test) {
     window.setSize(100, 100);
-    window.setTitle("View zoom");
+    window.setTitle("view zoom");
     View view;
     view.setPosition(Vector2(5.0f, 5.0f));
     window.setView(view);
@@ -474,7 +479,7 @@ void GlvisTestModule::viewZoomTest(test::Test& test) {
 
 void GlvisTestModule::viewRotateTest(test::Test& test) {
     window.setSize(100, 100);
-    window.setTitle("View rotation");
+    window.setTitle("view rotation");
     View view;
     view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
     window.setView(view);
@@ -516,14 +521,73 @@ void GlvisTestModule::viewRotateTest(test::Test& test) {
     T_COMPARE(image.getPixel(window_width / 2, window_height / 2), Color::Red, &Color::toString);
 }
 
+void GlvisTestModule::vertexArrayTriangleTest(test::Test& test) {
+   window.setSize(100, 100);
+   window.setTitle("vertex array triangle");
+   View view;
+   view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+   window.setView(view);
+   window.clear(Color::Black);
+
+   // Render a triangle
+   VertexArray triangle(PrimitiveType::Triangles, 3);
+   triangle[0] = Vertex(Vector2(0, 0), Color::Red, Vector2(0, 0));
+   triangle[1] = Vertex(Vector2(10, 0), Color::Red, Vector2(0, 0));
+   triangle[2] = Vertex(Vector2(5, 10), Color::Red, Vector2(0, 0));
+   triangle.syncBuffer();
+   window.draw(triangle);
+   window.display();
+
+   // Check that the triangle is rendered correctly
+   Image image = window.readPixels();
+   T_COMPARE(image.getPixel(5, 5), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(2, 2), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(8, 2), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(0, 10), Color::Black, &Color::toString);
+   T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
+   T_COMPARE(image.getPixel(15, 15), Color::Black, &Color::toString);
+}
+
+void GlvisTestModule::vertexArrayLineTest(test::Test& test) {
+   window.setSize(100, 100);
+   window.setTitle("vertex array line");
+   View view;
+   view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+   window.setView(view);
+   window.clear(Color::Black);
+
+   // Render a line
+   VertexArray line(PrimitiveType::Lines, 2);
+   line[0] = Vertex(Vector2(10, 50), Color::Red, Vector2(0, 0));
+   line[1] = Vertex(Vector2(90, 50), Color::Red, Vector2(0, 0));
+   line.syncBuffer();
+   window.draw(line);
+   window.display();
+
+   // Check line pixels
+   Image image = window.readPixels();
+   T_COMPARE(image.getPixel(10, 50), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(50, 50), Color::Red, &Color::toString);
+   T_COMPARE(image.getPixel(89, 50), Color::Red, &Color::toString);
+
+   // Check line edges on the outside
+   T_COMPARE(image.getPixel(9, 50), Color::Black, &Color::toString);
+   T_COMPARE(image.getPixel(90, 50), Color::Black, &Color::toString);
+
+   // Check above and below
+   T_COMPARE(image.getPixel(50, 49), Color::Black, &Color::toString);
+   T_COMPARE(image.getPixel(50, 51), Color::Black, &Color::toString);
+}
+
 int main() {
     test::TestModule root("glvis tests", nullptr);
     root.print_summary_enabled = true;
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: draw lines
-    // TODO: VertexArray test
+    // TODO: replace hardcoded values in tests
+    // TODO: test adding vertices to VertexArray
+    // TODO: add usage hints to VertexBuffer
     // TODO: text rendering
     // TODO: transparent texture rendering
 
