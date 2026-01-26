@@ -2,10 +2,8 @@
 #include "glvis/render_texture.h"
 #include "glvis/rectangle.h"
 #include "glvis/shader.h"
-#include "glvis/shaders/simple_vert.h"
-#include "glvis/shaders/simple_frag.h"
-#include "glvis/shaders/screen_vert.h"
-#include "glvis/shaders/screen_frag.h"
+#include "glvis/shaders/simple.h"
+#include "glvis/shaders/screen.h"
 #include "glvis/image.h"
 #include "glvis/utils.h"
 #include <stdexcept>
@@ -50,7 +48,7 @@ void Window::create(int width, int height, const char* title) {
     }
 
     glfwSetWindowUserPointer(window, this);
-    
+
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSetCursorPosCallback(window, mouseMoveCallbackGLFW);
     glfwSetMouseButtonCallback(window, mouseButtonCallbackGLFW);
@@ -59,7 +57,7 @@ void Window::create(int width, int height, const char* title) {
     defaultShaderUptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag);
     common::defaultShader = defaultShaderUptr.get();
     screenShaderUptr = std::make_unique<Shader>(shaders::screen_vert, shaders::screen_frag);
-    
+
     screenTextureUptr = std::make_unique<RenderTexture>(width, height);
 
     screenRectangleUptr = std::make_unique<Rectangle>(2.0f, 2.0f);
