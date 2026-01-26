@@ -80,20 +80,28 @@ int Window::getHeight() const {
     return currentHeight;
 }
 
-Vector2f glvis::Window::getCenter() const {
+Vector2i Window::getSize() const {
+    return Vector2i(currentWidth, currentHeight);
+}
+
+Vector2f Window::getCenter() const {
     return Vector2f((float)currentWidth / 2.0f, (float)currentHeight / 2.0f);
 }
 
-void glvis::Window::setSize(int width, int height) {
+void Window::setSize(int width, int height) {
     glfwSetWindowSize(window, width, height);
     processWindowSize(width, height);
 }
 
-void glvis::Window::setTitle(const std::string& title) const {
+void Window::setSize(const Vector2i& size) {
+    setSize(size.x, size.y);
+}
+
+void Window::setTitle(const std::string& title) const {
     glfwSetWindowTitle(window, title.c_str());
 }
 
-void glvis::Window::setView(const View& view) {
+void Window::setView(const View& view) {
     this->view = view.getViewMatrix((float)currentWidth, (float)currentHeight);
     invView = view.getInvViewMatrix((float)currentWidth, (float)currentHeight);
     projection = view.getProjectionMatrix((float)currentWidth, (float)currentHeight);
@@ -129,7 +137,7 @@ Image Window::readPixels() const {
     GL_CALL(glReadBuffer(GL_FRONT));
     GL_CALL(glReadPixels(0, 0, currentWidth, currentHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data()));
 
-    // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have top-left
+    // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have (0,0) at top-left
     std::vector<unsigned char> flippedPixels(currentWidth * currentHeight * 4);
     size_t rowSize = currentWidth * 4;
     for (int y = 0; y < currentHeight; ++y) {

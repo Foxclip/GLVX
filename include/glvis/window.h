@@ -25,8 +25,10 @@ public:
     bool isOpen() const;
     int getWidth() const;
     int getHeight() const;
+    Vector2i getSize() const;
     Vector2f getCenter() const;
     void setSize(int width, int height);
+    void setSize(const Vector2i& size);
     void setTitle(const std::string& title) const;
     void setView(const View& view);
     void clear(const Color& color) const;
