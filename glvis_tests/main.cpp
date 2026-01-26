@@ -166,36 +166,44 @@ void GlvisTestModule::circleTest(test::Test& test) {
 }
 
 void GlvisTestModule::moveTest(test::Test& test) {
-   window.setSize(100, 100);
-   window.setTitle("move");
-   View view;
-   view.setPosition(Vector2f(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-   window.setView(view);
-   window.clear(Color::Black);
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
+    window.setTitle("move");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
 
-   // render rect
-   Rectangle rect(10.0f, 10.0f);
-   rect.setColor(Color::Red);
-   window.draw(rect);
-   window.display();
-   Image image = window.readPixels();
-   T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-   T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
-   T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
+    // render rect
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    Rectangle rect(rect_size);
+    rect.setColor(Color::Red);
+    window.draw(rect);
+    window.display();
 
-   // move rect 10 pixels right and down
-   rect.move(10.0f, 10.0f);
-   window.clear(Color::Black);
-   window.draw(rect);
-   window.display();
-   image = window.readPixels();
+    // check initial rectangle position
+    Image image = window.readPixels();
+    Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
+    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
 
-   // check that the rectangle has moved 10 pixels right and down
-   T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
-   T_COMPARE(image.getPixel(9, 9), Color::Black, &Color::toString);
-   T_COMPARE(image.getPixel(10, 10), Color::Red, &Color::toString);
-   T_COMPARE(image.getPixel(19, 19), Color::Red, &Color::toString);
-   T_COMPARE(image.getPixel(20, 20), Color::Black, &Color::toString);
+    // move rect 10 pixels right and down
+    const Vector2f move_offset = Vector2f(10.0f, 10.0f);
+    const Vector2f new_pos = rect.getPosition() + move_offset;
+    rect.move(move_offset);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    
+    // check that the rectangle has moved 10 pixels right and down
+    image = window.readPixels();
+    Vector2i new_pos_int = static_cast<Vector2i>(new_pos);
+    T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(new_pos_int - Vector2i(1, 1)), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(new_pos_int), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(new_pos_int + rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(new_pos_int + rect_size_int), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::rotateTest(test::Test& test) {
