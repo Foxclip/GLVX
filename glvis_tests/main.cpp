@@ -123,7 +123,7 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
     window.setSize(window_width, window_height);
     window.setTitle("rectangle");
     View view;
-    view.setPosition(Vector2(window_width / 2.0f, window_height / 2.0f));
+    view.setPosition(window.getCenter());
     window.setView(view);
     window.clear(Color::Black);
 

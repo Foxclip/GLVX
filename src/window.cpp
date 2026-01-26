@@ -80,6 +80,10 @@ int Window::getHeight() const {
     return currentHeight;
 }
 
+Vector2 glvis::Window::getCenter() const {
+    return Vector2((float)currentWidth / 2.0f, (float)currentHeight / 2.0f);
+}
+
 void glvis::Window::setSize(int width, int height) {
     glfwSetWindowSize(window, width, height);
     processWindowSize(width, height);

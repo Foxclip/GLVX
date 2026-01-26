@@ -25,6 +25,7 @@ public:
     bool isOpen() const;
     int getWidth() const;
     int getHeight() const;
+    Vector2 getCenter() const;
     void setSize(int width, int height);
     void setTitle(const std::string& title) const;
     void setView(const View& view);
