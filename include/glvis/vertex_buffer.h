@@ -23,6 +23,7 @@ public:
     void render(const Matrix4& view, const Matrix4& projection) const;
     Vertex& operator[](std::size_t index);
     const Vertex& operator[](unsigned int index) const;
+    bool syncBuffer();
 
 private:
     bool isInitialized = false;
@@ -32,7 +33,6 @@ private:
     unsigned int VBO = 0;
     unsigned int VAO = 0;
 
-    bool syncBuffer();
     void recreateBuffer(const std::vector<Vertex>& data);
 
 };

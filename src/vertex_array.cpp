@@ -58,6 +58,10 @@ void VertexArray::setTexture(AbstractTexture* texture) {
     this->texture = texture;
 }
 
+void VertexArray::syncBuffer() {
+    vertexBuffer.syncBuffer();
+}
+
 void VertexArray::render(const Matrix4& view, const Matrix4& projection) const {
     if (shader == nullptr) return;
     auto modelMatrix = getModelMatrix();
