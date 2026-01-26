@@ -118,9 +118,8 @@ void GlvisTestModule::clearTest(test::Test& test) {
 }
 
 void GlvisTestModule::rectangleTest(test::Test& test) {
-    const int window_width = 100;
-    const int window_height = 100;
-    window.setSize(window_width, window_height);
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
     window.setTitle("rectangle");
     View view;
     view.setPosition(window.getCenter());
@@ -129,7 +128,6 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
 
     // Render a rectangle
     const Vector2f rect_size = Vector2f(10.0f, 10.0f);
-    const Vector2i rect_size_int(rect_size);
     Rectangle rect(rect_size);
     rect.setColor(Color::Red);
     window.draw(rect);
@@ -138,8 +136,8 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
     // Check that the rectangle is rendered correctly
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(rect_size_int.x - 1, rect_size_int.y - 1), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(rect_size_int.x, rect_size_int.y), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size - Vector2f(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::circleTest(test::Test& test) {
