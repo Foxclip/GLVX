@@ -90,7 +90,9 @@ bool GlvisTestModule::compareImages(test::Test& test, const Image& image1, const
 }
 
 void GlvisTestModule::clearTest(test::Test& test) {
-    window.setSize(100, 100);
+    const int window_width = 100;
+    const int window_height = 100;
+    window.setSize(window_width, window_height);
     window.setTitle("clear");
 
     // Clear the window with red
@@ -98,19 +100,21 @@ void GlvisTestModule::clearTest(test::Test& test) {
     window.display();
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(50, 50), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(99, 99), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(window_width / 2, window_height / 2), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(window_width - 1, window_height - 1), Color::Red, &Color::toString);
 
     // Resize the window
-    window.setSize(200, 200);
+    const int new_window_width = 200;
+    const int new_window_height = 200;
+    window.setSize(new_window_width, new_window_height);
 
     // Clear the window with green
     window.clear(Color::Green);
     window.display();
     image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Green, &Color::toString);
-    T_COMPARE(image.getPixel(50, 50), Color::Green, &Color::toString);
-    T_COMPARE(image.getPixel(99, 99), Color::Green, &Color::toString);
+    T_COMPARE(image.getPixel(new_window_width / 2, new_window_height / 2), Color::Green, &Color::toString);
+    T_COMPARE(image.getPixel(new_window_width - 1, new_window_height - 1), Color::Green, &Color::toString);
 }
 
 void GlvisTestModule::rectangleTest(test::Test& test) {
