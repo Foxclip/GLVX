@@ -531,9 +531,9 @@ void GlvisTestModule::vertexArrayTriangleTest(test::Test& test) {
 
    // Render a triangle
    VertexArray triangle(PrimitiveType::Triangles, 3);
-   triangle[0] = Vertex{Vector2(0, 0), Color::Red, Vector2(0, 0)};
-   triangle[1] = Vertex{Vector2(10, 0), Color::Red, Vector2(0, 0)};
-   triangle[2] = Vertex{Vector2(5, 10), Color::Red, Vector2(0, 0)};
+   triangle[0] = Vertex(Vector2(0, 0), Color::Red, Vector2(0, 0));
+   triangle[1] = Vertex(Vector2(10, 0), Color::Red, Vector2(0, 0));
+   triangle[2] = Vertex(Vector2(5, 10), Color::Red, Vector2(0, 0));
    triangle.syncBuffer();
    window.draw(triangle);
    window.display();
@@ -558,8 +558,8 @@ void GlvisTestModule::vertexArrayLineTest(test::Test& test) {
 
    // Render a line
    VertexArray line(PrimitiveType::Lines, 2);
-   line[0] = Vertex{Vector2(10, 50), Color::Red, Vector2(0, 0)};
-   line[1] = Vertex{Vector2(90, 50), Color::Red, Vector2(0, 0)};
+   line[0] = Vertex(Vector2(10, 50), Color::Red, Vector2(0, 0));
+   line[1] = Vertex(Vector2(90, 50), Color::Red, Vector2(0, 0));
    line.syncBuffer();
    window.draw(line);
    window.display();
@@ -585,6 +585,8 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
+    // TODO: replace hardcoded values in tests
+    // TODO: test adding vertices to VertexArray
     // TODO: add usage hints to VertexBuffer
     // TODO: text rendering
     // TODO: transparent texture rendering
