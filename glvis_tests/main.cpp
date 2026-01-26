@@ -100,7 +100,7 @@ void GlvisTestModule::clearTest(test::Test& test) {
     Image image = window.readPixels();
     Vector2f window_center = window.getCenter();
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(window_center), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(static_cast<Vector2i>(window_center)), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(window_size - Vector2i(1, 1)), Color::Red, &Color::toString);
 
     // Resize the window
@@ -113,7 +113,7 @@ void GlvisTestModule::clearTest(test::Test& test) {
     image = window.readPixels();
     Vector2f new_window_center = window.getCenter();
     T_COMPARE(image.getPixel(0, 0), Color::Green, &Color::toString);
-    T_COMPARE(image.getPixel(new_window_center), Color::Green, &Color::toString);
+    T_COMPARE(image.getPixel(static_cast<Vector2i>(new_window_center)), Color::Green, &Color::toString);
     T_COMPARE(image.getPixel(new_window_size - Vector2i(1, 1)), Color::Green, &Color::toString);
 }
 
@@ -136,8 +136,8 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
     // Check that the rectangle is rendered correctly
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(rect_size - Vector2f(1, 1)), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(rect_size), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(static_cast<Vector2i>(rect_size) - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(static_cast<Vector2i>(rect_size)), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::circleTest(test::Test& test) {

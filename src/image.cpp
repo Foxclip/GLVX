@@ -28,8 +28,4 @@ Color Image::getPixel(const Vector2i& pos) const {
     return getPixel(pos.x, pos.y);
 }
 
-Color Image::getPixel(const Vector2f& pos) const {
-    return getPixel(static_cast<int>(pos.x), static_cast<int>(pos.y));
-}
-
 }
