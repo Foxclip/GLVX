@@ -23,7 +23,6 @@ set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/abstract_texture.cpp
     ${SRC_DIR}/angle.cpp
-    ${SRC_DIR}/camera.cpp
     ${SRC_DIR}/circle.cpp
     ${SRC_DIR}/color.cpp
     ${SRC_DIR}/drawable.cpp
@@ -40,6 +39,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/vector.cpp
     ${SRC_DIR}/vertex_array.cpp
     ${SRC_DIR}/vertex_buffer.cpp
+    ${SRC_DIR}/view.cpp
     ${SRC_DIR}/window.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC

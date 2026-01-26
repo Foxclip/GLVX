@@ -89,10 +89,10 @@ void glvis::Window::setTitle(const std::string& title) const {
     glfwSetWindowTitle(window, title.c_str());
 }
 
-void glvis::Window::setCamera(const Camera& camera) {
-    view = camera.getViewMatrix((float)currentWidth, (float)currentHeight);
-    invView = camera.getInvViewMatrix((float)currentWidth, (float)currentHeight);
-    projection = camera.getProjectionMatrix((float)currentWidth, (float)currentHeight);
+void glvis::Window::setView(const View& view) {
+    this->view = view.getViewMatrix((float)currentWidth, (float)currentHeight);
+    invView = view.getInvViewMatrix((float)currentWidth, (float)currentHeight);
+    projection = view.getProjectionMatrix((float)currentWidth, (float)currentHeight);
 }
 
 void Window::clear(const Color& color) const {

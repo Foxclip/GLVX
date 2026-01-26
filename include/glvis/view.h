@@ -6,9 +6,9 @@
 
 namespace glvis {
 
-const float CAMERA_ZOOM_FACTOR = 1.2f;
+const float VIEW_ZOOM_FACTOR = 1.2f;
 
-class Camera {
+class View {
     public:
     const Vector2& getPosition() const;
     float getZoom() const;

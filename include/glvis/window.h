@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glvis/glvis_common.h"
-#include "glvis/camera.h"
+#include "glvis/view.h"
 #include "glvis/drawable.h"
 #include "glvis/rectangle.h"
 #include "glvis/shader.h"
@@ -27,7 +27,7 @@ public:
     int getHeight() const;
     void setSize(int width, int height);
     void setTitle(const std::string& title) const;
-    void setCamera(const Camera& camera);
+    void setView(const View& view);
     void clear(const Color& color) const;
     void draw(const Drawable& drawable) const;
     void display() const;

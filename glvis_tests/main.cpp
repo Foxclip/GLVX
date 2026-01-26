@@ -31,9 +31,9 @@ private:
     void textureColorMultiplyTest(test::Test& test);
     void textureResizeTest(test::Test& test);
     void windowResizeTest(test::Test& test);
-    void cameraPanTest(test::Test& test);
-    void cameraZoomTest(test::Test& test);
-    void cameraRotationTest(test::Test& test);
+    void viewPanTest(test::Test& test);
+    void viewZoomTest(test::Test& test);
+    void viewRotateTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -49,9 +49,9 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
     auto texture_resize_up_test = addTest("texture_resize", { texture_test }, [&](test::Test& test) { textureResizeTest(test); });
     auto window_resize_test = addTest("window_resize", { rectangle_test }, [&](test::Test& test) { windowResizeTest(test); });
-    auto camera_pan_test = addTest("camera pan", { rectangle_test }, [&](test::Test& test) { cameraPanTest(test); });
-    auto camera_zoom_test = addTest("camera zoom", { rectangle_test }, [&](test::Test& test) { cameraZoomTest(test); });
-    auto camera_rotation_test = addTest("camera rotation", { rectangle_test }, [&](test::Test& test) { cameraRotationTest(test); });
+    auto view_pan_test = addTest("view_pan", { rectangle_test }, [&](test::Test& test) { viewPanTest(test); });
+    auto view_zoom_test = addTest("view_zoom", { rectangle_test }, [&](test::Test& test) { viewZoomTest(test); });
+    auto view_rotate_test = addTest("view_rotate", { rectangle_test }, [&](test::Test& test) { viewRotateTest(test); });
 }
 
 bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor) {
@@ -111,9 +111,9 @@ void GlvisTestModule::clearTest(test::Test& test) {
 void GlvisTestModule::rectangleTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("rectangle");
-    Camera camera;
-    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-    window.setCamera(camera);
+    View view;
+    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setView(view);
     window.clear(Color::Black);
 
     // Render a rectangle
@@ -132,9 +132,9 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
 void GlvisTestModule::circleTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("circle");
-    Camera camera;
-    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-    window.setCamera(camera);
+    View view;
+    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setView(view);
     window.clear(Color::Black);
 
     // Render a circle
@@ -153,9 +153,9 @@ void GlvisTestModule::circleTest(test::Test& test) {
 void GlvisTestModule::moveTest(test::Test& test) {
    window.setSize(100, 100);
    window.setTitle("move");
-   Camera camera;
-   camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-   window.setCamera(camera);
+   View view;
+   view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+   window.setView(view);
    window.clear(Color::Black);
 
    // render rect
@@ -186,9 +186,9 @@ void GlvisTestModule::moveTest(test::Test& test) {
 void GlvisTestModule::rotateTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("rotate");
-    Camera camera;
-    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-    window.setCamera(camera);
+    View view;
+    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setView(view);
     window.clear(Color::Black);
 
     // render rect
@@ -204,8 +204,8 @@ void GlvisTestModule::rotateTest(test::Test& test) {
     T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 
     // rotate rect 45 degrees
-    camera.setPosition(Vector2());
-    window.setCamera(camera);
+    view.setPosition(Vector2());
+    window.setView(view);
     rect.setOrigin(5.0f, 5.0f);
     rect.setRotation(degrees(45.0f));
     window.clear(Color::Black);
@@ -233,9 +233,9 @@ void GlvisTestModule::rotateTest(test::Test& test) {
 void GlvisTestModule::scaleTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("scale");
-    Camera camera;
-    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-    window.setCamera(camera);
+    View view;
+    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setView(view);
     window.clear(Color::Black);
 
     // render rect
@@ -249,8 +249,8 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 
     // scale rect by factor 2
-    camera.setPosition(Vector2());
-    window.setCamera(camera);
+    view.setPosition(Vector2());
+    window.setView(view);
     rect.setOrigin(5.0f, 5.0f);
     rect.setScale(Vector2(2.0f, 2.0f));
     window.clear(Color::Black);
@@ -269,9 +269,9 @@ void GlvisTestModule::scaleTest(test::Test& test) {
 void GlvisTestModule::textureTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("texture");
-    Camera camera;
-    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-    window.setCamera(camera);
+    View view;
+    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setView(view);
     window.clear(Color::Black);
 
     // Create a 2x2 texture
@@ -301,9 +301,9 @@ void GlvisTestModule::textureTest(test::Test& test) {
 void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("texture color multiply");
-    Camera camera;
-    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-    window.setCamera(camera);
+    View view;
+    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setView(view);
     window.clear(Color::Black);
 
     // Render a rectangle with a texture
@@ -369,9 +369,9 @@ void GlvisTestModule::textureResizeTest(test::Test& test) {
 void GlvisTestModule::windowResizeTest(test::Test& test) {
     window.setSize(100, 100);
     window.setTitle("window resize");
-    Camera camera;
-    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-    window.setCamera(camera);
+    View view;
+    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setView(view);
     window.clear(Color::Black);
 
     // Draw a 10x10 red rectangle
@@ -383,8 +383,8 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
 
     // Resize to 200x200
     window.setSize(200, 200);
-    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-    window.setCamera(camera);
+    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
@@ -392,8 +392,8 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
 
     // Resize back to 100x100
     window.setSize(100, 100);
-    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-    window.setCamera(camera);
+    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
@@ -403,12 +403,12 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
     T_WRAP_CONTAINER(compareImages(test, finalImage, initialImage));
 }
 
-void GlvisTestModule::cameraPanTest(test::Test& test) {
+void GlvisTestModule::viewPanTest(test::Test& test) {
     window.setSize(100, 100);
-    window.setTitle("camera pan");
-    Camera camera;
-    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-    window.setCamera(camera);
+    window.setTitle("View pan");
+    View view;
+    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setView(view);
     window.clear(Color::Black);
 
     // render rect
@@ -421,16 +421,16 @@ void GlvisTestModule::cameraPanTest(test::Test& test) {
     T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 
-    // move camera 10 pixels up and left
-    Vector2 camera_pos = camera.getPosition();
-    camera.setPosition(camera.getPosition() + Vector2(-10.0f, -10.0f));
-    window.setCamera(camera);
+    // move View 10 pixels up and left
+    Vector2 camera_pos = view.getPosition();
+    view.setPosition(view.getPosition() + Vector2(-10.0f, -10.0f));
+    window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
     image = window.readPixels();
 
-    // check that the camera has panned 10 pixels up and left
+    // check that the View has panned 10 pixels up and left
     T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
     T_COMPARE(image.getPixel(9, 9), Color::Black, &Color::toString);
     T_COMPARE(image.getPixel(10, 10), Color::Red, &Color::toString);
@@ -438,12 +438,12 @@ void GlvisTestModule::cameraPanTest(test::Test& test) {
     T_COMPARE(image.getPixel(20, 20), Color::Black, &Color::toString);
 }
 
-void GlvisTestModule::cameraZoomTest(test::Test& test) {
+void GlvisTestModule::viewZoomTest(test::Test& test) {
     window.setSize(100, 100);
-    window.setTitle("camera zoom");
-    Camera camera;
-    camera.setPosition(Vector2(5.0f, 5.0f));
-    window.setCamera(camera);
+    window.setTitle("View zoom");
+    View view;
+    view.setPosition(Vector2(5.0f, 5.0f));
+    window.setView(view);
     window.clear(Color::Black);
 
     // render rect
@@ -457,14 +457,14 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
     T_WRAP_CONTAINER(checkPixelColor(test, image, 45, 45, 55, 55, Color::Red));
 
     // zoom in by factor 2
-    camera.setZoom(2.0f);
-    window.setCamera(camera);
+    view.setZoom(2.0f);
+    window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
     image = window.readPixels();
 
-    // check that the camera has zoomed in
+    // check that the View has zoomed in
     T_WRAP_CONTAINER(checkPixelColor(test, image, 40, 40, 60, 60, Color::Red));
 
     // check outside
@@ -472,12 +472,12 @@ void GlvisTestModule::cameraZoomTest(test::Test& test) {
     T_COMPARE(image.getPixel(60, 60), Color::Black, &Color::toString);
 }
 
-void GlvisTestModule::cameraRotationTest(test::Test& test) {
+void GlvisTestModule::viewRotateTest(test::Test& test) {
     window.setSize(100, 100);
-    window.setTitle("camera rotation");
-    Camera camera;
-    camera.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
-    window.setCamera(camera);
+    window.setTitle("View rotation");
+    View view;
+    view.setPosition(Vector2(window.getWidth() / 2.0f, window.getHeight() / 2.0f));
+    window.setView(view);
     window.clear(Color::Black);
 
     // render rect
@@ -490,10 +490,10 @@ void GlvisTestModule::cameraRotationTest(test::Test& test) {
     T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 
-    // rotate camera 45 degrees
-    camera.setPosition(Vector2(5.0f, 5.0f));
-    camera.setRotation(degrees(45.0f));
-    window.setCamera(camera);
+    // rotate View 45 degrees
+    view.setPosition(Vector2(5.0f, 5.0f));
+    view.setRotation(degrees(45.0f));
+    window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
@@ -522,7 +522,6 @@ int main() {
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
 
-    // TODO: add move method to Transformable
     // TODO: draw lines
     // TODO: VertexArray test
     // TODO: text rendering
