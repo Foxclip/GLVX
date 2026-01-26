@@ -90,33 +90,31 @@ bool GlvisTestModule::compareImages(test::Test& test, const Image& image1, const
 }
 
 void GlvisTestModule::clearTest(test::Test& test) {
-    const int window_width = 100;
-    const int window_height = 100;
-    window.setSize(window_width, window_height);
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
     window.setTitle("clear");
 
     // Clear the window with red
     window.clear(Color::Red);
     window.display();
     Image image = window.readPixels();
+    Vector2f window_center = window.getCenter();
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    Vector2i center = Vector2i(window.getCenter());
-    T_COMPARE(image.getPixel(center.x, center.y), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(window_width - 1, window_height - 1), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(window_center), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(window_size - Vector2i(1, 1)), Color::Red, &Color::toString);
 
     // Resize the window
-    const int new_window_width = 200;
-    const int new_window_height = 200;
-    window.setSize(new_window_width, new_window_height);
+    const Vector2i new_window_size = Vector2i(200, 200);
+    window.setSize(new_window_size);
 
     // Clear the window with green
     window.clear(Color::Green);
     window.display();
     image = window.readPixels();
+    Vector2f new_window_center = window.getCenter();
     T_COMPARE(image.getPixel(0, 0), Color::Green, &Color::toString);
-    Vector2i new_center = Vector2i(window.getCenter());
-    T_COMPARE(image.getPixel(new_center.x, new_center.y), Color::Green, &Color::toString);
-    T_COMPARE(image.getPixel(new_window_width - 1, new_window_height - 1), Color::Green, &Color::toString);
+    T_COMPARE(image.getPixel(new_window_center), Color::Green, &Color::toString);
+    T_COMPARE(image.getPixel(new_window_size - Vector2i(1, 1)), Color::Green, &Color::toString);
 }
 
 void GlvisTestModule::rectangleTest(test::Test& test) {
