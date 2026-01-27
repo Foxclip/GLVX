@@ -940,19 +940,36 @@ void GlvisTestModule::renderStatesTransformTest(test::Test& test) {
 
     // Render a rectangle with translation using RenderStates
     const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
+    const Vector2f transform_offset = Vector2f(10.0f, 10.0f);
+    const Vector2i transform_offset_int = static_cast<Vector2i>(transform_offset);
+    const Color rect_color = Color::Red;
     Rectangle rect(rect_size);
-    rect.setColor(Color::Red);
+    rect.setColor(rect_color);
     RenderStates states;
-    glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 0.0f));
+    glm::mat4 transform = glm::translate(
+        glm::mat4(1.0f),
+        glm::vec3(transform_offset.x, transform_offset.y, 0.0f)
+    );
     states.transform = from_glmMat4(transform);
     window.draw(rect, states);
     window.display();
 
     // Check that the rectangle is rendered at translated position
     Image image = window.readPixels();
-    T_WRAP_CONTAINER(checkPixelColor(test, image, 10, 10, 20, 20, Color::Red));
-    T_COMPARE(image.getPixel(9, 9), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(20, 20), Color::Black, &Color::toString);
+    const Vector2i rect_start = transform_offset_int;
+    const Vector2i rect_end = rect_start + rect_size_int;
+    T_WRAP_CONTAINER(checkPixelColor(
+        test,
+        image,
+        rect_start.x,
+        rect_start.y,
+        rect_end.x,
+        rect_end.y,
+        rect_color
+    ));
+    T_COMPARE(image.getPixel(rect_start - Vector2i(1, 1)), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(rect_end), Color::Black, &Color::toString);
 }
 
 int main() {
@@ -961,7 +978,9 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: add RenderStates
+    // TODO: RenderStates texture test
+    // TODO: RenderStates shader test
+    // TODO: replace glm objects in renderStatesTransformTest with glvis objects
     // TODO: remove syncBuffer from VertexBuffer and make update method handle partial updates
     // TODO: text rendering
     // TODO: transparent texture rendering
