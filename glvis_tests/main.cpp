@@ -930,8 +930,8 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: make VertexArray upload data on every render and remove syncBuffer
     // TODO: add RenderStates
+    // TODO: remove syncBuffer from VertexBuffer and make update method handle partial updates
     // TODO: text rendering
     // TODO: transparent texture rendering
 

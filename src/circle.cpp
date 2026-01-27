@@ -51,16 +51,18 @@ void Circle::setTexture(AbstractTexture* texture) {
     this->texture = texture;
 }
 
-void Circle::render(const Matrix4& view, const Matrix4& projection) const {
+void Circle::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
     START_TRY
-    if (shader == nullptr) throw std::runtime_error("Shader not set");
-    auto modelMatrix = getModelMatrix();
-    shader->use();
-    shader->setMat4("model", modelMatrix);
-    shader->setMat4("view", view);
-    shader->setMat4("projection", projection);
-    shader->setVec4("color", Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-    renderBase(shader, texture, view, projection);
+    Shader* renderShader = states.shader ? states.shader : shader;
+    if (renderShader == nullptr) throw std::runtime_error("Shader not set");
+    AbstractTexture* renderTexture = states.texture ? states.texture : texture;
+    renderShader->use();
+    Matrix4 combinedModel = states.transform * getModelMatrix();
+    renderShader->setMat4("model", combinedModel);
+    renderShader->setMat4("view", view);
+    renderShader->setMat4("projection", projection);
+    renderShader->setVec4("color", Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+    renderBase(renderShader, renderTexture, combinedModel, view, projection);
     END_TRY
 }
 

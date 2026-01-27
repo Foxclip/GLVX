@@ -32,7 +32,7 @@ public:
     void setTitle(const std::string& title) const;
     void setView(const View& view);
     void clear(const Color& color) const;
-    void draw(const Drawable& drawable) const;
+    void draw(const Drawable& drawable, const RenderStates& states = RenderStates()) const;
     void display() const;
     Image readPixels() const;
     Vector2f worldToScreen(float x, float y) const;
