@@ -534,10 +534,7 @@ void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
     };
     const Vector2i texture_size = Vector2i(2, 2);
     Texture tex(texture_data, texture_size.x, texture_size.y);
-    const Vector2f rect_size = Vector2f(
-        static_cast<float>(texture_size.x),
-        static_cast<float>(texture_size.y)
-    );
+    const Vector2f rect_size = static_cast<Vector2f>(texture_size);
     Rectangle rect(rect_size);
     rect.setTexture(&tex);
     rect.setColor(Color(64, 128, 192, 32));
