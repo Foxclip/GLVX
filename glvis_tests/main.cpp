@@ -10,6 +10,9 @@
 #include "glvis/texture.h"
 #include "glvis/angle.h"
 #include "glvis/vertex_array.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include "glvis/utils.h"
 
 using namespace glvis;
 
@@ -42,6 +45,7 @@ private:
     void vertexArrayTriangleTest(test::Test& test);
     void vertexArrayLineTest(test::Test& test);
     void vertexArrayModifyTest(test::Test& test);
+    void renderStatesTransformTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -66,6 +70,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto vertex_array_triangle_test = addTest("vertex_array_triangle", { clear_test }, [&](test::Test& test) { vertexArrayTriangleTest(test); });
     auto vertex_array_line_test = addTest("vertex_array_line", { clear_test }, [&](test::Test& test) { vertexArrayLineTest(test); });
     auto vertex_array_modify_test = addTest("vertex_array_modify", { vertex_array_triangle_test }, [&](test::Test& test) { vertexArrayModifyTest(test); });
+    auto render_states_transform_test = addTest("render_states_transform", { rectangle_test }, [&](test::Test& test) { renderStatesTransformTest(test); });
 }
 
 bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor) {
@@ -922,6 +927,32 @@ void GlvisTestModule::vertexArrayModifyTest(test::Test& test) {
     // Check final image matches initial
     Image final_image = window.readPixels();
     T_WRAP_CONTAINER(compareImages(test, final_image, initial_image));
+}
+
+void GlvisTestModule::renderStatesTransformTest(test::Test& test) {
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
+    window.setTitle("render states transform");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    // Render a rectangle with translation using RenderStates
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    Rectangle rect(rect_size);
+    rect.setColor(Color::Red);
+    RenderStates states;
+    glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 0.0f));
+    states.transform = from_glmMat4(transform);
+    window.draw(rect, states);
+    window.display();
+
+    // Check that the rectangle is rendered at translated position
+    Image image = window.readPixels();
+    T_WRAP_CONTAINER(checkPixelColor(test, image, 10, 10, 20, 20, Color::Red));
+    T_COMPARE(image.getPixel(9, 9), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(20, 20), Color::Black, &Color::toString);
 }
 
 int main() {
