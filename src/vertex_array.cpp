@@ -77,13 +77,37 @@ const VertexBuffer& VertexArray::getVertexBuffer() const {
 }
 
 Vector2f VertexArray::getBoundsMin() const {
-    // TODO: Implement bounds calculation
-    return Vector2f(0.0f, 0.0f);
+    if (vertexBuffer.getVertexCount() == 0) {
+        return Vector2f(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+    }
+
+    float minX = std::numeric_limits<float>::max();
+    float minY = std::numeric_limits<float>::max();
+
+    for (std::size_t i = 0; i < vertexBuffer.getVertexCount(); ++i) {
+        const Vertex& vertex = (*this)[i];
+        if (vertex.position.x < minX) minX = vertex.position.x;
+        if (vertex.position.y < minY) minY = vertex.position.y;
+    }
+
+    return Vector2f(minX, minY);
 }
 
 Vector2f VertexArray::getBoundsMax() const {
-    // TODO: Implement bounds calculation
-    return Vector2f(0.0f, 0.0f);
+    if (vertexBuffer.getVertexCount() == 0) {
+        return Vector2f(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
+    }
+
+    float maxX = std::numeric_limits<float>::lowest();
+    float maxY = std::numeric_limits<float>::lowest();
+
+    for (std::size_t i = 0; i < vertexBuffer.getVertexCount(); ++i) {
+        const Vertex& vertex = (*this)[i];
+        if (vertex.position.x > maxX) maxX = vertex.position.x;
+        if (vertex.position.y > maxY) maxY = vertex.position.y;
+    }
+
+    return Vector2f(maxX, maxY);
 }
 
 Matrix4 VertexArray::getModelMatrix() const {
