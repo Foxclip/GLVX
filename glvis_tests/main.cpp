@@ -26,9 +26,11 @@ private:
     void rectangleTest(test::Test& test);
     void circleTest(test::Test& test);
     void moveTest(test::Test& test);
-    void rotateTest(test::Test& test);
-    void scaleTest(test::Test& test);
     void setOriginTest(test::Test& test);
+    void rotateTopLeftTest(test::Test& test);
+    void rotateCenterTest(test::Test& test);
+    void scaleTopLeftTest(test::Test& test);
+    void scaleCenterTest(test::Test& test);
     void textureTest(test::Test& test);
     void textureColorMultiplyTest(test::Test& test);
     void textureResizeTest(test::Test& test);
@@ -48,9 +50,11 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto rectangle_test = addTest("rectangle", { clear_test }, [&](test::Test& test) { rectangleTest(test); });
     auto circle_test = addTest("circle", { clear_test }, [&](test::Test& test) { circleTest(test); });
     auto move_test = addTest("move", { rectangle_test }, [&](test::Test& test) { moveTest(test); });
-    auto rotate_test = addTest("rotate", { rectangle_test }, [&](test::Test& test) { rotateTest(test); });
-    auto scale_test = addTest("scale", { rectangle_test }, [&](test::Test& test) { scaleTest(test); });
     auto set_origin_test = addTest("set_origin", { rectangle_test }, [&](test::Test& test) { setOriginTest(test); });
+    auto rotate_rop_left_test = addTest("rotate_top_left", { set_origin_test }, [&](test::Test& test) { rotateTopLeftTest(test); });
+    auto rotate_center_test = addTest("rotate_center", { set_origin_test }, [&](test::Test& test) { rotateCenterTest(test); });
+    auto scale_top_left_test = addTest("scale_top_left", { set_origin_test }, [&](test::Test& test) { scaleTopLeftTest(test); });
+    auto scale_center_test = addTest("scale_center", { set_origin_test }, [&](test::Test& test) { scaleCenterTest(test); });
     auto texture_test = addTest("texture", { rectangle_test }, [&](test::Test& test) { textureTest(test); });
     auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
     auto texture_resize_up_test = addTest("texture_resize", { texture_test }, [&](test::Test& test) { textureResizeTest(test); });
@@ -210,10 +214,55 @@ void GlvisTestModule::moveTest(test::Test& test) {
     T_COMPARE(image.getPixel(new_pos_int + rect_size_int), Color::Black, &Color::toString);
 }
 
-void GlvisTestModule::rotateTest(test::Test& test) {
+void GlvisTestModule::setOriginTest(test::Test& test) {
     const Vector2i window_size = Vector2i(100, 100);
     window.setSize(window_size);
-    window.setTitle("rotate");
+    window.setTitle("set origin");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    // render rect with default origin (0,0)
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
+    const Vector2f rect_half_size = rect_size / 2.0f;
+    const Vector2i rect_half_size_int = static_cast<Vector2i>(rect_half_size);
+    Rectangle rect(rect_size);
+    rect.setColor(Color::Red);
+    window.draw(rect);
+    window.display();
+
+    // check initial rectangle position
+    Image image = window.readPixels();
+    T_WRAP_CONTAINER(checkPixelColor(test, image, 0, 0, rect_size_int.x, rect_size_int.y, Color::Red));
+    T_COMPARE(image.getPixel(rect_size_int + Vector2i(1, 1)), Color::Black, &Color::toString);
+
+    // set origin to (-10,-10)
+    rect.setOrigin(-rect_size);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+
+    // check that the rectangle has visually moved right and down
+    image = window.readPixels();
+    T_WRAP_CONTAINER(checkPixelColor(
+        test,
+        image,
+        rect_size_int.x,
+        rect_size_int.y,
+        rect_size_int.x * 2,
+        rect_size_int.y * 2,
+        Color::Red
+    ));
+    T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int * 2 + Vector2i(1, 1)), Color::Black, &Color::toString);
+}
+
+void GlvisTestModule::rotateTopLeftTest(test::Test& test) {
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
+    window.setTitle("rotate without origin change");
     View view;
     Vector2f window_center = window.getCenter();
     Vector2i window_center_int = static_cast<Vector2i>(window_center);
@@ -237,8 +286,8 @@ void GlvisTestModule::rotateTest(test::Test& test) {
     T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
 
     // center rect on the screen
-        view.setPosition(Vector2f());
-        window.setView(view);
+    view.setPosition(Vector2f());
+    window.setView(view);
 
     // rotate rect 45 degrees around top-left
     const Angle rotation_angle = degrees(45.0f);
@@ -257,10 +306,41 @@ void GlvisTestModule::rotateTest(test::Test& test) {
     T_COMPARE(image.getPixel(pixel_red_1), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(pixel_red_2), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(pixel_black), Color::Black, &Color::toString);
+}
+
+void GlvisTestModule::rotateCenterTest(test::Test& test) {
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
+    window.setTitle("rotate with origin change");
+    View view;
+    Vector2f window_center = window.getCenter();
+    Vector2i window_center_int = static_cast<Vector2i>(window_center);
+    view.setPosition(window_center);
+    window.setView(view);
+    window.clear(Color::Black);
+
+    // render rect
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    const Vector2f rect_half_size = rect_size / 2.0f;
+    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
+    Rectangle rect(rect_size);
+    rect.setColor(Color::Red);
+    window.draw(rect);
+    window.display();
+
+    // check initial rectangle position
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
+
+    // center rect on the screen
+    view.setPosition(Vector2f());
+    window.setView(view);
 
     // rotate rect 45 degrees around center
     rect.setOrigin(rect_half_size);
-    rect.setRotation(rotation_angle);
+    rect.setRotation(degrees(45.0f));
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
@@ -279,10 +359,10 @@ void GlvisTestModule::rotateTest(test::Test& test) {
     T_COMPARE(image.getPixel(window_center_int), Color::Red, &Color::toString);
 }
 
-void GlvisTestModule::scaleTest(test::Test& test) {
+void GlvisTestModule::scaleTopLeftTest(test::Test& test) {
     const Vector2i window_size = Vector2i(100, 100);
     window.setSize(window_size);
-    window.setTitle("scale");
+    window.setTitle("scale without origin change");
     View view;
     Vector2f window_center = window.getCenter();
     Vector2i window_center_int = static_cast<Vector2i>(window_center);
@@ -333,17 +413,48 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     // check outside
     T_COMPARE(image.getPixel(30, 30), Color::Black, &Color::toString);
     T_COMPARE(image.getPixel(80, 80), Color::Black, &Color::toString);
+}
+
+void GlvisTestModule::scaleCenterTest(test::Test& test) {
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
+    window.setTitle("scale with origin change");
+    View view;
+    Vector2f window_center = window.getCenter();
+    Vector2i window_center_int = static_cast<Vector2i>(window_center);
+    view.setPosition(window_center);
+    window.setView(view);
+    window.clear(Color::Black);
+
+    // render rect
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    const Vector2f rect_half_size = rect_size / 2.0f;
+    Rectangle rect(rect_size);
+    rect.setColor(Color::Red);
+    window.draw(rect);
+    window.display();
+
+    // check initial rectangle position
+    Image image = window.readPixels();
+    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
+    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
+
+    // center rect on the screen
+    view.setPosition(Vector2f());
+    window.setView(view);
 
     // scale rect around center
     rect.setOrigin(rect_half_size);
-    rect.setScale(scale_factor);
+    rect.setScale(Vector2f(2.0f, 2.0f));
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
-    image = window.readPixels();
 
     // check that the rectangle has scaled
-    const Vector2i half_scaled_size(rect_size_int / 2);
+    image = window.readPixels();
+    const Vector2i half_scaled_size(rect_size_int);
     const Vector2i scaled_rect_start = window_center_int - half_scaled_size;
     const Vector2i scaled_rect_end = window_center_int + half_scaled_size;
     T_WRAP_CONTAINER(checkPixelColor(
@@ -359,50 +470,6 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     // check outside
     T_COMPARE(image.getPixel(30, 30), Color::Black, &Color::toString);
     T_COMPARE(image.getPixel(80, 80), Color::Black, &Color::toString);
-}
-
-void GlvisTestModule::setOriginTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
-    window.setTitle("set origin");
-    View view;
-    view.setPosition(window.getCenter());
-    window.setView(view);
-    window.clear(Color::Black);
-
-    // render rect with default origin (0,0)
-    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
-    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
-    const Vector2f rect_half_size = rect_size / 2.0f;
-    const Vector2i rect_half_size_int = static_cast<Vector2i>(rect_half_size);
-    Rectangle rect(rect_size);
-    rect.setColor(Color::Red);
-    window.draw(rect);
-    window.display();
-
-    // check initial rectangle position
-    Image image = window.readPixels();
-    T_WRAP_CONTAINER(checkPixelColor(test, image, 0, 0, rect_size_int.x, rect_size_int.y, Color::Red));
-    T_COMPARE(image.getPixel(rect_size_int + Vector2i(1, 1)), Color::Black, &Color::toString);
-
-    // set origin to (-10,-10)
-    rect.setOrigin(-rect_size);
-    window.clear(Color::Black);
-    window.draw(rect);
-    window.display();
-
-    image = window.readPixels();
-    T_WRAP_CONTAINER(checkPixelColor(
-        test,
-        image,
-        rect_size_int.x,
-        rect_size_int.y,
-        rect_size_int.x * 2,
-        rect_size_int.y * 2,
-        Color::Red
-    ));
-    T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(rect_size_int * 2 + Vector2i(1, 1)), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::textureTest(test::Test& test) {
