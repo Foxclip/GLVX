@@ -8,13 +8,14 @@
 
 namespace glvis {
 
-VertexArray::VertexArray() {
+VertexArray::VertexArray() : vertexBuffer(Usage::StreamDraw) {
     shader = common::defaultShader;
 }
 
-VertexArray::VertexArray(PrimitiveType type, std::size_t vertexCount) {
-    vertexBuffer.create(vertexCount);
-    vertexBuffer.setPrimitiveType(type);
+VertexArray::VertexArray(PrimitiveType type, std::size_t vertexCount) : vertexBuffer(type, Usage::StreamDraw) {
+    if (vertexCount > 0) {
+        vertexBuffer.create(vertexCount);
+    }
     shader = common::defaultShader;
 }
 

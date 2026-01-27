@@ -16,6 +16,9 @@ enum class Usage {
 class VertexBuffer {
 public:
     VertexBuffer();
+    VertexBuffer(PrimitiveType type);
+    VertexBuffer(Usage usage);
+    VertexBuffer(PrimitiveType type, Usage usage);
     ~VertexBuffer();
     bool create(std::size_t vertexCount);
     std::size_t getVertexCount() const;
