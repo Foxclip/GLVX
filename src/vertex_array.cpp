@@ -8,7 +8,7 @@
 
 namespace glvis {
 
-VertexArray::VertexArray() { 
+VertexArray::VertexArray() {
     shader = common::defaultShader;
 }
 
@@ -30,7 +30,7 @@ Vertex& VertexArray::operator[](std::size_t index) {
     return vertexBuffer[index];
 }
 
-const Vertex& VertexArray::operator[](unsigned int index) const {
+const Vertex& VertexArray::operator[](std::size_t index) const {
     return vertexBuffer[index];
 }
 
@@ -58,10 +58,6 @@ void VertexArray::setTexture(AbstractTexture* texture) {
     this->texture = texture;
 }
 
-void VertexArray::syncBuffer() {
-    vertexBuffer.syncBuffer();
-}
-
 void VertexArray::render(const Matrix4& view, const Matrix4& projection) const {
     if (shader == nullptr) return;
     auto modelMatrix = getModelMatrix();
@@ -69,6 +65,7 @@ void VertexArray::render(const Matrix4& view, const Matrix4& projection) const {
     shader->setMat4("model", modelMatrix);
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
+    vertexBuffer.syncBuffer();
     renderBase(shader, texture, view, projection);
 }
 

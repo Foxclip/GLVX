@@ -115,7 +115,7 @@ Vertex& VertexBuffer::operator[](std::size_t index) {
     return vertices[index];
 }
 
-const Vertex& VertexBuffer::operator[](unsigned int index) const {
+const Vertex& VertexBuffer::operator[](std::size_t index) const {
     return vertices[index];
 }
 

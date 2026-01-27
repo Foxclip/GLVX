@@ -19,20 +19,19 @@ public:
     Vector2f getBoundsMin() const;
     Vector2f getBoundsMax() const;
     Vertex& operator[](std::size_t index);
-    const Vertex& operator[](unsigned int index) const;
+    const Vertex& operator[](std::size_t index) const;
     void clear();
     void resize(unsigned int newSize);
     void append(const Vertex& vertex);
     void setPrimitiveType(PrimitiveType type);
     void setShader(Shader* shader);
     void setTexture(AbstractTexture* texture);
-    void syncBuffer();
     void render(const Matrix4& view, const Matrix4& projection) const override;
     const VertexBuffer& getVertexBuffer() const override;
     Matrix4 getModelMatrix() const override;
 
 private:
-    VertexBuffer vertexBuffer;
+    mutable VertexBuffer vertexBuffer;
     Shader* shader = nullptr;
     AbstractTexture* texture = nullptr;
 };

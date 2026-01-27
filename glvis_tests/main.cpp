@@ -801,7 +801,6 @@ void GlvisTestModule::vertexArrayTriangleTest(test::Test& test) {
    triangle[0] = Vertex(triangle_base_left, Color::Red, Vector2f(0, 0));
    triangle[1] = Vertex(triangle_base_right, Color::Red, Vector2f(0, 0));
    triangle[2] = Vertex(triangle_top, Color::Red, Vector2f(0, 0));
-   triangle.syncBuffer();
    window.draw(triangle);
    window.display();
 
@@ -838,7 +837,6 @@ void GlvisTestModule::vertexArrayLineTest(test::Test& test) {
    const Vector2f line_end = Vector2f(90, 50);
    line[0] = Vertex(line_start, Color::Red, Vector2f(0, 0));
    line[1] = Vertex(line_end, Color::Red, Vector2f(0, 0));
-   line.syncBuffer();
    window.draw(line);
    window.display();
 
@@ -881,7 +879,6 @@ void GlvisTestModule::vertexArrayModifyTest(test::Test& test) {
     vertex_array[0] = Vertex(triangle_base_left, Color::Red, Vector2f(0, 0));
     vertex_array[1] = Vertex(triangle_base_right, Color::Red, Vector2f(0, 0));
     vertex_array[2] = Vertex(triangle_top, Color::Red, Vector2f(0, 0));
-    vertex_array.syncBuffer();
     window.draw(vertex_array);
     window.display();
 
@@ -901,7 +898,6 @@ void GlvisTestModule::vertexArrayModifyTest(test::Test& test) {
     vertex_array.append(Vertex(second_triangle_base_left, Color::Red, Vector2f(0, 0)));
     vertex_array.append(Vertex(second_triangle_base_right, Color::Red, Vector2f(0, 0)));
     vertex_array.append(Vertex(second_triangle_top, Color::Red, Vector2f(0, 0)));
-    vertex_array.syncBuffer();
     window.clear(Color::Black);
     window.draw(vertex_array);
     window.display();
@@ -919,7 +915,6 @@ void GlvisTestModule::vertexArrayModifyTest(test::Test& test) {
 
     // Delete the added vertices (removing the second triangle)
     vertex_array.resize(3);
-    vertex_array.syncBuffer();
     window.clear(Color::Black);
     window.draw(vertex_array);
     window.display();
@@ -935,9 +930,8 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: test rotation and scale without changing origin
-    // TODO: add RenderStates
     // TODO: make VertexArray upload data on every render and remove syncBuffer
+    // TODO: add RenderStates
     // TODO: text rendering
     // TODO: transparent texture rendering
 
