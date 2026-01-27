@@ -64,11 +64,12 @@ void VertexArray::render(const Matrix4& view, const Matrix4& projection, const R
     if (renderShader == nullptr) return;
     AbstractTexture* renderTexture = states.texture ? states.texture : texture;
     renderShader->use();
-    renderShader->setMat4("model", states.transform);
+    Matrix4 combinedModel = states.transform * getModelMatrix();
+    renderShader->setMat4("model", combinedModel);
     renderShader->setMat4("view", view);
     renderShader->setMat4("projection", projection);
     vertexBuffer.syncBuffer();
-    renderBase(renderShader, renderTexture, states.transform, view, projection);
+    renderBase(renderShader, renderTexture, combinedModel, view, projection);
 }
 
 const VertexBuffer& VertexArray::getVertexBuffer() const {
