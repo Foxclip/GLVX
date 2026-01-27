@@ -390,34 +390,33 @@ void GlvisTestModule::scaleTopLeftTest(test::Test& test) {
     T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
 
-    // scale rect around top-left
+    // center rect on the screen
     view.setPosition(Vector2f());
     window.setView(view);
-    const Vector2f scale_factor = Vector2f(2.0f, 2.0f);
-    const int scaled_size = static_cast<int>(rect_size.x * scale_factor.x);
-    rect.setOrigin(Vector2f(0.0f, 0.0f));
-    rect.setScale(scale_factor);
+
+    // scale rect around top-left
+    rect.setScale(2.0f, 2.0f);
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
 
     // check that the rectangle has scaled
     image = window.readPixels();
-    const Vector2i scaled_rect_start_no_origin = Vector2i(50, 50);
-    const Vector2i scaled_rect_end_no_origin = Vector2i(70, 70);
+    const Vector2i scaled_rect_start = window_center_int;
+    const Vector2i scaled_rect_end = window_center_int + rect_size_int * 2;
     T_WRAP_CONTAINER(checkPixelColor(
         test,
         image,
-        scaled_rect_start_no_origin.x,
-        scaled_rect_start_no_origin.y,
-        scaled_rect_end_no_origin.x,
-        scaled_rect_end_no_origin.y,
+        scaled_rect_start.x,
+        scaled_rect_start.y,
+        scaled_rect_end.x,
+        scaled_rect_end.y,
         Color::Red
     ));
 
     // check outside
-    T_COMPARE(image.getPixel(30, 30), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(80, 80), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(scaled_rect_start - Vector2i(1, 1)), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(scaled_rect_end), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::scaleCenterTest(test::Test& test) {
