@@ -299,7 +299,7 @@ void GlvisTestModule::rotateTopLeftTest(test::Test& test) {
     // check pixels for rotation around top-left
     image = window.readPixels();
     const Vector2f original_rect_center = rect_half_size;
-    const Vector2f new_rect_center = Vector2f(sqrt(2.0f) * original_rect_center.x, original_rect_center.y);
+    const Vector2f new_rect_center = Vector2f(sqrt(2.0f) * original_rect_center.x, 0);
     const Vector2i new_rect_center_screen = static_cast<Vector2i>(window_center + new_rect_center);
     const int pixel_offset = 5;
     const Vector2i top_left     = new_rect_center_screen + Vector2i(-pixel_offset    , -pixel_offset    );
