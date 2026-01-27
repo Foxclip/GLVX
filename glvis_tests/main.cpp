@@ -235,23 +235,41 @@ void GlvisTestModule::rotateTest(test::Test& test) {
     T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
 
     // center rect on the screen
-    view.setPosition(Vector2f());
-    window.setView(view);
+        view.setPosition(Vector2f());
+        window.setView(view);
 
-    // rotate rect 45 degrees
+    // rotate rect 45 degrees around top-left
+    const Angle rotation_angle = degrees(45.0f);
+    const Vector2i pixel_red_1 = Vector2i(50, 50);
+    const Vector2i pixel_red_2 = Vector2i(55, 55);
+    const Vector2i pixel_black = Vector2i(40, 40);
+    rect.setOrigin(Vector2f(0.0f, 0.0f));
+    rect.setRotation(degrees(0.0f));
+    rect.setRotation(rotation_angle);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+
+    // check pixels for rotation around top-left
+    image = window.readPixels();
+    T_COMPARE(image.getPixel(pixel_red_1), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(pixel_red_2), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(pixel_black), Color::Black, &Color::toString);
+
+    // rotate rect 45 degrees around center
     rect.setOrigin(rect_half_size);
-    rect.setRotation(degrees(45.0f));
+    rect.setRotation(rotation_angle);
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
 
     // check pixels around screen center
     image = window.readPixels();
-    const int offset = 5;
-    const Vector2i top_left     = window_center_int + Vector2i(-offset    , -offset    );
-    const Vector2i top_right    = window_center_int + Vector2i( offset - 1, -offset    );
-    const Vector2i bottom_right = window_center_int + Vector2i( offset - 1,  offset - 1);
-    const Vector2i bottom_left  = window_center_int + Vector2i(-offset    ,  offset - 1);
+    const int pixel_offset = 5;
+    const Vector2i top_left     = window_center_int + Vector2i(-pixel_offset    , -pixel_offset    );
+    const Vector2i top_right    = window_center_int + Vector2i( pixel_offset - 1, -pixel_offset    );
+    const Vector2i bottom_right = window_center_int + Vector2i( pixel_offset - 1,  pixel_offset - 1);
+    const Vector2i bottom_left  = window_center_int + Vector2i(-pixel_offset    ,  pixel_offset - 1);
     T_COMPARE(image.getPixel(top_left), Color::Black, &Color::toString);
     T_COMPARE(image.getPixel(top_right), Color::Black, &Color::toString);
     T_COMPARE(image.getPixel(bottom_right), Color::Black, &Color::toString);
@@ -265,6 +283,7 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     window.setTitle("scale");
     View view;
     Vector2f window_center = window.getCenter();
+    Vector2i window_center_int = static_cast<Vector2i>(window_center);
     view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
@@ -276,25 +295,55 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     rect.setColor(Color::Red);
     window.draw(rect);
     window.display();
+
+    // check initial rectangle position
     Image image = window.readPixels();
     const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
 
-    // scale rect by factor 2
+    // scale rect around top-left
     view.setPosition(Vector2f());
     window.setView(view);
+    const Vector2f scale_factor = Vector2f(2.0f, 2.0f);
+    const int scaled_size = static_cast<int>(rect_size.x * scale_factor.x);
+    rect.setOrigin(Vector2f(0.0f, 0.0f));
+    rect.setScale(scale_factor);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+
+    // check that the rectangle has scaled
+    image = window.readPixels();
+    const Vector2i scaled_rect_start_no_origin = Vector2i(50, 50);
+    const Vector2i scaled_rect_end_no_origin = Vector2i(70, 70);
+    T_WRAP_CONTAINER(checkPixelColor(
+        test,
+        image,
+        scaled_rect_start_no_origin.x,
+        scaled_rect_start_no_origin.y,
+        scaled_rect_end_no_origin.x,
+        scaled_rect_end_no_origin.y,
+        Color::Red
+    ));
+
+    // check outside
+    T_COMPARE(image.getPixel(30, 30), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(80, 80), Color::Black, &Color::toString);
+
+    // scale rect around center
     rect.setOrigin(rect_half_size);
-    rect.setScale(Vector2f(2.0f, 2.0f));
+    rect.setScale(scale_factor);
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
     image = window.readPixels();
 
-    // check that the rectangle has scaled by factor 2
-    const Vector2i scaled_rect_start = Vector2i(40, 40);
-    const Vector2i scaled_rect_end = Vector2i(60, 60);
+    // check that the rectangle has scaled
+    const Vector2i half_scaled_size(rect_size_int / 2);
+    const Vector2i scaled_rect_start = window_center_int - half_scaled_size;
+    const Vector2i scaled_rect_end = window_center_int + half_scaled_size;
     T_WRAP_CONTAINER(checkPixelColor(
         test,
         image,
@@ -306,8 +355,8 @@ void GlvisTestModule::scaleTest(test::Test& test) {
     ));
 
     // check outside
-    T_COMPARE(image.getPixel(scaled_rect_start - Vector2i(1, 1)), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(scaled_rect_end), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(30, 30), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(80, 80), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::textureTest(test::Test& test) {
@@ -772,7 +821,8 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: shader tests
+    // TODO: test rotation and scale without changing origin
+    // TODO: add RenderStates
     // TODO: make VertexArray upload data on every render and remove syncBuffer
     // TODO: text rendering
     // TODO: transparent texture rendering
