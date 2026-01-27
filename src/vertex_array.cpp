@@ -59,18 +59,7 @@ void VertexArray::setTexture(AbstractTexture* texture) {
     this->texture = texture;
 }
 
-void VertexArray::render(const Matrix4& view, const Matrix4& projection) const {
-    if (shader == nullptr) return;
-    auto modelMatrix = getModelMatrix();
-    shader->use();
-    shader->setMat4("model", modelMatrix);
-    shader->setMat4("view", view);
-    shader->setMat4("projection", projection);
-    vertexBuffer.syncBuffer();
-    renderBase(shader, texture, modelMatrix, view, projection);
-}
-
-void VertexArray::render(const RenderStates& states, const Matrix4& view, const Matrix4& projection) const {
+void VertexArray::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
     Shader* renderShader = states.shader ? states.shader : shader;
     if (renderShader == nullptr) return;
     AbstractTexture* renderTexture = states.texture ? states.texture : texture;

@@ -111,14 +111,9 @@ void Window::clear(const Color& color) const {
     GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
 }
 
-void Window::draw(const Drawable& drawable) const {
-    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
-    drawable.render(view, projection);
-}
-
 void Window::draw(const Drawable& drawable, const RenderStates& states) const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
-    drawable.render(states, view, projection);
+    drawable.render(view, projection, states);
 }
 
 void Window::display() const {

@@ -26,8 +26,11 @@ public:
     void setPrimitiveType(PrimitiveType type);
     void setShader(Shader* shader);
     void setTexture(AbstractTexture* texture);
-    void render(const Matrix4& view, const Matrix4& projection) const override;
-    void render(const RenderStates& states, const Matrix4& view, const Matrix4& projection) const override;
+    void render(
+        const Matrix4& view,
+        const Matrix4& projection,
+        const RenderStates& states = RenderStates()
+    ) const override;
     const VertexBuffer& getVertexBuffer() const override;
     Matrix4 getModelMatrix() const override;
 
