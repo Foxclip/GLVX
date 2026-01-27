@@ -19,24 +19,24 @@ Rectangle::Rectangle(float width, float height) {
     vertices[0].position = Vector2f(0.0f, height);
     vertices[0].color = Color(255, 255, 255, 255);
     vertices[0].texCoords = Vector2f(0.0f, 1.0f);
-    
+
     vertices[1].position = Vector2f(0.0f, 0.0f);
     vertices[1].color = Color(255, 255, 255, 255);
     vertices[1].texCoords = Vector2f(0.0f, 0.0f);
-    
+
     vertices[2].position = Vector2f(width, height);
     vertices[2].color = Color(255, 255, 255, 255);
     vertices[2].texCoords = Vector2f(1.0f, 1.0f);
-    
+
     // Second triangle (width, height), (0, 0), (width, 0)
     vertices[3].position = Vector2f(width, height);
     vertices[3].color = Color(255, 255, 255, 255);
     vertices[3].texCoords = Vector2f(1.0f, 1.0f);
-    
+
     vertices[4].position = Vector2f(0.0f, 0.0f);
     vertices[4].color = Color(255, 255, 255, 255);
     vertices[4].texCoords = Vector2f(0.0f, 0.0f);
-    
+
     vertices[5].position = Vector2f(width, 0.0f);
     vertices[5].color = Color(255, 255, 255, 255);
     vertices[5].texCoords = Vector2f(1.0f, 0.0f);
@@ -77,7 +77,20 @@ void Rectangle::render(const Matrix4& view, const Matrix4& projection) const {
     shader->setMat4("model", modelMatrix);
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
-    renderBase(shader, texture, view, projection);
+    renderBase(shader, texture, modelMatrix, view, projection);
+    END_TRY
+}
+
+void Rectangle::render(const RenderStates& states, const Matrix4& view, const Matrix4& projection) const {
+    START_TRY
+    Shader* renderShader = states.shader ? states.shader : shader;
+    if (renderShader == nullptr) throw std::runtime_error("Shader not set");
+    AbstractTexture* renderTexture = states.texture ? states.texture : texture;
+    renderShader->use();
+    renderShader->setMat4("model", states.transform);
+    renderShader->setMat4("view", view);
+    renderShader->setMat4("projection", projection);
+    renderBase(renderShader, renderTexture, states.transform, view, projection);
     END_TRY
 }
 

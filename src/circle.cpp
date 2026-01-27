@@ -60,7 +60,21 @@ void Circle::render(const Matrix4& view, const Matrix4& projection) const {
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
     shader->setVec4("color", Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-    renderBase(shader, texture, view, projection);
+    renderBase(shader, texture, modelMatrix, view, projection);
+    END_TRY
+}
+
+void Circle::render(const RenderStates& states, const Matrix4& view, const Matrix4& projection) const {
+    START_TRY
+    Shader* renderShader = states.shader ? states.shader : shader;
+    if (renderShader == nullptr) throw std::runtime_error("Shader not set");
+    AbstractTexture* renderTexture = states.texture ? states.texture : texture;
+    renderShader->use();
+    renderShader->setMat4("model", states.transform);
+    renderShader->setMat4("view", view);
+    renderShader->setMat4("projection", projection);
+    renderShader->setVec4("color", Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+    renderBase(renderShader, renderTexture, states.transform, view, projection);
     END_TRY
 }
 

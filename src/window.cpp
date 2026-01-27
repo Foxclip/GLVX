@@ -116,6 +116,11 @@ void Window::draw(const Drawable& drawable) const {
     drawable.render(view, projection);
 }
 
+void Window::draw(const Drawable& drawable, const RenderStates& states) const {
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
+    drawable.render(states, view, projection);
+}
+
 void Window::display() const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 

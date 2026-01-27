@@ -33,6 +33,7 @@ public:
     void setView(const View& view);
     void clear(const Color& color) const;
     void draw(const Drawable& drawable) const;
+    void draw(const Drawable& drawable, const RenderStates& states) const;
     void display() const;
     Image readPixels() const;
     Vector2f worldToScreen(float x, float y) const;

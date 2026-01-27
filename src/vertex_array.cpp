@@ -67,7 +67,19 @@ void VertexArray::render(const Matrix4& view, const Matrix4& projection) const {
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
     vertexBuffer.syncBuffer();
-    renderBase(shader, texture, view, projection);
+    renderBase(shader, texture, modelMatrix, view, projection);
+}
+
+void VertexArray::render(const RenderStates& states, const Matrix4& view, const Matrix4& projection) const {
+    Shader* renderShader = states.shader ? states.shader : shader;
+    if (renderShader == nullptr) return;
+    AbstractTexture* renderTexture = states.texture ? states.texture : texture;
+    renderShader->use();
+    renderShader->setMat4("model", states.transform);
+    renderShader->setMat4("view", view);
+    renderShader->setMat4("projection", projection);
+    vertexBuffer.syncBuffer();
+    renderBase(renderShader, renderTexture, states.transform, view, projection);
 }
 
 const VertexBuffer& VertexArray::getVertexBuffer() const {
