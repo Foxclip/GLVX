@@ -5,11 +5,35 @@
 #include "glvis/vertex.h"
 
 namespace glvis {
-
 VertexBuffer::VertexBuffer() {
     VBO = 0;
     VAO = 0;
 }
+
+
+VertexBuffer::VertexBuffer(PrimitiveType type) {
+    this->type = type;
+    this->usage = Usage::StaticDraw;
+    VBO = 0;
+    VAO = 0;
+}
+
+
+VertexBuffer::VertexBuffer(Usage usage) {
+    this->type = PrimitiveType::Triangles;
+    this->usage = usage;
+    VBO = 0;
+    VAO = 0;
+}
+
+
+VertexBuffer::VertexBuffer(PrimitiveType type, Usage usage) {
+    this->type = type;
+    this->usage = usage;
+    VBO = 0;
+    VAO = 0;
+}
+
 
 VertexBuffer::~VertexBuffer() {
     if (VAO != 0) {
@@ -115,7 +139,7 @@ Vertex& VertexBuffer::operator[](std::size_t index) {
     return vertices[index];
 }
 
-const Vertex& VertexBuffer::operator[](unsigned int index) const {
+const Vertex& VertexBuffer::operator[](std::size_t index) const {
     return vertices[index];
 }
 

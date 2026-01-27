@@ -12,10 +12,13 @@ enum class Usage {
     DynamicDraw,
     StreamDraw
 };
-    
+
 class VertexBuffer {
 public:
     VertexBuffer();
+    VertexBuffer(PrimitiveType type);
+    VertexBuffer(Usage usage);
+    VertexBuffer(PrimitiveType type, Usage usage);
     ~VertexBuffer();
     bool create(std::size_t vertexCount);
     std::size_t getVertexCount() const;
@@ -29,7 +32,7 @@ public:
     unsigned int getVAO() const;
     void render(const Matrix4& view, const Matrix4& projection) const;
     Vertex& operator[](std::size_t index);
-    const Vertex& operator[](unsigned int index) const;
+    const Vertex& operator[](std::size_t index) const;
     bool syncBuffer();
 
 private:
