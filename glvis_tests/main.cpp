@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include "test_lib/test.h"
 #include "glvis/vector.h"
 #include "glvis/color.h"
@@ -290,22 +291,26 @@ void GlvisTestModule::rotateTopLeftTest(test::Test& test) {
     window.setView(view);
 
     // rotate rect 45 degrees around top-left
-    const Angle rotation_angle = degrees(45.0f);
-    const Vector2i pixel_red_1 = Vector2i(50, 50);
-    const Vector2i pixel_red_2 = Vector2i(55, 55);
-    const Vector2i pixel_black = Vector2i(40, 40);
-    rect.setOrigin(Vector2f(0.0f, 0.0f));
-    rect.setRotation(degrees(0.0f));
-    rect.setRotation(rotation_angle);
+    rect.setRotation(degrees(45.0f));
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
 
     // check pixels for rotation around top-left
     image = window.readPixels();
-    T_COMPARE(image.getPixel(pixel_red_1), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(pixel_red_2), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(pixel_black), Color::Black, &Color::toString);
+    const Vector2f original_rect_center = rect_half_size;
+    const Vector2f new_rect_center = Vector2f(sqrt(2.0f) * original_rect_center.x, original_rect_center.y);
+    const Vector2i new_rect_center_screen = static_cast<Vector2i>(window_center + new_rect_center);
+    const int pixel_offset = 5;
+    const Vector2i top_left     = new_rect_center_screen + Vector2i(-pixel_offset    , -pixel_offset    );
+    const Vector2i top_right    = new_rect_center_screen + Vector2i( pixel_offset - 1, -pixel_offset    );
+    const Vector2i bottom_right = new_rect_center_screen + Vector2i( pixel_offset - 1,  pixel_offset - 1);
+    const Vector2i bottom_left  = new_rect_center_screen + Vector2i(-pixel_offset    ,  pixel_offset - 1);
+    T_COMPARE(image.getPixel(top_left), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(top_right), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(bottom_right), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(bottom_left), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(window_center_int), Color::Red, &Color::toString);
 }
 
 void GlvisTestModule::rotateCenterTest(test::Test& test) {
