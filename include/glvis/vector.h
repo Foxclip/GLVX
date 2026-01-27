@@ -17,6 +17,7 @@ public:
     Vector2f operator*(float scalar) const;
     Vector2f operator/(float scalar) const;
     Vector2f& operator+=(const Vector2f& other);
+    Vector2f operator-() const;
 
 private:
 };
@@ -33,6 +34,7 @@ public:
     Vector2i operator-(const Vector2i& other) const;
     Vector2i operator*(int scalar) const;
     Vector2i operator/(int scalar) const;
+    Vector2i operator-() const;
 
 private:
 };
@@ -49,6 +51,7 @@ public:
     Vector3 operator-(const Vector3& other) const;
     Vector3 operator*(float scalar) const;
     Vector3 operator/(float scalar) const;
+    Vector3 operator-() const;
 
 private:
 };
@@ -66,6 +69,7 @@ public:
     Vector4 operator-(const Vector4& other) const;
     Vector4 operator*(float scalar) const;
     Vector4 operator/(float scalar) const;
+    Vector4 operator-() const;
 
 private:
 };

@@ -39,6 +39,10 @@ Vector2f& Vector2f::operator+=(const Vector2f& other) {
     return *this;
 }
 
+Vector2f Vector2f::operator-() const {
+    return Vector2f(-x, -y);
+}
+
 Vector2i::Vector2i() {
     this->x = 0;
     this->y = 0;
@@ -70,6 +74,10 @@ Vector2i Vector2i::operator/(int scalar) const {
     return Vector2i(x / scalar, y / scalar);
 }
 
+Vector2i Vector2i::operator-() const {
+    return Vector2i(-x, -y);
+}
+
 Vector3::Vector3() {
     this->x = 0;
     this->y = 0;
@@ -96,6 +104,10 @@ Vector3 Vector3::operator*(float scalar) const {
 
 Vector3 Vector3::operator/(float scalar) const {
     return Vector3(x / scalar, y / scalar, z / scalar);
+}
+
+Vector3 Vector3::operator-() const {
+    return Vector3(-x, -y, -z);
 }
 
 Vector4::Vector4() {
@@ -126,6 +138,10 @@ Vector4 Vector4::operator*(float scalar) const {
 
 Vector4 Vector4::operator/(float scalar) const {
     return Vector4(x / scalar, y / scalar, z / scalar, w / scalar);
+}
+
+Vector4 Vector4::operator-() const {
+    return Vector4(-x, -y, -z, -w);
 }
 
 }
