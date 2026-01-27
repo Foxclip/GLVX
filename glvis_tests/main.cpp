@@ -458,7 +458,7 @@ void GlvisTestModule::scaleCenterTest(test::Test& test) {
 
     // check that the rectangle has scaled
     image = window.readPixels();
-    const Vector2i half_scaled_size(rect_size_int);
+    const Vector2i half_scaled_size = rect_size_int;
     const Vector2i scaled_rect_start = window_center_int - half_scaled_size;
     const Vector2i scaled_rect_end = window_center_int + half_scaled_size;
     T_WRAP_CONTAINER(checkPixelColor(
@@ -472,8 +472,8 @@ void GlvisTestModule::scaleCenterTest(test::Test& test) {
     ));
 
     // check outside
-    T_COMPARE(image.getPixel(30, 30), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(80, 80), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(scaled_rect_start - Vector2i(1, 1)), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(scaled_rect_end), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::textureTest(test::Test& test) {
