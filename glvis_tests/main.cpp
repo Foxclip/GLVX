@@ -10,8 +10,6 @@
 #include "glvis/texture.h"
 #include "glvis/angle.h"
 #include "glvis/vertex_array.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include "glvis/utils.h"
 
 using namespace glvis;
@@ -947,11 +945,8 @@ void GlvisTestModule::renderStatesTransformTest(test::Test& test) {
     Rectangle rect(rect_size);
     rect.setColor(rect_color);
     RenderStates states;
-    glm::mat4 transform = glm::translate(
-        glm::mat4(1.0f),
-        glm::vec3(transform_offset.x, transform_offset.y, 0.0f)
-    );
-    states.transform = from_glmMat4(transform);
+    Matrix4 transform = Matrix4::translation(Vector3(transform_offset.x, transform_offset.y, 0.0f));
+    states.transform = transform;
     window.draw(rect, states);
     window.display();
 

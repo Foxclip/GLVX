@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include "glvis/vector.h"
 
 namespace glvis {
 
@@ -11,6 +12,8 @@ public:
     Matrix4(const float* data);
     const float* getData() const;
     Matrix4 operator*(const Matrix4& other) const;
+
+    static Matrix4 translation(const Vector3& v);
 
 private:
     std::array<float, 16> data;
