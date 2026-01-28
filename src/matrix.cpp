@@ -35,11 +35,13 @@ Matrix4 Matrix4::operator*(const Matrix4& other) const {
     return result;
 }
 
-Matrix4 Matrix4::translation(const Vector3& v) {
-    return Matrix4({1.0f, 0.0f, 0.0f, 0.0f,
-                    0.0f, 1.0f, 0.0f, 0.0f,
-                    0.0f, 0.0f, 1.0f, 0.0f,
-                     v.x,  v.y,  v.z, 1.0f});
+Matrix4 Matrix4::translate(const Matrix4& matrix, const Vector3& v) {
+    Matrix4 result = matrix;
+    // Add translation to the 4th column (positions 12, 13, 14 in column-major order)
+    result.data[12] += v.x;
+    result.data[13] += v.y;
+    result.data[14] += v.z;
+    return result;
 }
 
 }

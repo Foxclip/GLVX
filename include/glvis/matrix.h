@@ -13,7 +13,7 @@ public:
     const float* getData() const;
     Matrix4 operator*(const Matrix4& other) const;
 
-    static Matrix4 translation(const Vector3& v);
+    static Matrix4 translate(const Matrix4& matrix, const Vector3& v);
 
 private:
     std::array<float, 16> data;

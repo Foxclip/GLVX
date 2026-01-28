@@ -945,7 +945,7 @@ void GlvisTestModule::renderStatesTransformTest(test::Test& test) {
     Rectangle rect(rect_size);
     rect.setColor(rect_color);
     RenderStates states;
-    Matrix4 transform = Matrix4::translation(Vector3(transform_offset.x, transform_offset.y, 0.0f));
+    Matrix4 transform = Matrix4::translate(Matrix4(), Vector3(transform_offset.x, transform_offset.y, 0.0f));
     states.transform = transform;
     window.draw(rect, states);
     window.display();
