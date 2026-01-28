@@ -35,4 +35,11 @@ Matrix4 Matrix4::operator*(const Matrix4& other) const {
     return result;
 }
 
+Matrix4 Matrix4::translation(const Vector3& v) {
+    return Matrix4({1.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f,
+                     v.x,  v.y,  v.z, 1.0f});
+}
+
 }
