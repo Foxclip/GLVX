@@ -10,21 +10,7 @@ Shader::Shader(const std::filesystem::path& vertexPath, const std::filesystem::p
     START_TRY
     unsigned int vertexShader = compileShader(ShaderType::VERTEX, vertexPath);
     unsigned int fragmentShader = compileShader(ShaderType::FRAGMENT, fragmentPath);
-    ID = GL_CALL(glCreateProgram());
-    GL_CALL(glAttachShader(ID, vertexShader));
-    GL_CALL(glAttachShader(ID, fragmentShader));
-    GL_CALL(glLinkProgram(ID));
-    int success;
-    GL_CALL(glGetProgramiv(ID, GL_LINK_STATUS, &success));
-    if (!success) {
-        int length;
-        GL_CALL(glGetProgramiv(ID, GL_INFO_LOG_LENGTH, &length));
-        std::vector<char> infoLog(length);
-        GL_CALL(glGetProgramInfoLog(ID, length, NULL, infoLog.data()));
-        throw std::format("Linking failed\n{}", std::string(infoLog.data()));
-    }
-    GL_CALL(glDeleteShader(vertexShader));
-    GL_CALL(glDeleteShader(fragmentShader));
+    linkProgram(vertexShader, fragmentShader);
     END_TRY
 }
 
@@ -32,21 +18,7 @@ Shader::Shader(const char* vertexSource, const char* fragmentSource) {
     START_TRY
     unsigned int vertexShader = compileShader(ShaderType::VERTEX, vertexSource);
     unsigned int fragmentShader = compileShader(ShaderType::FRAGMENT, fragmentSource);
-    ID = GL_CALL(glCreateProgram());
-    GL_CALL(glAttachShader(ID, vertexShader));
-    GL_CALL(glAttachShader(ID, fragmentShader));
-    GL_CALL(glLinkProgram(ID));
-    int success;
-    GL_CALL(glGetProgramiv(ID, GL_LINK_STATUS, &success));
-    if (!success) {
-        int length;
-        GL_CALL(glGetProgramiv(ID, GL_INFO_LOG_LENGTH, &length));
-        std::vector<char> infoLog(length);
-        GL_CALL(glGetProgramInfoLog(ID, length, NULL, infoLog.data()));
-        throw std::format("Linking failed\n{}", std::string(infoLog.data()));
-    }
-    GL_CALL(glDeleteShader(vertexShader));
-    GL_CALL(glDeleteShader(fragmentShader));
+    linkProgram(vertexShader, fragmentShader);
     END_TRY
 }
 
@@ -78,25 +50,28 @@ void Shader::setMat4(const std::string& name, const Matrix4& value) const {
     GL_CALL(glUniformMatrix4fv(GL_CALL(glGetUniformLocation(ID, name.c_str())), 1, GL_FALSE, value.getData()));
 }
 
-int Shader::compileShader(ShaderType type, const std::filesystem::path& path) {
+void Shader::linkProgram(unsigned int vertexShader, unsigned int fragmentShader) {
     START_TRY
-    std::string source = file_to_str(path);
-    const char* sourceCstr = source.c_str();
-    unsigned int shader = GL_CALL(glCreateShader(type == ShaderType::VERTEX ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER));
-    GL_CALL(glShaderSource(shader, 1, &sourceCstr, NULL));
-    GL_CALL(glCompileShader(shader));
+    ID = GL_CALL(glCreateProgram());
+    GL_CALL(glAttachShader(ID, vertexShader));
+    GL_CALL(glAttachShader(ID, fragmentShader));
+    GL_CALL(glLinkProgram(ID));
     int success;
-    GL_CALL(glGetShaderiv(shader, GL_COMPILE_STATUS, &success));
+    GL_CALL(glGetProgramiv(ID, GL_LINK_STATUS, &success));
     if (!success) {
         int length;
-        GL_CALL(glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length));
+        GL_CALL(glGetProgramiv(ID, GL_INFO_LOG_LENGTH, &length));
         std::vector<char> infoLog(length);
-        GL_CALL(glGetShaderInfoLog(shader, length, NULL, infoLog.data()));
-        std::string typeStr = type == ShaderType::VERTEX ? "Vertex" : "Fragment";
-        throw std::runtime_error(std::format("{} shader compilation failed: {}\n{}", typeStr, path.string(), std::string(infoLog.data())));
+        GL_CALL(glGetProgramInfoLog(ID, length, NULL, infoLog.data()));
+        throw std::format("Linking failed\n{}", std::string(infoLog.data()));
     }
-    return shader;
+    GL_CALL(glDeleteShader(vertexShader));
+    GL_CALL(glDeleteShader(fragmentShader));
     END_TRY
+}
+
+int Shader::compileShader(ShaderType type, const std::filesystem::path& path) {
+    return compileShader(type, file_to_str(path).c_str());
 }
 
 int Shader::compileShader(ShaderType type, const char* source) {
