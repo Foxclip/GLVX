@@ -23,6 +23,7 @@ private:
     Window window;
 
     bool checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor);
+    bool checkPixelColor(test::Test& test, const Image& image, const Vector2i& start, const Vector2i& end, const Color& expectedColor);
     bool compareImages(test::Test& test, const Image& image1, const Image& image2);
 
     void clearTest(test::Test& test);
@@ -84,6 +85,10 @@ bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image, int 
         }
     }
     return true;
+}
+
+bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image, const Vector2i& start, const Vector2i& end, const Color& expectedColor) {
+    return checkPixelColor(test, image, start.x, start.y, end.x, end.y, expectedColor);
 }
 
 bool GlvisTestModule::compareImages(test::Test& test, const Image& image1, const Image& image2) {
@@ -242,7 +247,7 @@ void GlvisTestModule::setOriginTest(test::Test& test) {
 
     // check initial rectangle position
     Image image = window.readPixels();
-    T_WRAP_CONTAINER(checkPixelColor(test, image, 0, 0, rect_size_int.x, rect_size_int.y, Color::Red));
+    T_WRAP_CONTAINER(checkPixelColor(test, image, Vector2i(0, 0), rect_size_int, Color::Red));
     T_COMPARE(image.getPixel(rect_size_int + Vector2i(1, 1)), Color::Black, &Color::toString);
 
     // set origin to (-10,-10)
@@ -256,10 +261,8 @@ void GlvisTestModule::setOriginTest(test::Test& test) {
     T_WRAP_CONTAINER(checkPixelColor(
         test,
         image,
-        rect_size_int.x,
-        rect_size_int.y,
-        rect_size_int.x * 2,
-        rect_size_int.y * 2,
+        rect_size_int,
+        rect_size_int * 2,
         Color::Red
     ));
     T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Black, &Color::toString);
@@ -410,15 +413,7 @@ void GlvisTestModule::scaleTopLeftTest(test::Test& test) {
     image = window.readPixels();
     const Vector2i scaled_rect_start = window_center_int;
     const Vector2i scaled_rect_end = window_center_int + rect_size_int * 2;
-    T_WRAP_CONTAINER(checkPixelColor(
-        test,
-        image,
-        scaled_rect_start.x,
-        scaled_rect_start.y,
-        scaled_rect_end.x,
-        scaled_rect_end.y,
-        Color::Red
-    ));
+    T_WRAP_CONTAINER(checkPixelColor(test, image, scaled_rect_start, scaled_rect_end, Color::Red));
 
     // check outside
     T_COMPARE(image.getPixel(scaled_rect_start - Vector2i(1, 1)), Color::Black, &Color::toString);
@@ -467,15 +462,7 @@ void GlvisTestModule::scaleCenterTest(test::Test& test) {
     const Vector2i half_scaled_size = rect_size_int;
     const Vector2i scaled_rect_start = window_center_int - half_scaled_size;
     const Vector2i scaled_rect_end = window_center_int + half_scaled_size;
-    T_WRAP_CONTAINER(checkPixelColor(
-        test,
-        image,
-        scaled_rect_start.x,
-        scaled_rect_start.y,
-        scaled_rect_end.x,
-        scaled_rect_end.y,
-        Color::Red
-    ));
+    T_WRAP_CONTAINER(checkPixelColor(test, image, scaled_rect_start, scaled_rect_end, Color::Red));
 
     // check outside
     T_COMPARE(image.getPixel(scaled_rect_start - Vector2i(1, 1)), Color::Black, &Color::toString);
@@ -1035,7 +1022,6 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: add version of checkPixelColor with Vector2i
     // TODO: RenderStates shader test
     // TODO: remove syncBuffer from VertexBuffer and make update method handle partial updates
     // TODO: make vertex buffer update test
