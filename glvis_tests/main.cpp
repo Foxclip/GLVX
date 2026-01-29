@@ -1013,6 +1013,7 @@ void GlvisTestModule::renderStatesTextureTest(test::Test& test) {
     Texture tex(texture_data, texture_size.x, texture_size.y);
     RenderStates states;
     states.texture = &tex;
+    rect.setColor(Color::White);
     window.clear(Color::Black);
     window.draw(rect, states);
     window.display();
