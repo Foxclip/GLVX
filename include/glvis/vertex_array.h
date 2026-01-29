@@ -35,6 +35,7 @@ public:
     Matrix4 getModelMatrix() const override;
 
 private:
+    std::vector<Vertex> vertices;
     mutable VertexBuffer vertexBuffer;
     Shader* shader = nullptr;
     AbstractTexture* texture = nullptr;

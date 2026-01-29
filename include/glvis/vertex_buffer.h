@@ -23,28 +23,23 @@ public:
     bool create(std::size_t vertexCount);
     std::size_t getVertexCount() const;
     bool update(const std::vector<Vertex>& newVertices);
-    bool resize(std::size_t newSize);
-    bool append(const Vertex& vertex);
-    void clear();
+    bool update(const std::vector<Vertex>& newVertices, std::size_t vertexCount, unsigned int offset);
     PrimitiveType getPrimitiveType() const;
     void setPrimitiveType(PrimitiveType type);
     void setUsage(Usage usage);
     unsigned int getVAO() const;
     void render(const Matrix4& view, const Matrix4& projection) const;
-    Vertex& operator[](std::size_t index);
-    const Vertex& operator[](std::size_t index) const;
-    bool syncBuffer();
 
 private:
     bool isInitialized = false;
     size_t gpuBuffferSize = 0;
+    size_t vertexCount = 0;
     PrimitiveType type = PrimitiveType::Triangles;
     Usage usage = Usage::StaticDraw;
-    std::vector<Vertex> vertices;
     unsigned int VBO = 0;
     unsigned int VAO = 0;
 
-    void recreateBuffer(const std::vector<Vertex>& data);
+    void recreateBuffer(std::size_t size);
 
 };
 

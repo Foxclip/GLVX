@@ -1101,7 +1101,6 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: reduce code duplication in Shader class
     // TODO: remove syncBuffer from VertexBuffer and make update method handle partial updates
     // TODO: make vertex buffer update test
     // TODO: make vertex buffer partial update test
