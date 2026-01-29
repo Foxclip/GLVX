@@ -16,6 +16,9 @@
 
 using namespace glvis;
 
+const Vector2i WINDOW_SIZE = Vector2i(100, 100);
+const Vector2i RESIZED_WINDOW_SIZE = Vector2i(200, 200);
+
 class GlvisTestModule : public test::TestModule {
 public:
     GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes = { });
@@ -53,7 +56,7 @@ private:
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
     : test::TestModule(name, parent, required_nodes) {
-    window.create(100, 100, "glvis tests");
+    window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "glvis tests");
     auto clear_test = addTest("clear", [&](test::Test& test) { clearTest(test); });
     auto rectangle_test = addTest("rectangle", { clear_test }, [&](test::Test& test) { rectangleTest(test); });
     auto circle_test = addTest("circle", { clear_test }, [&](test::Test& test) { circleTest(test); });
@@ -113,8 +116,7 @@ bool GlvisTestModule::compareImages(test::Test& test, const Image& image1, const
 }
 
 void GlvisTestModule::clearTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("clear");
 
     // Clear the window with red
@@ -124,10 +126,10 @@ void GlvisTestModule::clearTest(test::Test& test) {
     Vector2f window_center = window.getCenter();
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(static_cast<Vector2i>(window_center)), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(window_size - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(WINDOW_SIZE - Vector2i(1, 1)), Color::Red, &Color::toString);
 
     // Resize the window
-    const Vector2i new_window_size = Vector2i(200, 200);
+    const Vector2i new_window_size = RESIZED_WINDOW_SIZE;
     window.setSize(new_window_size);
 
     // Clear the window with green
@@ -141,8 +143,7 @@ void GlvisTestModule::clearTest(test::Test& test) {
 }
 
 void GlvisTestModule::rectangleTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("rectangle");
     View view;
     view.setPosition(window.getCenter());
@@ -164,8 +165,7 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
 }
 
 void GlvisTestModule::circleTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("circle");
     View view;
     view.setPosition(window.getCenter());
@@ -189,8 +189,7 @@ void GlvisTestModule::circleTest(test::Test& test) {
 }
 
 void GlvisTestModule::moveTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("move");
     View view;
     view.setPosition(window.getCenter());
@@ -230,8 +229,7 @@ void GlvisTestModule::moveTest(test::Test& test) {
 }
 
 void GlvisTestModule::setOriginTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("set origin");
     View view;
     view.setPosition(window.getCenter());
@@ -273,8 +271,7 @@ void GlvisTestModule::setOriginTest(test::Test& test) {
 }
 
 void GlvisTestModule::rotateTopLeftTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("rotate without origin change");
     View view;
     Vector2f window_center = window.getCenter();
@@ -326,8 +323,7 @@ void GlvisTestModule::rotateTopLeftTest(test::Test& test) {
 }
 
 void GlvisTestModule::rotateCenterTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("rotate with origin change");
     View view;
     Vector2f window_center = window.getCenter();
@@ -377,8 +373,7 @@ void GlvisTestModule::rotateCenterTest(test::Test& test) {
 }
 
 void GlvisTestModule::scaleTopLeftTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("scale without origin change");
     View view;
     Vector2f window_center = window.getCenter();
@@ -424,8 +419,7 @@ void GlvisTestModule::scaleTopLeftTest(test::Test& test) {
 }
 
 void GlvisTestModule::scaleCenterTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("scale with origin change");
     View view;
     Vector2f window_center = window.getCenter();
@@ -473,8 +467,7 @@ void GlvisTestModule::scaleCenterTest(test::Test& test) {
 }
 
 void GlvisTestModule::textureTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("texture");
     View view;
     Vector2f window_center = window.getCenter();
@@ -512,8 +505,7 @@ void GlvisTestModule::textureTest(test::Test& test) {
 }
 
 void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("texture color multiply");
     View view;
     Vector2f window_center = window.getCenter();
@@ -547,8 +539,7 @@ void GlvisTestModule::textureColorMultiplyTest(test::Test& test) {
 }
 
 void GlvisTestModule::textureResizeTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("texture resize interpolation");
 
     // Test resizing up from 2x1 to 3x1
@@ -589,8 +580,7 @@ void GlvisTestModule::textureResizeTest(test::Test& test) {
 }
 
 void GlvisTestModule::windowResizeTest(test::Test& test) {
-    const Vector2i initial_window_size = Vector2i(100, 100);
-    window.setSize(initial_window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("window resize");
     View view;
     Vector2f window_center = window.getCenter();
@@ -606,9 +596,8 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
     window.display();
     Image initialImage = window.readPixels();
 
-    // Resize to 200x200
-    const Vector2i resized_window_size = Vector2i(200, 200);
-    window.setSize(resized_window_size);
+    // Resize window
+    window.setSize(RESIZED_WINDOW_SIZE);
     window_center = window.getCenter();
     view.setPosition(window_center);
     window.setView(view);
@@ -617,8 +606,8 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
     window.display();
     Image resizedImage = window.readPixels();
 
-    // Resize back to 100x100
-    window.setSize(initial_window_size);
+    // Resize back to original size
+    window.setSize(WINDOW_SIZE);
     window_center = window.getCenter();
     view.setPosition(window_center);
     window.setView(view);
@@ -632,8 +621,7 @@ void GlvisTestModule::windowResizeTest(test::Test& test) {
 }
 
 void GlvisTestModule::viewPanTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("view pan");
     View view;
     Vector2f window_center = window.getCenter();
@@ -673,8 +661,7 @@ void GlvisTestModule::viewPanTest(test::Test& test) {
 }
 
 void GlvisTestModule::viewZoomTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("view zoom");
     View view;
     const Vector2f initial_view_pos = Vector2f(5.0f, 5.0f);
@@ -731,8 +718,7 @@ void GlvisTestModule::viewZoomTest(test::Test& test) {
 }
 
 void GlvisTestModule::viewRotateTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("view rotation");
     View view;
     Vector2f window_center = window.getCenter();
@@ -779,8 +765,7 @@ void GlvisTestModule::viewRotateTest(test::Test& test) {
 }
 
 void GlvisTestModule::vertexArrayTriangleTest(test::Test& test) {
-   const Vector2i window_size = Vector2i(100, 100);
-   window.setSize(window_size);
+   window.setSize(WINDOW_SIZE);
    window.setTitle("vertex array triangle");
    View view;
    Vector2f window_center = window.getCenter();
@@ -817,8 +802,7 @@ void GlvisTestModule::vertexArrayTriangleTest(test::Test& test) {
 }
 
 void GlvisTestModule::vertexArrayLineTest(test::Test& test) {
-   const Vector2i window_size = Vector2i(100, 100);
-   window.setSize(window_size);
+   window.setSize(WINDOW_SIZE);
    window.setTitle("vertex array line");
    View view;
    Vector2f window_center = window.getCenter();
@@ -857,8 +841,7 @@ void GlvisTestModule::vertexArrayLineTest(test::Test& test) {
 }
 
 void GlvisTestModule::vertexArrayModifyTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("vertex array triangle");
     View view;
     Vector2f window_center = window.getCenter();
@@ -921,8 +904,7 @@ void GlvisTestModule::vertexArrayModifyTest(test::Test& test) {
 }
 
 void GlvisTestModule::renderStatesTransformTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("render states transform");
     View view;
     view.setPosition(window.getCenter());
@@ -961,8 +943,7 @@ void GlvisTestModule::renderStatesTransformTest(test::Test& test) {
 }
 
 void GlvisTestModule::renderStatesTextureTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("render states texture");
     View view;
     Vector2f window_center = window.getCenter();
@@ -1020,8 +1001,7 @@ void GlvisTestModule::renderStatesTextureTest(test::Test& test) {
 }
 
 void GlvisTestModule::renderStatesShaderTest(test::Test& test) {
-    const Vector2i window_size = Vector2i(100, 100);
-    window.setSize(window_size);
+    window.setSize(WINDOW_SIZE);
     window.setTitle("render states shader");
     View view;
     view.setPosition(window.getCenter());
@@ -1101,9 +1081,9 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: remove syncBuffer from VertexBuffer and make update method handle partial updates
     // TODO: make vertex buffer update test
     // TODO: make vertex buffer partial update test
+    // TODO: add size setting to Rectangle and Circle
     // TODO: text rendering
     // TODO: transparent texture rendering
 
