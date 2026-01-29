@@ -2,6 +2,7 @@
 #include <cmath>
 #include "test_lib/test.h"
 #include "glvis/render_states.h"
+#include "glvis/shader.h"
 #include "glvis/vector.h"
 #include "glvis/color.h"
 #include "glvis/vertex.h"
@@ -47,6 +48,7 @@ private:
     void vertexArrayModifyTest(test::Test& test);
     void renderStatesTransformTest(test::Test& test);
     void renderStatesTextureTest(test::Test& test);
+    void renderStatesShaderTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -73,6 +75,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto vertex_array_modify_test = addTest("vertex_array_modify", { vertex_array_triangle_test }, [&](test::Test& test) { vertexArrayModifyTest(test); });
     auto render_states_transform_test = addTest("render_states_transform", { rectangle_test }, [&](test::Test& test) { renderStatesTransformTest(test); });
     auto render_states_texture_test = addTest("render_states_texture", { texture_test }, [&](test::Test& test) { renderStatesTextureTest(test); });
+    auto render_states_shader_test = addTest("render_states_shader", { rectangle_test }, [&](test::Test& test) { renderStatesShaderTest(test); });
 }
 
 bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor) {
@@ -1016,13 +1019,89 @@ void GlvisTestModule::renderStatesTextureTest(test::Test& test) {
     T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);
 }
 
+void GlvisTestModule::renderStatesShaderTest(test::Test& test) {
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
+    window.setTitle("render states shader");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    // Custom shader that outputs green color
+    const char* custom_vert = R"(
+        #version 330 core
+        layout (location = 0) in vec2 aPos;
+        layout (location = 1) in vec4 aColor;
+        layout (location = 2) in vec2 aTexCoords;
+
+        out vec2 TexCoords;
+        out vec4 VertexColor;
+
+        uniform mat4 model;
+        uniform mat4 view;
+        uniform mat4 projection;
+
+        void main() {
+            gl_Position = projection * view * model * vec4(aPos, 0.0, 1.0);
+            TexCoords = aTexCoords;
+            VertexColor = aColor;
+        }
+    )";
+
+    const char* custom_frag = R"(
+        #version 330 core
+
+        in vec2 TexCoords;
+        in vec4 VertexColor;
+
+        out vec4 FragColor;
+
+        uniform sampler2D tex;
+        uniform bool hasTexture;
+        uniform vec4 color;
+
+        void main() {
+            // Always output green color regardless of input color
+            FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+        }
+    )";
+
+    Shader customShader(custom_vert, custom_frag);
+
+    // Render a rectangle with default shader
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
+    Rectangle rect(rect_size);
+    rect.setColor(Color::Red);
+    window.draw(rect);
+    window.display();
+
+    // Check that the rectangle is rendered with default shader (red)
+    Image image = window.readPixels();
+    T_WRAP_CONTAINER(checkPixelColor(test, image, Vector2i(), rect_size_int, Color::Red));
+    T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
+
+    // Render a rectangle with custom shader using RenderStates
+    RenderStates states;
+    states.shader = &customShader;
+    window.clear(Color::Black);
+    window.draw(rect, states);
+    window.display();
+
+    // Check that the rectangle is rendered with custom shader (green)
+    image = window.readPixels();
+    T_WRAP_CONTAINER(checkPixelColor(test, image, Vector2i(), rect_size_int, Color::Green));
+    T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
+}
+
 int main() {
     test::TestModule root("glvis tests", nullptr);
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
     root.printSummary();
 
-    // TODO: RenderStates shader test
+    // TODO: reduce code duplication in Shader class
     // TODO: remove syncBuffer from VertexBuffer and make update method handle partial updates
     // TODO: make vertex buffer update test
     // TODO: make vertex buffer partial update test
