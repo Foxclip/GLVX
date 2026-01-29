@@ -23,6 +23,7 @@ public:
     bool create(std::size_t vertexCount);
     std::size_t getVertexCount() const;
     bool update(const std::vector<Vertex>& newVertices);
+    bool update(const Vertex* vertices, std::size_t vertexCount, unsigned int offset);
     bool resize(std::size_t newSize);
     bool append(const Vertex& vertex);
     void clear();
@@ -33,7 +34,6 @@ public:
     void render(const Matrix4& view, const Matrix4& projection) const;
     Vertex& operator[](std::size_t index);
     const Vertex& operator[](std::size_t index) const;
-    bool syncBuffer();
 
 private:
     bool isInitialized = false;

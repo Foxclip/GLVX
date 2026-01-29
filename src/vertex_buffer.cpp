@@ -49,7 +49,14 @@ VertexBuffer::~VertexBuffer() {
 bool VertexBuffer::create(std::size_t vertexCount) {
     vertices.resize(vertexCount);
     GL_CALL(glGenVertexArrays(1, &VAO));
-    return syncBuffer();
+    if (isInitialized && vertices.size() == gpuBuffferSize) {
+        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
+        GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data()));
+        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    } else {
+        recreateBuffer(vertices);
+    }
+    return true;
 }
 
 std::size_t VertexBuffer::getVertexCount() const {
@@ -58,20 +65,43 @@ std::size_t VertexBuffer::getVertexCount() const {
 
 bool VertexBuffer::update(const std::vector<Vertex>& newVertices) {
     vertices = newVertices;
-    return syncBuffer();
+    if (isInitialized && vertices.size() == gpuBuffferSize) {
+        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
+        GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data()));
+        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    } else {
+        recreateBuffer(vertices);
+    }
+    return true;
+}
+
+bool VertexBuffer::update(const Vertex* newVertices, std::size_t vertexCount, unsigned int offset) {
+    if (offset + vertexCount > vertices.size()) {
+        return false;
+    }
+    std::copy(newVertices, newVertices + vertexCount, vertices.begin() + offset);
+    if (isInitialized) {
+        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
+        GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, offset * sizeof(Vertex), vertexCount * sizeof(Vertex), newVertices));
+        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    }
+    return true;
 }
 
 bool VertexBuffer::resize(std::size_t newSize) {
     vertices.resize(newSize);
-    return syncBuffer();
+    if (isInitialized && vertices.size() == gpuBuffferSize) {
+        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
+        GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data()));
+        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    } else {
+        recreateBuffer(vertices);
+    }
+    return true;
 }
 
 bool VertexBuffer::append(const Vertex& vertex) {
     vertices.push_back(vertex);
-    return syncBuffer();
-}
-
-bool VertexBuffer::syncBuffer() {
     if (isInitialized && vertices.size() == gpuBuffferSize) {
         GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
         GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data()));

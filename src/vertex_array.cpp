@@ -68,7 +68,6 @@ void VertexArray::render(const Matrix4& view, const Matrix4& projection, const R
     renderShader->setMat4("model", combinedModel);
     renderShader->setMat4("view", view);
     renderShader->setMat4("projection", projection);
-    vertexBuffer.syncBuffer();
     renderBase(renderShader, renderTexture, combinedModel, view, projection);
 }
 
