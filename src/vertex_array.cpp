@@ -14,13 +14,14 @@ VertexArray::VertexArray() : vertexBuffer(Usage::StreamDraw) {
 
 VertexArray::VertexArray(PrimitiveType type, std::size_t vertexCount) : vertexBuffer(type, Usage::StreamDraw) {
     if (vertexCount > 0) {
+        vertices.resize(vertexCount);
         vertexBuffer.create(vertexCount);
     }
     shader = common::defaultShader;
 }
 
 std::size_t VertexArray::getVertexCount() const {
-    return vertexBuffer.getVertexCount();
+    return vertices.size();
 }
 
 PrimitiveType VertexArray::getPrimitiveType() const {
@@ -28,23 +29,30 @@ PrimitiveType VertexArray::getPrimitiveType() const {
 }
 
 Vertex& VertexArray::operator[](std::size_t index) {
-    return vertexBuffer[index];
+    return vertices[index];
 }
 
 const Vertex& VertexArray::operator[](std::size_t index) const {
-    return vertexBuffer[index];
+    return vertices[index];
 }
 
 void VertexArray::clear() {
-    vertexBuffer.clear();
+    vertices.clear();
+    vertexBuffer.create(0);
 }
 
 void VertexArray::resize(unsigned int newSize) {
-    vertexBuffer.resize(newSize);
+    vertices.resize(newSize);
+    if (vertices.empty()) {
+        vertexBuffer.create(0);
+    } else {
+        vertexBuffer.update(vertices);
+    }
 }
 
 void VertexArray::append(const Vertex& vertex) {
-    vertexBuffer.append(vertex);
+    vertices.push_back(vertex);
+    vertexBuffer.update(vertices);
 }
 
 void VertexArray::setPrimitiveType(PrimitiveType type) {
@@ -68,6 +76,7 @@ void VertexArray::render(const Matrix4& view, const Matrix4& projection, const R
     renderShader->setMat4("model", combinedModel);
     renderShader->setMat4("view", view);
     renderShader->setMat4("projection", projection);
+    vertexBuffer.update(vertices);
     renderBase(renderShader, renderTexture, combinedModel, view, projection);
 }
 
@@ -76,15 +85,14 @@ const VertexBuffer& VertexArray::getVertexBuffer() const {
 }
 
 Vector2f VertexArray::getBoundsMin() const {
-    if (vertexBuffer.getVertexCount() == 0) {
+    if (vertices.empty()) {
         return Vector2f(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
     }
 
     float minX = std::numeric_limits<float>::max();
     float minY = std::numeric_limits<float>::max();
 
-    for (std::size_t i = 0; i < vertexBuffer.getVertexCount(); ++i) {
-        const Vertex& vertex = (*this)[i];
+    for (const auto& vertex : vertices) {
         if (vertex.position.x < minX) minX = vertex.position.x;
         if (vertex.position.y < minY) minY = vertex.position.y;
     }
@@ -93,15 +101,14 @@ Vector2f VertexArray::getBoundsMin() const {
 }
 
 Vector2f VertexArray::getBoundsMax() const {
-    if (vertexBuffer.getVertexCount() == 0) {
+    if (vertices.empty()) {
         return Vector2f(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
     }
 
     float maxX = std::numeric_limits<float>::lowest();
     float maxY = std::numeric_limits<float>::lowest();
 
-    for (std::size_t i = 0; i < vertexBuffer.getVertexCount(); ++i) {
-        const Vertex& vertex = (*this)[i];
+    for (const auto& vertex : vertices) {
         if (vertex.position.x > maxX) maxX = vertex.position.x;
         if (vertex.position.y > maxY) maxY = vertex.position.y;
     }
