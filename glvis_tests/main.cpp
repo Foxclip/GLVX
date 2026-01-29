@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include "test_lib/test.h"
+#include "glvis/render_states.h"
 #include "glvis/vector.h"
 #include "glvis/color.h"
 #include "glvis/vertex.h"
@@ -44,6 +45,7 @@ private:
     void vertexArrayLineTest(test::Test& test);
     void vertexArrayModifyTest(test::Test& test);
     void renderStatesTransformTest(test::Test& test);
+    void renderStatesTextureTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
@@ -69,6 +71,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto vertex_array_line_test = addTest("vertex_array_line", { clear_test }, [&](test::Test& test) { vertexArrayLineTest(test); });
     auto vertex_array_modify_test = addTest("vertex_array_modify", { vertex_array_triangle_test }, [&](test::Test& test) { vertexArrayModifyTest(test); });
     auto render_states_transform_test = addTest("render_states_transform", { rectangle_test }, [&](test::Test& test) { renderStatesTransformTest(test); });
+    auto render_states_texture_test = addTest("render_states_texture", { texture_test }, [&](test::Test& test) { renderStatesTextureTest(test); });
 }
 
 bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor) {
@@ -967,16 +970,76 @@ void GlvisTestModule::renderStatesTransformTest(test::Test& test) {
     T_COMPARE(image.getPixel(rect_end), Color::Black, &Color::toString);
 }
 
+void GlvisTestModule::renderStatesTextureTest(test::Test& test) {
+    const Vector2i window_size = Vector2i(100, 100);
+    window.setSize(window_size);
+    window.setTitle("render states texture");
+    View view;
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
+    window.setView(view);
+
+    // Create a 2x2 texture
+    const Vector2i texture_size = Vector2i(2, 2);
+    unsigned char texture_data[16] = {
+        1, 2, 3, 4,
+        5, 6, 7, 8,
+        9, 10, 11, 12,
+        13, 14, 15, 16
+    };
+
+    // Create a rectangle
+    const Vector2f rect_size = static_cast<Vector2f>(texture_size);
+    Rectangle rect(rect_size);
+    rect.setColor(Color::Red);
+
+    // Render a rectangle without the texture
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+
+    // Check that the rectangle is rendered correctly
+    T_WRAP_CONTAINER(checkPixelColor(
+        test,
+        window.readPixels(),
+        0,
+        0,
+        texture_size.x,
+        texture_size.y,
+        Color::Red
+    ));
+
+    // Use RenderStates to set the texture
+    Texture tex(texture_data, texture_size.x, texture_size.y);
+    RenderStates states;
+    states.texture = &tex;
+    rect.setColor(Color::White);
+    window.clear(Color::Black);
+    window.draw(rect, states);
+    window.display();
+
+    // Check that the texture is rendered correctly
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), Color(1, 2, 3, 4), &Color::toString);
+    T_COMPARE(image.getPixel(1, 0), Color(5, 6, 7, 8), &Color::toString);
+    T_COMPARE(image.getPixel(0, 1), Color(9, 10, 11, 12), &Color::toString);
+    T_COMPARE(image.getPixel(1, 1), Color(13, 14, 15, 16), &Color::toString);
+
+    // Check outside of the texture
+    T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);
+}
+
 int main() {
     test::TestModule root("glvis tests", nullptr);
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
     root.printSummary();
 
-    // TODO: RenderStates texture test
+    // TODO: add version of checkPixelColor with Vector2i
     // TODO: RenderStates shader test
-    // TODO: replace glm objects in renderStatesTransformTest with glvis objects
     // TODO: remove syncBuffer from VertexBuffer and make update method handle partial updates
+    // TODO: make vertex buffer update test
+    // TODO: make vertex buffer partial update test
     // TODO: text rendering
     // TODO: transparent texture rendering
 
