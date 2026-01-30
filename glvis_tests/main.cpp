@@ -1083,6 +1083,7 @@ int main() {
 
     // TODO: make vertex buffer update test
     // TODO: make vertex buffer partial update test
+    // TODO: make Rectangle and Circle use VertexArray
     // TODO: add size setting to Rectangle and Circle
     // TODO: text rendering
     // TODO: transparent texture rendering
