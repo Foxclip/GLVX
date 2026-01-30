@@ -923,6 +923,7 @@ public:
         const Matrix4& projection,
         const RenderStates& states = RenderStates()
     ) const override {
+        common::defaultShader->use();
         vertexBuffer.render(view, projection);
     }
 
