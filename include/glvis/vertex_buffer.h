@@ -40,6 +40,7 @@ private:
     unsigned int VAO = 0;
 
     void recreateBuffer(std::size_t size);
+    void updateBuffer(const void* data, unsigned int offset, std::size_t size);
 
 };
 
