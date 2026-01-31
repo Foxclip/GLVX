@@ -46,6 +46,7 @@ private:
     void viewPanTest(test::Test& test);
     void viewZoomTest(test::Test& test);
     void viewRotateTest(test::Test& test);
+    void vertexBufferUpdateTest(test::Test& test);
     void vertexArrayTriangleTest(test::Test& test);
     void vertexArrayLineTest(test::Test& test);
     void vertexArrayModifyTest(test::Test& test);
@@ -73,8 +74,9 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto view_pan_test = addTest("view_pan", { rectangle_test }, [&](test::Test& test) { viewPanTest(test); });
     auto view_zoom_test = addTest("view_zoom", { rectangle_test }, [&](test::Test& test) { viewZoomTest(test); });
     auto view_rotate_test = addTest("view_rotate", { rectangle_test }, [&](test::Test& test) { viewRotateTest(test); });
-    auto vertex_array_triangle_test = addTest("vertex_array_triangle", { clear_test }, [&](test::Test& test) { vertexArrayTriangleTest(test); });
-    auto vertex_array_line_test = addTest("vertex_array_line", { clear_test }, [&](test::Test& test) { vertexArrayLineTest(test); });
+    auto vertex_buffer_update_test = addTest("vertex_buffer_update", { /*vertexBufferRenderTest*/ }, [&](test::Test& test) { vertexBufferUpdateTest(test); });
+    auto vertex_array_triangle_test = addTest("vertex_array_triangle", { /*vertexBufferRenderTest*/ }, [&](test::Test& test) { vertexArrayTriangleTest(test); });
+    auto vertex_array_line_test = addTest("vertex_array_line", { /*vertexBufferRenderTest*/ }, [&](test::Test& test) { vertexArrayLineTest(test); });
     auto vertex_array_modify_test = addTest("vertex_array_modify", { vertex_array_triangle_test }, [&](test::Test& test) { vertexArrayModifyTest(test); });
     auto render_states_transform_test = addTest("render_states_transform", { rectangle_test }, [&](test::Test& test) { renderStatesTransformTest(test); });
     auto render_states_texture_test = addTest("render_states_texture", { texture_test }, [&](test::Test& test) { renderStatesTextureTest(test); });
@@ -764,6 +766,116 @@ void GlvisTestModule::viewRotateTest(test::Test& test) {
     T_COMPARE(image.getPixel(center), Color::Red, &Color::toString);
 }
 
+// Helper class to make VertexBuffer drawable for testing
+class VertexBufferDrawable : public Drawable {
+public:
+    explicit VertexBufferDrawable(VertexBuffer& vb) : vertexBuffer(vb) {
+        this->shader = common::defaultShader;
+    }
+
+    const VertexBuffer& getVertexBuffer() const override {
+        return vertexBuffer;
+    }
+
+    Matrix4 getModelMatrix() const override {
+        return Matrix4(); // Identity
+    }
+
+    void render(
+        const Matrix4& view,
+        const Matrix4& projection,
+        const RenderStates& states = RenderStates()
+    ) const override {
+        shader->use();
+        shader->setVec4("color", Vector4(255, 255, 255, 255));
+        shader->setMat4("model", getModelMatrix());
+        shader->setMat4("view", view);
+        shader->setMat4("projection", projection);
+        vertexBuffer.render(view, projection);
+    }
+
+private:
+    Shader* shader = nullptr;
+    VertexBuffer& vertexBuffer;
+};
+
+void GlvisTestModule::vertexBufferUpdateTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("vertex buffer update");
+    View view;
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
+    window.setView(view);
+    window.clear(Color::Black);
+
+    // Create a VertexBuffer with initial vertices (red triangle)
+    VertexBuffer vertexBuffer(PrimitiveType::Triangles);
+    const std::size_t initialVertexCount = 3;
+    T_ASSERT(vertexBuffer.create(initialVertexCount));
+
+    const Vector2f triangle_base_left = Vector2f(0, 0);
+    const Vector2f triangle_base_right = Vector2f(10, 0);
+    const Vector2f triangle_top = Vector2f(5, 10);
+
+    std::vector<Vertex> initialVertices = {
+        Vertex(triangle_base_left, Color::Red, Vector2f(0, 0)),
+        Vertex(triangle_base_right, Color::Red, Vector2f(0, 0)),
+        Vertex(triangle_top, Color::Red, Vector2f(0, 0))
+    };
+
+    T_ASSERT(vertexBuffer.update(initialVertices));
+
+    // Create drawable wrapper and render
+    VertexBufferDrawable drawable(vertexBuffer);
+    window.draw(drawable);
+    window.display();
+
+    // Check initial pixels (red triangle at position 0-10)
+    Image initial_image = window.readPixels();
+    const Vector2f triangle_center = (triangle_base_left + triangle_base_right + triangle_top) / 3.0f;
+    const Vector2i triangle_center_check = static_cast<Vector2i>(triangle_center);
+    const Vector2i triangle_left_check = static_cast<Vector2i>(triangle_base_left + Vector2f(2, 2));
+    const Vector2i outside_initial = static_cast<Vector2i>(triangle_base_right + Vector2f(5, 0));
+    T_COMPARE(initial_image.getPixel(triangle_center_check), Color::Red, &Color::toString);
+    T_COMPARE(initial_image.getPixel(triangle_left_check), Color::Red, &Color::toString);
+    T_COMPARE(initial_image.getPixel(outside_initial), Color::Black, &Color::toString);
+
+    // Update with new vertices (blue triangle at different position)
+    const Vector2f new_triangle_base_left = Vector2f(20, 0);
+    const Vector2f new_triangle_base_right = Vector2f(30, 0);
+    const Vector2f new_triangle_top = Vector2f(25, 10);
+
+    std::vector<Vertex> newVertices = {
+        Vertex(new_triangle_base_left, Color::Blue, Vector2f(0, 0)),
+        Vertex(new_triangle_base_right, Color::Blue, Vector2f(0, 0)),
+        Vertex(new_triangle_top, Color::Blue, Vector2f(0, 0))
+    };
+
+    T_ASSERT(vertexBuffer.update(newVertices));
+
+    // Render updated buffer
+    window.clear(Color::Black);
+    window.draw(drawable);
+    window.display();
+
+    // Check updated pixels (blue triangle at position 20-30)
+    Image updated_image = window.readPixels();
+    const Vector2f new_triangle_center = (new_triangle_base_left + new_triangle_base_right + new_triangle_top) / 3.0f;
+    const Vector2i new_triangle_center_check = static_cast<Vector2i>(new_triangle_center);
+    const Vector2i new_triangle_left_check = static_cast<Vector2i>(new_triangle_base_left + Vector2f(2, 2));
+
+    // Original position should now be black
+    T_COMPARE(updated_image.getPixel(triangle_center_check), Color::Black, &Color::toString);
+    T_COMPARE(updated_image.getPixel(triangle_left_check), Color::Black, &Color::toString);
+
+    // New position should be blue
+    T_COMPARE(updated_image.getPixel(new_triangle_center_check), Color::Blue, &Color::toString);
+    T_COMPARE(updated_image.getPixel(new_triangle_left_check), Color::Blue, &Color::toString);
+
+    // Position outside both triangles should be black
+    T_COMPARE(updated_image.getPixel(outside_initial), Color::Black, &Color::toString);
+}
+
 void GlvisTestModule::vertexArrayTriangleTest(test::Test& test) {
    window.setSize(WINDOW_SIZE);
    window.setTitle("vertex array triangle");
@@ -1081,8 +1193,11 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: make vertex buffer update test
+    // TODO: make vertex buffer render test
     // TODO: make vertex buffer partial update test
+    // TODO: remove view and projection arguments from VertexBuffer::render
+    // TODO: call renderBase in VertexBufferDrawable
+    // TODO: remove unnecessary uniform setting in Rectangle::render
     // TODO: make Rectangle and Circle use VertexArray
     // TODO: add size setting to Rectangle and Circle
     // TODO: text rendering
