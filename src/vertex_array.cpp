@@ -71,7 +71,6 @@ void VertexArray::render(const Matrix4& view, const Matrix4& projection, const R
     Shader* renderShader = states.shader ? states.shader : shader;
     if (renderShader == nullptr) return;
     AbstractTexture* renderTexture = states.texture ? states.texture : texture;
-    renderShader->use();
     Matrix4 combinedModel = states.transform * getModelMatrix();
     vertexBuffer.update(vertices);
     renderBase(renderShader, renderTexture, color, combinedModel, view, projection);
