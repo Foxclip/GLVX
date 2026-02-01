@@ -47,16 +47,6 @@ Circle::~Circle() {
     // VertexBuffer destructor will handle cleanup
 }
 
-void Circle::setTexture(AbstractTexture* texture) {
-    this->texture = texture;
-}
-
-void Circle::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
-    START_TRY
-    renderBase(shader, texture, color, getModelMatrix(), view, projection, states);
-    END_TRY
-}
-
 const VertexBuffer& Circle::getVertexBuffer() const {
     return vertexBuffer;
 }

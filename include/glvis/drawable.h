@@ -18,14 +18,20 @@ public:
     virtual const VertexBuffer& getVertexBuffer() const = 0;
     Color getColor() const;
     void setColor(const Color& color);
+    Shader* getShader() const;
+    void setShader(Shader* shader);
+    AbstractTexture* getTexture() const;
+    void setTexture(AbstractTexture* texture);
     virtual void render(
         const Matrix4& view,
         const Matrix4& projection,
         const RenderStates& states = RenderStates()
-    ) const = 0;
+    ) const;
 
 protected:
     Color color = Color::White;
+    Shader* shader = nullptr;
+    AbstractTexture* texture = nullptr;
 
     void renderBase(
         Shader* shader,

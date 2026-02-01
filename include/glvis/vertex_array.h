@@ -24,8 +24,6 @@ public:
     void resize(unsigned int newSize);
     void append(const Vertex& vertex);
     void setPrimitiveType(PrimitiveType type);
-    void setShader(Shader* shader);
-    void setTexture(AbstractTexture* texture);
     void render(
         const Matrix4& view,
         const Matrix4& projection,
@@ -37,8 +35,6 @@ public:
 private:
     std::vector<Vertex> vertices;
     mutable VertexBuffer vertexBuffer;
-    Shader* shader = nullptr;
-    AbstractTexture* texture = nullptr;
 };
 
 }

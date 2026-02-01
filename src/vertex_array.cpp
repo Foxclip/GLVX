@@ -59,14 +59,6 @@ void VertexArray::setPrimitiveType(PrimitiveType type) {
     vertexBuffer.setPrimitiveType(type);
 }
 
-void VertexArray::setShader(Shader* shader) {
-    this->shader = shader;
-}
-
-void VertexArray::setTexture(AbstractTexture* texture) {
-    this->texture = texture;
-}
-
 void VertexArray::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
     START_TRY
     vertexBuffer.update(vertices);

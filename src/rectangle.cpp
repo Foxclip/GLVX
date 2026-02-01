@@ -65,16 +65,6 @@ Vector2f Rectangle::getSize() const {
     return Vector2f(width, height);
 }
 
-void Rectangle::setTexture(AbstractTexture* texture) {
-    this->texture = texture;
-}
-
-void Rectangle::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
-    START_TRY
-    renderBase(shader, texture, color, getModelMatrix(), view, projection, states);
-    END_TRY
-}
-
 const VertexBuffer& Rectangle::getVertexBuffer() const {
     return vertexBuffer;
 }
