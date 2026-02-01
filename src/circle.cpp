@@ -19,7 +19,7 @@ Circle::Circle(float radius, size_t numSegments) : Shape(PrimitiveType::Triangle
     // Add center vertex
     getVertex(0) = Vertex {
         Vector2f(radius, radius), // position
-        Color(255, 255, 255, 255), // color
+        Color::White, // color
         Vector2f(0.5f, 0.5f) // texCoords
     };
 
@@ -32,7 +32,7 @@ Circle::Circle(float radius, size_t numSegments) : Shape(PrimitiveType::Triangle
         float texY = (y / radius + 1.0f) / 2.0f;
         getVertex(i + 1) = Vertex {
             Vector2f(x_shifted, y_shifted), // position
-            Color(255, 255, 255, 255), // color
+            Color::White, // color
             Vector2f(texX, texY) // texCoords
         };
     }
