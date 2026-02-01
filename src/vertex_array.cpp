@@ -36,6 +36,14 @@ const Vertex& VertexArray::operator[](std::size_t index) const {
     return vertices[index];
 }
 
+Vertex& VertexArray::getVertex(std::size_t index) {
+    return vertices[index];
+}
+
+const Vertex& VertexArray::getVertex(std::size_t index) const {
+    return vertices[index];
+}
+
 void VertexArray::clear() {
     vertices.clear();
     vertexBuffer.create(0);

@@ -20,6 +20,8 @@ public:
     Vector2f getBoundsMax() const;
     Vertex& operator[](std::size_t index);
     const Vertex& operator[](std::size_t index) const;
+    Vertex& getVertex(std::size_t index);
+    const Vertex& getVertex(std::size_t index) const;
     void clear();
     void resize(unsigned int newSize);
     void append(const Vertex& vertex);

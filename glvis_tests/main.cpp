@@ -1315,8 +1315,9 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: make Rectangle and Circle use VertexArray
+    // TODO: make Circle test that renders diamond shape
     // TODO: add size setting to Rectangle and Circle
+    // TODO: split tests into separate files
     // TODO: text rendering
     // TODO: transparent texture rendering
 
