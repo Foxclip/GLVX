@@ -804,6 +804,48 @@ private:
     VertexBuffer& vertexBuffer;
 };
 
+void GlvisTestModule::vertexBufferRenderTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("vertex buffer render");
+    View view;
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
+    window.setView(view);
+    window.clear(Color::Black);
+
+    // Create a VertexBuffer with initial vertices (red triangle)
+    VertexBuffer vertexBuffer(PrimitiveType::Triangles);
+    const std::size_t initialVertexCount = 3;
+    T_ASSERT(vertexBuffer.create(initialVertexCount));
+
+    const Vector2f triangle_base_left = Vector2f(0, 0);
+    const Vector2f triangle_base_right = Vector2f(10, 0);
+    const Vector2f triangle_top = Vector2f(5, 10);
+
+    std::vector<Vertex> initialVertices = {
+        Vertex(triangle_base_left, Color::Red, Vector2f(0, 0)),
+        Vertex(triangle_base_right, Color::Red, Vector2f(0, 0)),
+        Vertex(triangle_top, Color::Red, Vector2f(0, 0))
+    };
+
+    T_ASSERT(vertexBuffer.update(initialVertices));
+
+    // Create drawable wrapper and render
+    VertexBufferDrawable drawable(vertexBuffer);
+    window.draw(drawable);
+    window.display();
+
+    // Check initial pixels (red triangle at position 0-10)
+    Image image = window.readPixels();
+    const Vector2f triangle_center = (triangle_base_left + triangle_base_right + triangle_top) / 3.0f;
+    const Vector2i triangle_center_check = static_cast<Vector2i>(triangle_center);
+    const Vector2i triangle_left_check = static_cast<Vector2i>(triangle_base_left + Vector2f(2, 2));
+    const Vector2i outside_initial = static_cast<Vector2i>(triangle_base_right + Vector2f(5, 0));
+    T_COMPARE(image.getPixel(triangle_center_check), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(triangle_left_check), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(outside_initial), Color::Black, &Color::toString);
+}
+
 void GlvisTestModule::vertexBufferUpdateTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("vertex buffer update");
@@ -962,48 +1004,6 @@ void GlvisTestModule::vertexBufferPartialUpdateTest(test::Test& test) {
 
     // Position outside should still be black
     T_COMPARE(updated_image.getPixel(outside), Color::Black, &Color::toString);
-}
-
-void GlvisTestModule::vertexBufferRenderTest(test::Test& test) {
-    window.setSize(WINDOW_SIZE);
-    window.setTitle("vertex buffer render");
-    View view;
-    Vector2f window_center = window.getCenter();
-    view.setPosition(window_center);
-    window.setView(view);
-    window.clear(Color::Black);
-
-    // Create a VertexBuffer with initial vertices (red triangle)
-    VertexBuffer vertexBuffer(PrimitiveType::Triangles);
-    const std::size_t initialVertexCount = 3;
-    T_ASSERT(vertexBuffer.create(initialVertexCount));
-
-    const Vector2f triangle_base_left = Vector2f(0, 0);
-    const Vector2f triangle_base_right = Vector2f(10, 0);
-    const Vector2f triangle_top = Vector2f(5, 10);
-
-    std::vector<Vertex> initialVertices = {
-        Vertex(triangle_base_left, Color::Red, Vector2f(0, 0)),
-        Vertex(triangle_base_right, Color::Red, Vector2f(0, 0)),
-        Vertex(triangle_top, Color::Red, Vector2f(0, 0))
-    };
-
-    T_ASSERT(vertexBuffer.update(initialVertices));
-
-    // Create drawable wrapper and render
-    VertexBufferDrawable drawable(vertexBuffer);
-    window.draw(drawable);
-    window.display();
-
-    // Check initial pixels (red triangle at position 0-10)
-    Image image = window.readPixels();
-    const Vector2f triangle_center = (triangle_base_left + triangle_base_right + triangle_top) / 3.0f;
-    const Vector2i triangle_center_check = static_cast<Vector2i>(triangle_center);
-    const Vector2i triangle_left_check = static_cast<Vector2i>(triangle_base_left + Vector2f(2, 2));
-    const Vector2i outside_initial = static_cast<Vector2i>(triangle_base_right + Vector2f(5, 0));
-    T_COMPARE(image.getPixel(triangle_center_check), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(triangle_left_check), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(outside_initial), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::vertexArrayTriangleTest(test::Test& test) {
@@ -1315,7 +1315,6 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: remove view and projection arguments from VertexBuffer::render
     // TODO: call renderBase in VertexBufferDrawable
     // TODO: remove unnecessary uniform setting in Rectangle::render
     // TODO: make Rectangle and Circle use VertexArray
