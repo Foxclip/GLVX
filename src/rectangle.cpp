@@ -8,49 +8,41 @@
 
 namespace glvis {
 
-Rectangle::Rectangle(float width, float height) {
+Rectangle::Rectangle(float width, float height) : Shape(PrimitiveType::Triangles, 6) {
     this->width = width;
     this->height = height;
-    this->shader = common::defaultShader;
 
     // Create vertices for rectangle (2 triangles, 6 vertices total)
-    std::vector<Vertex> vertices(6);
     // First triangle (0, height), (0, 0), (width, height)
-    vertices[0].position = Vector2f(0.0f, height);
-    vertices[0].color = Color(255, 255, 255, 255);
-    vertices[0].texCoords = Vector2f(0.0f, 1.0f);
+    (*this)[0].position = Vector2f(0.0f, height);
+    (*this)[0].color = Color(255, 255, 255, 255);
+    (*this)[0].texCoords = Vector2f(0.0f, 1.0f);
 
-    vertices[1].position = Vector2f(0.0f, 0.0f);
-    vertices[1].color = Color(255, 255, 255, 255);
-    vertices[1].texCoords = Vector2f(0.0f, 0.0f);
+    (*this)[1].position = Vector2f(0.0f, 0.0f);
+    (*this)[1].color = Color(255, 255, 255, 255);
+    (*this)[1].texCoords = Vector2f(0.0f, 0.0f);
 
-    vertices[2].position = Vector2f(width, height);
-    vertices[2].color = Color(255, 255, 255, 255);
-    vertices[2].texCoords = Vector2f(1.0f, 1.0f);
+    (*this)[2].position = Vector2f(width, height);
+    (*this)[2].color = Color(255, 255, 255, 255);
+    (*this)[2].texCoords = Vector2f(1.0f, 1.0f);
 
     // Second triangle (width, height), (0, 0), (width, 0)
-    vertices[3].position = Vector2f(width, height);
-    vertices[3].color = Color(255, 255, 255, 255);
-    vertices[3].texCoords = Vector2f(1.0f, 1.0f);
+    (*this)[3].position = Vector2f(width, height);
+    (*this)[3].color = Color(255, 255, 255, 255);
+    (*this)[3].texCoords = Vector2f(1.0f, 1.0f);
 
-    vertices[4].position = Vector2f(0.0f, 0.0f);
-    vertices[4].color = Color(255, 255, 255, 255);
-    vertices[4].texCoords = Vector2f(0.0f, 0.0f);
+    (*this)[4].position = Vector2f(0.0f, 0.0f);
+    (*this)[4].color = Color(255, 255, 255, 255);
+    (*this)[4].texCoords = Vector2f(0.0f, 0.0f);
 
-    vertices[5].position = Vector2f(width, 0.0f);
-    vertices[5].color = Color(255, 255, 255, 255);
-    vertices[5].texCoords = Vector2f(1.0f, 0.0f);
-
-    // Initialize vertex buffer with 6 vertices
-    vertexBuffer.create(6);
-    vertexBuffer.update(vertices);
-    vertexBuffer.setPrimitiveType(PrimitiveType::Triangles);
+    (*this)[5].position = Vector2f(width, 0.0f);
+    (*this)[5].color = Color(255, 255, 255, 255);
+    (*this)[5].texCoords = Vector2f(1.0f, 0.0f);
 }
 
 Rectangle::Rectangle(const Vector2f& size) : Rectangle(size.x, size.y) {}
 
 Rectangle::~Rectangle() {
-    // VertexBuffer destructor will handle cleanup
 }
 
 float Rectangle::getWidth() const {
@@ -63,10 +55,6 @@ float Rectangle::getHeight() const {
 
 Vector2f Rectangle::getSize() const {
     return Vector2f(width, height);
-}
-
-const VertexBuffer& Rectangle::getVertexBuffer() const {
-    return vertexBuffer;
 }
 
 }

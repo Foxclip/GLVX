@@ -1,20 +1,16 @@
 #pragma once
 
-#include "glvis/drawable.h"
+#include "glvis/vertex_array.h"
 #include "glvis/transformable.h"
 
 namespace glvis {
 
-class Shader;
-
-class Shape : public Drawable, public Transformable {
+class Shape : public VertexArray, public Transformable {
 public:
     Matrix4 getModelMatrix() const override;
 
 protected:
-
-
-private:
+    using VertexArray::VertexArray;  // Inherit constructors from VertexArray
 
 };
 
