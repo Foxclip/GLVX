@@ -1315,7 +1315,6 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: remove unnecessary uniform setting in Rectangle::render
     // TODO: make Rectangle and Circle use VertexArray
     // TODO: add size setting to Rectangle and Circle
     // TODO: text rendering
