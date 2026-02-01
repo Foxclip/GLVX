@@ -37,17 +37,6 @@ protected:
         const RenderStates& states = RenderStates()
     ) const;
 
-private:
-    static void renderInternal(
-        const VertexBuffer& vertexBuffer,
-        Shader* shader,
-        AbstractTexture* texture,
-        const Color& color,
-        const Matrix4& model,
-        const Matrix4& view,
-        const Matrix4& projection
-    );
-
 };
 
 }
