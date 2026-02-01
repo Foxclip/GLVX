@@ -77,7 +77,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto view_pan_test = addTest("view_pan", { rectangle_test }, [&](test::Test& test) { viewPanTest(test); });
     auto view_zoom_test = addTest("view_zoom", { rectangle_test }, [&](test::Test& test) { viewZoomTest(test); });
     auto view_rotate_test = addTest("view_rotate", { rectangle_test }, [&](test::Test& test) { viewRotateTest(test); });
-    auto vertex_buffer_render_test = addTest("vertex_buffer_render", { }, [&](test::Test& test) { vertexBufferRenderTest(test); });
+    auto vertex_buffer_render_test = addTest("vertex_buffer_render", { clear_test }, [&](test::Test& test) { vertexBufferRenderTest(test); });
     auto vertex_buffer_update_test = addTest("vertex_buffer_update", { vertex_buffer_render_test }, [&](test::Test& test) { vertexBufferUpdateTest(test); });
     auto vertex_buffer_partial_update_test = addTest("vertex_buffer_partial_update", { vertex_buffer_update_test }, [&](test::Test& test) { vertexBufferPartialUpdateTest(test); });
     auto vertex_array_triangle_test = addTest("vertex_array_triangle", { vertex_buffer_render_test }, [&](test::Test& test) { vertexArrayTriangleTest(test); });

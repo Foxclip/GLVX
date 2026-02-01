@@ -10,11 +10,9 @@ class Circle : public Shape {
 public:
     Circle(float radius = 0, size_t numSegments = 30);
     ~Circle();
-    void setTexture(AbstractTexture* texture);
     const VertexBuffer& getVertexBuffer() const override;
 
 private:
-    AbstractTexture* texture = nullptr;
     float radius = 0.0f;
     size_t numSegments = 0;
     VertexBuffer vertexBuffer;

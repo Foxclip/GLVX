@@ -65,10 +65,6 @@ Vector2f Rectangle::getSize() const {
     return Vector2f(width, height);
 }
 
-void Rectangle::setTexture(AbstractTexture* texture) {
-    this->texture = texture;
-}
-
 const VertexBuffer& Rectangle::getVertexBuffer() const {
     return vertexBuffer;
 }

@@ -46,7 +46,7 @@ void Drawable::renderBase(
 ) const {
     const VertexBuffer& vertexBuffer = getVertexBuffer();
     Shader* renderShader = states.shader ? states.shader : shader;
-    assert(renderShader);
+    if (!renderShader) throw std::runtime_error("Shader is not set");
     AbstractTexture* renderTexture = states.texture ? states.texture : texture;
     Matrix4 combinedModel = states.transform * getModelMatrix();
     renderShader->use();

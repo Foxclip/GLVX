@@ -47,10 +47,6 @@ Circle::~Circle() {
     // VertexBuffer destructor will handle cleanup
 }
 
-void Circle::setTexture(AbstractTexture* texture) {
-    this->texture = texture;
-}
-
 const VertexBuffer& Circle::getVertexBuffer() const {
     return vertexBuffer;
 }

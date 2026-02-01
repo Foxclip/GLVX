@@ -16,11 +16,9 @@ public:
     float getWidth() const;
     float getHeight() const;
     Vector2f getSize() const;
-    void setTexture(AbstractTexture* texture);
     const VertexBuffer& getVertexBuffer() const override;
 
 private:
-    AbstractTexture* texture = nullptr;
     float width = 0.0f;
     float height = 0.0f;
     VertexBuffer vertexBuffer;
