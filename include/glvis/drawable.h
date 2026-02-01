@@ -25,10 +25,18 @@ public:
     ) const = 0;
 
 protected:
-    void renderBase(Shader* shader, AbstractTexture* texture, const Matrix4& model, const Matrix4& view, const Matrix4& projection) const;
+    Color color = Color::White;
+
+    void renderBase(
+        Shader* shader,
+        AbstractTexture* texture,
+        const Color& color,
+        const Matrix4& model,
+        const Matrix4& view,
+        const Matrix4& projection
+    ) const;
 
 private:
-    Color color = Color::White;
 
 };
 

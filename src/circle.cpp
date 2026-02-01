@@ -58,11 +58,7 @@ void Circle::render(const Matrix4& view, const Matrix4& projection, const Render
     AbstractTexture* renderTexture = states.texture ? states.texture : texture;
     renderShader->use();
     Matrix4 combinedModel = states.transform * getModelMatrix();
-    renderShader->setMat4("model", combinedModel);
-    renderShader->setMat4("view", view);
-    renderShader->setMat4("projection", projection);
-    renderShader->setVec4("color", Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-    renderBase(renderShader, renderTexture, combinedModel, view, projection);
+    renderBase(renderShader, renderTexture, color, combinedModel, view, projection);
     END_TRY
 }
 
