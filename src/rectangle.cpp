@@ -71,11 +71,7 @@ void Rectangle::setTexture(AbstractTexture* texture) {
 
 void Rectangle::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
     START_TRY
-    Shader* renderShader = states.shader ? states.shader : shader;
-    if (renderShader == nullptr) throw std::runtime_error("Shader not set");
-    AbstractTexture* renderTexture = states.texture ? states.texture : texture;
-    Matrix4 combinedModel = states.transform * getModelMatrix();
-    renderBase(renderShader, renderTexture, color, combinedModel, view, projection);
+    renderBase(shader, texture, color, getModelMatrix(), view, projection, states);
     END_TRY
 }
 

@@ -25,8 +25,28 @@ void Drawable::renderBase(
     const Color& color,
     const Matrix4& model,
     const Matrix4& view,
-    const Matrix4& projection
+    const Matrix4& projection,
+    const RenderStates& states
 ) const {
+    const VertexBuffer& vertexBuffer = getVertexBuffer();
+    Shader* renderShader = states.shader ? states.shader : shader;
+    if (renderShader == nullptr) throw std::runtime_error("Shader not set");
+    AbstractTexture* renderTexture = states.texture ? states.texture : texture;
+    Matrix4 combinedModel = states.transform * getModelMatrix();
+    Drawable::renderInternal(
+        vertexBuffer, renderShader, renderTexture, color, combinedModel, view, projection
+    );
+}
+
+void Drawable::renderInternal(
+    const VertexBuffer& vertexBuffer,
+    Shader* shader,
+    AbstractTexture* texture,
+    const Color& color,
+    const Matrix4& model,
+    const Matrix4& view,
+    const Matrix4& projection
+) {
     shader->use();
     shader->setVec4("color", Vector4(color.r, color.g, color.b, color.a));
     shader->setMat4("model", model);
@@ -39,7 +59,6 @@ void Drawable::renderBase(
     } else {
         shader->setBool("hasTexture", false);
     }
-    const VertexBuffer& vertexBuffer = getVertexBuffer();
     vertexBuffer.render();
 }
 
