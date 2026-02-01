@@ -32,7 +32,7 @@ void Drawable::renderBase(Shader* shader, AbstractTexture* texture, const Matrix
         shader->setBool("hasTexture", false);
     }
     const VertexBuffer& vertexBuffer = getVertexBuffer();
-    vertexBuffer.render(view, projection);
+    vertexBuffer.render();
 }
 
 }

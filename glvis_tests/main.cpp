@@ -796,7 +796,7 @@ public:
         shader->setMat4("model", getModelMatrix());
         shader->setMat4("view", view);
         shader->setMat4("projection", projection);
-        vertexBuffer.render(view, projection);
+        vertexBuffer.render();
     }
 
 private:

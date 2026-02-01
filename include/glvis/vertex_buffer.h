@@ -28,7 +28,7 @@ public:
     void setPrimitiveType(PrimitiveType type);
     void setUsage(Usage usage);
     unsigned int getVAO() const;
-    void render(const Matrix4& view, const Matrix4& projection) const;
+    void render() const;
 
 private:
     bool isInitialized = false;
