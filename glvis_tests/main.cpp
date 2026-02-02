@@ -1354,8 +1354,6 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: make Circle test that renders diamond shape
-    // TODO: add asserts where appropriate
     // TODO: add size setting to Rectangle and Circle
     // TODO: split tests into separate files
     // TODO: text rendering
