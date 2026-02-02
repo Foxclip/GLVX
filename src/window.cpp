@@ -151,7 +151,7 @@ Image Window::readPixels() const {
 Vector2i Window::worldToScreen(float x, float y) const {
     glm::vec4 point = to_glmMat4(view) * glm::vec4(x, y, 0.0f, 1.0f);
     glm::vec2 result = glm::vec2(point.x, currentHeight - point.y);
-    return Vector2i(static_cast<int>(std::round(result.x)), static_cast<int>(std::round(result.y)));
+    return Vector2i(static_cast<int>(result.x), static_cast<int>(result.y));
 }
 
 Vector2i Window::worldToScreen(const Vector2f& worldPos) const {
