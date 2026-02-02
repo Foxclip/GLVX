@@ -33,6 +33,7 @@ private:
 
     void clearTest(test::Test& test);
     void rectangleTest(test::Test& test);
+    void rectangleSetSizeTest(test::Test& test);
     void circleTest(test::Test& test);
     void moveTest(test::Test& test);
     void setOriginTest(test::Test& test);
@@ -63,6 +64,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "glvis tests");
     auto clear_test = addTest("clear", [&](test::Test& test) { clearTest(test); });
     auto rectangle_test = addTest("rectangle", { clear_test }, [&](test::Test& test) { rectangleTest(test); });
+    auto rectangle_set_size_test = addTest("retcangle_set_size", { rectangle_test }, [&](test::Test& test) { rectangleSetSizeTest(test); });
     auto circle_test = addTest("circle", { clear_test }, [&](test::Test& test) { circleTest(test); });
     auto move_test = addTest("move", { rectangle_test }, [&](test::Test& test) { moveTest(test); });
     auto set_origin_test = addTest("set_origin", { rectangle_test }, [&](test::Test& test) { setOriginTest(test); });
@@ -169,6 +171,43 @@ void GlvisTestModule::rectangleTest(test::Test& test) {
     T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(static_cast<Vector2i>(rect_size) - Vector2i(1, 1)), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(static_cast<Vector2i>(rect_size)), Color::Black, &Color::toString);
+}
+
+void GlvisTestModule::rectangleSetSizeTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("rectangle set size");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    // Create a rectangle with initial size
+    const Vector2f initial_size = Vector2f(10.0f, 10.0f);
+    Rectangle rect(initial_size);
+    rect.setColor(Color::Red);
+    window.draw(rect);
+    window.display();
+
+    // Check that the rectangle is rendered correctly with initial size
+    Image image = window.readPixels();
+    Vector2i rect_size_int = static_cast<Vector2i>(initial_size);
+    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
+
+    // Change the size using setSize()
+    const Vector2f new_size = Vector2f(20.0f, 15.0f);
+    rect.setSize(new_size);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+
+    // Check that the rectangle is rendered correctly with new size
+    image = window.readPixels();
+    Vector2i new_size_int = static_cast<Vector2i>(new_size);
+    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(new_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(new_size_int), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::circleTest(test::Test& test) {
