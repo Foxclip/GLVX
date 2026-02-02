@@ -10,7 +10,7 @@
 
 namespace glvis {
 
-Circle::Circle(float radius, size_t numSegments) : Shape(PrimitiveType::TriangleFan, numSegments + 1) {
+Circle::Circle(float radius, size_t numSegments) : Shape(PrimitiveType::TriangleFan, numSegments + 2) {
     this->radius = radius;
     this->numSegments = numSegments;
 
@@ -23,9 +23,14 @@ Circle::Circle(float radius, size_t numSegments) : Shape(PrimitiveType::Triangle
         Vector2f(0.5f, 0.5f) // texCoords
     };
 
-    for (size_t i = 0; i < numSegments; i++) {
+    for (size_t i = 0; i <= numSegments; i++) {
         float x = radius * cos(theta * i);
         float y = radius * sin(theta * i);
+        // When i == numSegments, wrap around to 0 for closing the loop
+        if (i == numSegments) {
+            x = radius * cos(theta * 0);
+            y = radius * sin(theta * 0);
+        }
         float x_shifted = x + radius;
         float y_shifted = y + radius;
         float texX = (x / radius + 1.0f) / 2.0f;
