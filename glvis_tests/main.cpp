@@ -190,17 +190,18 @@ void GlvisTestModule::circleTest(test::Test& test) {
 
     // Check the 4 diamond vertices (all should be Red - on the diamond edges)
     Image image = window.readPixels();
+    const float radius_offset = std::floor(circle_radius);
     const Vector2i top_check = static_cast<Vector2i>(
-        circle_center + Vector2f(0, -circle_radius)
+        circle_center + Vector2f(0, -radius_offset)
     );
     const Vector2i right_check = static_cast<Vector2i>(
-        circle_center + Vector2f(circle_radius - 1, 0)
+        circle_center + Vector2f(radius_offset, 0)
     );
     const Vector2i bottom_check = static_cast<Vector2i>(
-        circle_center + Vector2f(0, circle_radius - 1)
+        circle_center + Vector2f(0, radius_offset)
     );
     const Vector2i left_check = static_cast<Vector2i>(
-        circle_center + Vector2f(-circle_radius, 0)
+        circle_center + Vector2f(-radius_offset, 0)
     );
     T_COMPARE(image.getPixel(top_check), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(right_check), Color::Red, &Color::toString);
