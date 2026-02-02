@@ -16,7 +16,19 @@ Circle::Circle(float radius, size_t numSegments) : Shape(PrimitiveType::Triangle
     assert(numSegments >= 3);
     this->radius = radius;
     this->numSegments = numSegments;
+    createVertices();
+}
 
+Circle::~Circle() {
+}
+
+void Circle::setRadius(float radius) {
+    assert(radius >= 0);
+    this->radius = radius;
+    createVertices();
+}
+
+void Circle::createVertices() {
     float theta = (float)(2.0 * M_PI / numSegments);
 
     // Add center vertex
@@ -44,9 +56,6 @@ Circle::Circle(float radius, size_t numSegments) : Shape(PrimitiveType::Triangle
             Vector2f(texX, texY) // texCoords
         };
     }
-}
-
-Circle::~Circle() {
 }
 
 }

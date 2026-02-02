@@ -35,6 +35,7 @@ private:
     void rectangleTest(test::Test& test);
     void rectangleSetSizeTest(test::Test& test);
     void circleTest(test::Test& test);
+    void circleSetRadiusTest(test::Test& test);
     void moveTest(test::Test& test);
     void setOriginTest(test::Test& test);
     void rotateTopLeftTest(test::Test& test);
@@ -66,6 +67,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto rectangle_test = addTest("rectangle", { clear_test }, [&](test::Test& test) { rectangleTest(test); });
     auto rectangle_set_size_test = addTest("retcangle_set_size", { rectangle_test }, [&](test::Test& test) { rectangleSetSizeTest(test); });
     auto circle_test = addTest("circle", { clear_test }, [&](test::Test& test) { circleTest(test); });
+    auto circle_set_radius_test = addTest("circle_set_radius", { circle_test }, [&](test::Test& test) { circleSetRadiusTest(test); });
     auto move_test = addTest("move", { rectangle_test }, [&](test::Test& test) { moveTest(test); });
     auto set_origin_test = addTest("set_origin", { rectangle_test }, [&](test::Test& test) { setOriginTest(test); });
     auto rotate_rop_left_test = addTest("rotate_top_left", { set_origin_test }, [&](test::Test& test) { rotateTopLeftTest(test); });
@@ -269,6 +271,71 @@ void GlvisTestModule::circleTest(test::Test& test) {
     // Check a pixel outside the diamond (should be Black)
     const Vector2i outside_check = static_cast<Vector2i>(
         circle_center + Vector2f(circle_radius, circle_radius) + Vector2f(1, 1)
+    );
+    T_COMPARE(image.getPixel(outside_check), Color::Black, &Color::toString);
+}
+
+void GlvisTestModule::circleSetRadiusTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("circle_set_radius");
+    View view;
+    const Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
+    window.setView(view);
+    window.clear(Color::Black);
+
+    // Render a circle with initial radius
+    const float initial_radius = 5.5f;
+    const Vector2f circle_center(initial_radius, initial_radius);
+    Circle circle(initial_radius, 4); // 4 segments = diamond shape
+    circle.setColor(Color::Red);
+    window.draw(circle);
+    window.display();
+
+    // Check the initial circle (smaller diamond)
+    Image image = window.readPixels();
+    const float initial_radius_offset = std::floor(initial_radius);
+    const Vector2i initial_right_check = window.worldToScreen(
+        circle_center + Vector2f(initial_radius_offset, 0)
+    );
+    const Vector2i initial_bottom_check = window.worldToScreen(
+        circle_center + Vector2f(0, initial_radius_offset)
+    );
+    T_COMPARE(image.getPixel(initial_right_check), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(initial_bottom_check), Color::Red, &Color::toString);
+
+    // Check a pixel that should be outside the initial circle but inside the new one
+    const float new_radius = 10.5f;
+    const float mid_radius = (initial_radius + new_radius) / 2.0f;
+    const Vector2i mid_check = window.worldToScreen(
+        circle_center + Vector2f(mid_radius, 0)
+    );
+    T_COMPARE(image.getPixel(mid_check), Color::Black, &Color::toString);
+
+    // Change the radius
+    circle.setRadius(new_radius);
+    window.clear(Color::Black);
+    window.draw(circle);
+    window.display();
+
+    // Check the circle with new radius (larger diamond)
+    image = window.readPixels();
+    const float new_radius_offset = std::floor(new_radius);
+    const Vector2i new_right_check = window.worldToScreen(
+        circle_center + Vector2f(new_radius_offset, 0)
+    );
+    const Vector2i new_bottom_check = window.worldToScreen(
+        circle_center + Vector2f(0, new_radius_offset)
+    );
+    T_COMPARE(image.getPixel(new_right_check), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(new_bottom_check), Color::Red, &Color::toString);
+
+    // Check that the midpoint is now red
+    T_COMPARE(image.getPixel(mid_check), Color::Red, &Color::toString);
+
+    // Check a pixel outside the new circle
+    const Vector2i outside_check = window.worldToScreen(
+        circle_center + Vector2f(new_radius_offset + 1, 0)
     );
     T_COMPARE(image.getPixel(outside_check), Color::Black, &Color::toString);
 }
@@ -1393,7 +1460,8 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: add size setting to Rectangle and Circle
+    // TODO: add worldToScreen and screenToWorld tests
+    // TODO: replace raw casts with static_cast
     // TODO: split tests into separate files
     // TODO: text rendering
     // TODO: transparent texture rendering

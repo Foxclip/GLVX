@@ -35,8 +35,10 @@ public:
     void draw(const Drawable& drawable, const RenderStates& states = RenderStates()) const;
     void display() const;
     Image readPixels() const;
-    Vector2f worldToScreen(float x, float y) const;
+    Vector2i worldToScreen(float x, float y) const;
+    Vector2i worldToScreen(const Vector2f& worldPos) const;
     Vector2f screenToWorld(int x, int y) const;
+    Vector2f screenToWorld(const Vector2i& screenPos) const;
 
     using mouseCallbackFuncType = std::function<void(double xpos, double ypos)>;
     using mouseButtonCallbackFuncType = std::function<void(int button, int action, int mods)>;
