@@ -175,24 +175,45 @@ void GlvisTestModule::circleTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("circle");
     View view;
-    view.setPosition(window.getCenter());
+    const Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
 
-    // Render a circle
+    // Render a circle with 4 vertices
     const float circle_radius = 5.0f;
-    Circle circle(circle_radius);
+    const Vector2f circle_center(circle_radius, circle_radius);
+    Circle circle(circle_radius, 4); // 4 segments = diamond shape
     circle.setColor(Color::Red);
     window.draw(circle);
     window.display();
 
-    // Check that the circle is rendered correctly
+    // Check the 4 diamond vertices (all should be Red - on the diamond edges)
     Image image = window.readPixels();
-    Vector2i circle_center((int)circle_radius, (int)circle_radius);
-    Vector2i circle_bounds_max = circle_center * 2;
-    T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(circle_center), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(circle_bounds_max - Vector2i(1, 1)), Color::Black, &Color::toString);
+    const Vector2i top_check = static_cast<Vector2i>(circle_center + Vector2f(0, -5));
+    const Vector2i right_check = static_cast<Vector2i>(circle_center + Vector2f(5, 0));
+    const Vector2i bottom_check = static_cast<Vector2i>(circle_center + Vector2f(0, 5));
+    const Vector2i left_check = static_cast<Vector2i>(circle_center + Vector2f(-5, 0));
+    T_COMPARE(image.getPixel(top_check), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(right_check), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(bottom_check), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(left_check), Color::Red, &Color::toString);
+
+    // Check diagonal pixels from top-left to bottom-right
+    const Vector2i top_left_check = static_cast<Vector2i>(circle_center + Vector2f(-5, -5));
+    const Vector2i bottom_right_check = static_cast<Vector2i>(circle_center + Vector2f(5, 5));
+    const Vector2i top_right_check = static_cast<Vector2i>(circle_center + Vector2f(5, -5));
+    const Vector2i bottom_left_check = static_cast<Vector2i>(circle_center + Vector2f(-5, 5));
+    T_COMPARE(image.getPixel(top_left_check), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(bottom_right_check), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(top_right_check), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(bottom_left_check), Color::Red, &Color::toString);
+
+    // Check a pixel outside the diamond (should be Black)
+    const Vector2i outside_check = static_cast<Vector2i>(
+        circle_center + Vector2f(circle_radius, circle_radius) + Vector2f(1, 1)
+    );
+    T_COMPARE(image.getPixel(outside_check), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::moveTest(test::Test& test) {
