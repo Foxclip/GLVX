@@ -148,16 +148,24 @@ Image Window::readPixels() const {
     return Image(currentWidth, currentHeight, std::move(flippedPixels));
 }
 
-Vector2f Window::worldToScreen(float x, float y) const {
+Vector2i Window::worldToScreen(float x, float y) const {
     glm::vec4 point = to_glmMat4(view) * glm::vec4(x, y, 0.0f, 1.0f);
     glm::vec2 result = glm::vec2(point.x, currentHeight - point.y);
-    return from_glmVec2(result);
+    return Vector2i(static_cast<int>(std::round(result.x)), static_cast<int>(std::round(result.y)));
+}
+
+Vector2i Window::worldToScreen(const Vector2f& worldPos) const {
+    return worldToScreen(worldPos.x, worldPos.y);
 }
 
 Vector2f Window::screenToWorld(int x, int y) const {
     glm::vec4 point = to_glmMat4(invView) * glm::vec4(x, currentHeight - y, 0.0f, 1.0f);
     glm::vec2 result = glm::vec2(point.x, point.y);
     return from_glmVec2(result);
+}
+
+Vector2f Window::screenToWorld(const Vector2i& screenPos) const {
+    return screenToWorld(screenPos.x, screenPos.y);
 }
 
 void Window::setMouseCallback(const mouseCallbackFuncType& callback) {
