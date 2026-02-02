@@ -58,38 +58,68 @@ private:
     void renderStatesTransformTest(test::Test& test);
     void renderStatesTextureTest(test::Test& test);
     void renderStatesShaderTest(test::Test& test);
+    void worldToScreenIdentityTest(test::Test& test);
+    void worldToScreenPanTest(test::Test& test);
+    void worldToScreenZoomTest(test::Test& test);
+    void worldToScreenRotateTest(test::Test& test);
+    void screenToWorldIdentityTest(test::Test& test);
+    void screenToWorldPanTest(test::Test& test);
+    void screenToWorldZoomTest(test::Test& test);
+    void screenToWorldRotateTest(test::Test& test);
+    void coordinateRoundTripTest(test::Test& test);
+    void coordinateCombinedTransformTest(test::Test& test);
 };
 
 GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes)
     : test::TestModule(name, parent, required_nodes) {
     window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "glvis tests");
+    // basic tests
     auto clear_test = addTest("clear", [&](test::Test& test) { clearTest(test); });
+    // shape tests
     auto rectangle_test = addTest("rectangle", { clear_test }, [&](test::Test& test) { rectangleTest(test); });
     auto rectangle_set_size_test = addTest("retcangle_set_size", { rectangle_test }, [&](test::Test& test) { rectangleSetSizeTest(test); });
     auto circle_test = addTest("circle", { clear_test }, [&](test::Test& test) { circleTest(test); });
     auto circle_set_radius_test = addTest("circle_set_radius", { circle_test }, [&](test::Test& test) { circleSetRadiusTest(test); });
+    // transform tests
     auto move_test = addTest("move", { rectangle_test }, [&](test::Test& test) { moveTest(test); });
     auto set_origin_test = addTest("set_origin", { rectangle_test }, [&](test::Test& test) { setOriginTest(test); });
     auto rotate_rop_left_test = addTest("rotate_top_left", { set_origin_test }, [&](test::Test& test) { rotateTopLeftTest(test); });
     auto rotate_center_test = addTest("rotate_center", { set_origin_test }, [&](test::Test& test) { rotateCenterTest(test); });
     auto scale_top_left_test = addTest("scale_top_left", { set_origin_test }, [&](test::Test& test) { scaleTopLeftTest(test); });
     auto scale_center_test = addTest("scale_center", { set_origin_test }, [&](test::Test& test) { scaleCenterTest(test); });
+    // texture tests
     auto texture_test = addTest("texture", { rectangle_test }, [&](test::Test& test) { textureTest(test); });
     auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
     auto texture_resize_up_test = addTest("texture_resize", { texture_test }, [&](test::Test& test) { textureResizeTest(test); });
+    // window tests
     auto window_resize_test = addTest("window_resize", { rectangle_test }, [&](test::Test& test) { windowResizeTest(test); });
+    // view tests
     auto view_pan_test = addTest("view_pan", { rectangle_test }, [&](test::Test& test) { viewPanTest(test); });
     auto view_zoom_test = addTest("view_zoom", { rectangle_test }, [&](test::Test& test) { viewZoomTest(test); });
     auto view_rotate_test = addTest("view_rotate", { rectangle_test }, [&](test::Test& test) { viewRotateTest(test); });
+    // vertex buffer tests
     auto vertex_buffer_render_test = addTest("vertex_buffer_render", { clear_test }, [&](test::Test& test) { vertexBufferRenderTest(test); });
     auto vertex_buffer_update_test = addTest("vertex_buffer_update", { vertex_buffer_render_test }, [&](test::Test& test) { vertexBufferUpdateTest(test); });
     auto vertex_buffer_partial_update_test = addTest("vertex_buffer_partial_update", { vertex_buffer_update_test }, [&](test::Test& test) { vertexBufferPartialUpdateTest(test); });
+    // vertex array tests
     auto vertex_array_triangle_test = addTest("vertex_array_triangle", { vertex_buffer_render_test }, [&](test::Test& test) { vertexArrayTriangleTest(test); });
     auto vertex_array_line_test = addTest("vertex_array_line", { vertex_buffer_render_test }, [&](test::Test& test) { vertexArrayLineTest(test); });
     auto vertex_array_modify_test = addTest("vertex_array_modify", { vertex_array_triangle_test }, [&](test::Test& test) { vertexArrayModifyTest(test); });
+    // render states tests
     auto render_states_transform_test = addTest("render_states_transform", { rectangle_test }, [&](test::Test& test) { renderStatesTransformTest(test); });
     auto render_states_texture_test = addTest("render_states_texture", { texture_test }, [&](test::Test& test) { renderStatesTextureTest(test); });
     auto render_states_shader_test = addTest("render_states_shader", { rectangle_test }, [&](test::Test& test) { renderStatesShaderTest(test); });
+    // worldToScreen and screenToWorld tests
+    auto world_to_screen_identity_test = addTest("world_to_screen_identity", { view_pan_test }, [&](test::Test& test) { worldToScreenIdentityTest(test); });
+    auto world_to_screen_pan_test = addTest("world_to_screen_pan", { view_pan_test }, [&](test::Test& test) { worldToScreenPanTest(test); });
+    auto world_to_screen_zoom_test = addTest("world_to_screen_zoom", { view_zoom_test }, [&](test::Test& test) { worldToScreenZoomTest(test); });
+    auto world_to_screen_rotate_test = addTest("world_to_screen_rotate", { view_rotate_test }, [&](test::Test& test) { worldToScreenRotateTest(test); });
+    auto screen_to_world_identity_test = addTest("screen_to_world_identity", { view_pan_test }, [&](test::Test& test) { screenToWorldIdentityTest(test); });
+    auto screen_to_world_pan_test = addTest("screen_to_world_pan", { view_pan_test }, [&](test::Test& test) { screenToWorldPanTest(test); });
+    auto screen_to_world_zoom_test = addTest("screen_to_world_zoom", { view_zoom_test }, [&](test::Test& test) { screenToWorldZoomTest(test); });
+    auto screen_to_world_rotate_test = addTest("screen_to_world_rotate", { view_rotate_test }, [&](test::Test& test) { screenToWorldRotateTest(test); });
+    auto coordinate_round_trip_test = addTest("coordinate_round_trip", { world_to_screen_identity_test, screen_to_world_identity_test }, [&](test::Test& test) { coordinateRoundTripTest(test); });
+    auto coordinate_combined_transform_test = addTest("coordinate_combined_transform", { world_to_screen_zoom_test, world_to_screen_rotate_test }, [&](test::Test& test) { coordinateCombinedTransformTest(test); });
 }
 
 bool GlvisTestModule::checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor) {
@@ -1460,13 +1490,390 @@ void GlvisTestModule::renderStatesShaderTest(test::Test& test) {
     T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
 }
 
+void GlvisTestModule::worldToScreenIdentityTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("world to screen identity");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+
+    // Test that world (50, 50) maps to screen (50, 50) for default view (centered at window center)
+    // With view at (50, 50) and zoom=1, rotation=0:
+    // World point at view position maps to screen center
+    const Vector2f worldPoint = window.getCenter();
+    Vector2i screenPoint = window.worldToScreen(worldPoint);
+    T_VEC2_COMPARE(screenPoint, Vector2i(50, 50));
+
+    // Test world (0, 0) - should map to top-left (0, 0) since view is at center
+    const Vector2i worldOriginScreen = window.worldToScreen(Vector2f(0.0f, 0.0f));
+    T_VEC2_COMPARE(worldOriginScreen, Vector2i(0, 0));
+
+    // Test world (100, 100) - should map to bottom-right (100, 100)
+    const Vector2i worldMaxScreen = window.worldToScreen(Vector2f(100.0f, 100.0f));
+    T_VEC2_COMPARE(worldMaxScreen, Vector2i(100, 100));
+
+    // Test center of window using individual coordinates
+    Vector2i centerScreen = window.worldToScreen(50.0f, 50.0f);
+    T_VEC2_COMPARE(centerScreen, Vector2i(50, 50));
+
+    // Test a point at (25, 25) - should map to (25, 25)
+    const Vector2i quarterPoint = window.worldToScreen(Vector2f(25.0f, 25.0f));
+    T_VEC2_COMPARE(quarterPoint, Vector2i(25, 25));
+}
+
+void GlvisTestModule::worldToScreenPanTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("world to screen pan");
+    View view;
+
+    // Set view center at (50, 50) as baseline
+    view.setPosition(Vector2f(50.0f, 50.0f));
+    window.setView(view);
+
+    // Test with view centered at (50, 50) - world (50, 50) should map to screen (50, 50)
+    Vector2i result = window.worldToScreen(Vector2f(50.0f, 50.0f));
+    T_VEC2_COMPARE(result, Vector2i(50, 50));
+
+    // Move view to (60, 60) - now world (60, 60) should map to screen (50, 50)
+    view.setPosition(Vector2f(60.0f, 60.0f));
+    window.setView(view);
+    result = window.worldToScreen(Vector2f(60.0f, 60.0f));
+    T_VEC2_COMPARE(result, Vector2i(50, 50));
+
+    // World (50, 50) with view at (60, 60) should shift by (-10, -10)
+    result = window.worldToScreen(Vector2f(50.0f, 50.0f));
+    T_VEC2_COMPARE(result, Vector2i(40, 40));
+
+    // World (100, 100) with view at (60, 60) should shift by (+40, +40)
+    result = window.worldToScreen(Vector2f(100.0f, 100.0f));
+    T_VEC2_COMPARE(result, Vector2i(90, 90));
+}
+
+void GlvisTestModule::worldToScreenZoomTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("world to screen zoom");
+    View view;
+
+    // Set view at (50, 50) with zoom=1
+    view.setPosition(Vector2f(50.0f, 50.0f));
+    view.setZoom(1.0f);
+    window.setView(view);
+
+    // With zoom=1, world (50, 50) maps to screen (50, 50)
+    Vector2i result = window.worldToScreen(Vector2f(50.0f, 50.0f));
+    T_VEC2_COMPARE(result, Vector2i(50, 50));
+
+    // Set zoom=2
+    view.setZoom(2.0f);
+    window.setView(view);
+
+    // World (25, 25) should map to screen (0, 0)
+    result = window.worldToScreen(Vector2f(25.0f, 25.0f));
+    T_VEC2_COMPARE(result, Vector2i(0, 0));
+
+    // World (50, 50) should still map to screen (50, 50)
+    result = window.worldToScreen(Vector2f(50.0f, 50.0f));
+    T_VEC2_COMPARE(result, Vector2i(50, 50));
+
+    // World (75, 75) should map to screen (100, 100)
+    result = window.worldToScreen(Vector2f(75.0f, 75.0f));
+    T_VEC2_COMPARE(result, Vector2i(100, 100));
+
+    // Test with zoom=0.5 (zoomed out)
+    view.setZoom(0.5f);
+    window.setView(view);
+
+    // With zoom=0.5, world range [-50, 150] maps to screen [0, 100]
+    // World (-50, -50) maps to screen (0, 0)
+    result = window.worldToScreen(Vector2f(-50.0f, -50.0f));
+    T_VEC2_COMPARE(result, Vector2i(0, 0));
+
+    // World (50, 50) still maps to screen (50, 50)
+    result = window.worldToScreen(Vector2f(50.0f, 50.0f));
+    T_VEC2_COMPARE(result, Vector2i(50, 50));
+
+    // World (150, 150) maps to screen (100, 100)
+    result = window.worldToScreen(Vector2f(150.0f, 150.0f));
+    T_VEC2_COMPARE(result, Vector2i(100, 100));
+}
+
+void GlvisTestModule::worldToScreenRotateTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("world to screen rotate");
+    View view;
+
+    // Set view at (50, 50) with rotation=0
+    view.setPosition(Vector2f(50.0f, 50.0f));
+    view.setRotation(degrees(0.0f));
+    window.setView(view);
+
+    // Test with no rotation
+    Vector2i result = window.worldToScreen(Vector2f(60.0f, 50.0f));
+    T_VEC2_COMPARE(result, Vector2i(60, 50));
+
+    result = window.worldToScreen(Vector2f(50.0f, 60.0f));
+    T_VEC2_COMPARE(result, Vector2i(50, 60));
+
+    // Rotate 90 degrees clockwise
+    view.setRotation(degrees(90.0f));
+    window.setView(view);
+
+    // With 90-degree rotation, the coordinate system rotates
+    // World (60, 50) which is right of center should now appear at bottom of screen
+    result = window.worldToScreen(Vector2f(60.0f, 50.0f));
+    T_VEC2_COMPARE(result, Vector2i(50, 100));
+
+    // World (50, 60) which is above center should now appear at right of screen
+    result = window.worldToScreen(Vector2f(50.0f, 60.0f));
+    T_VEC2_COMPARE(result, Vector2i(100, 50));
+
+    // World (40, 50) which is left of center should appear at top of screen
+    result = window.worldToScreen(Vector2f(40.0f, 50.0f));
+    T_VEC2_COMPARE(result, Vector2i(50, 0));
+
+    // World (50, 40) which is below center should appear at left of screen
+    result = window.worldToScreen(Vector2f(50.0f, 40.0f));
+    T_VEC2_COMPARE(result, Vector2i(0, 50));
+}
+
+void GlvisTestModule::screenToWorldIdentityTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("screen to world identity");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+
+    // Test that screen (50, 50) maps to world (50, 50) for default view
+    Vector2f worldPoint = window.screenToWorld(50, 50);
+    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(50.0f, 50.0f));
+
+    // Test screen (0, 0) - should map to world (0, 0)
+    worldPoint = window.screenToWorld(Vector2i(0, 0));
+    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(0.0f, 0.0f));
+
+    // Test screen (100, 100) - should map to world (100, 100)
+    worldPoint = window.screenToWorld(Vector2i(100, 100));
+    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(100.0f, 100.0f));
+
+    // Test using individual coordinates
+    worldPoint = window.screenToWorld(25, 25);
+    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(25.0f, 25.0f));
+}
+
+void GlvisTestModule::screenToWorldPanTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("screen to world pan");
+    View view;
+
+    // Set view at (50, 50)
+    view.setPosition(Vector2f(50.0f, 50.0f));
+    window.setView(view);
+
+    // With view at (50, 50), screen (50, 50) should map to world (50, 50)
+    Vector2f result = window.screenToWorld(50, 50);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 50.0f));
+
+    // Move view to (60, 60)
+    view.setPosition(Vector2f(60.0f, 60.0f));
+    window.setView(view);
+
+    // Screen (50, 50) should now map to world (60, 60)
+    result = window.screenToWorld(50, 50);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(60.0f, 60.0f));
+
+    // Screen (40, 40) should map to world (50, 50)
+    result = window.screenToWorld(40, 40);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 50.0f));
+
+    // Screen (60, 60) should map to world (70, 70)
+    result = window.screenToWorld(60, 60);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(70.0f, 70.0f));
+}
+
+void GlvisTestModule::screenToWorldZoomTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("screen to world zoom");
+    View view;
+
+    // Set view at (50, 50) with zoom=1
+    view.setPosition(Vector2f(50.0f, 50.0f));
+    view.setZoom(1.0f);
+    window.setView(view);
+
+    // With zoom=1, screen (50, 50) maps to world (50, 50)
+    Vector2f result = window.screenToWorld(50, 50);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 50.0f));
+
+    // With zoom=2, screen (50, 50) still maps to world (50, 50) (center stays fixed)
+    view.setZoom(2.0f);
+    window.setView(view);
+    result = window.screenToWorld(50, 50);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 50.0f));
+
+    // Screen (0, 0) maps to world (25, 25) with zoom=2
+    result = window.screenToWorld(0, 0);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(25.0f, 25.0f));
+
+    // Screen (100, 100) maps to world (75, 75) with zoom=2
+    result = window.screenToWorld(100, 100);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(75.0f, 75.0f));
+
+    // Test with zoom=0.5
+    view.setZoom(0.5f);
+    window.setView(view);
+
+    // Screen (0, 0) maps to world (-50, -50) with zoom=0.5
+    result = window.screenToWorld(0, 0);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(-50.0f, -50.0f));
+
+    // Screen (100, 100) maps to world (150, 150) with zoom=0.5
+    result = window.screenToWorld(100, 100);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(150.0f, 150.0f));
+}
+
+void GlvisTestModule::screenToWorldRotateTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("screen to world rotate");
+    View view;
+
+    // Set view at (50, 50) with rotation=0
+    view.setPosition(Vector2f(50.0f, 50.0f));
+    view.setRotation(degrees(0.0f));
+    window.setView(view);
+
+    // With no rotation, screen (60, 50) maps to world (60, 50)
+    Vector2f result = window.screenToWorld(60, 50);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(60.0f, 50.0f));
+
+    result = window.screenToWorld(50, 60);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 60.0f));
+
+    // Rotate 90 degrees clockwise
+    view.setRotation(degrees(90.0f));
+    window.setView(view);
+
+    // Screen (50, 100) which is at the bottom should map to world (60, 50) - right of center
+    result = window.screenToWorld(50, 100);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(60.0f, 50.0f));
+
+    // Screen (100, 50) which is at the right should map to world (50, 60) - above center
+    result = window.screenToWorld(100, 50);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 60.0f));
+
+    // Screen (50, 0) which is at the top should map to world (40, 50) - left of center
+    result = window.screenToWorld(50, 0);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(40.0f, 50.0f));
+
+    // Screen (0, 50) which is at the left should map to world (50, 40) - below center
+    result = window.screenToWorld(0, 50);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 40.0f));
+}
+
+void GlvisTestModule::coordinateRoundTripTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("coordinate round trip");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+
+    // Test round-trip: screenToWorld(worldToScreen(x)) should return x
+    const Vector2f originalWorld(25.0f, 75.0f);
+    Vector2i screen = window.worldToScreen(originalWorld);
+    Vector2f roundTripped = window.screenToWorld(screen);
+    T_VEC2_APPROX_COMPARE(roundTripped, originalWorld);
+
+    // Test round-trip: worldToScreen(screenToWorld(x)) should return x
+    const Vector2i originalScreen(30, 70);
+    Vector2f toWorld = window.screenToWorld(originalScreen);
+    Vector2i backToScreen = window.worldToScreen(toWorld);
+    T_VEC2_COMPARE(backToScreen, originalScreen);
+
+    // Test with different view positions
+    view.setPosition(Vector2f(25.0f, 25.0f));
+    window.setView(view);
+
+    const Vector2f world2(50.0f, 50.0f);
+    screen = window.worldToScreen(world2);
+    roundTripped = window.screenToWorld(screen);
+    T_VEC2_APPROX_COMPARE(roundTripped, world2);
+
+    // Test with zoom
+    view.setPosition(Vector2f(50.0f, 50.0f));
+    view.setZoom(1.5f);
+    window.setView(view);
+
+    const Vector2f world3(10.0f, 90.0f);
+    screen = window.worldToScreen(world3);
+    roundTripped = window.screenToWorld(screen);
+    T_VEC2_APPROX_COMPARE(roundTripped, world3);
+
+    // Test with rotation
+    view.setRotation(degrees(45.0f));
+    window.setView(view);
+
+    const Vector2f world4(30.0f, 70.0f);
+    screen = window.worldToScreen(world4);
+    roundTripped = window.screenToWorld(screen);
+    T_VEC2_APPROX_COMPARE(roundTripped, world4);
+}
+
+void GlvisTestModule::coordinateCombinedTransformTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("coordinate combined transform");
+    View view;
+
+    // Test with pan + zoom + rotation combined
+    view.setPosition(Vector2f(50.0f, 50.0f));
+    view.setZoom(2.0f);
+    view.setRotation(degrees(90.0f));
+    window.setView(view);
+
+    // Screen (50, 50) should map to world (50, 50) regardless of zoom/rotation (center is fixed)
+    Vector2f result = window.screenToWorld(50, 50);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 50.0f));
+
+    // World (50, 50) should map to screen (50, 50)
+    Vector2i screen = window.worldToScreen(50.0f, 50.0f);
+    T_VEC2_COMPARE(screen, Vector2i(50, 50));
+
+    // Test with different pan position
+    view.setPosition(Vector2f(60.0f, 60.0f));
+    view.setZoom(2.0f);
+    view.setRotation(degrees(90.0f));
+    window.setView(view);
+
+    // With view at (60, 60), zoom=2, rotation=90:
+    // Screen (50, 50) should map to world (60, 60) - the center stays fixed
+    result = window.screenToWorld(50, 50);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(60.0f, 60.0f));
+
+    // Verify round-trip
+    Vector2f testWorld(70.0f, 50.0f);
+    screen = window.worldToScreen(testWorld);
+    result = window.screenToWorld(screen);
+    T_VEC2_APPROX_COMPARE(result, testWorld);
+
+    // Test with zoom=0.5, rotation=45 degrees
+    view.setPosition(Vector2f(50.0f, 50.0f));
+    view.setZoom(0.5f);
+    view.setRotation(degrees(45.0f));
+    window.setView(view);
+
+    result = window.screenToWorld(50, 50);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 50.0f));
+
+    testWorld = Vector2f(0.0f, 100.0f);
+    screen = window.worldToScreen(testWorld);
+    result = window.screenToWorld(screen);
+    T_VEC2_APPROX_COMPARE(result, testWorld);
+}
+
 int main() {
     test::TestModule root("glvis tests", nullptr);
     GlvisTestModule* glvisModule = root.addModule<GlvisTestModule>("Basic");
     root.run();
     root.printSummary();
 
-    // TODO: add worldToScreen and screenToWorld tests
     // TODO: replace raw casts with static_cast
     // TODO: split tests into separate files
     // TODO: text rendering
