@@ -1,6 +1,7 @@
 #include "glvis/vertex_array.h"
 #include <algorithm>
 #include <limits>
+#include <cassert>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glvis/shader.h"
@@ -29,18 +30,22 @@ PrimitiveType VertexArray::getPrimitiveType() const {
 }
 
 Vertex& VertexArray::operator[](std::size_t index) {
+    assert(index < vertices.size());
     return vertices[index];
 }
 
 const Vertex& VertexArray::operator[](std::size_t index) const {
+    assert(index < vertices.size());
     return vertices[index];
 }
 
 Vertex& VertexArray::getVertex(std::size_t index) {
+    assert(index < vertices.size());
     return vertices[index];
 }
 
 const Vertex& VertexArray::getVertex(std::size_t index) const {
+    assert(index < vertices.size());
     return vertices[index];
 }
 

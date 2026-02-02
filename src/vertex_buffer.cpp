@@ -1,5 +1,6 @@
 #include "glvis/vertex_buffer.h"
 #include <stdexcept>
+#include <cassert>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glvis/vertex.h"
@@ -27,6 +28,7 @@ VertexBuffer::~VertexBuffer() {
 }
 
 bool VertexBuffer::create(std::size_t vertexCount) {
+    assert(VAO == 0);
     this->vertexCount = vertexCount;
     GL_CALL(glGenVertexArrays(1, &VAO));
     recreateBuffer(vertexCount);
@@ -55,9 +57,7 @@ bool VertexBuffer::update(const std::vector<Vertex>& newVertices, std::size_t ve
 }
 
 void VertexBuffer::updateBuffer(const void* data, unsigned int offset, std::size_t size) {
-    if (!isInitialized) {
-        return;
-    }
+    assert(isInitialized);
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
     GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, offset, size, data));
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
@@ -108,6 +108,8 @@ unsigned int VertexBuffer::getVAO() const {
 }
 
 void VertexBuffer::render() const {
+    assert(VAO != 0);
+    if (vertexCount == 0) return;
     GL_CALL(glBindVertexArray(VAO));
     GL_CALL(glDrawArrays(static_cast<GLenum>(type), 0, static_cast<GLsizei>(getVertexCount())));
 }

@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <corecrt_math_defines.h>
+#include <cassert>
 #include "glvis/glvis_common.h"
 #include "glvis/texture.h"
 #include "glvis/shader.h"
@@ -11,6 +12,8 @@
 namespace glvis {
 
 Circle::Circle(float radius, size_t numSegments) : Shape(PrimitiveType::TriangleFan, numSegments + 2) {
+    assert(radius >= 0);
+    assert(numSegments >= 3);
     this->radius = radius;
     this->numSegments = numSegments;
 

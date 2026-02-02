@@ -1,6 +1,7 @@
 #include "glvis/image.h"
 #include "glvis/color.h"
 #include "glvis/vector.h"
+#include <cassert>
 
 namespace glvis {
 
@@ -20,6 +21,8 @@ const std::vector<unsigned char>& Image::getData() const {
 }
 
 Color Image::getPixel(int x, int y) const {
+    assert(x >= 0 && x < width);
+    assert(y >= 0 && y < height);
     size_t index = (y * width + x) * 4;
     return Color(data[index], data[index + 1], data[index + 2], data[index + 3]);
 }

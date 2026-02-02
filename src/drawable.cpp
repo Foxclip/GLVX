@@ -4,6 +4,7 @@
 #include "glvis/abstract_texture.h"
 #include "glvis/vertex_buffer.h"
 #include "glvis/utils.h"
+#include <cassert>
 
 namespace glvis {
 
@@ -45,8 +46,9 @@ void Drawable::renderBase(
     const RenderStates& states
 ) const {
     const VertexBuffer& vertexBuffer = getVertexBuffer();
+    if (vertexBuffer.getVertexCount() == 0) return;
     Shader* renderShader = states.shader ? states.shader : shader;
-    if (!renderShader) throw std::runtime_error("Shader is not set");
+    assert(renderShader);
     AbstractTexture* renderTexture = states.texture ? states.texture : texture;
     Matrix4 combinedModel = states.transform * getModelMatrix();
     renderShader->use();

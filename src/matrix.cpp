@@ -1,5 +1,6 @@
 #include "glvis/matrix.h"
 #include <cstring>
+#include <cassert>
 
 namespace glvis {
 
@@ -14,6 +15,7 @@ Matrix4::Matrix4() {
 Matrix4::Matrix4(const std::array<float, 16>& data) : data(data) {}
 
 Matrix4::Matrix4(const float* data) {
+    assert(data);
     std::memcpy(this->data.data(), data, sizeof(float) * 16);
 }
 

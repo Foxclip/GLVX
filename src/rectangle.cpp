@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
+#include <cassert>
 #include "glvis/glvis_common.h"
 #include "glvis/texture.h"
 #include "glvis/shader.h"
@@ -9,6 +10,8 @@
 namespace glvis {
 
 Rectangle::Rectangle(float width, float height) : Shape(PrimitiveType::Triangles, 6) {
+    assert(width >= 0);
+    assert(height >= 0);
     this->width = width;
     this->height = height;
 

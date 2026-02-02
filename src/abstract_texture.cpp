@@ -6,6 +6,7 @@
 #include <cmath>
 #include <memory>
 #include <vector>
+#include <cassert>
 
 namespace glvis {
 
@@ -48,6 +49,8 @@ AbstractTexture::~AbstractTexture() {
 
 void AbstractTexture::createTexture(int width, int height, unsigned char* data) {
     START_TRY
+    assert(width > 0);
+    assert(height > 0);
     if (data && glfwGetCurrentContext() == nullptr) {
         throw std::runtime_error("Texture::create called outside of GLFW context");
     }
@@ -63,6 +66,8 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data) 
 }
 
 void AbstractTexture::resizeTexture(int newWidth, int newHeight) {
+    assert(newWidth > 0);
+    assert(newHeight > 0);
     if (newWidth == width && newHeight == height) {
         return;
     }
@@ -84,6 +89,7 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight) {
     // Attach original texture to source FBO
     GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFBO));
     GL_CALL(glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0));
+    assert(GL_CALL(glCheckFramebufferStatus(GL_READ_FRAMEBUFFER)) == GL_FRAMEBUFFER_COMPLETE);
 
     // Attach new texture to destination FBO
     GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFBO));

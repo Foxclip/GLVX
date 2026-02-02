@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include "glvis/glvis_common.h"
 #include <vector>
+#include <cassert>
 
 namespace glvis {
 
@@ -23,30 +24,37 @@ Shader::Shader(const char* vertexSource, const char* fragmentSource) {
 }
 
 void Shader::use() {
+    assert(ID != 0);
     GL_CALL(glUseProgram(ID));
 }
 
 void Shader::setBool(const std::string& name, bool value) const {
+    assert(ID != 0);
     GL_CALL(glUniform1i(GL_CALL(glGetUniformLocation(ID, name.c_str())), (int)value));
 }
 
 void Shader::setInt(const std::string& name, int value) const {
+    assert(ID != 0);
     GL_CALL(glUniform1i(GL_CALL(glGetUniformLocation(ID, name.c_str())), (int)value));
 }
 
 void Shader::setFloat(const std::string& name, float value) const {
+    assert(ID != 0);
     GL_CALL(glUniform1f(GL_CALL(glGetUniformLocation(ID, name.c_str())), value));
 }
 
 void Shader::setVec3(const std::string &name, const Vector3& value) const {
+    assert(ID != 0);
     GL_CALL(glUniform3fv(GL_CALL(glGetUniformLocation(ID, name.c_str())), 1, &value.x));
 }
 
 void Shader::setVec4(const std::string &name, const Vector4& value) const {
+    assert(ID != 0);
     GL_CALL(glUniform4fv(GL_CALL(glGetUniformLocation(ID, name.c_str())), 1, &value.x));
 }
 
 void Shader::setMat4(const std::string& name, const Matrix4& value) const {
+    assert(ID != 0);
     GL_CALL(glUniformMatrix4fv(GL_CALL(glGetUniformLocation(ID, name.c_str())), 1, GL_FALSE, value.getData()));
 }
 
