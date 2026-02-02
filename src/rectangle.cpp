@@ -60,4 +60,21 @@ Vector2f Rectangle::getSize() const {
     return Vector2f(width, height);
 }
 
+void Rectangle::setSize(float width, float height) {
+    assert(width >= 0);
+    assert(height >= 0);
+    this->width = width;
+    this->height = height;
+
+    // Update vertices for rectangle
+    getVertex(0).position = Vector2f(0.0f, height);
+    getVertex(2).position = Vector2f(width, height);
+    getVertex(3).position = Vector2f(width, height);
+    getVertex(5).position = Vector2f(width, 0.0f);
+}
+
+void Rectangle::setSize(const Vector2f& size) {
+    setSize(size.x, size.y);
+}
+
 }
