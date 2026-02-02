@@ -190,20 +190,37 @@ void GlvisTestModule::circleTest(test::Test& test) {
 
     // Check the 4 diamond vertices (all should be Red - on the diamond edges)
     Image image = window.readPixels();
-    const Vector2i top_check = static_cast<Vector2i>(circle_center + Vector2f(0, -circle_radius));
-    const Vector2i right_check = static_cast<Vector2i>(circle_center + Vector2f(circle_radius - 1, 0));
-    const Vector2i bottom_check = static_cast<Vector2i>(circle_center + Vector2f(0, circle_radius - 1));
-    const Vector2i left_check = static_cast<Vector2i>(circle_center + Vector2f(-circle_radius, 0));
+    const Vector2i top_check = static_cast<Vector2i>(
+        circle_center + Vector2f(0, -circle_radius)
+    );
+    const Vector2i right_check = static_cast<Vector2i>(
+        circle_center + Vector2f(circle_radius - 1, 0)
+    );
+    const Vector2i bottom_check = static_cast<Vector2i>(
+        circle_center + Vector2f(0, circle_radius - 1)
+    );
+    const Vector2i left_check = static_cast<Vector2i>(
+        circle_center + Vector2f(-circle_radius, 0)
+    );
     T_COMPARE(image.getPixel(top_check), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(right_check), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(bottom_check), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(left_check), Color::Red, &Color::toString);
 
     // Check diagonal pixels from top-left to bottom-right
-    const Vector2i top_left_check = static_cast<Vector2i>(circle_center + Vector2f(-5, -5));
-    const Vector2i bottom_right_check = static_cast<Vector2i>(circle_center + Vector2f(5, 5));
-    const Vector2i top_right_check = static_cast<Vector2i>(circle_center + Vector2f(5, -5));
-    const Vector2i bottom_left_check = static_cast<Vector2i>(circle_center + Vector2f(-5, 5));
+    const float offset = static_cast<float>(circle_radius / std::sqrt(2));
+    const Vector2i top_left_check = static_cast<Vector2i>(
+        circle_center + Vector2f(-offset, -offset)
+    );
+    const Vector2i bottom_right_check = static_cast<Vector2i>(
+        circle_center + Vector2f(offset, offset)
+    );
+    const Vector2i top_right_check = static_cast<Vector2i>(
+        circle_center + Vector2f(offset, -offset)
+    );
+    const Vector2i bottom_left_check = static_cast<Vector2i>(
+        circle_center + Vector2f(-offset, offset)
+    );
     T_COMPARE(image.getPixel(top_left_check), Color::Black, &Color::toString);
     T_COMPARE(image.getPixel(bottom_right_check), Color::Black, &Color::toString);
     T_COMPARE(image.getPixel(top_right_check), Color::Black, &Color::toString);
