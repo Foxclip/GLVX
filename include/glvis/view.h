@@ -13,6 +13,7 @@ class View {
     const Vector2f& getPosition() const;
     float getZoom() const;
     const Angle& getRotation() const;
+    void setPosition(float x, float y);
     void setPosition(const Vector2f& pos);
     void setZoom(float zoom);
     void setRotation(const Angle& rotation);

@@ -14,6 +14,10 @@ float View::getZoom() const {
     return zoom;
 }
 
+void View::setPosition(float x, float y) {
+    this->pos = Vector2f(x, y);
+}
+
 void View::setPosition(const Vector2f& pos) {
     this->pos = pos;
 }
