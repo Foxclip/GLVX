@@ -1621,19 +1621,19 @@ void GlvisTestModule::worldToScreenRotateTest(test::Test& test) {
     // With 90-degree rotation, the coordinate system rotates
     // World (60, 50) which is right of center should now appear at bottom of screen
     result = window.worldToScreen(Vector2f(60.0f, 50.0f));
-    T_VEC2_COMPARE(result, Vector2i(50, 100));
+    T_VEC2_COMPARE(result, Vector2i(50, 60));
 
     // World (50, 60) which is above center should now appear at right of screen
     result = window.worldToScreen(Vector2f(50.0f, 60.0f));
-    T_VEC2_COMPARE(result, Vector2i(100, 50));
+    T_VEC2_COMPARE(result, Vector2i(40, 50));
 
     // World (40, 50) which is left of center should appear at top of screen
     result = window.worldToScreen(Vector2f(40.0f, 50.0f));
-    T_VEC2_COMPARE(result, Vector2i(50, 0));
+    T_VEC2_COMPARE(result, Vector2i(50, 40));
 
     // World (50, 40) which is below center should appear at left of screen
     result = window.worldToScreen(Vector2f(50.0f, 40.0f));
-    T_VEC2_COMPARE(result, Vector2i(0, 50));
+    T_VEC2_COMPARE(result, Vector2i(60, 50));
 }
 
 void GlvisTestModule::screenToWorldIdentityTest(test::Test& test) {
