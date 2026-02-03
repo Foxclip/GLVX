@@ -874,46 +874,52 @@ void GlvisTestModule::viewRotateTest(test::Test& test) {
     window.setTitle("view rotation");
     View view;
     Vector2f window_center = window.getCenter();
-    view.setPosition(window_center);
+    Vector2i window_center_int = static_cast<Vector2i>(window_center);
+    view.setPosition(0.0f, 0.0f);
     window.setView(view);
     window.clear(Color::Black);
 
     // render rect
-    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    const Vector2f rect_size = Vector2f(20.0f, 10.0f);
     Rectangle rect(rect_size);
     rect.setColor(Color::Red);
+    rect.setPosition(0.0f, 0.0f);
     window.draw(rect);
     window.display();
+
+    // check initial rectangle position
     Image image = window.readPixels();
     const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
-    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
+    T_WRAP_CONTAINER(checkPixelColor(
+        test, image, window_center_int, window_center_int + rect_size_int, Color::Red)
+    );
 
-    // rotate View 45 degrees
-    const Vector2f rotated_view_pos = Vector2f(5.0f, 5.0f);
+    // rotate View 90 degrees
+    const Vector2f rotated_view_pos = Vector2f(0.0f, 0.0f);
+    const Vector2f rotated_rect_size = Vector2f(rect_size.y, rect_size.x);
+    const Vector2i rotated_rect_size_int = static_cast<Vector2i>(rotated_rect_size);
     view.setPosition(rotated_view_pos);
-    const Angle rotation_angle = degrees(45.0f);
+    const Angle rotation_angle = degrees(90.0f);
     view.setRotation(rotation_angle);
     window.setView(view);
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
-    image = window.readPixels();
 
     // check pixels around screen center
-    window_center = window.getCenter();
-    const Vector2i center = static_cast<Vector2i>(window_center);
-    const int offset = 5;
-    const Vector2i top_left     = center + Vector2i(-offset,     -offset    );
-    const Vector2i top_right    = center + Vector2i( offset - 1, -offset    );
-    const Vector2i bottom_right = center + Vector2i( offset - 1,  offset - 1);
-    const Vector2i bottom_left  = center + Vector2i(-offset,      offset - 1);
-    T_COMPARE(image.getPixel(top_left), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(top_right), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(bottom_right), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(bottom_left), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(center), Color::Red, &Color::toString);
+    image = window.readPixels();
+    T_WRAP_CONTAINER(checkPixelColor(
+        test,
+        image,
+        window_center_int.x - rotated_rect_size_int.x,
+        window_center_int.y,
+        window_center_int.x,
+        window_center_int.y + rotated_rect_size_int.y,
+        Color::Red
+    ));
+    // check outside
+    T_COMPARE(image.getPixel(window_center_int - Vector2i(1, 1)), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(window_center_int + rotated_rect_size_int), Color::Black, &Color::toString);
 }
 
 // Helper class to make VertexBuffer drawable for testing
