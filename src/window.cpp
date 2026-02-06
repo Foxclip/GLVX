@@ -159,7 +159,9 @@ Vector2i Window::worldToScreen(const Vector2f& worldPos) const {
 }
 
 Vector2f Window::screenToWorld(int x, int y) const {
-    glm::vec4 point = to_glmMat4(invView) * glm::vec4(x, currentHeight - y, 0.0f, 1.0f);
+    float x_shifted = x + 0.5f;
+    float y_shifted = y + 0.5f;
+    glm::vec4 point = to_glmMat4(invView) * glm::vec4(x_shifted, currentHeight - y_shifted, 0.0f, 1.0f);
     glm::vec2 result = glm::vec2(point.x, point.y);
     return from_glmVec2(result);
 }
