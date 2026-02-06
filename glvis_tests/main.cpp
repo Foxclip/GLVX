@@ -1602,38 +1602,58 @@ void GlvisTestModule::worldToScreenRotateTest(test::Test& test) {
     window.setTitle("world to screen rotate");
     View view;
 
-    // Set view at (50, 50) with rotation=0
+    // Set view at (50.5, 50.5) with rotation = 0
     view.setPosition(Vector2f(50.0f, 50.0f));
     view.setRotation(degrees(0.0f));
     window.setView(view);
 
     // Test with no rotation
-    Vector2i result = window.worldToScreen(Vector2f(60.0f, 50.0f));
-    T_VEC2_COMPARE(result, Vector2i(60, 50));
 
-    result = window.worldToScreen(Vector2f(50.0f, 60.0f));
-    T_VEC2_COMPARE(result, Vector2i(50, 60));
+    // top left
+    Vector2i result = window.worldToScreen(Vector2f(0.5f, 0.5f));
+    T_VEC2_COMPARE(result, Vector2i(0, 0));
+
+    // top right
+    result = window.worldToScreen(Vector2f(99.5f, 0.5f));
+    T_VEC2_COMPARE(result, Vector2i(99, 0));
+
+    // bottom right
+    result = window.worldToScreen(Vector2f(99.5f, 99.5f));
+    T_VEC2_COMPARE(result, Vector2i(99, 99));
+
+    // bottom left
+    result = window.worldToScreen(Vector2f(0.5f, 99.5f));
+    T_VEC2_COMPARE(result, Vector2i(0, 99));
+
+    // center
+    result = window.worldToScreen(Vector2f(50.5f, 50.5f));
+    T_VEC2_COMPARE(result, Vector2i(50, 50));
 
     // Rotate 90 degrees clockwise
     view.setRotation(degrees(90.0f));
     window.setView(view);
 
     // With 90-degree rotation, the coordinate system rotates
-    // World (60, 50) which is right of center should now appear at bottom of screen
-    result = window.worldToScreen(Vector2f(60.0f, 50.0f));
-    T_VEC2_COMPARE(result, Vector2i(50, 60));
 
-    // World (50, 60) which is above center should now appear at right of screen
-    result = window.worldToScreen(Vector2f(50.0f, 60.0f));
-    T_VEC2_COMPARE(result, Vector2i(40, 50));
+    // top left
+    result = window.worldToScreen(Vector2f(0.5f, 0.5f));
+    T_VEC2_COMPARE(result, Vector2i(99, 0));
 
-    // World (40, 50) which is left of center should appear at top of screen
-    result = window.worldToScreen(Vector2f(40.0f, 50.0f));
-    T_VEC2_COMPARE(result, Vector2i(50, 40));
+    // top right
+    result = window.worldToScreen(Vector2f(99.5f, 0.5f));
+    T_VEC2_COMPARE(result, Vector2i(99, 99));
 
-    // World (50, 40) which is below center should appear at left of screen
-    result = window.worldToScreen(Vector2f(50.0f, 40.0f));
-    T_VEC2_COMPARE(result, Vector2i(60, 50));
+    // bottom right
+    result = window.worldToScreen(Vector2f(99.5f, 99.5f));
+    T_VEC2_COMPARE(result, Vector2i(0, 99));
+
+    // bottom left
+    result = window.worldToScreen(Vector2f(0.5f, 99.5f));
+    T_VEC2_COMPARE(result, Vector2i(0, 0));
+
+    // center
+    result = window.worldToScreen(Vector2f(50.5f, 50.5f));
+    T_VEC2_COMPARE(result, Vector2i(49, 50));
 }
 
 void GlvisTestModule::screenToWorldIdentityTest(test::Test& test) {
