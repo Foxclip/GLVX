@@ -1496,20 +1496,20 @@ void GlvisTestModule::worldToScreenIdentityTest(test::Test& test) {
     window.setView(view);
 
     const Vector2f window_center = window.getCenter();
-    Vector2i window_center_screen = window.worldToScreen(window_center);
-    T_VEC2_COMPARE(window_center_screen, Vector2i(50, 50));
+    Vector2i result = window.worldToScreen(window_center);
+    T_VEC2_COMPARE(result, Vector2i(50, 50));
 
-    const Vector2i world_top_left_screen = window.worldToScreen(Vector2f(0.5f, 0.5f));
-    T_VEC2_COMPARE(world_top_left_screen, Vector2i(0, 0));
+    result = window.worldToScreen(Vector2f(0.5f, 0.5f));
+    T_VEC2_COMPARE(result, Vector2i(0, 0));
 
-    const Vector2i world_bottom_right_screen = window.worldToScreen(Vector2f(100.5f, 100.5f));
-    T_VEC2_COMPARE(world_bottom_right_screen, Vector2i(100, 100));
+    result = window.worldToScreen(Vector2f(100.5f, 100.5f));
+    T_VEC2_COMPARE(result, Vector2i(100, 100));
 
-    Vector2i center_pixel_screen = window.worldToScreen(50.5f, 50.5f);
-    T_VEC2_COMPARE(center_pixel_screen, Vector2i(50, 50));
+    result = window.worldToScreen(50.5f, 50.5f);
+    T_VEC2_COMPARE(result, Vector2i(50, 50));
 
-    const Vector2i quarter_point_screen = window.worldToScreen(Vector2f(25.5f, 25.5f));
-    T_VEC2_COMPARE(quarter_point_screen, Vector2i(25, 25));
+    result = window.worldToScreen(Vector2f(25.5f, 25.5f));
+    T_VEC2_COMPARE(result, Vector2i(25, 25));
 }
 
 void GlvisTestModule::worldToScreenPanTest(test::Test& test) {
@@ -1647,17 +1647,17 @@ void GlvisTestModule::screenToWorldIdentityTest(test::Test& test) {
     view.setPosition(window.getCenter());
     window.setView(view);
 
-    Vector2f worldPoint = window.screenToWorld(50, 50);
-    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(50.5f, 50.5f));
+    Vector2f result = window.screenToWorld(50, 50);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.5f, 50.5f));
 
-    worldPoint = window.screenToWorld(Vector2i(0, 0));
-    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(0.5f, 0.5f));
+    result = window.screenToWorld(Vector2i(0, 0));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(0.5f, 0.5f));
 
-    worldPoint = window.screenToWorld(Vector2i(100, 100));
-    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(100.5f, 100.5f));
+    result = window.screenToWorld(Vector2i(100, 100));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(100.5f, 100.5f));
 
-    worldPoint = window.screenToWorld(25, 25);
-    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(25.5f, 25.5f));
+    result = window.screenToWorld(25, 25);
+    T_VEC2_APPROX_COMPARE(result, Vector2f(25.5f, 25.5f));
 }
 
 void GlvisTestModule::screenToWorldPanTest(test::Test& test) {
@@ -1788,6 +1788,7 @@ int main() {
     root.run();
     root.printSummary();
 
+    // TODO: use consistent sets of coordinates in coordinate transform tests
     // TODO: remove glm or typedef matrix and vector to glm types
     // TODO: replace raw casts with static_cast
     // TODO: split tests into separate files
