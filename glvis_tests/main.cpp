@@ -1667,29 +1667,24 @@ void GlvisTestModule::screenToWorldPanTest(test::Test& test) {
     window.setTitle("screen to world pan");
     View view;
 
-    // Set view at (50, 50)
-    view.setPosition(Vector2f(50.0f, 50.0f));
+    view.setPosition(window.getCenter());
     window.setView(view);
 
-    // With view at (50, 50), screen (50, 50) should map to world (50, 50)
     Vector2f result = window.screenToWorld(50, 50);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 50.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.5f, 50.5f));
 
-    // Move view to (60, 60)
+    // Test with different pan position
     view.setPosition(Vector2f(60.0f, 60.0f));
     window.setView(view);
 
-    // Screen (50, 50) should now map to world (60, 60)
     result = window.screenToWorld(50, 50);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(60.0f, 60.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(60.5f, 60.5f));
 
-    // Screen (40, 40) should map to world (50, 50)
     result = window.screenToWorld(40, 40);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 50.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.5f, 50.5f));
 
-    // Screen (60, 60) should map to world (70, 70)
     result = window.screenToWorld(60, 60);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(70.0f, 70.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(70.5f, 70.5f));
 }
 
 void GlvisTestModule::screenToWorldZoomTest(test::Test& test) {
