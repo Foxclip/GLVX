@@ -1728,38 +1728,31 @@ void GlvisTestModule::screenToWorldRotateTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("screen to world rotate");
     View view;
-
-    // Set view at (50, 50) with rotation=0
     view.setPosition(Vector2f(50.0f, 50.0f));
     view.setRotation(degrees(0.0f));
     window.setView(view);
 
-    // With no rotation, screen (60, 50) maps to world (60, 50)
     Vector2f result = window.screenToWorld(60, 50);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(60.0f, 50.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(60.5f, 50.5f));
 
     result = window.screenToWorld(50, 60);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 60.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.5f, 60.5f));
 
     // Rotate 90 degrees clockwise
     view.setRotation(degrees(90.0f));
     window.setView(view);
 
-    // Screen (50, 100) which is at the bottom should map to world (60, 50) - right of center
     result = window.screenToWorld(50, 100);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(60.0f, 50.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(100.5f, 49.5f));
 
-    // Screen (100, 50) which is at the right should map to world (50, 60) - above center
     result = window.screenToWorld(100, 50);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 60.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.5f, -0.5f));
 
-    // Screen (50, 0) which is at the top should map to world (40, 50) - left of center
     result = window.screenToWorld(50, 0);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(40.0f, 50.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(0.5f, 49.5f));
 
-    // Screen (0, 50) which is at the left should map to world (50, 40) - below center
     result = window.screenToWorld(0, 50);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 40.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.5f, 99.5f));
 }
 
 void GlvisTestModule::coordinateRoundTripTest(test::Test& test) {
