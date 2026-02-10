@@ -1691,41 +1691,37 @@ void GlvisTestModule::screenToWorldZoomTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("screen to world zoom");
     View view;
-
-    // Set view at (50, 50) with zoom=1
     view.setPosition(Vector2f(50.0f, 50.0f));
     view.setZoom(1.0f);
     window.setView(view);
 
-    // With zoom=1, screen (50, 50) maps to world (50, 50)
     Vector2f result = window.screenToWorld(50, 50);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 50.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.5f, 50.5f));
 
-    // With zoom=2, screen (50, 50) still maps to world (50, 50) (center stays fixed)
+    // Test with zoom=2
     view.setZoom(2.0f);
     window.setView(view);
+
+    // with zoom=2 pixel center offset turns into 0.25
     result = window.screenToWorld(50, 50);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(50.0f, 50.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(50.25f, 50.25f));
 
-    // Screen (0, 0) maps to world (25, 25) with zoom=2
     result = window.screenToWorld(0, 0);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(25.0f, 25.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(25.25f, 25.25f));
 
-    // Screen (100, 100) maps to world (75, 75) with zoom=2
     result = window.screenToWorld(100, 100);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(75.0f, 75.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(75.25f, 75.25f));
 
     // Test with zoom=0.5
     view.setZoom(0.5f);
     window.setView(view);
 
-    // Screen (0, 0) maps to world (-50, -50) with zoom=0.5
+    // with zoom=0.5 pixel center offset turns into 1.0
     result = window.screenToWorld(0, 0);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(-50.0f, -50.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(-49.0f, -49.0f));
 
-    // Screen (100, 100) maps to world (150, 150) with zoom=0.5
     result = window.screenToWorld(100, 100);
-    T_VEC2_APPROX_COMPARE(result, Vector2f(150.0f, 150.0f));
+    T_VEC2_APPROX_COMPARE(result, Vector2f(151.0f, 151.0f));
 }
 
 void GlvisTestModule::screenToWorldRotateTest(test::Test& test) {
