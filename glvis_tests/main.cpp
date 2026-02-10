@@ -1543,47 +1543,43 @@ void GlvisTestModule::worldToScreenZoomTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("world to screen zoom");
     View view;
-
-    // Set view at (50, 50) with zoom=1
-    view.setPosition(Vector2f(50.0f, 50.0f));
+    view.setPosition(Vector2f(50.5f, 50.5f));
     view.setZoom(1.0f);
     window.setView(view);
 
-    // With zoom=1, world (50, 50) maps to screen (50, 50)
-    Vector2i result = window.worldToScreen(Vector2f(50.0f, 50.0f));
+    Vector2i result = window.worldToScreen(Vector2f(50.5f, 50.5f));
     T_VEC2_COMPARE(result, Vector2i(50, 50));
 
-    // Set zoom=2
     view.setZoom(2.0f);
     window.setView(view);
 
-    // World (25, 25) should map to screen (0, 0)
-    result = window.worldToScreen(Vector2f(25.0f, 25.0f));
+    result = window.worldToScreen(Vector2f(25.5f, 25.5f));
     T_VEC2_COMPARE(result, Vector2i(0, 0));
 
-    // World (50, 50) should still map to screen (50, 50)
-    result = window.worldToScreen(Vector2f(50.0f, 50.0f));
+    result = window.worldToScreen(Vector2f(50.5f, 50.5f));
     T_VEC2_COMPARE(result, Vector2i(50, 50));
 
-    // World (75, 75) should map to screen (100, 100)
-    result = window.worldToScreen(Vector2f(75.0f, 75.0f));
+    result = window.worldToScreen(Vector2f(75.5f, 75.5f));
     T_VEC2_COMPARE(result, Vector2i(100, 100));
 
-    // Test with zoom=0.5 (zoomed out)
     view.setZoom(0.5f);
     window.setView(view);
 
     // With zoom=0.5, world range [-50, 150] maps to screen [0, 100]
-    // World (-50, -50) maps to screen (0, 0)
-    result = window.worldToScreen(Vector2f(-50.0f, -50.0f));
+    // World (-49.5, -49.5) maps to screen (0, 0)
+    result = window.worldToScreen(Vector2f(-49.5f, -49.5f));
     T_VEC2_COMPARE(result, Vector2i(0, 0));
 
-    // World (50, 50) still maps to screen (50, 50)
-    result = window.worldToScreen(Vector2f(50.0f, 50.0f));
+    // World (50.5, 50.5) still maps to screen (50, 50)
+    result = window.worldToScreen(Vector2f(50.5f, 50.5f));
     T_VEC2_COMPARE(result, Vector2i(50, 50));
 
-    // World (150, 150) maps to screen (100, 100)
-    result = window.worldToScreen(Vector2f(150.0f, 150.0f));
+    // World (149.5, 149.5) maps to screen (99, 99)
+    result = window.worldToScreen(Vector2f(149.5f, 149.5f));
+    T_VEC2_COMPARE(result, Vector2i(99, 99));
+
+    // World (150.5, 150.5) maps to screen (100, 100)
+    result = window.worldToScreen(Vector2f(150.5f, 150.5f));
     T_VEC2_COMPARE(result, Vector2i(100, 100));
 }
 
