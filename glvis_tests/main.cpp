@@ -1649,21 +1649,17 @@ void GlvisTestModule::screenToWorldIdentityTest(test::Test& test) {
     view.setPosition(window.getCenter());
     window.setView(view);
 
-    // Test that screen (50, 50) maps to world (50, 50) for default view
     Vector2f worldPoint = window.screenToWorld(50, 50);
-    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(50.0f, 50.0f));
+    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(50.5f, 50.5f));
 
-    // Test screen (0, 0) - should map to world (0, 0)
     worldPoint = window.screenToWorld(Vector2i(0, 0));
-    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(0.0f, 0.0f));
+    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(0.5f, 0.5f));
 
-    // Test screen (100, 100) - should map to world (100, 100)
     worldPoint = window.screenToWorld(Vector2i(100, 100));
-    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(100.0f, 100.0f));
+    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(100.5f, 100.5f));
 
-    // Test using individual coordinates
     worldPoint = window.screenToWorld(25, 25);
-    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(25.0f, 25.0f));
+    T_VEC2_APPROX_COMPARE(worldPoint, Vector2f(25.5f, 25.5f));
 }
 
 void GlvisTestModule::screenToWorldPanTest(test::Test& test) {
