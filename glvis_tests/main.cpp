@@ -1497,28 +1497,21 @@ void GlvisTestModule::worldToScreenIdentityTest(test::Test& test) {
     view.setPosition(window.getCenter());
     window.setView(view);
 
-    // Test that world (50, 50) maps to screen (50, 50) for default view (centered at window center)
-    // With view at (50, 50) and zoom=1, rotation=0:
-    // World point at view position maps to screen center
-    const Vector2f worldPoint = window.getCenter();
-    Vector2i screenPoint = window.worldToScreen(worldPoint);
-    T_VEC2_COMPARE(screenPoint, Vector2i(50, 50));
+    const Vector2f window_center = window.getCenter();
+    Vector2i window_center_screen = window.worldToScreen(window_center);
+    T_VEC2_COMPARE(window_center_screen, Vector2i(50, 50));
 
-    // Test world (0, 0) - should map to top-left (0, 0) since view is at center
-    const Vector2i worldOriginScreen = window.worldToScreen(Vector2f(0.0f, 0.0f));
-    T_VEC2_COMPARE(worldOriginScreen, Vector2i(0, 0));
+    const Vector2i world_top_left_screen = window.worldToScreen(Vector2f(0.5f, 0.5f));
+    T_VEC2_COMPARE(world_top_left_screen, Vector2i(0, 0));
 
-    // Test world (100, 100) - should map to bottom-right (100, 100)
-    const Vector2i worldMaxScreen = window.worldToScreen(Vector2f(100.0f, 100.0f));
-    T_VEC2_COMPARE(worldMaxScreen, Vector2i(100, 100));
+    const Vector2i world_bottom_right_screen = window.worldToScreen(Vector2f(100.5f, 100.5f));
+    T_VEC2_COMPARE(world_bottom_right_screen, Vector2i(100, 100));
 
-    // Test center of window using individual coordinates
-    Vector2i centerScreen = window.worldToScreen(50.0f, 50.0f);
-    T_VEC2_COMPARE(centerScreen, Vector2i(50, 50));
+    Vector2i center_pixel_screen = window.worldToScreen(50.5f, 50.5f);
+    T_VEC2_COMPARE(center_pixel_screen, Vector2i(50, 50));
 
-    // Test a point at (25, 25) - should map to (25, 25)
-    const Vector2i quarterPoint = window.worldToScreen(Vector2f(25.0f, 25.0f));
-    T_VEC2_COMPARE(quarterPoint, Vector2i(25, 25));
+    const Vector2i quarter_point_screen = window.worldToScreen(Vector2f(25.5f, 25.5f));
+    T_VEC2_COMPARE(quarter_point_screen, Vector2i(25, 25));
 }
 
 void GlvisTestModule::worldToScreenPanTest(test::Test& test) {
