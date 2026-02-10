@@ -1518,27 +1518,24 @@ void GlvisTestModule::worldToScreenPanTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("world to screen pan");
     View view;
-
-    // Set view center at (50, 50) as baseline
-    view.setPosition(Vector2f(50.0f, 50.0f));
+    view.setPosition(Vector2f(50.5f, 50.5f));
     window.setView(view);
 
-    // Test with view centered at (50, 50) - world (50, 50) should map to screen (50, 50)
-    Vector2i result = window.worldToScreen(Vector2f(50.0f, 50.0f));
+    // Test with no pan
+    Vector2i result = window.worldToScreen(Vector2f(50.5f, 50.5f));
     T_VEC2_COMPARE(result, Vector2i(50, 50));
 
-    // Move view to (60, 60) - now world (60, 60) should map to screen (50, 50)
-    view.setPosition(Vector2f(60.0f, 60.0f));
+    // Move view to (60.5, 60.5)
+    view.setPosition(Vector2f(60.5f, 60.5f));
     window.setView(view);
-    result = window.worldToScreen(Vector2f(60.0f, 60.0f));
+
+    result = window.worldToScreen(Vector2f(60.5f, 60.5f));
     T_VEC2_COMPARE(result, Vector2i(50, 50));
 
-    // World (50, 50) with view at (60, 60) should shift by (-10, -10)
-    result = window.worldToScreen(Vector2f(50.0f, 50.0f));
+    result = window.worldToScreen(Vector2f(50.5f, 50.5f));
     T_VEC2_COMPARE(result, Vector2i(40, 40));
 
-    // World (100, 100) with view at (60, 60) should shift by (+40, +40)
-    result = window.worldToScreen(Vector2f(100.0f, 100.0f));
+    result = window.worldToScreen(Vector2f(100.5f, 100.5f));
     T_VEC2_COMPARE(result, Vector2i(90, 90));
 }
 
