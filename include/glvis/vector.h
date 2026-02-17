@@ -11,7 +11,6 @@ class Vector2f;
 
 class Vector2i : public glm::ivec2 {
 public:
-    using glm::ivec2::ivec2;
     Vector2i();
     Vector2i(int x, int y);
     Vector2i(const Vector2f& v);
@@ -25,7 +24,6 @@ public:
 
 class Vector2f : public glm::vec2 {
 public:
-    using glm::vec2::vec2;
     Vector2f();
     Vector2f(float x, float y);
     explicit Vector2f(const Vector2i& v);
@@ -40,7 +38,6 @@ public:
 
 class Vector3 : public glm::vec3 {
 public:
-    using glm::vec3::vec3;
     Vector3();
     Vector3(float x, float y, float z);
 
@@ -53,7 +50,6 @@ public:
 
 class Vector4 : public glm::vec4 {
 public:
-    using glm::vec4::vec4;
     Vector4();
     Vector4(float x, float y, float z, float w);
 
