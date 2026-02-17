@@ -323,10 +323,10 @@ void GlvisTestModule::circleSetRadiusTest(test::Test& test) {
     // Check the initial circle (smaller diamond)
     Image image = window.readPixels();
     const float initial_radius_offset = std::floor(initial_radius);
-    const Vector2i initial_right_check = window.worldToScreen(
+    const Vector2i initial_right_check = static_cast<Vector2i>(
         circle_center + Vector2f(initial_radius_offset, 0)
     );
-    const Vector2i initial_bottom_check = window.worldToScreen(
+    const Vector2i initial_bottom_check = static_cast<Vector2i>(
         circle_center + Vector2f(0, initial_radius_offset)
     );
     T_COMPARE(image.getPixel(initial_right_check), Color::Red, &Color::toString);
@@ -335,7 +335,7 @@ void GlvisTestModule::circleSetRadiusTest(test::Test& test) {
     // Check a pixel that should be outside the initial circle but inside the new one
     const float new_radius = 10.5f;
     const float mid_radius = (initial_radius + new_radius) / 2.0f;
-    const Vector2i mid_check = window.worldToScreen(
+    const Vector2i mid_check = static_cast<Vector2i>(
         circle_center + Vector2f(mid_radius, 0)
     );
     T_COMPARE(image.getPixel(mid_check), Color::Black, &Color::toString);
@@ -349,10 +349,10 @@ void GlvisTestModule::circleSetRadiusTest(test::Test& test) {
     // Check the circle with new radius (larger diamond)
     image = window.readPixels();
     const float new_radius_offset = std::floor(new_radius);
-    const Vector2i new_right_check = window.worldToScreen(
+    const Vector2i new_right_check = static_cast<Vector2i>(
         circle_center + Vector2f(new_radius_offset, 0)
     );
-    const Vector2i new_bottom_check = window.worldToScreen(
+    const Vector2i new_bottom_check = static_cast<Vector2i>(
         circle_center + Vector2f(0, new_radius_offset)
     );
     T_COMPARE(image.getPixel(new_right_check), Color::Red, &Color::toString);
@@ -362,7 +362,7 @@ void GlvisTestModule::circleSetRadiusTest(test::Test& test) {
     T_COMPARE(image.getPixel(mid_check), Color::Red, &Color::toString);
 
     // Check a pixel outside the new circle
-    const Vector2i outside_check = window.worldToScreen(
+    const Vector2i outside_check = static_cast<Vector2i>(
         circle_center + Vector2f(new_radius_offset + 1, 0)
     );
     T_COMPARE(image.getPixel(outside_check), Color::Black, &Color::toString);
@@ -1788,9 +1788,9 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: use consistent sets of coordinates in coordinate transform tests
     // TODO: remove glm or typedef matrix and vector to glm types
     // TODO: replace raw casts with static_cast
+    // TODO: make View transformable
     // TODO: split tests into separate files
     // TODO: text rendering
     // TODO: transparent texture rendering
