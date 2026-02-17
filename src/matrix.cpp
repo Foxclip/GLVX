@@ -2,31 +2,35 @@
 #include <cstring>
 #include <cassert>
 #include <string>
+#include <glm/gtc/matrix_transform.hpp>
 #include "glvis/utils.h"
 
 namespace glvis {
 
-Matrix4::Matrix4() {
-    // Identity matrix
-    data = {1.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f};
-}
+Matrix4::Matrix4() : data(1.0f) {}
 
-Matrix4::Matrix4(const std::array<float, 16>& data) : data(data) {}
+Matrix4::Matrix4(const std::array<float, 16>& data) : data(
+    data[0], data[1], data[2], data[3],
+    data[4], data[5], data[6], data[7],
+    data[8], data[9], data[10], data[11],
+    data[12], data[13], data[14], data[15]
+) {}
 
-Matrix4::Matrix4(const float* data) {
-    assert(data);
-    std::memcpy(this->data.data(), data, sizeof(float) * 16);
-}
+Matrix4::Matrix4(const float* data) : data(
+    data[0], data[1], data[2], data[3],
+    data[4], data[5], data[6], data[7],
+    data[8], data[9], data[10], data[11],
+    data[12], data[13], data[14], data[15]
+) {}
+
+Matrix4::Matrix4(const glm::mat4& data) : data(data) {}
 
 const float* Matrix4::getData() const {
-    return data.data();
+    return &data[0][0];
 }
 
 float Matrix4::get(int row, int col) const {
-    return data[row * 4 + col];
+    return data[row][col];
 }
 
 std::string Matrix4::toString() const {
@@ -76,26 +80,15 @@ std::string Matrix4::toString() const {
 }
 
 Matrix4 Matrix4::operator*(const Matrix4& other) const {
-    Matrix4 result;
-    // Simple matrix multiplication (column-major)
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            result.data[i * 4 + j] = 0.0f;
-            for (int k = 0; k < 4; ++k) {
-                result.data[i * 4 + j] += data[k * 4 + j] * other.data[i * 4 + k];
-            }
-        }
-    }
-    return result;
+    return Matrix4(data * other.data);
 }
 
 Matrix4 Matrix4::translate(const Matrix4& matrix, const Vector3& v) {
-    Matrix4 result = matrix;
-    // Add translation to the 4th column (positions 12, 13, 14 in column-major order)
-    result.data[12] += v.x;
-    result.data[13] += v.y;
-    result.data[14] += v.z;
-    return result;
+    return Matrix4(glm::translate(matrix.data, glm::vec3(v.x, v.y, v.z)));
+}
+
+Matrix4::operator glm::mat4() const {
+    return data;
 }
 
 }
