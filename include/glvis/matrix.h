@@ -22,9 +22,6 @@ public:
     static Matrix4 scale(const Matrix4& matrix, const Vector3& v);
     static Matrix4 ortho(float left, float right, float bottom, float top, float zNear, float zFar);
 
-    // Implicit conversion to glm::mat4 for interoperability
-    operator glm::mat4() const;
-
 private:
     glm::mat4 data;
 };

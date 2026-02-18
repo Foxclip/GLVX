@@ -99,8 +99,4 @@ Matrix4 Matrix4::ortho(float left, float right, float bottom, float top, float z
     return Matrix4(glm::ortho(left, right, bottom, top, zNear, zFar));
 }
 
-Matrix4::operator glm::mat4() const {
-    return data;
-}
-
 }
