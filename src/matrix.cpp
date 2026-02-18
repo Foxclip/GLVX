@@ -87,6 +87,18 @@ Matrix4 Matrix4::translate(const Matrix4& matrix, const Vector3& v) {
     return Matrix4(glm::translate(matrix.data, glm::vec3(v.x, v.y, v.z)));
 }
 
+Matrix4 Matrix4::rotate(const Matrix4& matrix, float angle, const Vector3& axis) {
+    return Matrix4(glm::rotate(matrix.data, angle, glm::vec3(axis.x, axis.y, axis.z)));
+}
+
+Matrix4 Matrix4::scale(const Matrix4& matrix, const Vector3& v) {
+    return Matrix4(glm::scale(matrix.data, glm::vec3(v.x, v.y, v.z)));
+}
+
+Matrix4 Matrix4::ortho(float left, float right, float bottom, float top, float zNear, float zFar) {
+    return Matrix4(glm::ortho(left, right, bottom, top, zNear, zFar));
+}
+
 Matrix4::operator glm::mat4() const {
     return data;
 }

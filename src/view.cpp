@@ -1,8 +1,7 @@
 #include "glvis/view.h"
 #include "glvis/vector.h"
 #include "glvis/utils.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "glvis/matrix.h"
 
 namespace glvis {
 
@@ -15,26 +14,25 @@ void View::setZoom(float zoom) {
 }
 
 Matrix4 View::getViewMatrix(float width, float height) const {
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(width / 2, height / 2, 0.0f));
-    view = glm::rotate(view, -getRotation().asRadians(), glm::vec3(0.0f, 0.0f, 1.0f));
-    view = glm::scale(view, glm::vec3(getZoom(), -getZoom(), 1.0f));
-    view = glm::translate(view, glm::vec3(-getPosition().x, -getPosition().y, 0.0f));
-    return from_glmMat4(view);
+    Matrix4 view;
+    view = Matrix4::translate(view, Vector3(width / 2, height / 2, 0.0f));
+    view = Matrix4::rotate(view, -getRotation().asRadians(), Vector3(0.0f, 0.0f, 1.0f));
+    view = Matrix4::scale(view, Vector3(getZoom(), -getZoom(), 1.0f));
+    view = Matrix4::translate(view, Vector3(-getPosition().x, -getPosition().y, 0.0f));
+    return view;
 }
 
 Matrix4 View::getInvViewMatrix(float width, float height) const {
-    glm::mat4 invView = glm::mat4(1.0f);
-    invView = glm::translate(invView, glm::vec3(getPosition().x, getPosition().y, 0.0f));
-    invView = glm::scale(invView, glm::vec3(1.0f / getZoom(), -1.0f / getZoom(), 1.0f));
-    invView = glm::rotate(invView, getRotation().asRadians(), glm::vec3(0.0f, 0.0f, 1.0f));
-    invView = glm::translate(invView, glm::vec3(-width / 2, -height / 2, 0.0f));
-    return from_glmMat4(invView);
+    Matrix4 invView;
+    invView = Matrix4::translate(invView, Vector3(getPosition().x, getPosition().y, 0.0f));
+    invView = Matrix4::scale(invView, Vector3(1.0f / getZoom(), -1.0f / getZoom(), 1.0f));
+    invView = Matrix4::rotate(invView, getRotation().asRadians(), Vector3(0.0f, 0.0f, 1.0f));
+    invView = Matrix4::translate(invView, Vector3(-width / 2, -height / 2, 0.0f));
+    return invView;
 }
 
 Matrix4 View::getProjectionMatrix(float width, float height) const {
-    glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
-    return from_glmMat4(projection);
+    return Matrix4::ortho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
 }
 
 }
