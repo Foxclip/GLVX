@@ -1,16 +1,32 @@
 #pragma once
 
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/ext/vector_int2.hpp>
+
 namespace glvis {
 
-class Vector2i;
+class Vector2f;
 
-class Vector2f {
+class Vector2i : public glm::ivec2 {
+public:
+    Vector2i();
+    Vector2i(int x, int y);
+    explicit Vector2i(const Vector2f& v);
+
+    Vector2i operator+(const Vector2i& other) const;
+    Vector2i operator-(const Vector2i& other) const;
+    Vector2i operator*(int scalar) const;
+    Vector2i operator/(int scalar) const;
+    Vector2i operator-() const;
+};
+
+class Vector2f : public glm::vec2 {
 public:
     Vector2f();
     Vector2f(float x, float y);
     explicit Vector2f(const Vector2i& v);
-    float x = 0;
-    float y = 0;
 
     Vector2f operator+(const Vector2f& other) const;
     Vector2f operator-(const Vector2f& other) const;
@@ -18,60 +34,30 @@ public:
     Vector2f operator/(float scalar) const;
     Vector2f& operator+=(const Vector2f& other);
     Vector2f operator-() const;
-
-private:
 };
 
-class Vector2i {
-public:
-    Vector2i();
-    Vector2i(int x, int y);
-    explicit Vector2i(const Vector2f& v);
-    int x = 0;
-    int y = 0;
-
-    Vector2i operator+(const Vector2i& other) const;
-    Vector2i operator-(const Vector2i& other) const;
-    Vector2i operator*(int scalar) const;
-    Vector2i operator/(int scalar) const;
-    Vector2i operator-() const;
-
-private:
-};
-
-class Vector3 {
+class Vector3 : public glm::vec3 {
 public:
     Vector3();
     Vector3(float x, float y, float z);
-    float x = 0;
-    float y = 0;
-    float z = 0;
 
     Vector3 operator+(const Vector3& other) const;
     Vector3 operator-(const Vector3& other) const;
     Vector3 operator*(float scalar) const;
     Vector3 operator/(float scalar) const;
     Vector3 operator-() const;
-
-private:
 };
 
-class Vector4 {
+class Vector4 : public glm::vec4 {
 public:
     Vector4();
     Vector4(float x, float y, float z, float w);
-    float x = 0;
-    float y = 0;
-    float z = 0;
-    float w = 0;
 
     Vector4 operator+(const Vector4& other) const;
     Vector4 operator-(const Vector4& other) const;
     Vector4 operator*(float scalar) const;
     Vector4 operator/(float scalar) const;
     Vector4 operator-() const;
-
-private:
 };
 
 }
