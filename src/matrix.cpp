@@ -33,6 +33,10 @@ float Matrix4::get(int row, int col) const {
     return data[row][col];
 }
 
+float& Matrix4::get(int row, int col) {
+    return data[row][col];
+}
+
 std::string Matrix4::toString() const {
     constexpr std::string_view floatFormatStr = "{:.3f}";
     auto count_digits = [](float val) {

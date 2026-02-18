@@ -15,6 +15,7 @@ public:
     explicit Matrix4(const glm::mat4& data);
     const float* getData() const;
     float get(int row, int col) const;
+    float& get(int row, int col);
     std::string toString() const;
     Matrix4 operator*(const Matrix4& other) const;
     static Matrix4 translate(const Matrix4& matrix, const Vector3& v);
