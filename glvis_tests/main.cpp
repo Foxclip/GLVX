@@ -1788,8 +1788,6 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: remove glm or typedef matrix and vector to glm types
-    // TODO: replace raw casts with static_cast
     // TODO: make View transformable
     // TODO: split tests into separate files
     // TODO: text rendering

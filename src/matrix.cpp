@@ -39,7 +39,7 @@ std::string Matrix4::toString() const {
 		int result = 1;
 		float absval = abs(val);
 		if (absval > 1) {
-			result += (int)log10(absval);
+			result += static_cast<int>(log10(absval));
 		}
 		if (std::signbit(val)) {
 			result++;

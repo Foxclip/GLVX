@@ -41,7 +41,7 @@ void Window::create(int width, int height, const char* title) {
     currentWidth = width;
     currentHeight = height;
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         glfwDestroyWindow(window);
         glfwTerminate();
         throw std::runtime_error("Failed to initialize GLAD");
@@ -83,7 +83,7 @@ Vector2i Window::getSize() const {
 }
 
 Vector2f Window::getCenter() const {
-    return Vector2f((float)currentWidth / 2.0f, (float)currentHeight / 2.0f);
+    return Vector2f(static_cast<float>(currentWidth) / 2.0f, static_cast<float>(currentHeight) / 2.0f);
 }
 
 void Window::setSize(int width, int height) {
@@ -100,9 +100,9 @@ void Window::setTitle(const std::string& title) const {
 }
 
 void Window::setView(const View& view) {
-    this->view = view.getViewMatrix((float)currentWidth, (float)currentHeight);
-    invView = view.getInvViewMatrix((float)currentWidth, (float)currentHeight);
-    projection = view.getProjectionMatrix((float)currentWidth, (float)currentHeight);
+    this->view = view.getViewMatrix(static_cast<float>(currentWidth), static_cast<float>(currentHeight));
+    invView = view.getInvViewMatrix(static_cast<float>(currentWidth), static_cast<float>(currentHeight));
+    projection = view.getProjectionMatrix(static_cast<float>(currentWidth), static_cast<float>(currentHeight));
 }
 
 void Window::clear(const Color& color) const {

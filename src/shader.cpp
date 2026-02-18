@@ -30,12 +30,12 @@ void Shader::use() {
 
 void Shader::setBool(const std::string& name, bool value) const {
     assert(ID != 0);
-    GL_CALL(glUniform1i(GL_CALL(glGetUniformLocation(ID, name.c_str())), (int)value));
+    GL_CALL(glUniform1i(GL_CALL(glGetUniformLocation(ID, name.c_str())), static_cast<int>(value)));
 }
 
 void Shader::setInt(const std::string& name, int value) const {
     assert(ID != 0);
-    GL_CALL(glUniform1i(GL_CALL(glGetUniformLocation(ID, name.c_str())), (int)value));
+    GL_CALL(glUniform1i(GL_CALL(glGetUniformLocation(ID, name.c_str())), value));
 }
 
 void Shader::setFloat(const std::string& name, float value) const {

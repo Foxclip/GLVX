@@ -53,7 +53,7 @@ Matrix4 View::getInvViewMatrix(float width, float height) const {
 }
 
 Matrix4 View::getProjectionMatrix(float width, float height) const {
-    glm::mat4 projection = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
+    glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
     return from_glmMat4(projection);
 }
 
