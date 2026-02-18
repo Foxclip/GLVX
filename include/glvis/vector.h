@@ -13,7 +13,7 @@ class Vector2i : public glm::ivec2 {
 public:
     Vector2i();
     Vector2i(int x, int y);
-    Vector2i(const Vector2f& v);
+    explicit Vector2i(const Vector2f& v);
 
     Vector2i operator+(const Vector2i& other) const;
     Vector2i operator-(const Vector2i& other) const;
