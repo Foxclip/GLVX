@@ -2,6 +2,7 @@
 #include <cmath>
 #include "glvis_tests/glvis_tests_common.h"
 #include "glvis_tests/basic_tests.h"
+#include "glvis_tests/shape_tests.h"
 #include "glvis/render_states.h"
 #include "glvis/shader.h"
 #include "glvis/vector.h"
@@ -27,10 +28,6 @@ private:
     bool checkPixelColor(test::Test& test, const Image& image, const Vector2i& start, const Vector2i& end, const Color& expectedColor);
     bool compareImages(test::Test& test, const Image& image1, const Image& image2);
 
-    void rectangleTest(test::Test& test);
-    void rectangleSetSizeTest(test::Test& test);
-    void circleTest(test::Test& test);
-    void circleSetRadiusTest(test::Test& test);
     void moveTest(test::Test& test);
     void setOriginTest(test::Test& test);
     void rotateTopLeftTest(test::Test& test);
@@ -70,27 +67,24 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     // basic tests
     auto basic_tests_module = addModule<BasicTestsModule>("Basic");
     // shape tests
-    auto rectangle_test = addTest("rectangle", { basic_tests_module }, [&](test::Test& test) { rectangleTest(test); });
-    auto rectangle_set_size_test = addTest("retcangle_set_size", { rectangle_test }, [&](test::Test& test) { rectangleSetSizeTest(test); });
-    auto circle_test = addTest("circle", { basic_tests_module }, [&](test::Test& test) { circleTest(test); });
-    auto circle_set_radius_test = addTest("circle_set_radius", { circle_test }, [&](test::Test& test) { circleSetRadiusTest(test); });
+    auto shape_tests_module = addModule<ShapeTestsModule>("Shape", { basic_tests_module });
     // transform tests
-    auto move_test = addTest("move", { rectangle_test }, [&](test::Test& test) { moveTest(test); });
-    auto set_origin_test = addTest("set_origin", { rectangle_test }, [&](test::Test& test) { setOriginTest(test); });
+    auto move_test = addTest("move", { shape_tests_module }, [&](test::Test& test) { moveTest(test); });
+    auto set_origin_test = addTest("set_origin", { shape_tests_module }, [&](test::Test& test) { setOriginTest(test); });
     auto rotate_rop_left_test = addTest("rotate_top_left", { set_origin_test }, [&](test::Test& test) { rotateTopLeftTest(test); });
     auto rotate_center_test = addTest("rotate_center", { set_origin_test }, [&](test::Test& test) { rotateCenterTest(test); });
     auto scale_top_left_test = addTest("scale_top_left", { set_origin_test }, [&](test::Test& test) { scaleTopLeftTest(test); });
     auto scale_center_test = addTest("scale_center", { set_origin_test }, [&](test::Test& test) { scaleCenterTest(test); });
     // texture tests
-    auto texture_test = addTest("texture", { rectangle_test }, [&](test::Test& test) { textureTest(test); });
+    auto texture_test = addTest("texture", { shape_tests_module }, [&](test::Test& test) { textureTest(test); });
     auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
     auto texture_resize_up_test = addTest("texture_resize", { texture_test }, [&](test::Test& test) { textureResizeTest(test); });
     // window tests
-    auto window_resize_test = addTest("window_resize", { rectangle_test }, [&](test::Test& test) { windowResizeTest(test); });
+    auto window_resize_test = addTest("window_resize", { shape_tests_module }, [&](test::Test& test) { windowResizeTest(test); });
     // view tests
-    auto view_pan_test = addTest("view_pan", { rectangle_test }, [&](test::Test& test) { viewPanTest(test); });
-    auto view_zoom_test = addTest("view_zoom", { rectangle_test }, [&](test::Test& test) { viewZoomTest(test); });
-    auto view_rotate_test = addTest("view_rotate", { rectangle_test }, [&](test::Test& test) { viewRotateTest(test); });
+    auto view_pan_test = addTest("view_pan", { shape_tests_module }, [&](test::Test& test) { viewPanTest(test); });
+    auto view_zoom_test = addTest("view_zoom", { shape_tests_module }, [&](test::Test& test) { viewZoomTest(test); });
+    auto view_rotate_test = addTest("view_rotate", { shape_tests_module }, [&](test::Test& test) { viewRotateTest(test); });
     // vertex buffer tests
     auto vertex_buffer_render_test = addTest("vertex_buffer_render", { basic_tests_module }, [&](test::Test& test) { vertexBufferRenderTest(test); });
     auto vertex_buffer_update_test = addTest("vertex_buffer_update", { vertex_buffer_render_test }, [&](test::Test& test) { vertexBufferUpdateTest(test); });
@@ -100,9 +94,9 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto vertex_array_line_test = addTest("vertex_array_line", { vertex_buffer_render_test }, [&](test::Test& test) { vertexArrayLineTest(test); });
     auto vertex_array_modify_test = addTest("vertex_array_modify", { vertex_array_triangle_test }, [&](test::Test& test) { vertexArrayModifyTest(test); });
     // render states tests
-    auto render_states_transform_test = addTest("render_states_transform", { rectangle_test }, [&](test::Test& test) { renderStatesTransformTest(test); });
+    auto render_states_transform_test = addTest("render_states_transform", { shape_tests_module }, [&](test::Test& test) { renderStatesTransformTest(test); });
     auto render_states_texture_test = addTest("render_states_texture", { texture_test }, [&](test::Test& test) { renderStatesTextureTest(test); });
-    auto render_states_shader_test = addTest("render_states_shader", { rectangle_test }, [&](test::Test& test) { renderStatesShaderTest(test); });
+    auto render_states_shader_test = addTest("render_states_shader", { shape_tests_module }, [&](test::Test& test) { renderStatesShaderTest(test); });
     // worldToScreen and screenToWorld tests
     auto world_to_screen_identity_test = addTest("world_to_screen_identity", { view_pan_test }, [&](test::Test& test) { worldToScreenIdentityTest(test); });
     auto world_to_screen_pan_test = addTest("world_to_screen_pan", { view_pan_test }, [&](test::Test& test) { worldToScreenPanTest(test); });
@@ -147,193 +141,6 @@ bool GlvisTestModule::compareImages(test::Test& test, const Image& image1, const
         }
     }
     return true;
-}
-
-void GlvisTestModule::rectangleTest(test::Test& test) {
-    window.setSize(WINDOW_SIZE);
-    window.setTitle("rectangle");
-    View view;
-    view.setPosition(window.getCenter());
-    window.setView(view);
-    window.clear(Color::Black);
-
-    // Render a rectangle
-    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
-    Rectangle rect(rect_size);
-    rect.setColor(Color::Red);
-    window.draw(rect);
-    window.display();
-
-    // Check that the rectangle is rendered correctly
-    Image image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(static_cast<Vector2i>(rect_size) - Vector2i(1, 1)), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(static_cast<Vector2i>(rect_size)), Color::Black, &Color::toString);
-}
-
-void GlvisTestModule::rectangleSetSizeTest(test::Test& test) {
-    window.setSize(WINDOW_SIZE);
-    window.setTitle("rectangle set size");
-    View view;
-    view.setPosition(window.getCenter());
-    window.setView(view);
-    window.clear(Color::Black);
-
-    // Create a rectangle with initial size
-    const Vector2f initial_size = Vector2f(10.0f, 10.0f);
-    Rectangle rect(initial_size);
-    rect.setColor(Color::Red);
-    window.draw(rect);
-    window.display();
-
-    // Check that the rectangle is rendered correctly with initial size
-    Image image = window.readPixels();
-    Vector2i rect_size_int = static_cast<Vector2i>(initial_size);
-    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(rect_size_int), Color::Black, &Color::toString);
-
-    // Change the size using setSize()
-    const Vector2f new_size = Vector2f(20.0f, 15.0f);
-    rect.setSize(new_size);
-    window.clear(Color::Black);
-    window.draw(rect);
-    window.display();
-
-    // Check that the rectangle is rendered correctly with new size
-    image = window.readPixels();
-    Vector2i new_size_int = static_cast<Vector2i>(new_size);
-    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(new_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(new_size_int), Color::Black, &Color::toString);
-}
-
-void GlvisTestModule::circleTest(test::Test& test) {
-    window.setSize(WINDOW_SIZE);
-    window.setTitle("circle");
-    View view;
-    const Vector2f window_center = window.getCenter();
-    view.setPosition(window_center);
-    window.setView(view);
-    window.clear(Color::Black);
-
-    // Render a circle with 4 vertices
-    const float circle_radius = 5.5f;
-    const Vector2f circle_center(circle_radius, circle_radius);
-    Circle circle(circle_radius, 4); // 4 segments = diamond shape
-    circle.setColor(Color::Red);
-    window.draw(circle);
-    window.display();
-
-    // Check the 4 diamond vertices (all should be Red - on the diamond edges)
-    Image image = window.readPixels();
-    const float radius_offset = std::floor(circle_radius);
-    const Vector2i top_check = static_cast<Vector2i>(
-        circle_center + Vector2f(0, -radius_offset)
-    );
-    const Vector2i right_check = static_cast<Vector2i>(
-        circle_center + Vector2f(radius_offset, 0)
-    );
-    const Vector2i bottom_check = static_cast<Vector2i>(
-        circle_center + Vector2f(0, radius_offset)
-    );
-    const Vector2i left_check = static_cast<Vector2i>(
-        circle_center + Vector2f(-radius_offset, 0)
-    );
-    T_COMPARE(image.getPixel(top_check), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(right_check), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(bottom_check), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(left_check), Color::Red, &Color::toString);
-
-    // Check diagonal pixels from top-left to bottom-right
-    const float offset = static_cast<float>(circle_radius / std::sqrt(2));
-    const Vector2i top_left_check = static_cast<Vector2i>(
-        circle_center + Vector2f(-offset, -offset)
-    );
-    const Vector2i bottom_right_check = static_cast<Vector2i>(
-        circle_center + Vector2f(offset, offset)
-    );
-    const Vector2i top_right_check = static_cast<Vector2i>(
-        circle_center + Vector2f(offset, -offset)
-    );
-    const Vector2i bottom_left_check = static_cast<Vector2i>(
-        circle_center + Vector2f(-offset, offset)
-    );
-    T_COMPARE(image.getPixel(top_left_check), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(bottom_right_check), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(top_right_check), Color::Black, &Color::toString);
-    T_COMPARE(image.getPixel(bottom_left_check), Color::Black, &Color::toString);
-
-    // Check a pixel outside the diamond (should be Black)
-    const Vector2i outside_check = static_cast<Vector2i>(
-        circle_center + Vector2f(circle_radius, circle_radius) + Vector2f(1, 1)
-    );
-    T_COMPARE(image.getPixel(outside_check), Color::Black, &Color::toString);
-}
-
-void GlvisTestModule::circleSetRadiusTest(test::Test& test) {
-    window.setSize(WINDOW_SIZE);
-    window.setTitle("circle_set_radius");
-    View view;
-    const Vector2f window_center = window.getCenter();
-    view.setPosition(window_center);
-    window.setView(view);
-    window.clear(Color::Black);
-
-    // Render a circle with initial radius
-    const float initial_radius = 5.5f;
-    const Vector2f circle_center(initial_radius, initial_radius);
-    Circle circle(initial_radius, 4); // 4 segments = diamond shape
-    circle.setColor(Color::Red);
-    window.draw(circle);
-    window.display();
-
-    // Check the initial circle (smaller diamond)
-    Image image = window.readPixels();
-    const float initial_radius_offset = std::floor(initial_radius);
-    const Vector2i initial_right_check = static_cast<Vector2i>(
-        circle_center + Vector2f(initial_radius_offset, 0)
-    );
-    const Vector2i initial_bottom_check = static_cast<Vector2i>(
-        circle_center + Vector2f(0, initial_radius_offset)
-    );
-    T_COMPARE(image.getPixel(initial_right_check), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(initial_bottom_check), Color::Red, &Color::toString);
-
-    // Check a pixel that should be outside the initial circle but inside the new one
-    const float new_radius = 10.5f;
-    const float mid_radius = (initial_radius + new_radius) / 2.0f;
-    const Vector2i mid_check = static_cast<Vector2i>(
-        circle_center + Vector2f(mid_radius, 0)
-    );
-    T_COMPARE(image.getPixel(mid_check), Color::Black, &Color::toString);
-
-    // Change the radius
-    circle.setRadius(new_radius);
-    window.clear(Color::Black);
-    window.draw(circle);
-    window.display();
-
-    // Check the circle with new radius (larger diamond)
-    image = window.readPixels();
-    const float new_radius_offset = std::floor(new_radius);
-    const Vector2i new_right_check = static_cast<Vector2i>(
-        circle_center + Vector2f(new_radius_offset, 0)
-    );
-    const Vector2i new_bottom_check = static_cast<Vector2i>(
-        circle_center + Vector2f(0, new_radius_offset)
-    );
-    T_COMPARE(image.getPixel(new_right_check), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(new_bottom_check), Color::Red, &Color::toString);
-
-    // Check that the midpoint is now red
-    T_COMPARE(image.getPixel(mid_check), Color::Red, &Color::toString);
-
-    // Check a pixel outside the new circle
-    const Vector2i outside_check = static_cast<Vector2i>(
-        circle_center + Vector2f(new_radius_offset + 1, 0)
-    );
-    T_COMPARE(image.getPixel(outside_check), Color::Black, &Color::toString);
 }
 
 void GlvisTestModule::moveTest(test::Test& test) {

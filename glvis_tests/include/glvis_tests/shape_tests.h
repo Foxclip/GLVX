@@ -5,14 +5,17 @@
 
 using namespace glvis;
 
-class BasicTestsModule : public test::TestModule {
+class ShapeTestsModule : public test::TestModule {
 public:
-    BasicTestsModule(
+    ShapeTestsModule(
         const std::string& name,
         test::TestModule* parent,
         const std::vector<test::TestNode*>& required_nodes = { }
     );
-    void clearTest(test::Test& test);
+    void rectangleTest(test::Test& test);
+    void rectangleSetSizeTest(test::Test& test);
+    void circleTest(test::Test& test);
+    void circleSetRadiusTest(test::Test& test);
 
 private:
 
