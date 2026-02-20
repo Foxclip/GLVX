@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cmath>
 #include "test_lib/test.h"
+#include "glvis_tests_common.h"
+#include "basic_tests.h"
 #include "glvis/render_states.h"
 #include "glvis/shader.h"
 #include "glvis/vector.h"
@@ -17,21 +19,15 @@
 
 using namespace glvis;
 
-const Vector2i WINDOW_SIZE = Vector2i(100, 100);
-const Vector2i RESIZED_WINDOW_SIZE = Vector2i(200, 200);
-
 class GlvisTestModule : public test::TestModule {
 public:
     GlvisTestModule(const std::string& name, test::TestModule* parent, const std::vector<test::TestNode*>& required_nodes = { });
 
 private:
-    Window window;
-
     bool checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor);
     bool checkPixelColor(test::Test& test, const Image& image, const Vector2i& start, const Vector2i& end, const Color& expectedColor);
     bool compareImages(test::Test& test, const Image& image1, const Image& image2);
 
-    void clearTest(test::Test& test);
     void rectangleTest(test::Test& test);
     void rectangleSetSizeTest(test::Test& test);
     void circleTest(test::Test& test);
@@ -73,11 +69,11 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     : test::TestModule(name, parent, required_nodes) {
     window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "glvis tests");
     // basic tests
-    auto clear_test = addTest("clear", [&](test::Test& test) { clearTest(test); });
+    auto basic_tests_module = addModule<BasicTestsModule>("Basic");
     // shape tests
-    auto rectangle_test = addTest("rectangle", { clear_test }, [&](test::Test& test) { rectangleTest(test); });
+    auto rectangle_test = addTest("rectangle", { basic_tests_module }, [&](test::Test& test) { rectangleTest(test); });
     auto rectangle_set_size_test = addTest("retcangle_set_size", { rectangle_test }, [&](test::Test& test) { rectangleSetSizeTest(test); });
-    auto circle_test = addTest("circle", { clear_test }, [&](test::Test& test) { circleTest(test); });
+    auto circle_test = addTest("circle", { basic_tests_module }, [&](test::Test& test) { circleTest(test); });
     auto circle_set_radius_test = addTest("circle_set_radius", { circle_test }, [&](test::Test& test) { circleSetRadiusTest(test); });
     // transform tests
     auto move_test = addTest("move", { rectangle_test }, [&](test::Test& test) { moveTest(test); });
@@ -97,7 +93,7 @@ GlvisTestModule::GlvisTestModule(const std::string& name, test::TestModule* pare
     auto view_zoom_test = addTest("view_zoom", { rectangle_test }, [&](test::Test& test) { viewZoomTest(test); });
     auto view_rotate_test = addTest("view_rotate", { rectangle_test }, [&](test::Test& test) { viewRotateTest(test); });
     // vertex buffer tests
-    auto vertex_buffer_render_test = addTest("vertex_buffer_render", { clear_test }, [&](test::Test& test) { vertexBufferRenderTest(test); });
+    auto vertex_buffer_render_test = addTest("vertex_buffer_render", { basic_tests_module }, [&](test::Test& test) { vertexBufferRenderTest(test); });
     auto vertex_buffer_update_test = addTest("vertex_buffer_update", { vertex_buffer_render_test }, [&](test::Test& test) { vertexBufferUpdateTest(test); });
     auto vertex_buffer_partial_update_test = addTest("vertex_buffer_partial_update", { vertex_buffer_update_test }, [&](test::Test& test) { vertexBufferPartialUpdateTest(test); });
     // vertex array tests
@@ -152,33 +148,6 @@ bool GlvisTestModule::compareImages(test::Test& test, const Image& image1, const
         }
     }
     return true;
-}
-
-void GlvisTestModule::clearTest(test::Test& test) {
-    window.setSize(WINDOW_SIZE);
-    window.setTitle("clear");
-
-    // Clear the window with red
-    window.clear(Color::Red);
-    window.display();
-    Image image = window.readPixels();
-    Vector2f window_center = window.getCenter();
-    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(static_cast<Vector2i>(window_center)), Color::Red, &Color::toString);
-    T_COMPARE(image.getPixel(WINDOW_SIZE - Vector2i(1, 1)), Color::Red, &Color::toString);
-
-    // Resize the window
-    const Vector2i new_window_size = RESIZED_WINDOW_SIZE;
-    window.setSize(new_window_size);
-
-    // Clear the window with green
-    window.clear(Color::Green);
-    window.display();
-    image = window.readPixels();
-    Vector2f new_window_center = window.getCenter();
-    T_COMPARE(image.getPixel(0, 0), Color::Green, &Color::toString);
-    T_COMPARE(image.getPixel(static_cast<Vector2i>(new_window_center)), Color::Green, &Color::toString);
-    T_COMPARE(image.getPixel(new_window_size - Vector2i(1, 1)), Color::Green, &Color::toString);
 }
 
 void GlvisTestModule::rectangleTest(test::Test& test) {
@@ -1788,8 +1757,8 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: make View transformable
     // TODO: split tests into separate files
+    // TODO: generate documentation and README.md
     // TODO: text rendering
     // TODO: transparent texture rendering
 
