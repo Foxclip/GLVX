@@ -1,8 +1,7 @@
 #include <iostream>
 #include <cmath>
-#include "test_lib/test.h"
-#include "glvis_tests_common.h"
-#include "basic_tests.h"
+#include "glvis_tests/glvis_tests_common.h"
+#include "glvis_tests/basic_tests.h"
 #include "glvis/render_states.h"
 #include "glvis/shader.h"
 #include "glvis/vector.h"

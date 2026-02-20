@@ -1,4 +1,4 @@
-#include "basic_tests.h"
+#include "glvis_tests/basic_tests.h"
 
 BasicTestsModule::BasicTestsModule(
     const std::string& name,
