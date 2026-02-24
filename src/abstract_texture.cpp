@@ -47,16 +47,31 @@ AbstractTexture::~AbstractTexture() {
     GL_CALL(glDeleteTextures(1, &ID));
 }
 
-void AbstractTexture::createTexture(int width, int height, unsigned char* data) {
+void AbstractTexture::createTexture(int width, int height, unsigned char* data, int channels) {
     START_TRY
     assert(width > 0);
     assert(height > 0);
-    if (data && glfwGetCurrentContext() == nullptr) {
+    if (glfwGetCurrentContext() == nullptr) {
         throw std::runtime_error("Texture::create called outside of GLFW context");
+    }
+    switch (channels) {
+        case 4: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 4)); break;
+        case 3: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); break;
+        case 2: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 2)); break;
+        case 1: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); break;
+        default: throw std::runtime_error("Invalid number of channels: " + std::to_string(channels));
     }
     GL_CALL(glGenTextures(1, &ID));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
-    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
+    GLenum format;
+    switch (channels) {
+        case 1: format = GL_RED; break;
+        case 2: format = GL_RG; break;
+        case 3: format = GL_RGB; break;
+        case 4: format = GL_RGBA; break;
+        default: throw std::runtime_error("Invalid number of channels: " + std::to_string(channels));
+    }
+    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
@@ -73,6 +88,7 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight) {
     }
 
     // Create a new texture with the desired size
+    GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 4));
     GLuint newTextureID;
     GL_CALL(glGenTextures(1, &newTextureID));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, newTextureID));
