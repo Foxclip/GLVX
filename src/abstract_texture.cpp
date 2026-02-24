@@ -54,10 +54,12 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
     if (glfwGetCurrentContext() == nullptr) {
         throw std::runtime_error("Texture::create called outside of GLFW context");
     }
-    if (channels == 4) {
-        GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 4));
-    } else {
-        GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
+    switch (channels) {
+        case 4: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 4)); break;
+        case 3: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); break;
+        case 2: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 2)); break;
+        case 1: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); break;
+        default: throw std::runtime_error("Invalid number of channels: " + std::to_string(channels));
     }
     GL_CALL(glGenTextures(1, &ID));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
