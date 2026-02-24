@@ -56,20 +56,15 @@ void Font::loadFont(const std::filesystem::path& filename) {
                 + " ( " + std::string(1, c) + ")"
         );
         unsigned char* buffer = face->glyph->bitmap.buffer;
-        std::vector<unsigned char> buffer_copy;
-        if (buffer) {
-            buffer_copy.resize(face->glyph->bitmap.width * face->glyph->bitmap.rows);
-            memcpy(buffer_copy.data(), buffer, face->glyph->bitmap.width * face->glyph->bitmap.rows);
-        }
-        int width = face->glyph->bitmap.width;
-        int height = face->glyph->bitmap.rows;
+        unsigned int width = face->glyph->bitmap.width;
+        unsigned int height = face->glyph->bitmap.rows;
         int pitch = face->glyph->bitmap.pitch;
         FT_Pos advance = face->glyph->advance.x;
         if (!buffer || width == 0 || height == 0) {
             characters[c] = { Texture(), 0, 0, advance / 64 };
         } else {
             characters[c] = {
-                Texture(buffer_copy.data(), width, height, 1),
+                Texture(buffer, width, height, 1),
                 face->glyph->bitmap_left,
                 face->glyph->bitmap_top,
                 advance / 64
