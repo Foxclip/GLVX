@@ -1,3 +1,5 @@
+#pragma once
+
 #include <filesystem>
 #include <map>
 #include <ft2build.h>
