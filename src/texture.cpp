@@ -15,7 +15,7 @@ Texture::Texture(int width, int height) {
 }
 
 Texture::Texture(unsigned char* data, int width, int height, int channels) {
-    createTexture(width, height, data);
+    createTexture(width, height, data, channels);
 }
 
 Texture::Texture(const std::filesystem::path& path) {
