@@ -14,6 +14,7 @@ set(GLM_BUILD_INSTALL OFF CACHE INTERNAL "" FORCE)
 add_subdirectory(glfw)
 add_subdirectory(glad)
 add_subdirectory(glm)
+add_subdirectory(freetype)
 add_subdirectory(glvis_tests)
 
 add_library(${PROJECT_NAME})
@@ -27,6 +28,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/color.cpp
     ${SRC_DIR}/drawable.cpp
     ${SRC_DIR}/glvis_common.cpp
+    ${SRC_DIR}/font.cpp
     ${SRC_DIR}/image.cpp
     ${SRC_DIR}/matrix.cpp
     ${SRC_DIR}/rectangle.cpp
@@ -54,3 +56,4 @@ else()
 endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC glad)
 target_link_libraries(${PROJECT_NAME} PUBLIC glm::glm)
+target_link_libraries(${PROJECT_NAME} PUBLIC freetype)

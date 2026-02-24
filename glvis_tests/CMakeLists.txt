@@ -18,6 +18,7 @@ target_sources(glvis_tests PRIVATE
     ${SRC_DIR}/vertex_array_tests.cpp
     ${SRC_DIR}/render_states_tests.cpp
     ${SRC_DIR}/coordinate_transform_tests.cpp
+    ${SRC_DIR}/text_tests.cpp
 )
 target_include_directories(glvis_tests PRIVATE ${INCLUDE_DIR})
 target_link_libraries(glvis_tests glvis test_lib)

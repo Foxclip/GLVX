@@ -7,3 +7,6 @@
 [submodule "glvis_tests/cpp-test-lib"]
 	path = glvis_tests/cpp-test-lib
 	url = https://github.com/Foxclip/cpp-test-lib.git
+[submodule "freetype"]
+	path = freetype
+	url = https://gitlab.freedesktop.org/freetype/freetype.git

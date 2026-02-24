@@ -11,6 +11,7 @@
 #include "glvis_tests/vertex_array_tests.h"
 #include "glvis_tests/render_states_tests.h"
 #include "glvis_tests/coordinate_transform_tests.h"
+#include "glvis_tests/text_tests.h"
 
 int main() {
     test::TestModule root("glvis tests", nullptr);
@@ -25,6 +26,7 @@ int main() {
     auto vertex_array_tests_module = root.addModule<VertexArrayTestsModule>("VertexArray", { vertex_buffer_tests_module });
     auto render_states_tests_module = root.addModule<RenderStatesTestsModule>("RenderStates", { shape_tests_module, texture_tests_module });
     auto coordinate_transform_tests_module = root.addModule<CoordinateTransformTestsModule>("CoordinateTransform", { view_tests_module });
+    auto text_tests_module = root.addModule<TextTestsModule>("Text", { shape_tests_module });
     root.run();
     root.printSummary();
 
