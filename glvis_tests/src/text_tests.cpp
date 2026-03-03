@@ -8,7 +8,8 @@ TextTestsModule::TextTestsModule(
     const std::vector<test::TestNode *>& required_nodes
 ) : test::TestModule(name, parent, required_nodes) { {
         auto font_test = addTest("font", [&](test::Test& test) { fontTest(test); });
-        auto text_test = addTest("dimensions", { font_test }, [&](test::Test& test) { dimensionsTest(test); });
+        auto dimensions_test = addTest("dimensions", { font_test }, [&](test::Test& test) { dimensionsTest(test); });
+        auto render_test = addTest("render", { dimensions_test }, [&](test::Test& test) { renderTest(test); });
     }
 }
 
@@ -23,7 +24,7 @@ void TextTestsModule::fontTest(test::Test& test) {
 
 void TextTestsModule::dimensionsTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
-    window.setTitle("rectangle");
+    window.setTitle("dimensions");
     View view;
     view.setPosition(window.getCenter());
     window.setView(view);
@@ -57,4 +58,18 @@ void TextTestsModule::dimensionsTest(test::Test& test) {
     text.setString("Q");
     T_COMPARE(text.getWidth(), 23.0f);
     T_COMPARE(text.getHeight(), 27.0f);
+}
+
+void TextTestsModule::renderTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("render");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    Font font("fonts/LiberationSans-Regular.ttf");
+    Text text(&font, "A");
+    window.draw(text);
+    window.display();
 }

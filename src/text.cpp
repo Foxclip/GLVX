@@ -3,9 +3,11 @@
 #include "glvis/shaders/simple.h"
 #include "glvis/vertex.h"
 #include "glvis/vertex_buffer.h"
+#include "glvis/render_states.h"
 #include <glad/glad.h>
 #include <vector>
 #include <cassert>
+#include <cmath>
 
 namespace glvis {
 
@@ -29,6 +31,94 @@ const std::string& Text::getString() const {
 void Text::setString(const std::string& string) {
     this->string = string;
 
+    Vector2f text_size = calculateSize();
+    setSize(text_size);
+
+    // Blit character textures onto text_texture
+    int width = static_cast<int>(std::ceil(text_size.x));
+    int height = static_cast<int>(std::ceil(text_size.y));
+
+    if (width <= 0 || height <= 0) {
+        return;
+    }
+
+    text_texture = RenderTexture(width, height);
+
+    // Save current framebuffer
+    GLint currentFBO;
+    GL_CALL(glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO));
+
+    // Bind our framebuffer
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, text_texture.getFBO()));
+    GL_CALL(glViewport(0, 0, width, height));
+
+    // Clear the texture with transparent color
+    GL_CALL(glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
+    GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
+
+    // Enable blending for transparency
+    GL_CALL(glEnable(GL_BLEND));
+    GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+    // Create shader for rendering
+    Shader simpleShader(shaders::simple_vert, shaders::simple_frag);
+    simpleShader.use();
+
+    // Render each character
+    float current_x = 0.0f;
+    for (size_t i = 0; i < string.size(); i++) {
+        char c = string[i];
+        const Character& ch = font->getCharacter(c);
+
+        if (ch.texture.getWidth() == 0 || ch.texture.getHeight() == 0) {
+            // Skip characters with no bitmap
+            current_x += static_cast<float>(ch.advance);
+            continue;
+        }
+
+        float char_width = static_cast<float>(ch.texture.getWidth());
+        float char_height = static_cast<float>(ch.texture.getHeight());
+
+        // Position: X = current_x + bitmap_left, Y = bitmap_top (from top of text area)
+        float pos_x = current_x + static_cast<float>(ch.x);
+        float pos_y = static_cast<float>(ch.y);
+
+        // Create a quad for this character
+        // Note: Y is flipped because OpenGL texture coordinates have (0,0) at bottom-left
+        // but we want to render with Y going up from the top
+        std::vector<Vertex> vertices = {
+            Vertex(Vector2f(pos_x, pos_y), Color::White, Vector2f(0.0f, 1.0f)),
+            Vertex(Vector2f(pos_x, pos_y - char_height), Color::White, Vector2f(0.0f, 0.0f)),
+            Vertex(Vector2f(pos_x + char_width, pos_y), Color::White, Vector2f(1.0f, 1.0f)),
+            Vertex(Vector2f(pos_x + char_width, pos_y), Color::White, Vector2f(1.0f, 1.0f)),
+            Vertex(Vector2f(pos_x, pos_y - char_height), Color::White, Vector2f(0.0f, 0.0f)),
+            Vertex(Vector2f(pos_x + char_width, pos_y - char_height), Color::White, Vector2f(1.0f, 0.0f))
+        };
+
+        // Create temporary vertex buffer for this character
+        VertexBuffer vb(PrimitiveType::Triangles, Usage::DynamicDraw);
+        vb.create(6);
+        vb.update(vertices);
+
+        // Set up shader uniforms
+        simpleShader.setMat4("model", Matrix4());
+        simpleShader.setMat4("view", Matrix4());
+        simpleShader.setMat4("projection", Matrix4());
+        simpleShader.setVec4("color", Vector4(255, 255, 255, 255));
+        simpleShader.setBool("hasTexture", true);
+
+        // Bind texture and render
+        ch.texture.bind();
+        vb.render();
+
+        current_x += static_cast<float>(ch.advance);
+    }
+
+    // Restore previous framebuffer
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, currentFBO));
+}
+
+Vector2f Text::calculateSize() const {
     float text_width = 0.0f;
     float text_height = 0.0f;
     float current_x = 0.0f;
@@ -43,9 +133,6 @@ void Text::setString(const std::string& string) {
 
         text_width = std::max(text_width, current_x + static_cast<float>(ch.advance));
 
-        // Height calculation: from highest point (top of tallest char) to lowest (bottom of deepest descender)
-        // bitmap_top is measured from baseline (positive going up)
-        // texture height extends below the bitmap_top position
         float char_top = static_cast<float>(ch.y);
         float char_bottom = char_top - static_cast<float>(ch.texture.getHeight());
 
@@ -54,26 +141,7 @@ void Text::setString(const std::string& string) {
         current_x += static_cast<float>(ch.advance);
     }
 
-    setSize(text_width, text_height);
-
-    float x = 0.0f;
-    float y = 0.0f;
-
-    for (char c : string) {
-        const Character& ch = font->getCharacter(c);
-
-        // Calculate position
-        // bitmap_left is measured from the current cursor position
-        // bitmap_top is measured from the baseline (positive going up in FreeType)
-        // In OpenGL, +Y is up, but we need to flip for text rendering
-        float xpos = x + ch.x;
-        float ypos = y - ch.y;
-
-        float w = static_cast<float>(ch.texture.getWidth());
-        float h = static_cast<float>(ch.texture.getHeight());
-
-        // TODO: blit character textures onto text_texture
-    }
+    return Vector2f(text_width, text_height);
 }
 
 }

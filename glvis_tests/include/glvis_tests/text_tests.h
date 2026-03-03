@@ -14,6 +14,7 @@ public:
     );
     void fontTest(test::Test& test);
     void dimensionsTest(test::Test& test);
+    void renderTest(test::Test& test);
 
 private:
 

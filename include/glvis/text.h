@@ -3,6 +3,7 @@
 #include "glvis/rectangle.h"
 #include "glvis/font.h"
 #include "glvis/render_texture.h"
+#include "glvis/vector.h"
 
 namespace glvis {
 
@@ -19,6 +20,8 @@ private:
     Font* font = nullptr;
     std::string string;
     RenderTexture text_texture;
+
+    Vector2f calculateSize() const;
 
 };
 
