@@ -31,8 +31,26 @@ void TextTestsModule::dimensionsTest(test::Test& test) {
 
     Font font("fonts/LiberationSans-Regular.ttf");
     Text text(&font, "A");
-    float width = text.getWidth();
-    float height = text.getHeight();
-    T_COMPARE(width, 20.0f);
-    T_COMPARE(height, 21.0f);
+    T_COMPARE(text.getWidth(), 20.0f);
+    T_COMPARE(text.getHeight(), 21.0f);
+
+    text.setString("AA");
+    T_COMPARE(text.getWidth(), 40.0f);
+    T_COMPARE(text.getHeight(), 21.0f);
+
+    text.setString(".");
+    T_COMPARE(text.getWidth(), 8.0f);
+    T_COMPARE(text.getHeight(), 3.0f);
+
+    text.setString(" ");
+    T_COMPARE(text.getWidth(), 8.0f);
+    T_COMPARE(text.getHeight(), 0.0f);
+
+    text.setString("A ");
+    T_COMPARE(text.getWidth(), 28.0f);
+    T_COMPARE(text.getHeight(), 21.0f);
+
+    text.setString("A A");
+    T_COMPARE(text.getWidth(), 48.0f);
+    T_COMPARE(text.getHeight(), 21.0f);
 }
