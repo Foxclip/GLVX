@@ -13,6 +13,7 @@ public:
         const std::vector<test::TestNode*>& required_nodes = { }
     );
     void fontTest(test::Test& test);
+    void dimensionsTest(test::Test& test);
 
 private:
 

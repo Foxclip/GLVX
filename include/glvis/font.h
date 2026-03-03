@@ -18,8 +18,10 @@ class Font {
 public:
     Font() = default;
     ~Font();
-    Font(const std::filesystem::path& filename);
-    void openFromFile(const std::filesystem::path& filename);
+    Font(const std::filesystem::path& filename, unsigned int character_size = 30);
+    void openFromFile(const std::filesystem::path& filename, unsigned int character_size = 30);
+    int getCharacterSize() const;
+    Character getCharacter(unsigned char c);
 
 private:
     friend class TextTestsModule;
@@ -27,8 +29,9 @@ private:
     static FT_Library library;
     FT_Face face = nullptr;
     std::map<unsigned char, Character> characters;
+    unsigned int character_size = 0;
 
-    void loadFont(const std::filesystem::path& filename);
+    void loadFont(const std::filesystem::path& filename, unsigned int size);
 
 };
 

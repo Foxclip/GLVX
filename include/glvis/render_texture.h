@@ -6,6 +6,7 @@ namespace glvis {
 
 class RenderTexture : public AbstractTexture {
 public:
+    RenderTexture() = default;
     RenderTexture(int width, int height);
     ~RenderTexture();
     unsigned int getFBO() const;

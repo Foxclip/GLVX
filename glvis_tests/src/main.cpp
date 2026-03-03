@@ -30,8 +30,11 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: generate documentation and README.md
     // TODO: text rendering
+    // TODO: AbstractTexture: add option to not blit old contents
+    // TODO: add RenderTexture test
+    // TODO: remove path from Texture
+    // TODO: use uniform buffer objects
     // TODO: transparent texture rendering
 
     return 0;

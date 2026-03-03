@@ -19,8 +19,8 @@ FT_Library Font::library = nullptr;
     }
 
 
-Font::Font(const std::filesystem::path& filename) {
-    loadFont(filename);
+Font::Font(const std::filesystem::path& filename, unsigned int character_size) {
+    loadFont(filename, character_size);
 }
 
 Font::~Font() {
@@ -29,11 +29,19 @@ Font::~Font() {
     }
 }
 
-void Font::openFromFile(const std::filesystem::path& filename) {
-    loadFont(filename);
+void Font::openFromFile(const std::filesystem::path& filename, unsigned int character_size) {
+    loadFont(filename, character_size);
 }
 
-void Font::loadFont(const std::filesystem::path& filename) {
+int Font::getCharacterSize() const {
+    return character_size;
+}
+
+Character Font::getCharacter(unsigned char c) {
+    return characters[c];
+}
+
+void Font::loadFont(const std::filesystem::path& filename, unsigned int character_size) {
     if (!is_library_initialized) {
         FREETYPE_CALL(FT_Init_FreeType(&library), []() { return "Failed to initialize FreeType library"; });
         is_library_initialized = true;
@@ -46,7 +54,7 @@ void Font::loadFont(const std::filesystem::path& filename) {
     std::string filename_str = filename.string();
     const char* filename_cstr = filename_str.c_str();
     FREETYPE_CALL(FT_New_Face(library, filename_cstr, 0, &face), []() { return "Failed to load font file"; });
-    FREETYPE_CALL(FT_Set_Pixel_Sizes(face, 0, 48), []() { return "Failed to set font size"; });
+    FREETYPE_CALL(FT_Set_Pixel_Sizes(face, 0, character_size), []() { return "Failed to set font size"; });
     GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
     for (unsigned char c = 32; c < 127; c++) {
         FREETYPE_CALL(

@@ -3,7 +3,7 @@
 namespace glvis {
 namespace shaders {
 
-const char* simple_vert = R"(
+inline const char* simple_vert = R"(
 #version 330 core
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec4 aColor;
@@ -23,7 +23,7 @@ void main() {
 }
 )";
 
-const char* simple_frag = R"(
+inline const char* simple_frag = R"(
 #version 330 core
 
 in vec2 TexCoords;

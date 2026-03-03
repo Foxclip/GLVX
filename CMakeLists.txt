@@ -36,6 +36,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/render_texture.cpp
     ${SRC_DIR}/shader.cpp
     ${SRC_DIR}/shape.cpp
+    ${SRC_DIR}/text.cpp
     ${SRC_DIR}/texture.cpp
     ${SRC_DIR}/transformable.cpp
     ${SRC_DIR}/utils.cpp
