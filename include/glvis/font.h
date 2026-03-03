@@ -21,6 +21,7 @@ public:
     Font(const std::filesystem::path& filename, unsigned int character_size = 30);
     void openFromFile(const std::filesystem::path& filename, unsigned int character_size = 30);
     int getCharacterSize() const;
+    int getBaselineY() const;
     Character getCharacter(unsigned char c);
 
 private:

@@ -37,6 +37,13 @@ int Font::getCharacterSize() const {
     return character_size;
 }
 
+int Font::getBaselineY() const {
+    if (!face) {
+        return 0;
+    }
+    return face->ascender / 64;
+}
+
 Character Font::getCharacter(unsigned char c) {
     return characters[c];
 }
