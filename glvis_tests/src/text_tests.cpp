@@ -53,4 +53,8 @@ void TextTestsModule::dimensionsTest(test::Test& test) {
     text.setString("A A");
     T_COMPARE(text.getWidth(), 48.0f);
     T_COMPARE(text.getHeight(), 21.0f);
+
+    text.setString("Q");
+    T_COMPARE(text.getWidth(), 23.0f);
+    T_COMPARE(text.getHeight(), 27.0f);
 }
