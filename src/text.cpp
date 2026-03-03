@@ -29,7 +29,6 @@ const std::string& Text::getString() const {
 void Text::setString(const std::string& string) {
     this->string = string;
 
-    // Calculate width and height of the text
     float text_width = 0.0f;
     float text_height = 0.0f;
     float current_x = 0.0f;
@@ -38,17 +37,11 @@ void Text::setString(const std::string& string) {
         char c = string[i];
         const Character& ch = font->getCharacter(c);
 
-        // Width of this character (from its left bearing to right edge)
         float char_left = static_cast<float>(ch.x);
         float char_width = static_cast<float>(ch.texture.getWidth());
         float char_right = char_left + char_width;
 
-        // For the last character, we need to include its width past the cursor
-        if (i == string.size() - 1) {
-            text_width = std::max(text_width, current_x + char_right);
-        } else {
-            text_width = std::max(text_width, current_x + static_cast<float>(ch.advance));
-        }
+        text_width = std::max(text_width, current_x + static_cast<float>(ch.advance));
 
         // Height calculation: from highest point (top of tallest char) to lowest (bottom of deepest descender)
         // bitmap_top is measured from baseline (positive going up)
@@ -58,14 +51,11 @@ void Text::setString(const std::string& string) {
 
         text_height = std::max(text_height, char_top - char_bottom);
 
-        // Move cursor to next character position
         current_x += static_cast<float>(ch.advance);
     }
 
-    // Set the calculated dimensions
     setSize(text_width, text_height);
 
-    // Starting position
     float x = 0.0f;
     float y = 0.0f;
 
@@ -79,7 +69,6 @@ void Text::setString(const std::string& string) {
         float xpos = x + ch.x;
         float ypos = y - ch.y;
 
-        // Width and height of the glyph
         float w = static_cast<float>(ch.texture.getWidth());
         float h = static_cast<float>(ch.texture.getHeight());
 
