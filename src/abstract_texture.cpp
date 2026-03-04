@@ -27,11 +27,17 @@ int AbstractTexture::getHeight() const {
 }
 
 void AbstractTexture::bind() const {
+    assert(ID != 0);
+    assert(glfwGetCurrentContext() != nullptr);
+    assert(GL_CALL(glIsTexture(ID)));
     GL_CALL(glActiveTexture(GL_TEXTURE0));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
 }
 
 void AbstractTexture::unbind() const {
+    assert(ID != 0);
+    assert(glfwGetCurrentContext() != nullptr);
+    assert(GL_CALL(glIsTexture(ID)));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
@@ -48,16 +54,19 @@ void AbstractTexture::resize(int newWidth, int newHeight) {
 }
 
 AbstractTexture::~AbstractTexture() {
+    if (ID == 0) {
+        return;
+    }
+    assert(glfwGetCurrentContext() != nullptr);
+    assert(GL_CALL(glIsTexture(ID)));
     GL_CALL(glDeleteTextures(1, &ID));
 }
 
 void AbstractTexture::createTexture(int width, int height, unsigned char* data, int channels) {
     START_TRY
+    assert(glfwGetCurrentContext() != nullptr);
     assert(width > 0);
     assert(height > 0);
-    if (glfwGetCurrentContext() == nullptr) {
-        throw std::runtime_error("Texture::create called outside of GLFW context");
-    }
     switch (channels) {
         case 4: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 4)); break;
         case 3: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); break;
@@ -85,6 +94,9 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
 }
 
 void AbstractTexture::resizeTexture(int newWidth, int newHeight) {
+    assert(ID != 0);
+    assert(glfwGetCurrentContext() != nullptr);
+    assert(GL_CALL(glIsTexture(ID)));
     assert(newWidth > 0);
     assert(newHeight > 0);
     if (newWidth == width && newHeight == height) {
