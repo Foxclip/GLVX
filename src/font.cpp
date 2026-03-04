@@ -73,17 +73,13 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
         unsigned char* buffer = face->glyph->bitmap.buffer;
         unsigned int width = face->glyph->bitmap.width;
         unsigned int height = face->glyph->bitmap.rows;
-        int pitch = face->glyph->bitmap.pitch;
         FT_Pos advance = face->glyph->advance.x;
-        if (!buffer || width == 0 || height == 0) {
-            characters[c] = { Texture(), 0, 0, advance / 64 };
-        } else {
-            characters[c] = {
-                Texture(buffer, width, height, 1),
-                face->glyph->bitmap_left,
-                face->glyph->bitmap_top,
-                advance / 64
-            };
+        Character& ch = characters[c];
+        ch.x = face->glyph->bitmap_left;
+        ch.y = face->glyph->bitmap_top;
+        ch.advance = advance / 64;
+        if (buffer && width > 0 && height > 0) {
+            ch.texture.create(width, height, buffer, 1);
         }
     }
 }
