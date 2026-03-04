@@ -10,6 +10,10 @@
 
 namespace glvis {
 
+void AbstractTexture::create(int width, int height, unsigned char *data, int channels) {
+    createTexture(width, height, data, channels);
+}
+
 int AbstractTexture::getID() const {
     return ID;
 }

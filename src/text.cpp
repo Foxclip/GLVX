@@ -42,7 +42,7 @@ void Text::setString(const std::string& string) {
         return;
     }
 
-    text_texture = RenderTexture(width, height);
+    text_texture.create(width, height);
 
     // Save current framebuffer
     GLint currentFBO;

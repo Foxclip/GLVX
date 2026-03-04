@@ -6,6 +6,7 @@ namespace glvis {
 
 class AbstractTexture {
 public:
+    void create(int width, int height, unsigned char* data = nullptr, int channels = 4);
     int getID() const;
     int getWidth() const;
     int getHeight() const;
