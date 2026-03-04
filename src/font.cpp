@@ -44,7 +44,7 @@ int Font::getBaselineY() const {
     return face->ascender / 64;
 }
 
-Character Font::getCharacter(unsigned char c) {
+Character& Font::getCharacter(unsigned char c) {
     return characters[c];
 }
 
