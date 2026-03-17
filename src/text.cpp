@@ -14,6 +14,7 @@ namespace glvis {
 Text::Text(Font* font, const std::string& string) : Rectangle(0.0f, 0.0f) {
     setFont(font);
     setString(string);
+    setTexture(&text_texture);
 }
 
 Font* Text::getFont() const {
@@ -35,8 +36,10 @@ void Text::setString(const std::string& string) {
     setSize(text_size);
 
     // Blit character textures onto text_texture
-    int width = static_cast<int>(std::ceil(text_size.x));
-    int height = static_cast<int>(std::ceil(text_size.y));
+    float widthf = std::ceil(text_size.x);
+    float heightf = std::ceil(text_size.y);
+    int width = static_cast<int>(widthf);
+    int height = static_cast<int>(heightf);
 
     if (width <= 0 || height <= 0) {
         return;
@@ -64,14 +67,21 @@ void Text::setString(const std::string& string) {
     Shader simpleShader(shaders::simple_vert, shaders::simple_frag);
     simpleShader.use();
 
+    // Set up shader uniforms - use identity matrices, vertices will be in NDC
+    simpleShader.setMat4("model", Matrix4());
+    simpleShader.setMat4("view", Matrix4());
+    simpleShader.setMat4("projection", Matrix4());
+    simpleShader.setVec4("color", Vector4(255, 255, 255, 255));
+    simpleShader.setBool("hasTexture", true);
+    simpleShader.setInt("tex", 0);  // Explicitly set texture unit
+
     // Render each character
     float current_x = 0.0f;
     for (size_t i = 0; i < string.size(); i++) {
         char c = string[i];
         const Character& ch = font->getCharacter(c);
 
-        if (ch.texture.getWidth() == 0 || ch.texture.getHeight() == 0) {
-            // Skip characters with no bitmap
+        if (ch.texture.getWidth() <= 0 || ch.texture.getHeight() <= 0) {
             current_x += static_cast<float>(ch.advance);
             continue;
         }
@@ -79,35 +89,36 @@ void Text::setString(const std::string& string) {
         float char_width = static_cast<float>(ch.texture.getWidth());
         float char_height = static_cast<float>(ch.texture.getHeight());
 
-        // Position: X = current_x + bitmap_left, Y = bitmap_top (from top of text area)
-        float pos_x = current_x + static_cast<float>(ch.x);
-        float pos_y = static_cast<float>(ch.y);
+        // Position relative to baseline
+        float x = current_x + static_cast<float>(ch.x);
+        float y = static_cast<float>(ch.y);
 
-        // Create a quad for this character
-        // Note: Y is flipped because OpenGL texture coordinates have (0,0) at bottom-left
-        // but we want to render with Y going up from the top
+        // Character bounds in pixel coordinates
+        float char_left = x;
+        float char_right = x + char_width;
+        float char_bottom = y - char_height;
+        float char_top = y;
+
+        // Convert pixel coordinates to NDC [-1, 1]
+        float left = (char_left / widthf) * 2.0f - 1.0f;
+        float right = (char_right / widthf) * 2.0f - 1.0f;
+        float bottom = (char_bottom / heightf) * 2.0f - 1.0f;
+        float top = (char_top / heightf) * 2.0f - 1.0f;
+
         std::vector<Vertex> vertices = {
-            Vertex(Vector2f(pos_x, pos_y), Color::White, Vector2f(0.0f, 1.0f)),
-            Vertex(Vector2f(pos_x, pos_y - char_height), Color::White, Vector2f(0.0f, 0.0f)),
-            Vertex(Vector2f(pos_x + char_width, pos_y), Color::White, Vector2f(1.0f, 1.0f)),
-            Vertex(Vector2f(pos_x + char_width, pos_y), Color::White, Vector2f(1.0f, 1.0f)),
-            Vertex(Vector2f(pos_x, pos_y - char_height), Color::White, Vector2f(0.0f, 0.0f)),
-            Vertex(Vector2f(pos_x + char_width, pos_y - char_height), Color::White, Vector2f(1.0f, 0.0f))
+            Vertex(Vector2f(left, top), Color::White, Vector2f(0.0f, 0.0f)),
+            Vertex(Vector2f(left, bottom), Color::White, Vector2f(0.0f, 1.0f)),
+            Vertex(Vector2f(right, top), Color::White, Vector2f(1.0f, 0.0f)),
+            Vertex(Vector2f(right, top), Color::White, Vector2f(1.0f, 0.0f)),
+            Vertex(Vector2f(left, bottom), Color::White, Vector2f(0.0f, 1.0f)),
+            Vertex(Vector2f(right, bottom), Color::White, Vector2f(1.0f, 1.0f))
         };
 
-        // Create temporary vertex buffer for this character
         VertexBuffer vb(PrimitiveType::Triangles, Usage::DynamicDraw);
         vb.create(6);
         vb.update(vertices);
 
-        // Set up shader uniforms
-        simpleShader.setMat4("model", Matrix4());
-        simpleShader.setMat4("view", Matrix4());
-        simpleShader.setMat4("projection", Matrix4());
-        simpleShader.setVec4("color", Vector4(255, 255, 255, 255));
-        simpleShader.setBool("hasTexture", true);
-
-        // Bind texture and render
+        // Bind character texture and render
         ch.texture.bind();
         vb.render();
 

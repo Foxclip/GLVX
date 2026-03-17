@@ -10,6 +10,7 @@ public:
     RenderTexture(int width, int height);
     ~RenderTexture();
     unsigned int getFBO() const;
+    void create(int width, int height);
     void resize(int newWidth, int newHeight) override;
 
 private:

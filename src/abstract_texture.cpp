@@ -67,6 +67,15 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
     assert(glfwGetCurrentContext() != nullptr);
     assert(width > 0);
     assert(height > 0);
+
+    // Delete existing texture if any
+    if (ID != 0) {
+        assert(glfwGetCurrentContext() != nullptr);
+        assert(GL_CALL(glIsTexture(ID)));
+        GL_CALL(glDeleteTextures(1, &ID));
+        ID = 0;
+    }
+
     switch (channels) {
         case 4: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 4)); break;
         case 3: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); break;
