@@ -106,12 +106,12 @@ void Text::setString(const std::string& string) {
         float top = (char_top / heightf) * 2.0f - 1.0f;
 
         std::vector<Vertex> vertices = {
-            Vertex(Vector2f(left, top), Color::White, Vector2f(0.0f, 0.0f)),
-            Vertex(Vector2f(left, bottom), Color::White, Vector2f(0.0f, 1.0f)),
-            Vertex(Vector2f(right, top), Color::White, Vector2f(1.0f, 0.0f)),
-            Vertex(Vector2f(right, top), Color::White, Vector2f(1.0f, 0.0f)),
-            Vertex(Vector2f(left, bottom), Color::White, Vector2f(0.0f, 1.0f)),
-            Vertex(Vector2f(right, bottom), Color::White, Vector2f(1.0f, 1.0f))
+            Vertex(Vector2f(left, top), Color::White, Vector2f(0.0f, 1.0f)),
+            Vertex(Vector2f(left, bottom), Color::White, Vector2f(0.0f, 0.0f)),
+            Vertex(Vector2f(right, top), Color::White, Vector2f(1.0f, 1.0f)),
+            Vertex(Vector2f(right, top), Color::White, Vector2f(1.0f, 1.0f)),
+            Vertex(Vector2f(left, bottom), Color::White, Vector2f(0.0f, 0.0f)),
+            Vertex(Vector2f(right, bottom), Color::White, Vector2f(1.0f, 0.0f))
         };
 
         VertexBuffer vb(PrimitiveType::Triangles, Usage::DynamicDraw);
