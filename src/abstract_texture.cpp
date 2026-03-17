@@ -96,6 +96,11 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
     GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+    // Swizzle single-channel textures to return (R, R, R, A) instead of (R, 0, 0, A)
+    if (channels == 1) {
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED));
+    }
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     this->width = width;
     this->height = height;
