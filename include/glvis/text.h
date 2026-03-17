@@ -15,6 +15,7 @@ public:
     void setFont(Font* font);
     const std::string& getString() const;
     void setString(const std::string& string);
+    const RenderTexture& getTexture();
 
 private:
     Font* font = nullptr;

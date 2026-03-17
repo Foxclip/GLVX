@@ -129,6 +129,10 @@ void Text::setString(const std::string& string) {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, currentFBO));
 }
 
+const RenderTexture& Text::getTexture() {
+    return text_texture;
+}
+
 Vector2f Text::calculateSize() const {
     float text_width = 0.0f;
     float text_height = 0.0f;
