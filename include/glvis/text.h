@@ -4,6 +4,7 @@
 #include "glvis/font.h"
 #include "glvis/render_texture.h"
 #include "glvis/vector.h"
+#include "glvis/rect.h"
 
 namespace glvis {
 
@@ -22,7 +23,7 @@ private:
     std::string string;
     RenderTexture text_texture;
 
-    Vector2f calculateSize() const;
+    Rect calculateVisualBounds() const;
 
 };
 

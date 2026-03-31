@@ -42,7 +42,7 @@ void TextTestsModule::dimensionsTest(test::Test& test) {
     T_COMPARE(text.getHeight(), 21.0f);
 
     text.setString(".");
-    T_COMPARE(text.getWidth(), 8.0f);
+    T_COMPARE(text.getWidth(), 4.0f);
     T_COMPARE(text.getHeight(), 3.0f);
 
     text.setString(" ");
@@ -58,7 +58,7 @@ void TextTestsModule::dimensionsTest(test::Test& test) {
     T_COMPARE(text.getHeight(), 21.0f);
 
     text.setString("Q");
-    T_COMPARE(text.getWidth(), 23.0f);
+    T_COMPARE(text.getWidth(), 21.0f);
     T_COMPARE(text.getHeight(), 27.0f);
 }
 

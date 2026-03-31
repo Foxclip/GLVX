@@ -4,7 +4,6 @@
 #include "glvis/vertex.h"
 #include "glvis/vertex_buffer.h"
 #include "glvis/render_states.h"
-#include "glvis/rect.h"
 #include <glad/glad.h>
 #include <vector>
 #include <cassert>
@@ -33,7 +32,8 @@ const std::string& Text::getString() const {
 void Text::setString(const std::string& string) {
     this->string = string;
 
-    Vector2f text_size = calculateSize();
+    Rect text_bounds = calculateVisualBounds();
+    Vector2f text_size = text_bounds.size;
     setSize(text_size);
 
     // Blit character textures onto text_texture
@@ -134,8 +134,8 @@ const RenderTexture& Text::getTexture() {
     return text_texture;
 }
 
-Vector2f Text::calculateSize() const {
-    Rect text_rect;
+Rect Text::calculateVisualBounds() const {
+    Rect result;
     float current_x = 0.0f;
 
     for (size_t i = 0; i < string.size(); i++) {
@@ -143,23 +143,27 @@ Vector2f Text::calculateSize() const {
         const Character& ch = font->getCharacter(c);
         float effective_char_width = 0.0f;
         float texture_width = static_cast<float>(ch.texture.getWidth());
-        if (texture_width > 0 && i < string.size() - 1) {
+        if (texture_width > 0) {
             effective_char_width = texture_width;
         } else {
             effective_char_width = static_cast<float>(ch.advance);
         }
 
         Rect char_rect;
-        char_rect.position.x = current_x;
+        char_rect.position.x = current_x + static_cast<float>(ch.x);
         char_rect.position.y = -static_cast<float>(ch.height);
         char_rect.size.x = effective_char_width;
         char_rect.size.y = static_cast<float>(ch.texture.getHeight());
 
-        text_rect.extend(char_rect);
+        if (i == 0) {
+            result = char_rect;
+        } else {
+            result.extend(char_rect);
+        }
         current_x += static_cast<float>(ch.advance);
     }
 
-    return Vector2f(text_rect.size.x, text_rect.size.y);
+    return result;
 }
 
 }
