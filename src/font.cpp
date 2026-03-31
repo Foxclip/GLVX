@@ -76,7 +76,7 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
         FT_Pos advance = face->glyph->advance.x;
         Character& ch = characters[c];
         ch.x = face->glyph->bitmap_left;
-        ch.y = face->glyph->bitmap_top;
+        ch.height = face->glyph->bitmap_top;
         ch.advance = advance / 64;
         if (buffer && width > 0 && height > 0) {
             ch.texture.create(width, height, buffer, 1);

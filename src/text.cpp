@@ -4,6 +4,7 @@
 #include "glvis/vertex.h"
 #include "glvis/vertex_buffer.h"
 #include "glvis/render_states.h"
+#include "glvis/rect.h"
 #include <glad/glad.h>
 #include <vector>
 #include <cassert>
@@ -91,7 +92,7 @@ void Text::setString(const std::string& string) {
 
         // Position relative to baseline
         float x = current_x + static_cast<float>(ch.x);
-        float y = static_cast<float>(ch.y);
+        float y = static_cast<float>(ch.height);
 
         // Character bounds in pixel coordinates
         float char_left = x;
@@ -134,29 +135,31 @@ const RenderTexture& Text::getTexture() {
 }
 
 Vector2f Text::calculateSize() const {
-    float text_width = 0.0f;
-    float text_height = 0.0f;
+    Rect text_rect;
     float current_x = 0.0f;
 
     for (size_t i = 0; i < string.size(); i++) {
         char c = string[i];
         const Character& ch = font->getCharacter(c);
+        float effective_char_width = 0.0f;
+        float texture_width = static_cast<float>(ch.texture.getWidth());
+        if (texture_width > 0 && i < string.size() - 1) {
+            effective_char_width = texture_width;
+        } else {
+            effective_char_width = static_cast<float>(ch.advance);
+        }
 
-        float char_left = static_cast<float>(ch.x);
-        float char_width = static_cast<float>(ch.texture.getWidth());
-        float char_right = char_left + char_width;
+        Rect char_rect;
+        char_rect.position.x = current_x;
+        char_rect.position.y = -static_cast<float>(ch.height);
+        char_rect.size.x = effective_char_width;
+        char_rect.size.y = static_cast<float>(ch.texture.getHeight());
 
-        text_width = std::max(text_width, current_x + static_cast<float>(ch.advance));
-
-        float char_top = static_cast<float>(ch.y);
-        float char_bottom = char_top - static_cast<float>(ch.texture.getHeight());
-
-        text_height = std::max(text_height, char_top - char_bottom);
-
+        text_rect.extend(char_rect);
         current_x += static_cast<float>(ch.advance);
     }
 
-    return Vector2f(text_width, text_height);
+    return Vector2f(text_rect.size.x, text_rect.size.y);
 }
 
 }

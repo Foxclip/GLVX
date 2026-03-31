@@ -12,7 +12,7 @@ const unsigned int FONT_DEFAULT_SIZE = 30;
 
 struct Character {
     Texture texture;
-    int x, y;
+    int x, height;
     int advance;
 };
 
