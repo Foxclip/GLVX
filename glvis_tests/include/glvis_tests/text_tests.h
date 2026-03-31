@@ -18,4 +18,6 @@ public:
 
 private:
 
+    std::string imageToAscii(const Image& image, int max_width, int max_height) const;
+
 };

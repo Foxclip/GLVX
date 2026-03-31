@@ -1,6 +1,8 @@
 #include "glvis_tests/text_tests.h"
+#include <iostream>
 #include "glvis/font.h"
 #include "glvis/text.h"
+#include "glvis/utils.h"
 
 TextTestsModule::TextTestsModule(
     const std::string& name,
@@ -68,8 +70,56 @@ void TextTestsModule::renderTest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    Font font("fonts/LiberationSans-Regular.ttf");
+    Font font("fonts/LiberationSans-Regular.ttf", 15);
     Text text(&font, "A");
     window.draw(text);
     window.display();
+
+    Image image = window.readPixels();
+    int width = image.getWidth();
+    int height = image.getHeight();
+    int max_width = 15;
+    int max_height = 15;
+    std::string actual_ascii = imageToAscii(image, max_width, max_height);
+    std::string expected_ascii = "\
+    ##         \n\
+   .##.        \n\
+   ++++        \n\
+   #..#        \n\
+  +#  #+       \n\
+  #+  +#       \n\
+ .#.  .#.      \n\
+ +######+      \n\
+ #+    +#      \n\
++#      #+     \n\
+++      ++     \n\
+               \n\
+               \n\
+               \n\
+               \n\
+";
+    T_COMPARE(actual_ascii, expected_ascii);
+}
+
+std::string TextTestsModule::imageToAscii(const Image& image, int max_width, int max_height) const {
+    int width = image.getWidth();
+    int height = image.getHeight();
+    std::string result;
+    for (int y = 0; y < max_height; y++) {
+        for (int x = 0; x < max_width; x++) {
+            Color color = image.getPixel(x, y);
+            float intensity = (color.r + color.g + color.b) / 3.0f;
+            if (intensity > 200) {
+                result += "#";
+            } else if (intensity > 100) {
+                result += "+";
+            } else if (intensity > 50) {
+                result += ".";
+            } else {
+                result += " ";
+            }
+        }
+        result += "\n";
+    }
+    return result;
 }

@@ -30,9 +30,11 @@ int main() {
     root.run();
     root.printSummary();
 
+    // TODO: Font: create font texture in swizzled form right away
     // TODO: text rendering
-    // TODO: AbstractTexture: add option to not blit old contents
+    // TODO: AbstractTexture: add option to not blit old contents when resizing
     // TODO: add RenderTexture test
+    // TODO: Textures: add parameters for interpolation
     // TODO: remove path from Texture
     // TODO: use uniform buffer objects
     // TODO: transparent texture rendering
