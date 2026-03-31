@@ -11,6 +11,7 @@
 namespace glvis {
 
 std::string file_to_str(const std::filesystem::path& path);
+void str_to_file(const std::string& str, const std::filesystem::path& path);
 glm::vec2 to_glmVec2(const Vector2f& v);
 Vector2f from_glmVec2(const glm::vec2& v);
 Vector3 toVector3(const Vector2f & v);
