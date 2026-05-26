@@ -81,26 +81,22 @@ void Text::setString(const std::string& string) {
     for (size_t i = 0; i < string.size(); i++) {
         char c = string[i];
         const Character& ch = font->getCharacter(c);
+        Rect char_bounds;
+        char_bounds.position.x = current_x + static_cast<float>(ch.x);
+        char_bounds.position.y = static_cast<float>(ch.height);
+        char_bounds.size.x = static_cast<float>(ch.texture.getWidth());
+        char_bounds.size.y = static_cast<float>(ch.texture.getHeight());
 
-        if (ch.texture.getWidth() <= 0 || ch.texture.getHeight() <= 0) {
+        if (char_bounds.size.x <= 0 || char_bounds.size.y <= 0) {
             current_x += static_cast<float>(ch.advance);
             continue;
         }
 
-        float char_width = static_cast<float>(ch.texture.getWidth());
-        float char_height = static_cast<float>(ch.texture.getHeight());
-
-        // Position relative to baseline
-        float x = current_x + static_cast<float>(ch.x);
-        float y = static_cast<float>(ch.height);
-
-        // Character bounds in pixel coordinates
-        float char_left = x;
-        float char_right = x + char_width;
-        float char_bottom = y - char_height;
-        float char_top = y;
-
         // Convert pixel coordinates to NDC [-1, 1]
+        float char_left = char_bounds.position.x;
+        float char_right = char_left + char_bounds.size.x;
+        float char_bottom = char_bounds.position.y - char_bounds.size.y;
+        float char_top = char_bounds.position.y;
         float left = (char_left / widthf) * 2.0f - 1.0f;
         float right = (char_right / widthf) * 2.0f - 1.0f;
         float bottom = (char_bottom / heightf) * 2.0f - 1.0f;
