@@ -14,8 +14,8 @@ public:
     );
     void fontTest(test::Test& test);
     void dimensionsTest(test::Test& test);
-    void renderCharacterTest(test::Test& test);
-    void renderStringTest(test::Test& test);
+    void renderCharacterATest(test::Test& test);
+    void renderCharacterDotTest(test::Test& test);
 
 private:
 

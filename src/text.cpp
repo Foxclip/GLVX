@@ -146,7 +146,6 @@ void Text::render(const Matrix4& view, const Matrix4& projection, const RenderSt
 Rect Text::calculateVisualBounds() const {
     Rect result;
     float current_x = 0.0f;
-    int baselineY = font->getBaselineY();
 
     for (size_t i = 0; i < string.size(); i++) {
         char c = string[i];
@@ -160,8 +159,9 @@ Rect Text::calculateVisualBounds() const {
         }
 
         Rect char_rect;
+        int font_size = font->getCharacterSize();
         char_rect.position.x = current_x + static_cast<float>(ch.x);
-        char_rect.position.y = static_cast<float>(baselineY - ch.height);
+        char_rect.position.y = static_cast<float>(font_size - ch.height);
         char_rect.size.x = effective_char_width;
         char_rect.size.y = static_cast<float>(ch.texture.getHeight());
 

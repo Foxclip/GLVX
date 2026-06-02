@@ -11,8 +11,8 @@ TextTestsModule::TextTestsModule(
 ) : test::TestModule(name, parent, required_nodes) { {
         auto font_test = addTest("font", [&](test::Test& test) { fontTest(test); });
         auto dimensions_test = addTest("dimensions", { font_test }, [&](test::Test& test) { dimensionsTest(test); });
-        auto render_character_test = addTest("render character", { dimensions_test }, [&](test::Test& test) { renderCharacterTest(test); });
-        auto render_string_test = addTest("render string", { render_character_test }, [&](test::Test& test) { renderStringTest(test); });
+        auto render_character_A_test = addTest("render character A", { dimensions_test }, [&](test::Test& test) { renderCharacterATest(test); });
+        auto render_character_dot_test = addTest("render character dot", { dimensions_test }, [&](test::Test& test) { renderCharacterDotTest(test); });
     }
 }
 
@@ -63,9 +63,9 @@ void TextTestsModule::dimensionsTest(test::Test& test) {
     T_COMPARE(text.getHeight(), 27.0f);
 }
 
-void TextTestsModule::renderCharacterTest(test::Test& test) {
+void TextTestsModule::renderCharacterATest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
-    window.setTitle("render character");
+    window.setTitle("render character A");
     View view;
     view.setPosition(window.getCenter());
     window.setView(view);
@@ -79,32 +79,33 @@ void TextTestsModule::renderCharacterTest(test::Test& test) {
     Image image = window.readPixels();
     int width = image.getWidth();
     int height = image.getHeight();
-    int max_width = 15;
-    int max_height = 15;
+    int max_width = 16;
+    int max_height = 16;
     std::string actual_ascii = imageToAscii(image, max_width, max_height);
     std::string expected_ascii = "\
-    ##         \n\
-   .##.        \n\
-   ++++        \n\
-   #..#        \n\
-  +#  #+       \n\
-  #+  +#       \n\
- .#.  .#.      \n\
- +######+      \n\
- #+    +#      \n\
-+#      #+     \n\
-++      ++     \n\
-               \n\
-               \n\
-               \n\
-               \n\
+                \n\
+                \n\
+                \n\
+                \n\
+    ##          \n\
+   .##.         \n\
+   ++++         \n\
+   #..#         \n\
+  +#  #+        \n\
+  #+  +#        \n\
+ .#.  .#.       \n\
+ +######+       \n\
+ #+    +#       \n\
++#      #+      \n\
+++      ++      \n\
+                \n\
 ";
     T_COMPARE(actual_ascii, expected_ascii);
 }
 
-void TextTestsModule::renderStringTest(test::Test& test) {
+void TextTestsModule::renderCharacterDotTest(test::Test& test) {
         window.setSize(WINDOW_SIZE);
-    window.setTitle("render character");
+    window.setTitle("render character dot");
     View view;
     view.setPosition(window.getCenter());
     window.setView(view);
@@ -118,14 +119,26 @@ void TextTestsModule::renderStringTest(test::Test& test) {
     Image image = window.readPixels();
     int width = image.getWidth();
     int height = image.getHeight();
-    int max_width = 3;
-    int max_height = 3;
+    int max_width = 16;
+    int max_height = 16;
     std::string actual_ascii = imageToAscii(image, max_width, max_height);
-    // str_to_file(actual_ascii, "ascii.txt");
     std::string expected_ascii = "\
-+# \n\
-+# \n\
-   \n\
+                \n\
+                \n\
+                \n\
+                \n\
+                \n\
+                \n\
+                \n\
+                \n\
+                \n\
+                \n\
+                \n\
+                \n\
+                \n\
+ +#             \n\
+ +#             \n\
+                \n\
 ";
     T_COMPARE(actual_ascii, expected_ascii);
 }
