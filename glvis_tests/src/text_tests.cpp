@@ -8,12 +8,12 @@ TextTestsModule::TextTestsModule(
     const std::string& name,
     test::TestModule *parent,
     const std::vector<test::TestNode *>& required_nodes
-) : test::TestModule(name, parent, required_nodes) { {
+) : test::TestModule(name, parent, required_nodes) {
         auto font_test = addTest("font", [&](test::Test& test) { fontTest(test); });
         auto dimensions_test = addTest("dimensions", { font_test }, [&](test::Test& test) { dimensionsTest(test); });
         auto render_character_A_test = addTest("render character A", { dimensions_test }, [&](test::Test& test) { renderCharacterATest(test); });
         auto render_character_dot_test = addTest("render character dot", { dimensions_test }, [&](test::Test& test) { renderCharacterDotTest(test); });
-    }
+        auto render_string_AA_test = addTest("render string AA", { render_character_A_test }, [&](test::Test& test) { renderStringAATest(test); });
 }
 
 void TextTestsModule::fontTest(test::Test& test) {
@@ -139,6 +139,46 @@ void TextTestsModule::renderCharacterDotTest(test::Test& test) {
  +#             \n\
  +#             \n\
                 \n\
+";
+    T_COMPARE(actual_ascii, expected_ascii);
+}
+
+void TextTestsModule::renderStringAATest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("render character AA");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    Font font("fonts/LiberationSans-Regular.ttf", 15);
+    Text text(&font, "AA");
+    window.draw(text);
+    window.display();
+
+    Image image = window.readPixels();
+    int width = image.getWidth();
+    int height = image.getHeight();
+    int max_width = 32;
+    int max_height = 16;
+    std::string actual_ascii = imageToAscii(image, max_width, max_height);
+    std::string expected_ascii = "\
+                                \n\
+                                \n\
+                                \n\
+                                \n\
+    ##        ##                \n\
+   .##.      .##.               \n\
+   ++++      ++++               \n\
+   #..#      #..#               \n\
+  +#  #+    +#  #+              \n\
+  #+  +#    #+  +#              \n\
+ .#.  .#.  .#.  .#.             \n\
+ +######+  +######+             \n\
+ #+    +#  #+    +#             \n\
++#      #++#      #+            \n\
+++      ++++      ++            \n\
+                                \n\
 ";
     T_COMPARE(actual_ascii, expected_ascii);
 }

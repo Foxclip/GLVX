@@ -16,6 +16,7 @@ public:
     void dimensionsTest(test::Test& test);
     void renderCharacterATest(test::Test& test);
     void renderCharacterDotTest(test::Test& test);
+    void renderStringAATest(test::Test& test);
 
 private:
 
