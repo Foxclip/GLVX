@@ -32,7 +32,7 @@ const std::string& Text::getString() const {
 void Text::setString(const std::string& string) {
     this->string = string;
 
-    Rect text_bounds = calculateVisualBounds();
+    text_bounds = calculateVisualBounds();
     Vector2f text_size = text_bounds.size;
     setSize(text_size);
 
@@ -82,7 +82,9 @@ void Text::setString(const std::string& string) {
         char c = string[i];
         const Character& ch = font->getCharacter(c);
         Rect char_bounds;
-        char_bounds.position.x = current_x + static_cast<float>(ch.x);
+        // if x position of the first character is non-zero, it will give the text non-zero x position,
+        // so we need to subtract it
+        char_bounds.position.x = current_x + static_cast<float>(ch.x) - text_bounds.position.x;
         char_bounds.position.y = static_cast<float>(ch.height);
         char_bounds.size.x = static_cast<float>(ch.texture.getWidth());
         char_bounds.size.y = static_cast<float>(ch.texture.getHeight());
@@ -130,9 +132,21 @@ const RenderTexture& Text::getTexture() {
     return text_texture;
 }
 
+void Text::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
+    if (string.empty()) {
+        return;
+    }
+    RenderStates shifted = states;
+    shifted.transform = Matrix4::translate(
+        shifted.transform, Vector3(text_bounds.position.x, text_bounds.position.y, 0.0f)
+    );
+    Rectangle::render(view, projection, shifted);
+}
+
 Rect Text::calculateVisualBounds() const {
     Rect result;
     float current_x = 0.0f;
+    int baselineY = font->getBaselineY();
 
     for (size_t i = 0; i < string.size(); i++) {
         char c = string[i];
@@ -147,7 +161,7 @@ Rect Text::calculateVisualBounds() const {
 
         Rect char_rect;
         char_rect.position.x = current_x + static_cast<float>(ch.x);
-        char_rect.position.y = -static_cast<float>(ch.height);
+        char_rect.position.y = static_cast<float>(baselineY - ch.height);
         char_rect.size.x = effective_char_width;
         char_rect.size.y = static_cast<float>(ch.texture.getHeight());
 

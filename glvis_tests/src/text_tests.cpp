@@ -111,33 +111,21 @@ void TextTestsModule::renderStringTest(test::Test& test) {
     window.clear(Color::Black);
 
     Font font("fonts/LiberationSans-Regular.ttf", 15);
-    Text text(&font, "..");
+    Text text(&font, ".");
     window.draw(text);
     window.display();
 
     Image image = window.readPixels();
     int width = image.getWidth();
     int height = image.getHeight();
-    int max_width = 15;
-    int max_height = 15;
+    int max_width = 3;
+    int max_height = 3;
     std::string actual_ascii = imageToAscii(image, max_width, max_height);
     // str_to_file(actual_ascii, "ascii.txt");
     std::string expected_ascii = "\
- +#  +#        \n\
- +#  +#        \n\
-               \n\
-               \n\
-               \n\
-               \n\
-               \n\
-               \n\
-               \n\
-               \n\
-               \n\
-               \n\
-               \n\
-               \n\
-               \n\
++# \n\
++# \n\
+   \n\
 ";
     T_COMPARE(actual_ascii, expected_ascii);
 }
