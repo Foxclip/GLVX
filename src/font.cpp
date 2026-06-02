@@ -49,6 +49,7 @@ Character& Font::getCharacter(unsigned char c) {
 }
 
 void Font::loadFont(const std::filesystem::path& filename, unsigned int character_size) {
+    this->character_size = character_size;
     if (!is_library_initialized) {
         FREETYPE_CALL(FT_Init_FreeType(&library), []() { return "Failed to initialize FreeType library"; });
         is_library_initialized = true;
