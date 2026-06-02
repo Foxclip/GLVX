@@ -80,7 +80,7 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
         ch.height = face->glyph->bitmap_top;
         ch.advance = advance / 64;
         if (buffer && width > 0 && height > 0) {
-            ch.texture.create(width, height, buffer, 1);
+            ch.texture.create(width, height, buffer, 1, true);
         }
     }
 }

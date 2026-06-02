@@ -30,7 +30,6 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: Text: cache size calculated with calculateSize
     // TODO: Font: create font texture in swizzled form right away
     // TODO: Text: kerning test
     // TODO: AbstractTexture: add option to not blit old contents when resizing

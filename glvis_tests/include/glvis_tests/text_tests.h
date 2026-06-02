@@ -17,6 +17,7 @@ public:
     void renderCharacterATest(test::Test& test);
     void renderCharacterDotTest(test::Test& test);
     void renderStringAATest(test::Test& test);
+    void transparencyTest(test::Test& test);
 
 private:
 

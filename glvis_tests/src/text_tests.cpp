@@ -9,11 +9,12 @@ TextTestsModule::TextTestsModule(
     test::TestModule *parent,
     const std::vector<test::TestNode *>& required_nodes
 ) : test::TestModule(name, parent, required_nodes) {
-        auto font_test = addTest("font", [&](test::Test& test) { fontTest(test); });
-        auto dimensions_test = addTest("dimensions", { font_test }, [&](test::Test& test) { dimensionsTest(test); });
-        auto render_character_A_test = addTest("render character A", { dimensions_test }, [&](test::Test& test) { renderCharacterATest(test); });
-        auto render_character_dot_test = addTest("render character dot", { dimensions_test }, [&](test::Test& test) { renderCharacterDotTest(test); });
-        auto render_string_AA_test = addTest("render string AA", { render_character_A_test }, [&](test::Test& test) { renderStringAATest(test); });
+    auto font_test = addTest("font", [&](test::Test& test) { fontTest(test); });
+    auto dimensions_test = addTest("dimensions", { font_test }, [&](test::Test& test) { dimensionsTest(test); });
+    auto render_character_A_test = addTest("render character A", { dimensions_test }, [&](test::Test& test) { renderCharacterATest(test); });
+    auto render_character_dot_test = addTest("render character dot", { dimensions_test }, [&](test::Test& test) { renderCharacterDotTest(test); });
+    auto render_string_AA_test = addTest("render string AA", { render_character_A_test }, [&](test::Test& test) { renderStringAATest(test); });
+    auto transparency_test = addTest("transparency", { render_character_A_test }, [&](test::Test& test) { transparencyTest(test); });
 }
 
 void TextTestsModule::fontTest(test::Test& test) {
@@ -82,6 +83,7 @@ void TextTestsModule::renderCharacterATest(test::Test& test) {
     int max_width = 16;
     int max_height = 16;
     std::string actual_ascii = imageToAscii(image, max_width, max_height);
+    str_to_file(actual_ascii, "ascii.txt");
     std::string expected_ascii = "\
                 \n\
                 \n\
@@ -179,6 +181,48 @@ void TextTestsModule::renderStringAATest(test::Test& test) {
 +#      #++#      #+            \n\
 ++      ++++      ++            \n\
                                 \n\
+";
+    T_COMPARE(actual_ascii, expected_ascii);
+}
+
+void TextTestsModule::transparencyTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("transparency");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    Font font("fonts/LiberationSans-Regular.ttf", 15);
+    Text textA(&font, "A");
+    Text textV(&font, "V");
+    window.draw(textA);
+    window.draw(textV);
+    window.display();
+
+    Image image = window.readPixels();
+    int width = image.getWidth();
+    int height = image.getHeight();
+    int max_width = 16;
+    int max_height = 16;
+    std::string actual_ascii = imageToAscii(image, max_width, max_height);
+    std::string expected_ascii = "\
+                \n\
+                \n\
+                \n\
+                \n\
+    ##          \n\
+   .##.         \n\
+   ++++         \n\
+   #..#         \n\
+  +#  #+        \n\
+  #+  +#        \n\
+ .#.  .#.       \n\
+ +######+       \n\
+ #+    +#       \n\
++#      #+      \n\
+++      ++      \n\
+                \n\
 ";
     T_COMPARE(actual_ascii, expected_ascii);
 }
