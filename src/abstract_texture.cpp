@@ -10,8 +10,8 @@
 
 namespace glvis {
 
-void AbstractTexture::create(int width, int height, unsigned char *data, int channels) {
-    createTexture(width, height, data, channels);
+void AbstractTexture::create(int width, int height, unsigned char* data, int channels, bool is_mask) {
+    createTexture(width, height, data, channels, is_mask);
 }
 
 int AbstractTexture::getID() const {
@@ -62,11 +62,12 @@ AbstractTexture::~AbstractTexture() {
     GL_CALL(glDeleteTextures(1, &ID));
 }
 
-void AbstractTexture::createTexture(int width, int height, unsigned char* data, int channels) {
+void AbstractTexture::createTexture(int width, int height, unsigned char* data, int channels, bool is_mask) {
     START_TRY
     assert(glfwGetCurrentContext() != nullptr);
     assert(width > 0);
     assert(height > 0);
+    assert(!is_mask || channels == 1); // only 1 channel for masks
 
     // Delete existing texture if any
     if (ID != 0) {
@@ -96,10 +97,18 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
     GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    // Swizzle single-channel textures to return (R, R, R, A) instead of (R, 0, 0, A)
     if (channels == 1) {
-        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED));
-        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED));
+        if (is_mask) {
+            // return (1, 1, 1, R) instead of (R, 0, 0, 1)
+            GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_ONE));
+            GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_ONE));
+            GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_ONE));
+            GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_RED));
+        } else {
+            // swizzle to return (R, R, R, 1) instead of (R, 0, 0, 1)
+            GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED));
+            GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED));
+        }
     }
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     this->width = width;
