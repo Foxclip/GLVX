@@ -249,3 +249,21 @@ std::string TextTestsModule::imageToAscii(const Image& image, int max_width, int
     }
     return result;
 }
+
+std::string TextTestsModule::imageToNumbers(const Image& image, int max_width, int max_height) const {
+    std::string result;
+    char buffer[16];
+    for (int y = 0; y < max_height; y++) {
+        for (int x = 0; x < max_width; x++) {
+            Color color = image.getPixel(x, y);
+            int intensity = (int)((color.r + color.g + color.b) / 3.0f);
+            std::snprintf(buffer, sizeof(buffer), "%4d", intensity);
+            result += buffer;
+            if (x < max_width - 1) {
+                result += " ";
+            }
+        }
+        result += "\n";
+    }
+    return result;
+}
