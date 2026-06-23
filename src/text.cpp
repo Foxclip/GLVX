@@ -60,10 +60,6 @@ void Text::setString(const std::string& string) {
     GL_CALL(glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
     GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
 
-    // Enable blending for transparency
-    GL_CALL(glEnable(GL_BLEND));
-    GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
     // Create shader for rendering
     Shader simpleShader(shaders::simple_vert, shaders::simple_frag);
     simpleShader.use();

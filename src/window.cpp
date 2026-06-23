@@ -114,6 +114,8 @@ void Window::clear(const Color& color) const {
 void Window::draw(const Drawable& drawable, const RenderStates& states) const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
     GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
+    GL_CALL(glEnable(GL_BLEND));
+    GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     drawable.render(view, projection, states);
 }
 
