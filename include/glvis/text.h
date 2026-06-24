@@ -2,7 +2,7 @@
 
 #include "glvis/rectangle.h"
 #include "glvis/font.h"
-#include "glvis/render_texture.h"
+#include "glvis/vertex_buffer.h"
 #include "glvis/vector.h"
 #include "glvis/rect.h"
 
@@ -16,7 +16,6 @@ public:
     void setFont(Font* font);
     const std::string& getString() const;
     void setString(const std::string& string);
-    const RenderTexture& getTexture();
     void render(
         const Matrix4& view,
         const Matrix4& projection,
@@ -26,7 +25,7 @@ public:
 private:
     Font* font = nullptr;
     std::string string;
-    RenderTexture text_texture;
+    VertexBuffer vertex_buffer;
     Rect text_bounds;
 
     Rect calculateVisualBounds() const;
