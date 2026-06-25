@@ -120,8 +120,8 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
                 return "Failed to load character: " + std::to_string(c) + " (" + std::string(1, c) + ")";
             }
         );
-        unsigned int width = face->glyph->bitmap.width;
-        unsigned int height = face->glyph->bitmap.rows;
+        int width = static_cast<int>(face->glyph->bitmap.width);
+        int height = static_cast<int>(face->glyph->bitmap.rows);
 
         if (currentX + width > atlasWidth) {
             currentX = 0;
