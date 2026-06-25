@@ -61,14 +61,11 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
         FREETYPE_CALL(FT_Init_FreeType(&library), []() { return "Failed to initialize FreeType library"; });
         is_library_initialized = true;
     }
-    if (face) {
-        FREETYPE_CALL(FT_Done_Face(face), []() { return "Failed to unload font"; });
-    }
+    FT_Done_Face(face);
+    face = nullptr;
     characters.clear();
 
-    std::string filename_str = filename.string();
-    const char* filename_cstr = filename_str.c_str();
-    FREETYPE_CALL(FT_New_Face(library, filename_cstr, 0, &face), []() { return "Failed to load font file"; });
+    FREETYPE_CALL(FT_New_Face(library, filename.string().c_str(), 0, &face), []() { return "Failed to load font file"; });
     FREETYPE_CALL(FT_Set_Pixel_Sizes(face, 0, character_size), []() { return "Failed to set font size"; });
 
     // Pass 1: measure glyphs and compute total area
@@ -96,16 +93,12 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
     }
 
     // Compute atlas dimensions
-    int atlasWidth = 0;
-    int atlasHeight = 0;
-    {
-        int side = static_cast<int>(std::ceil(std::sqrt(static_cast<float>(totalArea))));
-        int pow2 = 1;
-        while (pow2 < side) pow2 *= 2;
-        if (pow2 == 0) pow2 = 1;
-        atlasWidth = pow2;
-        atlasHeight = pow2;
-    }
+    int side = static_cast<int>(std::ceil(std::sqrt(static_cast<float>(totalArea))));
+    int pow2 = 1;
+    while (pow2 < side) pow2 *= 2;
+    if (pow2 == 0) pow2 = 1;
+    int atlasWidth = pow2;
+    int atlasHeight = pow2;
 
     std::vector<unsigned char> atlasData(atlasWidth * atlasHeight, 0);
 
@@ -113,6 +106,8 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
     int currentX = 0;
     int currentY = 0;
     int rowHeight = 0;
+    float invW = 1.0f / static_cast<float>(atlasWidth);
+    float invH = 1.0f / static_cast<float>(atlasHeight);
 
     for (unsigned char c = 32; c < 127; c++) {
         FREETYPE_CALL(
@@ -140,8 +135,6 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
 
         if (height > rowHeight) rowHeight = height;
 
-        float invW = 1.0f / static_cast<float>(atlasWidth);
-        float invH = 1.0f / static_cast<float>(atlasHeight);
         Character& ch = characters[c];
         ch.uv_top_left = Vector2f(static_cast<float>(currentX) * invW, static_cast<float>(currentY + height) * invH);
         ch.uv_bottom_right = Vector2f(static_cast<float>(currentX + width) * invW, static_cast<float>(currentY) * invH);
