@@ -18,4 +18,10 @@ Vector3 toVector3(const Vector2f & v);
 glm::mat4 to_glmMat4(const Matrix4& m);
 Matrix4 from_glmMat4(const glm::mat4& m);
 
+void blit_bitmap(
+    const unsigned char* src, int srcPitch,
+    unsigned char* dst, int dstPitch,
+    int x, int y, int width, int height
+);
+
 }

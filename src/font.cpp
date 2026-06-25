@@ -1,5 +1,6 @@
 #include "glvis/font.h"
 #include "glvis/glvis_common.h"
+#include "glvis/utils.h"
 #include <vector>
 #include <cmath>
 #include <glad/glad.h>
@@ -130,11 +131,11 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
         }
 
         if (width > 0 && height > 0 && face->glyph->bitmap.buffer) {
-            for (int y = 0; y < height; y++) {
-                const unsigned char* srcRow = face->glyph->bitmap.buffer + y * face->glyph->bitmap.pitch;
-                unsigned char* dstRow = atlasData.data() + (currentY + y) * atlasWidth + currentX;
-                std::memcpy(dstRow, srcRow, width);
-            }
+            blit_bitmap(
+                face->glyph->bitmap.buffer, face->glyph->bitmap.pitch,
+                atlasData.data(), atlasWidth,
+                currentX, currentY, width, height
+            );
         }
 
         if (height > rowHeight) rowHeight = height;
