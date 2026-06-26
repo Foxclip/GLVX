@@ -212,17 +212,17 @@ void TextTestsModule::transparencyTest(test::Test& test) {
                 \n\
                 \n\
                 \n\
-    ##          \n\
-   .##.         \n\
-   ++++         \n\
-   #..#         \n\
-  +#  #+        \n\
-  #+  +#        \n\
- .#.  .#.       \n\
+++  ##  ++      \n\
+.# .##. #.      \n\
+ #++++++#       \n\
+ +##..##+       \n\
+ .##  ##.       \n\
+  ##  ##        \n\
+ .##  ##.       \n\
  +######+       \n\
- #+    +#       \n\
-+#      #+      \n\
-++      ++      \n\
+ #++++++#       \n\
++# .##. #+      \n\
+++  ##  ++      \n\
                 \n\
 ";
     T_COMPARE_RAW(actual_ascii, expected_ascii);
