@@ -18,6 +18,7 @@ public:
     void renderCharacterDotTest(test::Test& test);
     void renderStringAATest(test::Test& test);
     void transparencyTest(test::Test& test);
+    void kerningTest(test::Test& test);
 
 private:
 

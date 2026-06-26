@@ -15,6 +15,7 @@ TextTestsModule::TextTestsModule(
     auto render_character_dot_test = addTest("render character dot", { dimensions_test }, [&](test::Test& test) { renderCharacterDotTest(test); });
     auto render_string_AA_test = addTest("render string AA", { render_character_A_test }, [&](test::Test& test) { renderStringAATest(test); });
     auto transparency_test = addTest("transparency", { render_character_A_test }, [&](test::Test& test) { transparencyTest(test); });
+    auto kerning_test = addTest("kerning", { dimensions_test }, [&](test::Test& test) { kerningTest(test); });
 }
 
 void TextTestsModule::fontTest(test::Test& test) {
@@ -56,7 +57,7 @@ void TextTestsModule::dimensionsTest(test::Test& test) {
     T_COMPARE(text.getHeight(), 21.0f);
 
     text.setString("A A");
-    T_COMPARE(text.getWidth(), 48.0f);
+    T_COMPARE(text.getWidth(), 46.0f);
     T_COMPARE(text.getHeight(), 21.0f);
 
     text.setString("Q");
@@ -226,6 +227,20 @@ void TextTestsModule::transparencyTest(test::Test& test) {
                 \n\
 ";
     T_COMPARE_RAW(actual_ascii, expected_ascii);
+}
+
+void TextTestsModule::kerningTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("kerning");
+
+    Font font("fonts/LiberationSans-Regular.ttf");
+
+    Text textA(&font, "A");
+    T_COMPARE(textA.getWidth(), 20.0f);
+    Text textV(&font, "V");
+    T_COMPARE(textV.getWidth(), 20.0f);
+    Text text(&font, "AV");
+    T_COMPARE(text.getWidth(), 38.0f);
 }
 
 std::string TextTestsModule::imageToAscii(const Image& image, int max_width, int max_height) const {

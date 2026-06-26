@@ -55,6 +55,14 @@ const Texture& Font::getAtlas() const {
     return atlas;
 }
 
+int Font::getKerning(unsigned char left, unsigned char right) const {
+    auto it = kerning.find({left, right});
+    if (it != kerning.end()) {
+        return it->second;
+    }
+    return 0;
+}
+
 void Font::loadFont(const std::filesystem::path& filename, unsigned int character_size) {
     this->character_size = character_size;
     if (!is_library_initialized) {
@@ -64,9 +72,28 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
     FT_Done_Face(face);
     face = nullptr;
     characters.clear();
+    kerning.clear();
 
     FREETYPE_CALL(FT_New_Face(library, filename.string().c_str(), 0, &face), []() { return "Failed to load font file"; });
     FREETYPE_CALL(FT_Set_Pixel_Sizes(face, 0, character_size), []() { return "Failed to set font size"; });
+
+    // Load kerning data
+    if (FT_HAS_KERNING(face)) {
+        FT_Vector kernVec;
+        for (unsigned char left = 32; left < 126; left++) {
+            for (unsigned char right = 33; right < 127; right++) {
+                FT_UInt leftGlyph = FT_Get_Char_Index(face, left);
+                FT_UInt rightGlyph = FT_Get_Char_Index(face, right);
+                if (leftGlyph && rightGlyph) {
+                    FT_Get_Kerning(face, leftGlyph, rightGlyph, FT_KERNING_DEFAULT, &kernVec);
+                    int kerningValue = kernVec.x / 64;
+                    if (kerningValue != 0) {
+                        kerning[{left, right}] = kerningValue;
+                    }
+                }
+            }
+        }
+    }
 
     // Pass 1: measure glyphs and compute total area
     int totalArea = 0;

@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <map>
+#include <utility>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include "glvis/texture.h"
@@ -34,6 +35,7 @@ public:
     int getBaselineY() const;
     Character& getCharacter(unsigned char c);
     const Texture& getAtlas() const;
+    int getKerning(unsigned char left, unsigned char right) const;
 
 private:
     friend class TextTestsModule;
@@ -42,6 +44,7 @@ private:
     Texture atlas;
     FT_Face face = nullptr;
     std::map<unsigned char, Character> characters;
+    std::map<std::pair<unsigned char, unsigned char>, int> kerning;
     unsigned int character_size = FONT_DEFAULT_SIZE;
 
     void loadFont(const std::filesystem::path& filename, unsigned int size);

@@ -45,10 +45,13 @@ void Text::setString(const std::string& string) {
     std::vector<Vertex> vertices;
     float current_x = 0.0f;
 
-    for (char c : string) {
-        const Character& ch = font->getCharacter(c);
+    for (size_t i = 0; i < string.size(); i++) {
+        const Character& ch = font->getCharacter(string[i]);
         if (ch.width <= 0) {
             current_x += static_cast<float>(ch.advance);
+            if (i + 1 < string.size()) {
+                current_x += static_cast<float>(font->getKerning(string[i], string[i + 1]));
+            }
             continue;
         }
 
@@ -70,6 +73,9 @@ void Text::setString(const std::string& string) {
         vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y - char_h), Color::White, Vector2f(uvTopR, uvBotL)));
 
         current_x += static_cast<float>(ch.advance);
+        if (i + 1 < string.size()) {
+            current_x -= static_cast<float>(font->getKerning(string[i], string[i + 1]));
+        }
     }
 
     if (!vertex_buffer.getVAO()) {
@@ -121,6 +127,9 @@ Rect Text::calculateVisualBounds() const {
         }
 
         current_x += static_cast<float>(ch.advance);
+        if (i + 1 < string.size()) {
+            current_x += static_cast<float>(font->getKerning(string[i], string[i + 1]));
+        }
     }
 
     return result;
