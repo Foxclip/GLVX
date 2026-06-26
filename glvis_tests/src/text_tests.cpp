@@ -231,14 +231,49 @@ void TextTestsModule::kerningTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("kerning");
 
-    Font font("fonts/LiberationSans-Regular.ttf");
+    Font font("fonts/LiberationSans-Regular.ttf", 15);
 
     Text textA(&font, "A");
-    T_COMPARE(textA.getWidth(), 20.0f);
+    T_COMPARE(textA.getWidth(), 10.0f);
     Text textV(&font, "V");
-    T_COMPARE(textV.getWidth(), 20.0f);
+    T_COMPARE(textV.getWidth(), 10.0f);
     Text text(&font, "AV");
-    T_COMPARE(text.getWidth(), 38.0f);
+    T_COMPARE(text.getWidth(), 19.0f);
+
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    Text textAV(&font, "AV");
+    window.draw(textAV);
+    window.display();
+
+    Image image = window.readPixels();
+    int width = image.getWidth();
+    int height = image.getHeight();
+    int max_width = 32;
+    int max_height = 16;
+    std::string actual_ascii = imageToAscii(image, max_width, max_height);
+    std::string expected_ascii = "\
+                                \n\
+                                \n\
+                                \n\
+                                \n\
+    ##   ++      ++             \n\
+   .##.  .#      #.             \n\
+   ++++   #+    +#              \n\
+   #..#   +#    #+              \n\
+  +#  #+  .#    #.              \n\
+  #+  +#   #+  +#               \n\
+ .#.  .#.  +#  #+               \n\
+ +######+   #..#                \n\
+ #+    +#   ++++                \n\
++#      #+  .##.                \n\
+++      ++   ##                 \n\
+                                \n\
+";
+    T_COMPARE(actual_ascii, expected_ascii);
 }
 
 std::string TextTestsModule::imageToAscii(const Image& image, int max_width, int max_height) const {
