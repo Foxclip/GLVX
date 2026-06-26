@@ -85,7 +85,12 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
                 FT_UInt leftGlyph = FT_Get_Char_Index(face, left);
                 FT_UInt rightGlyph = FT_Get_Char_Index(face, right);
                 if (leftGlyph && rightGlyph) {
-                    FT_Get_Kerning(face, leftGlyph, rightGlyph, FT_KERNING_DEFAULT, &kernVec);
+                    FREETYPE_CALL(
+                        FT_Get_Kerning(face, leftGlyph, rightGlyph, FT_KERNING_DEFAULT, &kernVec),
+                        [&]() {
+                            return "Failed to get kerning for characters: " + std::to_string(left) + ", " + std::to_string(right);
+                        }
+                    );
                     int kerningValue = kernVec.x / 64;
                     if (kerningValue != 0) {
                         kerning[{left, right}] = kerningValue;
