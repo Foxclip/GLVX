@@ -84,7 +84,6 @@ void TextTestsModule::renderCharacterATest(test::Test& test) {
     int max_width = 16;
     int max_height = 16;
     std::string actual_ascii = imageToAscii(image, max_width, max_height);
-    str_to_file(actual_ascii, "renderCharacterATest.txt");
     std::string expected_ascii = "\
                 \n\
                 \n\
@@ -207,7 +206,6 @@ void TextTestsModule::transparencyTest(test::Test& test) {
     int max_width = 16;
     int max_height = 16;
     std::string actual_ascii = imageToAscii(image, max_width, max_height);
-    str_to_file(actual_ascii, "transparencyTest.txt");
     std::string expected_ascii = "\
                 \n\
                 \n\
