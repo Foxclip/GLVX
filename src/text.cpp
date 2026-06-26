@@ -74,7 +74,7 @@ void Text::setString(const std::string& string) {
 
         current_x += static_cast<float>(ch.advance);
         if (i + 1 < string.size()) {
-            current_x -= static_cast<float>(font->getKerning(string[i], string[i + 1]));
+            current_x += static_cast<float>(font->getKerning(string[i], string[i + 1]));
         }
     }
 
