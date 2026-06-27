@@ -15,7 +15,7 @@ public:
     void bind() const;
     void unbind() const;
     Image readPixels() const;
-    virtual void resize(int newWidth, int newHeight);
+    virtual void resize(int newWidth, int newHeight, bool blitOldContents = true);
     ~AbstractTexture();
 
 protected:
@@ -25,7 +25,7 @@ protected:
     void createTexture(
         int width, int height, unsigned char* data = nullptr, int channels = 4, bool is_mask = false
     );
-    void resizeTexture(int newWidth, int newHeight);
+    void resizeTexture(int newWidth, int newHeight, bool blitOldContents);
 
 };
 

@@ -49,8 +49,8 @@ Image AbstractTexture::readPixels() const {
     return Image(width, height, std::move(data));
 }
 
-void AbstractTexture::resize(int newWidth, int newHeight) {
-    resizeTexture(newWidth, newHeight);
+void AbstractTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
+    resizeTexture(newWidth, newHeight, blitOldContents);
 }
 
 AbstractTexture::~AbstractTexture() {
@@ -116,7 +116,7 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
     END_TRY
 }
 
-void AbstractTexture::resizeTexture(int newWidth, int newHeight) {
+void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldContents) {
     assert(ID != 0);
     assert(glfwGetCurrentContext() != nullptr);
     assert(GL_CALL(glIsTexture(ID)));
@@ -126,7 +126,6 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight) {
         return;
     }
 
-    // Create a new texture with the desired size
     GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 4));
     GLuint newTextureID;
     GL_CALL(glGenTextures(1, &newTextureID));
@@ -136,29 +135,25 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight) {
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
-    // Create framebuffers
-    GLuint srcFBO, dstFBO;
-    GL_CALL(glGenFramebuffers(1, &srcFBO));
-    GL_CALL(glGenFramebuffers(1, &dstFBO));
+    if (blitOldContents) {
+        GLuint srcFBO, dstFBO;
+        GL_CALL(glGenFramebuffers(1, &srcFBO));
+        GL_CALL(glGenFramebuffers(1, &dstFBO));
 
-    // Attach original texture to source FBO
-    GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFBO));
-    GL_CALL(glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0));
-    assert(GL_CALL(glCheckFramebufferStatus(GL_READ_FRAMEBUFFER)) == GL_FRAMEBUFFER_COMPLETE);
+        GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFBO));
+        GL_CALL(glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0));
+        assert(GL_CALL(glCheckFramebufferStatus(GL_READ_FRAMEBUFFER)) == GL_FRAMEBUFFER_COMPLETE);
 
-    // Attach new texture to destination FBO
-    GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFBO));
-    GL_CALL(glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newTextureID, 0));
+        GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFBO));
+        GL_CALL(glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newTextureID, 0));
 
-    // Blit with bilinear interpolation
-    GL_CALL(glBlitFramebuffer(0, 0, width, height, 0, 0, newWidth, newHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR));
+        GL_CALL(glBlitFramebuffer(0, 0, width, height, 0, 0, newWidth, newHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR));
 
-    // Clean up
-    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-    GL_CALL(glDeleteFramebuffers(1, &srcFBO));
-    GL_CALL(glDeleteFramebuffers(1, &dstFBO));
+        GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+        GL_CALL(glDeleteFramebuffers(1, &srcFBO));
+        GL_CALL(glDeleteFramebuffers(1, &dstFBO));
+    }
 
-    // Replace the old texture
     GL_CALL(glDeleteTextures(1, &ID));
     ID = newTextureID;
     this->width = newWidth;
