@@ -41,7 +41,7 @@ void main() {
         vec4 texColor = texture(tex, TexCoords);
         vec3 subpixel = texColor.rgb;
         vec4 textColor = VertexColor * colorNormalized;
-        FragColor = mix(vec4(vec3(0.0), 1.0), textColor, subpixel);
+        FragColor = mix(vec4(vec3(0.0), 1.0), textColor, vec4(subpixel, 1.0));
     } else {
         FragColor = VertexColor * colorNormalized;
     }
