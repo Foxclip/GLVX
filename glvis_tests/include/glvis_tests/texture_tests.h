@@ -13,6 +13,7 @@ public:
         const std::vector<test::TestNode*>& required_nodes = { }
     );
     void textureTest(test::Test& test);
+    void textureAlphaTest(test::Test& test);
     void textureColorMultiplyTest(test::Test& test);
     void textureResizeTest(test::Test& test);
 
