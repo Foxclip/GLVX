@@ -305,9 +305,15 @@ void TextTestsModule::descenderTest(test::Test& test) {
 
     Image image = window.readPixels();
     int max_width = 32;
-    int max_height = 16;
+    int max_height = 19;
     std::string actual_ascii = imageToAscii(image, max_width, max_height);
     std::string expected_ascii = "\
+                                \n\
+                                \n\
+                                \n\
+                                \n\
+                                \n\
+                                \n\
                                 \n\
   +##.#.++    #.                \n\
  #+  +#..#   +#                 \n\
@@ -321,11 +327,8 @@ void TextTestsModule::descenderTest(test::Test& test) {
  #+  +#   ++                    \n\
   +##+  +#+                     \n\
                                 \n\
-                                \n\
-                                \n\
-                                \n\
 ";
-    T_COMPARE(actual_ascii, expected_ascii);
+    T_COMPARE_RAW(actual_ascii, expected_ascii);
 }
 
 std::string TextTestsModule::imageToAscii(const Image& image, int max_width, int max_height) const {
