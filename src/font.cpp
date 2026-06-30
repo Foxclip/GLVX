@@ -22,8 +22,8 @@ FT_Library Font::library = nullptr;
         } \
     }
 
-Font::Font(const std::filesystem::path& filename, unsigned int character_size) {
-    loadFont(filename, character_size);
+Font::Font(const std::filesystem::path& filename, unsigned int character_size, bool useSubpixel) {
+    loadFont(filename, character_size, useSubpixel);
 }
 
 Font::~Font() {
@@ -32,8 +32,8 @@ Font::~Font() {
     }
 }
 
-void Font::openFromFile(const std::filesystem::path& filename, unsigned int character_size) {
-    loadFont(filename, character_size);
+void Font::openFromFile(const std::filesystem::path& filename, unsigned int character_size, bool useSubpixel) {
+    loadFont(filename, character_size, useSubpixel);
 }
 
 int Font::getCharacterSize() const {
@@ -45,6 +45,10 @@ int Font::getBaselineY() const {
         return 0;
     }
     return face->ascender / 64;
+}
+
+bool Font::isSubpixel() const {
+    return _useSubpixel;
 }
 
 Character& Font::getCharacter(unsigned char c) {
@@ -63,8 +67,9 @@ int Font::getKerning(unsigned char left, unsigned char right) const {
     return 0;
 }
 
-void Font::loadFont(const std::filesystem::path& filename, unsigned int character_size) {
+void Font::loadFont(const std::filesystem::path& filename, unsigned int character_size, bool useSubpixel) {
     this->character_size = character_size;
+    this->_useSubpixel = useSubpixel;
     if (!is_library_initialized) {
         FREETYPE_CALL(FT_Init_FreeType(&library), []() { return "Failed to initialize FreeType library"; });
         is_library_initialized = true;
@@ -100,11 +105,13 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
         }
     }
 
+    unsigned int loadFlag = useSubpixel ? FT_LOAD_TARGET_LCD : FT_LOAD_RENDER;
+
     // Pass 1: measure glyphs and compute total area
     int totalArea = 0;
     for (unsigned char c = 32; c < 127; c++) {
         FREETYPE_CALL(
-            FT_Load_Char(face, c, FT_LOAD_RENDER),
+            FT_Load_Char(face, c, loadFlag),
             [&]() {
                 return "Failed to load character: " + std::to_string(c) + " (" + std::string(1, c) + ")";
             }
@@ -132,7 +139,7 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
     int atlasWidth = pow2;
     int atlasHeight = pow2;
 
-    std::vector<unsigned char> atlasData(atlasWidth * atlasHeight, 0);
+    std::vector<unsigned char> atlasData(useSubpixel ? atlasWidth * atlasHeight * 3 : atlasWidth * atlasHeight, 0);
 
     // Pass 2: render glyphs directly into atlas and compute UVs
     int currentX = 0;
@@ -143,7 +150,7 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
 
     for (unsigned char c = 32; c < 127; c++) {
         FREETYPE_CALL(
-            FT_Load_Char(face, c, FT_LOAD_RENDER),
+            FT_Load_Char(face, c, loadFlag),
             [&]() {
                 return "Failed to load character: " + std::to_string(c) + " (" + std::string(1, c) + ")";
             }
@@ -158,11 +165,19 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
         }
 
         if (width > 0 && height > 0 && face->glyph->bitmap.buffer) {
-            blit_bitmap(
-                face->glyph->bitmap.buffer, face->glyph->bitmap.pitch,
-                atlasData.data(), atlasWidth,
-                currentX, currentY, width, height
-            );
+            if (useSubpixel) {
+                blit_bitmap_subpixel(
+                    face->glyph->bitmap.buffer, face->glyph->bitmap.pitch,
+                    atlasData.data(), atlasWidth * 3,
+                    currentX, currentY, width, height
+                );
+            } else {
+                blit_bitmap(
+                    face->glyph->bitmap.buffer, face->glyph->bitmap.pitch,
+                    atlasData.data(), atlasWidth,
+                    currentX, currentY, width, height
+                );
+            }
         }
 
         if (height > rowHeight) rowHeight = height;
@@ -175,7 +190,13 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
     }
 
     GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
-    atlas.create(atlasWidth, atlasHeight, atlasData.data(), 1, true);
+    atlas.create(atlasWidth, atlasHeight, atlasData.data(), useSubpixel ? 3 : 1, useSubpixel ? false : true);
+
+    if (useSubpixel) {
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, atlas.getID()));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+    }
 }
 
 }

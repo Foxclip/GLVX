@@ -63,4 +63,16 @@ void blit_bitmap(
     }
 }
 
+void blit_bitmap_subpixel(
+    const unsigned char* src, int srcPitch,
+    unsigned char* dst, int dstPitch,
+    int x, int y, int width, int height
+) {
+    for (int row = 0; row < height; row++) {
+        const unsigned char* srcRow = src + row * srcPitch;
+        unsigned char* dstRow = dst + (y + row) * dstPitch + x * 3;
+        std::memcpy(dstRow, srcRow, width * 3);
+    }
+}
+
 }

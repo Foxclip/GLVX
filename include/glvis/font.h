@@ -26,13 +26,15 @@ class Font {
 public:
     Font() = default;
     ~Font();
-    Font(const std::filesystem::path& filename, unsigned int character_size = FONT_DEFAULT_SIZE);
+    Font(const std::filesystem::path& filename, unsigned int character_size = FONT_DEFAULT_SIZE, bool useSubpixel = false);
     void openFromFile(
         const std::filesystem::path& filename,
-        unsigned int character_size = FONT_DEFAULT_SIZE
+        unsigned int character_size = FONT_DEFAULT_SIZE,
+        bool useSubpixel = false
     );
     int getCharacterSize() const;
     int getBaselineY() const;
+    bool isSubpixel() const;
     Character& getCharacter(unsigned char c);
     const Texture& getAtlas() const;
     int getKerning(unsigned char left, unsigned char right) const;
@@ -46,8 +48,9 @@ private:
     std::map<unsigned char, Character> characters;
     std::map<std::pair<unsigned char, unsigned char>, int> kerning;
     unsigned int character_size = FONT_DEFAULT_SIZE;
+    bool _useSubpixel = false;
 
-    void loadFont(const std::filesystem::path& filename, unsigned int size);
+    void loadFont(const std::filesystem::path& filename, unsigned int size, bool useSubpixel);
 
 };
 

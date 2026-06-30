@@ -20,6 +20,7 @@ public:
     void transparencyTest(test::Test& test);
     void kerningTest(test::Test& test);
     void descenderTest(test::Test& test);
+    void subpixelTest(test::Test& test);
 
 private:
 

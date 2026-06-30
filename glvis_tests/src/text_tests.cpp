@@ -17,6 +17,7 @@ TextTestsModule::TextTestsModule(
     auto transparency_test = addTest("transparency", { render_character_A_test }, [&](test::Test& test) { transparencyTest(test); });
     auto kerning_test = addTest("kerning", { dimensions_test }, [&](test::Test& test) { kerningTest(test); });
     auto descender_test = addTest("descender", { dimensions_test }, [&](test::Test& test) { descenderTest(test); });
+    auto subpixel_test = addTest("subpixel", { font_test }, [&](test::Test& test) { subpixelTest(test); });
 }
 
 void TextTestsModule::fontTest(test::Test& test) {
@@ -329,6 +330,25 @@ void TextTestsModule::descenderTest(test::Test& test) {
                                 \n\
 ";
     T_COMPARE_RAW(actual_ascii, expected_ascii);
+}
+
+void TextTestsModule::subpixelTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("subpixel");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    Font font("fonts/LiberationSans-Regular.ttf", 15, true);
+    T_COMPARE(font.isSubpixel(), true);
+    Text text(&font, "A");
+    window.draw(text);
+    window.display();
+
+    Image image = window.readPixels();
+    T_COMPARE(image.getWidth() > 0, true);
+    T_COMPARE(image.getHeight() > 0, true);
 }
 
 std::string TextTestsModule::imageToAscii(const Image& image, int max_width, int max_height) const {
