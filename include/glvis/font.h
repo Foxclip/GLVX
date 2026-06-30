@@ -18,7 +18,7 @@ struct Character {
     int width;
     int glyph_height;
     int x;
-    int height;
+    int top;
     int advance;
 };
 

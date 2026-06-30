@@ -114,7 +114,7 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
         FT_Pos advance = face->glyph->advance.x;
         Character& ch = characters[c];
         ch.x = face->glyph->bitmap_left;
-        ch.height = face->glyph->bitmap_top;
+        ch.top = face->glyph->bitmap_top;
         ch.advance = advance / 64;
         ch.width = static_cast<int>(width);
         ch.glyph_height = static_cast<int>(height);
