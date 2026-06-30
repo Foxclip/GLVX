@@ -273,7 +273,7 @@ void TextTestsModule::kerningTest(test::Test& test) {
 ++      ++   ##                 \n\
                                 \n\
 ";
-    T_COMPARE(actual_ascii, expected_ascii);
+    T_COMPARE_RAW(actual_ascii, expected_ascii);
 }
 
 std::string TextTestsModule::imageToAscii(const Image& image, int max_width, int max_height) const {
