@@ -6,26 +6,27 @@ TextureTestsModule::TextureTestsModule(
     test::TestModule *parent,
     const std::vector<test::TestNode *>& required_nodes
 ) : test::TestModule(name, parent, required_nodes) {
-    auto texture_test = addTest("texture", [&](test::Test& test) { textureTest(test); });
-    auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
-    auto texture_resize_up_test = addTest("texture_resize", { texture_test }, [&](test::Test& test) { textureResizeTest(test); });
+    auto texture_full_alpha_test = addTest("texture_full_alpha", [&](test::Test& test) { textureFullAlphaTest(test); });
+    auto texture_varying_alpha_test = addTest("texture_varying_alpha", [&](test::Test& test) { textureVaryingAlphaTest(test); });
+    auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_full_alpha_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
+    auto texture_resize_up_test = addTest("texture_resize", { texture_full_alpha_test }, [&](test::Test& test) { textureResizeTest(test); });
 }
 
-void TextureTestsModule::textureTest(test::Test& test) {
+void TextureTestsModule::textureFullAlphaTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
-    window.setTitle("texture");
+    window.setTitle("texture full alpha");
     View view;
     Vector2f window_center = window.getCenter();
     view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
 
-    // Create a 2x2 texture
+    // Create a 2x2 texture with full alpha
     unsigned char texture_data[16] = {
-        1, 2, 3, 4,
-        5, 6, 7, 8,
-        9, 10, 11, 12,
-        13, 14, 15, 16
+        1, 2, 3, 255,
+        5, 6, 7, 255,
+        9, 10, 11, 255,
+        13, 14, 15, 255
     };
     const Vector2i texture_size = Vector2i(2, 2);
     Texture tex(texture_data, texture_size.x, texture_size.y);
@@ -38,12 +39,54 @@ void TextureTestsModule::textureTest(test::Test& test) {
     window.draw(rect);
     window.display();
 
-    // Check that the texture is rendered correctly
+    // With full alpha blending against black: Result = Src * 1 + Dst * 0 = Src
     Image image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), Color(1, 2, 3, 4), &Color::toString);
-    T_COMPARE(image.getPixel(1, 0), Color(5, 6, 7, 8), &Color::toString);
-    T_COMPARE(image.getPixel(0, 1), Color(9, 10, 11, 12), &Color::toString);
-    T_COMPARE(image.getPixel(1, 1), Color(13, 14, 15, 16), &Color::toString);
+    T_COMPARE(image.getPixel(0, 0), Color(1, 2, 3, 255), &Color::toString);
+    T_COMPARE(image.getPixel(1, 0), Color(5, 6, 7, 255), &Color::toString);
+    T_COMPARE(image.getPixel(0, 1), Color(9, 10, 11, 255), &Color::toString);
+    T_COMPARE(image.getPixel(1, 1), Color(13, 14, 15, 255), &Color::toString);
+
+    // Check outside of the texture
+    T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);
+}
+
+void TextureTestsModule::textureVaryingAlphaTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("texture varying alpha");
+    View view;
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
+    window.setView(view);
+    window.clear(Color::Black);
+
+    // Create a 2x2 texture with varying alpha
+    // Per-channel formula: src_channel * (alpha/255) + 0 * (1 - alpha/255)
+    unsigned char texture_data[16] = {
+        255, 0, 0, 255,
+        0, 255, 0, 128,
+        0, 0, 255, 64,
+        255, 255, 0, 32
+    };
+    const Vector2i texture_size = Vector2i(2, 2);
+    Texture tex(texture_data, texture_size.x, texture_size.y);
+    const Vector2f rect_size = Vector2f(
+        static_cast<float>(texture_size.x),
+        static_cast<float>(texture_size.y)
+    );
+    Rectangle rect(rect_size);
+    rect.setTexture(&tex);
+    window.draw(rect);
+    window.display();
+
+    Image image = window.readPixels();
+    // Pixel (0,0) alpha=255: fully opaque red
+    T_COMPARE(image.getPixel(0, 0), Color(255, 0, 0, 255), &Color::toString);
+    // Pixel (1,0) alpha=128: G=255*128/255=128, A blends with opaque bg: 191
+    T_COMPARE(image.getPixel(1, 0), Color(0, 128, 0, 191), &Color::toString);
+    // Pixel (0,1) alpha=64: B=255*64/255=64, A blends with opaque bg: 207
+    T_COMPARE(image.getPixel(0, 1), Color(0, 0, 64, 207), &Color::toString);
+    // Pixel (1,1) alpha=32: R=255*32/255=32, G=255*32/255=32, A blends: 227
+    T_COMPARE(image.getPixel(1, 1), Color(32, 32, 0, 227), &Color::toString);
 
     // Check outside of the texture
     T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);
@@ -59,27 +102,30 @@ void TextureTestsModule::textureColorMultiplyTest(test::Test& test) {
     window.clear(Color::Black);
 
     // Render a rectangle with a texture
+    // Increased alpha to 255 so blending produces non-zero results
     unsigned char texture_data[16] = {
-        1, 2, 3, 4,
-        5, 6, 7, 8,
-        9, 10, 11, 12,
-        13, 14, 15, 16
+        64, 65, 66, 255,
+        68, 69, 70, 255,
+        72, 73, 74, 255,
+        76, 77, 78, 255
     };
     const Vector2i texture_size = Vector2i(2, 2);
     Texture tex(texture_data, texture_size.x, texture_size.y);
     const Vector2f rect_size = static_cast<Vector2f>(texture_size);
     Rectangle rect(rect_size);
     rect.setTexture(&tex);
-    rect.setColor(Color(64, 128, 192, 32));
+    rect.setColor(Color(128, 128, 128, 255));
     window.draw(rect);
     window.display();
 
-    // Test that the color of the texture is multiplied by the color of the rectangle
+    // FragColor = texture(tex) * VertexColor * (rectColor/255)
+    // VertexColor = (1,1,1,1), rectColor/255 = (128/255, 128/255, 128/255, 1)
+    // Blend into black: Result = FragColor * 1 + 0 * 0 = FragColor
     Image image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), Color(0, 1, 2, 0), &Color::toString);
-    T_COMPARE(image.getPixel(1, 0), Color(1, 3, 5, 1), &Color::toString);
-    T_COMPARE(image.getPixel(0, 1), Color(2, 5, 8, 1), &Color::toString);
-    T_COMPARE(image.getPixel(1, 1), Color(3, 7, 11, 2), &Color::toString);
+    T_COMPARE(image.getPixel(0, 0), Color(32, 33, 33, 255), &Color::toString);
+    T_COMPARE(image.getPixel(1, 0), Color(34, 35, 35, 255), &Color::toString);
+    T_COMPARE(image.getPixel(0, 1), Color(36, 37, 37, 255), &Color::toString);
+    T_COMPARE(image.getPixel(1, 1), Color(38, 39, 39, 255), &Color::toString);
     T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);
 }
 

@@ -12,7 +12,8 @@ public:
         test::TestModule* parent,
         const std::vector<test::TestNode*>& required_nodes = { }
     );
-    void textureTest(test::Test& test);
+    void textureFullAlphaTest(test::Test& test);
+    void textureVaryingAlphaTest(test::Test& test);
     void textureColorMultiplyTest(test::Test& test);
     void textureResizeTest(test::Test& test);
 

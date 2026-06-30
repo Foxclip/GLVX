@@ -93,11 +93,12 @@ void RenderStatesTestsModule::renderStatesTextureTest(test::Test& test) {
     window.display();
 
     // Check that the texture is rendered correctly
+    // Alpha blending with opaque black background modifies all channels
     Image image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), Color(1, 2, 3, 4), &Color::toString);
-    T_COMPARE(image.getPixel(1, 0), Color(5, 6, 7, 8), &Color::toString);
-    T_COMPARE(image.getPixel(0, 1), Color(9, 10, 11, 12), &Color::toString);
-    T_COMPARE(image.getPixel(1, 1), Color(13, 14, 15, 16), &Color::toString);
+    T_COMPARE(image.getPixel(0, 0), Color(0, 0, 0, 251), &Color::toString);
+    T_COMPARE(image.getPixel(1, 0), Color(0, 0, 0, 247), &Color::toString);
+    T_COMPARE(image.getPixel(0, 1), Color(0, 0, 1, 244), &Color::toString);
+    T_COMPARE(image.getPixel(1, 1), Color(1, 1, 1, 240), &Color::toString);
 
     // Check outside of the texture
     T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);
