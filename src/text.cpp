@@ -57,7 +57,7 @@ void Text::setString(const std::string& string) {
 
         float char_x = current_x + static_cast<float>(ch.x);
         float part_below_baseline = static_cast<float>(ch.glyph_height - ch.top);
-        float char_y = static_cast<float>(font->getCharacterSize() - part_below_baseline);
+        float char_y = static_cast<float>(font->getCharacterSize() + part_below_baseline);
         float char_w = static_cast<float>(ch.width);
         float char_h = static_cast<float>(ch.glyph_height);
 
