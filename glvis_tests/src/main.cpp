@@ -30,6 +30,7 @@ int main() {
     root.run();
     root.printSummary();
 
+    // TODO: enable subpixel text rendering
     // TODO: add RenderTexture test
     // TODO: Textures: add parameters for interpolation
     // TODO: remove path from Texture

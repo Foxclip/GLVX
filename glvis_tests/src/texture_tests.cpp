@@ -6,15 +6,15 @@ TextureTestsModule::TextureTestsModule(
     test::TestModule *parent,
     const std::vector<test::TestNode *>& required_nodes
 ) : test::TestModule(name, parent, required_nodes) {
-    auto texture_full_alpha_test = addTest("texture_full_alpha", [&](test::Test& test) { textureFullAlphaTest(test); });
-    auto texture_varying_alpha_test = addTest("texture_varying_alpha", [&](test::Test& test) { textureVaryingAlphaTest(test); });
+    auto texture_full_alpha_test = addTest("texture", [&](test::Test& test) { textureTest(test); });
+    auto texture_alpha_test = addTest("texture_alpha", [&](test::Test& test) { textureAlphaTest(test); });
     auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_full_alpha_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
     auto texture_resize_up_test = addTest("texture_resize", { texture_full_alpha_test }, [&](test::Test& test) { textureResizeTest(test); });
 }
 
-void TextureTestsModule::textureFullAlphaTest(test::Test& test) {
+void TextureTestsModule::textureTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
-    window.setTitle("texture full alpha");
+    window.setTitle("texture");
     View view;
     Vector2f window_center = window.getCenter();
     view.setPosition(window_center);
@@ -50,9 +50,9 @@ void TextureTestsModule::textureFullAlphaTest(test::Test& test) {
     T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);
 }
 
-void TextureTestsModule::textureVaryingAlphaTest(test::Test& test) {
+void TextureTestsModule::textureAlphaTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
-    window.setTitle("texture varying alpha");
+    window.setTitle("texture alpha");
     View view;
     Vector2f window_center = window.getCenter();
     view.setPosition(window_center);
