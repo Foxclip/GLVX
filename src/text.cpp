@@ -56,7 +56,8 @@ void Text::setString(const std::string& string) {
         }
 
         float char_x = current_x + static_cast<float>(ch.x);
-        float char_y = static_cast<float>(font->getCharacterSize());
+        float part_below_baseline = static_cast<float>(ch.glyph_height - ch.top);
+        float char_y = static_cast<float>(font->getCharacterSize() + part_below_baseline);
         float char_w = static_cast<float>(ch.width);
         float char_h = static_cast<float>(ch.glyph_height);
 
@@ -116,7 +117,8 @@ Rect Text::calculateVisualBounds() const {
         Rect char_rect;
         int font_size = font->getCharacterSize();
         char_rect.position.x = current_x + static_cast<float>(ch.x);
-        char_rect.position.y = static_cast<float>(font_size - ch.height);
+        float part_below_baseline = static_cast<float>(ch.glyph_height - ch.top);
+        char_rect.position.y = static_cast<float>(font_size - ch.top + part_below_baseline);
         char_rect.size.x = effective_char_width;
         char_rect.size.y = static_cast<float>(ch.glyph_height);
 

@@ -19,6 +19,7 @@ public:
     void renderStringAATest(test::Test& test);
     void transparencyTest(test::Test& test);
     void kerningTest(test::Test& test);
+    void descenderTest(test::Test& test);
 
 private:
 

@@ -16,6 +16,7 @@ TextTestsModule::TextTestsModule(
     auto render_string_AA_test = addTest("render string AA", { render_character_A_test }, [&](test::Test& test) { renderStringAATest(test); });
     auto transparency_test = addTest("transparency", { render_character_A_test }, [&](test::Test& test) { transparencyTest(test); });
     auto kerning_test = addTest("kerning", { dimensions_test }, [&](test::Test& test) { kerningTest(test); });
+    auto descender_test = addTest("descender", { dimensions_test }, [&](test::Test& test) { descenderTest(test); });
 }
 
 void TextTestsModule::fontTest(test::Test& test) {
@@ -273,7 +274,61 @@ void TextTestsModule::kerningTest(test::Test& test) {
 ++      ++   ##                 \n\
                                 \n\
 ";
-    T_COMPARE(actual_ascii, expected_ascii);
+    T_COMPARE_RAW(actual_ascii, expected_ascii);
+}
+
+void TextTestsModule::descenderTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("descender");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    Font font("fonts/LiberationSans-Regular.ttf", 15);
+
+    Text textG(&font, "g");
+    Text textY(&font, "y");
+    Text textP(&font, "p");
+    Text textQ(&font, "q");
+    Text textA(&font, "A");
+
+    T_COMPARE(textA.getHeight(), 11.0f);
+    T_COMPARE(textG.getHeight(), 11.0f);
+    T_COMPARE(textY.getHeight(), 11.0f);
+    T_COMPARE(textP.getHeight(), 11.0f);
+    T_COMPARE(textQ.getHeight(), 11.0f);
+
+    Text text(&font, "Aq");
+    window.draw(text);
+    window.display();
+
+    Image image = window.readPixels();
+    int max_width = 32;
+    int max_height = 19;
+    std::string actual_ascii = imageToAscii(image, max_width, max_height);
+    std::string expected_ascii = "\
+                                \n\
+                                \n\
+                                \n\
+                                \n\
+    ##                          \n\
+   .##.                         \n\
+   ++++                         \n\
+   #..#     +##.#.              \n\
+  +#  #+   #+  +#.              \n\
+  #+  +#  .#    #.              \n\
+ .#.  .#. .#    #.              \n\
+ +######+ .#    #.              \n\
+ #+    +# .#   .#.              \n\
++#      #+ #+  +#.              \n\
+++      ++  ###.#.              \n\
+                #.              \n\
+                #.              \n\
+                #.              \n\
+                                \n\
+";
+    T_COMPARE_RAW(actual_ascii, expected_ascii);
 }
 
 std::string TextTestsModule::imageToAscii(const Image& image, int max_width, int max_height) const {

@@ -30,7 +30,9 @@ int main() {
     root.run();
     root.printSummary();
 
-    // TODO: AbstractTexture: add option to not blit old contents when resizing
+    // TODO: fix letter positions of letters with descenders: g, j, y
+    // TODO: rename glyph_height and height in Character struct
+    // TODO: fix failing texture tests
     // TODO: add RenderTexture test
     // TODO: Textures: add parameters for interpolation
     // TODO: remove path from Texture
