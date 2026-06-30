@@ -299,7 +299,7 @@ void TextTestsModule::descenderTest(test::Test& test) {
     T_COMPARE(textP.getHeight(), 11.0f);
     T_COMPARE(textQ.getHeight(), 11.0f);
 
-    Text text(&font, "gy");
+    Text text(&font, "Aq");
     window.draw(text);
     window.display();
 
@@ -312,20 +312,20 @@ void TextTestsModule::descenderTest(test::Test& test) {
                                 \n\
                                 \n\
                                 \n\
-                                \n\
-                                \n\
-                                \n\
-  +##.#.++    #.                \n\
- #+  +#..#   +#                 \n\
-.#   .#. #.  ++                 \n\
-.#    #. ++  #                  \n\
-.#    #.  # ++                  \n\
-.#   .#.  #+#.                  \n\
- #+  +#.  +##                   \n\
- .###.#.   #+                   \n\
-      #.   #                    \n\
- #+  +#   ++                    \n\
-  +##+  +#+                     \n\
+    ##                          \n\
+   .##.                         \n\
+   ++++                         \n\
+   #..#     +##.#.              \n\
+  +#  #+   #+  +#.              \n\
+  #+  +#  .#    #.              \n\
+ .#.  .#. .#    #.              \n\
+ +######+ .#    #.              \n\
+ #+    +# .#   .#.              \n\
++#      #+ #+  +#.              \n\
+++      ++  ###.#.              \n\
+                #.              \n\
+                #.              \n\
+                #.              \n\
                                 \n\
 ";
     T_COMPARE_RAW(actual_ascii, expected_ascii);
