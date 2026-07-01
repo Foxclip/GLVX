@@ -1,6 +1,7 @@
 #include "glvis/text.h"
 #include "glvis/shader.h"
 #include "glvis/shaders/simple.h"
+#include "glvis/shaders/subpixel.h"
 #include "glvis/vertex.h"
 #include "glvis/vertex_buffer.h"
 #include "glvis/render_states.h"
@@ -88,7 +89,7 @@ void Text::setString(const std::string& string) {
 void Text::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
     if (string.empty()) return;
 
-    Shader* renderShader = states.shader ? states.shader : (getShader() ? getShader() : common::defaultShader);
+    Shader* renderShader = states.shader ? states.shader : (getShader() ? getShader() : (font->isSubpixel() ? common::subpixelShader : common::defaultShader));
     renderShader->use();
 
     Matrix4 model = Transformable::getModelMatrix();

@@ -3,6 +3,7 @@
 #include "glvis/rectangle.h"
 #include "glvis/shader.h"
 #include "glvis/shaders/simple.h"
+#include "glvis/shaders/subpixel.h"
 #include "glvis/shaders/screen.h"
 #include "glvis/image.h"
 #include "glvis/utils.h"
@@ -15,6 +16,7 @@ Window::~Window() {
     screenRectangleUptr.reset();
     screenShaderUptr.reset();
     defaultShaderUptr.reset();
+    subpixelShaderUptr.reset();
     screenTextureUptr.reset();
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -56,6 +58,8 @@ void Window::create(int width, int height, const char* title) {
 
     defaultShaderUptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag);
     common::defaultShader = defaultShaderUptr.get();
+    subpixelShaderUptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag);
+    common::subpixelShader = subpixelShaderUptr.get();
     screenShaderUptr = std::make_unique<Shader>(shaders::screen_vert, shaders::screen_frag);
 
     screenTextureUptr = std::make_unique<RenderTexture>(width, height);

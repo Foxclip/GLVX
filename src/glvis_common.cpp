@@ -26,6 +26,7 @@ void check_opengl_errors() {
 
 namespace common {
     Shader* defaultShader = nullptr;
+    Shader* subpixelShader = nullptr;
 }
 
 }

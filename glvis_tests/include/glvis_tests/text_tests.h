@@ -20,10 +20,12 @@ public:
     void transparencyTest(test::Test& test);
     void kerningTest(test::Test& test);
     void descenderTest(test::Test& test);
+    void subpixelTest(test::Test& test);
 
 private:
 
     std::string imageToAscii(const Image& image, int max_width, int max_height) const;
     std::string imageToNumbers(const Image& image, int max_width, int max_height) const;
+    std::string imageToNumbersRGB(const Image& image, int max_width, int max_height) const;
 
 };

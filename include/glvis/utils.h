@@ -24,4 +24,10 @@ void blit_bitmap(
     int x, int y, int width, int height
 );
 
+void blit_bitmap_subpixel(
+    const unsigned char* src, int srcPitch,
+    unsigned char* dst, int dstPitch,
+    int x, int y, int width, int height
+);
+
 }

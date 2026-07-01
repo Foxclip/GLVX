@@ -53,6 +53,7 @@ private:
     int currentHeight = 0;
     std::unique_ptr<Rectangle> screenRectangleUptr = nullptr;
     std::unique_ptr<Shader> defaultShaderUptr = nullptr;
+    std::unique_ptr<Shader> subpixelShaderUptr = nullptr;
     std::unique_ptr<Shader> screenShaderUptr = nullptr;
     std::unique_ptr<RenderTexture> screenTextureUptr = nullptr;
     Matrix4 view;

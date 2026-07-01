@@ -17,6 +17,7 @@ TextTestsModule::TextTestsModule(
     auto transparency_test = addTest("transparency", { render_character_A_test }, [&](test::Test& test) { transparencyTest(test); });
     auto kerning_test = addTest("kerning", { dimensions_test }, [&](test::Test& test) { kerningTest(test); });
     auto descender_test = addTest("descender", { dimensions_test }, [&](test::Test& test) { descenderTest(test); });
+    auto subpixel_test = addTest("subpixel", { font_test }, [&](test::Test& test) { subpixelTest(test); });
 }
 
 void TextTestsModule::fontTest(test::Test& test) {
@@ -331,6 +332,50 @@ void TextTestsModule::descenderTest(test::Test& test) {
     T_COMPARE_RAW(actual_ascii, expected_ascii);
 }
 
+void TextTestsModule::subpixelTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("subpixel");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    Font font("fonts/LiberationSans-Regular.ttf", 15, true);
+    T_COMPARE(font.isSubpixel(), true);
+    Text text(&font, ".");
+    RenderStates states;
+    states.shader = glvis::common::defaultShader;
+    window.draw(text, states);
+    window.display();
+
+    Image image = window.readPixels();
+    T_COMPARE(image.getWidth() > 0, true);
+    T_COMPARE(image.getHeight() > 0, true);
+
+    int max_width = 5;
+    int max_height = 16;
+    std::string actual_ascii = imageToAscii(image, max_width, max_height);
+    std::string actual_numbers_rgb = imageToNumbersRGB(image, max_width, max_height);
+    std::string expected_numbers_rgb = "\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n\
+(0 0 0) (76 160 244) (255 204 120) (32 0 0) (0 0 0)\n\
+(0 0 0) (76 160 244) (255 204 120) (32 0 0) (0 0 0)\n\
+(0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n";
+    T_COMPARE_RAW(actual_numbers_rgb, expected_numbers_rgb);
+}
+
 std::string TextTestsModule::imageToAscii(const Image& image, int max_width, int max_height) const {
     int width = image.getWidth();
     int height = image.getHeight();
@@ -362,6 +407,26 @@ std::string TextTestsModule::imageToNumbers(const Image& image, int max_width, i
             Color color = image.getPixel(x, y);
             int intensity = (int)((color.r + color.g + color.b) / 3.0f);
             std::snprintf(buffer, sizeof(buffer), "%4d", intensity);
+            result += buffer;
+            if (x < max_width - 1) {
+                result += " ";
+            }
+        }
+        result += "\n";
+    }
+    return result;
+}
+
+std::string TextTestsModule::imageToNumbersRGB(const Image& image, int max_width, int max_height) const {
+    std::string result;
+    char buffer[64];
+    for (int y = 0; y < max_height; y++) {
+        for (int x = 0; x < max_width; x++) {
+            Color color = image.getPixel(x, y);
+            int r = (int)color.r;
+            int g = (int)color.g;
+            int b = (int)color.b;
+            std::snprintf(buffer, sizeof(buffer), "(%d %d %d)", r, g, b);
             result += buffer;
             if (x < max_width - 1) {
                 result += " ";
