@@ -343,12 +343,37 @@ void TextTestsModule::subpixelTest(test::Test& test) {
     Font font("fonts/LiberationSans-Regular.ttf", 15, true);
     T_COMPARE(font.isSubpixel(), true);
     Text text(&font, "A");
-    window.draw(text);
+    RenderStates states;
+    states.shader = glvis::common::defaultShader;
+    window.draw(text, states);
     window.display();
 
     Image image = window.readPixels();
     T_COMPARE(image.getWidth() > 0, true);
     T_COMPARE(image.getHeight() > 0, true);
+
+    int max_width = 16;
+    int max_height = 16;
+    std::string actual_ascii = imageToAscii(image, max_width, max_height);
+    std::string expected_ascii = "\
+                \n\
+                \n\
+                \n\
+                \n\
+    ##          \n\
+   .##+         \n\
+   ++++         \n\
+   #..#.        \n\
+  +#  #+        \n\
+  #+  +#        \n\
+ .#.  .#.       \n\
+ +######+       \n\
+ #+    +#       \n\
++#      #+      \n\
+++      ++      \n\
+                \n\
+";
+    T_COMPARE_RAW(actual_ascii, expected_ascii);
 }
 
 std::string TextTestsModule::imageToAscii(const Image& image, int max_width, int max_height) const {

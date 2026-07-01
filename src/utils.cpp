@@ -71,7 +71,7 @@ void blit_bitmap_subpixel(
     for (int row = 0; row < height; row++) {
         const unsigned char* srcRow = src + row * srcPitch;
         unsigned char* dstRow = dst + (y + row) * dstPitch + x * 3;
-        std::memcpy(dstRow, srcRow, width * 3);
+        std::memcpy(dstRow, srcRow, width);
     }
 }
 

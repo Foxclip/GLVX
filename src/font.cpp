@@ -105,7 +105,7 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
         }
     }
 
-    unsigned int loadFlag = useSubpixel ? FT_LOAD_TARGET_LCD : FT_LOAD_RENDER;
+    unsigned int loadFlag = useSubpixel ? (FT_LOAD_TARGET_LCD | FT_LOAD_RENDER) : FT_LOAD_RENDER;
 
     // Pass 1: measure glyphs and compute total area
     int totalArea = 0;
@@ -123,11 +123,11 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
         ch.x = face->glyph->bitmap_left;
         ch.top = face->glyph->bitmap_top;
         ch.advance = advance / 64;
-        ch.width = static_cast<int>(width);
+        ch.width = static_cast<int>(useSubpixel ? width / 3 : width);
         ch.glyph_height = static_cast<int>(height);
 
         if (width > 0 && height > 0 && face->glyph->bitmap.buffer) {
-            totalArea += width * height;
+            totalArea += static_cast<int>(useSubpixel ? width / 3 : width) * height;
         }
     }
 
@@ -157,8 +157,9 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
         );
         int width = static_cast<int>(face->glyph->bitmap.width);
         int height = static_cast<int>(face->glyph->bitmap.rows);
+        int atlasPixelWidth = useSubpixel ? width / 3 : width;
 
-        if (currentX + width > atlasWidth) {
+        if (currentX + atlasPixelWidth > atlasWidth) {
             currentX = 0;
             currentY += rowHeight + 1;
             rowHeight = 0;
@@ -184,9 +185,9 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
 
         Character& ch = characters[c];
         ch.uv_top_left = Vector2f(static_cast<float>(currentX) * invW, static_cast<float>(currentY + height) * invH);
-        ch.uv_bottom_right = Vector2f(static_cast<float>(currentX + width) * invW, static_cast<float>(currentY) * invH);
+        ch.uv_bottom_right = Vector2f(static_cast<float>(currentX + atlasPixelWidth) * invW, static_cast<float>(currentY) * invH);
 
-        currentX += width + 1;
+        currentX += atlasPixelWidth + 1;
     }
 
     GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
