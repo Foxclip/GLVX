@@ -16,6 +16,7 @@ public:
     void textureAlphaTest(test::Test& test);
     void textureColorMultiplyTest(test::Test& test);
     void textureResizeTest(test::Test& test);
+    void textureInterpolationTest(test::Test& test);
 
 private:
 

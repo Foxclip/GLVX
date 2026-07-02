@@ -8,9 +8,9 @@ namespace glvis {
 class Texture : public AbstractTexture {
 public:
     Texture() = default;
-    Texture(int width, int height);
-    Texture(unsigned char* data, int width, int height, int channels = 4);
-    Texture(const std::filesystem::path& path);
+    Texture(int width, int height, InterpolationType interp = InterpolationType::Nearest);
+    Texture(unsigned char* data, int width, int height, int channels = 4, InterpolationType interp = InterpolationType::Nearest);
+    Texture(const std::filesystem::path& path, InterpolationType interp = InterpolationType::Nearest);
     const std::filesystem::path& getPath() const;
 
 private:

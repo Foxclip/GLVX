@@ -41,8 +41,6 @@ int main() {
         return 1;
     }
 
-    // TODO: enable subpixel text rendering
-    // TODO: add RenderTexture test
     // TODO: Textures: add parameters for interpolation
     // TODO: remove path from Texture
     // TODO: use uniform buffer objects
