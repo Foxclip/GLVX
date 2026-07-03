@@ -11,6 +11,7 @@ TextureTestsModule::TextureTestsModule(
     auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_full_alpha_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
     auto texture_resize_up_test = addTest("texture_resize", { texture_full_alpha_test }, [&](test::Test& test) { textureResizeTest(test); });
     auto texture_interpolation_test = addTest("texture_interpolation", { texture_full_alpha_test }, [&](test::Test& test) { textureInterpolationTest(test); });
+    auto texture_rendering_interpolation_test = addTest("texture_rendering_interpolation", { texture_full_alpha_test }, [&](test::Test& test) { textureRenderingInterpolationTest(test); });
 }
 
 void TextureTestsModule::textureTest(test::Test& test) {
@@ -228,4 +229,48 @@ void TextureTestsModule::textureInterpolationTest(test::Test& test) {
     T_COMPARE(imgSwitchBack.getPixel(1, 0), Color(0, 0, 0, 255), &Color::toString);
     T_COMPARE(imgSwitchBack.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
     T_COMPARE(imgSwitchBack.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+}
+
+void TextureTestsModule::textureRenderingInterpolationTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("texture rendering interpolation");
+    auto interpToString = [](InterpolationType t) -> std::string {
+        return t == InterpolationType::Nearest ? "Nearest" : "Linear";
+    };
+
+    unsigned char texture_data[8] = {
+        0, 0, 0, 255,
+        255, 255, 255, 255
+    };
+    Rectangle rect(Vector2f(2, 1));
+    Texture texture(texture_data, 2, 1, 4);
+    rect.setTexture(&texture);
+
+    // draw 2x1 texture without any transformations
+    window.draw(rect);
+    window.display();
+    Image image_orig = window.readPixels();
+    T_COMPARE(image_orig.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_orig.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+
+    // set interpolation to nearest and resize rect
+    texture.setInterpolation(InterpolationType::Nearest);
+    rect.setSize(Vector2f(4, 1));
+    window.draw(rect);
+    window.display();
+    Image image_nearest = window.readPixels();
+    T_COMPARE(image_nearest.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_nearest.getPixel(1, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_nearest.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(image_nearest.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+
+    // set interpolation to linear
+    texture.setInterpolation(InterpolationType::Linear);
+    window.draw(rect);
+    window.display();
+    Image image_linear = window.readPixels();
+    T_COMPARE(image_linear.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_linear.getPixel(1, 0), Color(64, 64, 64, 255), &Color::toString);
+    T_COMPARE(image_linear.getPixel(2, 0), Color(191, 191, 191, 255), &Color::toString);
+    T_COMPARE(image_linear.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
 }

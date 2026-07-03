@@ -41,7 +41,7 @@ int main() {
         return 1;
     }
 
-    // TODO: Textures: add parameters for interpolation
+    // TODO: Tests: Textures: make interpolation test actually render textures on screen and change interpolation
     // TODO: remove path from Texture
     // TODO: use uniform buffer objects
     // TODO: transparent texture rendering
