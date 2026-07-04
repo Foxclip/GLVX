@@ -20,5 +20,6 @@ public:
     void textureRenderingInterpolationTest(test::Test& test);
 
 private:
+    static std::string interpToString(InterpolationType t);
 
 };

@@ -14,6 +14,10 @@ TextureTestsModule::TextureTestsModule(
     auto texture_rendering_interpolation_test = addTest("texture_rendering_interpolation", { texture_full_alpha_test }, [&](test::Test& test) { textureRenderingInterpolationTest(test); });
 }
 
+std::string TextureTestsModule::interpToString(InterpolationType t) {
+    return t == InterpolationType::Nearest ? "Nearest" : "Linear";
+}
+
 void TextureTestsModule::textureTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("texture");
@@ -126,9 +130,6 @@ void TextureTestsModule::textureColorMultiplyTest(test::Test& test) {
 void TextureTestsModule::textureResizeTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("texture resize interpolation");
-    auto interpToString = [](InterpolationType t) -> std::string {
-        return t == InterpolationType::Nearest ? "Nearest" : "Linear";
-    };
 
     // Test resizing up from 2x1 to 3x1 with linear interpolation
     const Vector2i initial_texture_size = Vector2i(2, 1);
@@ -171,9 +172,6 @@ void TextureTestsModule::textureResizeTest(test::Test& test) {
 void TextureTestsModule::textureInterpolationTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("texture interpolation");
-    auto interpToString = [](InterpolationType t) -> std::string {
-        return t == InterpolationType::Nearest ? "Nearest" : "Linear";
-    };
 
     // Test Nearest interpolation: resize 2x1 to 4x1, pixels should not blend
     unsigned char nearest_data[8] = {
@@ -239,10 +237,6 @@ void TextureTestsModule::textureRenderingInterpolationTest(test::Test& test) {
     view.setPosition(window_center);
     window.setView(view);
     window.clear(Color::Black);
-
-    auto interpToString = [](InterpolationType t) -> std::string {
-        return t == InterpolationType::Nearest ? "Nearest" : "Linear";
-    };
 
     unsigned char texture_data[8] = {
         0, 0, 0, 255,
