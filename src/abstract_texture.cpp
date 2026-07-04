@@ -121,6 +121,8 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
     GLenum filter = filterFromInterpolation(interp);
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
     if (channels == 1) {
         if (is_mask) {
             // return (1, 1, 1, R) instead of (R, 0, 0, 1)
