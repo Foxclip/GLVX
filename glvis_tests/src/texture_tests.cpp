@@ -12,10 +12,21 @@ TextureTestsModule::TextureTestsModule(
     auto texture_resize_up_test = addTest("texture_resize", { texture_full_alpha_test }, [&](test::Test& test) { textureResizeTest(test); });
     auto texture_interpolation_test = addTest("texture_interpolation", { texture_full_alpha_test }, [&](test::Test& test) { textureInterpolationTest(test); });
     auto texture_rendering_interpolation_test = addTest("texture_rendering_interpolation", { texture_full_alpha_test }, [&](test::Test& test) { textureRenderingInterpolationTest(test); });
+    auto texture_wrapping_test = addTest("texture_wrapping", { texture_full_alpha_test }, [&](test::Test& test) { textureWrappingTest(test); });
 }
 
 std::string TextureTestsModule::interpToString(InterpolationType t) {
     return t == InterpolationType::Nearest ? "Nearest" : "Linear";
+}
+
+std::string TextureTestsModule::wrapToString(WrappingType t) {
+    switch (t) {
+        case WrappingType::ClampToEdge: return "ClampToEdge";
+        case WrappingType::Repeat: return "Repeat";
+        case WrappingType::MirroredRepeat: return "MirroredRepeat";
+        case WrappingType::ClampToBorder: return "ClampToBorder";
+    }
+    return "Unknown";
 }
 
 void TextureTestsModule::textureTest(test::Test& test) {
@@ -276,4 +287,72 @@ void TextureTestsModule::textureRenderingInterpolationTest(test::Test& test) {
     T_COMPARE(image_linear.getPixel(1, 0), Color(64, 64, 64, 255), &Color::toString);
     T_COMPARE(image_linear.getPixel(2, 0), Color(191, 191, 191, 255), &Color::toString);
     T_COMPARE(image_linear.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+}
+
+void TextureTestsModule::textureWrappingTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("texture wrapping");
+    View view;
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
+    window.setView(view);
+
+    unsigned char texture_data[8] = {
+        0, 0, 0, 255,
+        255, 255, 255, 255
+    };
+    Rectangle rect(Vector2f(4, 1));
+    Texture texture(texture_data, 2, 1, 4);
+
+    // Draw 2x1 texture stretched to 4x1 with ClampToEdge
+    // UV at pixels 2,3 go beyond [0,1], should clamp to edge pixel (white)
+    texture.setWrapping(WrappingType::ClampToEdge);
+    T_COMPARE(texture.getWrapping(), WrappingType::ClampToEdge, wrapToString);
+    rect.setTexture(&texture);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    Image imageClampToEdge = window.readPixels();
+    T_COMPARE(imageClampToEdge.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imageClampToEdge.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imageClampToEdge.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imageClampToEdge.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+
+    // Draw with Repeat: texture repeats, so pixels 2,3 repeat the pattern
+    // Pixel 2 -> texture coord 0 (black), pixel 3 -> texture coord 1 (white)
+    texture.setWrapping(WrappingType::Repeat);
+    T_COMPARE(texture.getWrapping(), WrappingType::Repeat, wrapToString);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    Image imageRepeat = window.readPixels();
+    T_COMPARE(imageRepeat.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imageRepeat.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imageRepeat.getPixel(2, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imageRepeat.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+
+    // Draw with MirroredRepeat: pixels outside [0,1] are mirrored
+    // Pixel 2 -> mirrored to coord 1 (white), pixel 3 -> mirrored to coord 0 (black)
+    texture.setWrapping(WrappingType::MirroredRepeat);
+    T_COMPARE(texture.getWrapping(), WrappingType::MirroredRepeat, wrapToString);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    Image imageMirroredRepeat = window.readPixels();
+    T_COMPARE(imageMirroredRepeat.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imageMirroredRepeat.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imageMirroredRepeat.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imageMirroredRepeat.getPixel(3, 0), Color(0, 0, 0, 255), &Color::toString);
+
+    // Draw with ClampToBorder: pixels outside [0,1] should be border color (black)
+    texture.setWrapping(WrappingType::ClampToBorder);
+    T_COMPARE(texture.getWrapping(), WrappingType::ClampToBorder, wrapToString);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    Image imageClampToBorder = window.readPixels();
+    T_COMPARE(imageClampToBorder.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imageClampToBorder.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imageClampToBorder.getPixel(2, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imageClampToBorder.getPixel(3, 0), Color(0, 0, 0, 255), &Color::toString);
 }
