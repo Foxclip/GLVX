@@ -234,6 +234,12 @@ void TextureTestsModule::textureInterpolationTest(test::Test& test) {
 void TextureTestsModule::textureRenderingInterpolationTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("texture rendering interpolation");
+    View view;
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
+    window.setView(view);
+    window.clear(Color::Black);
+
     auto interpToString = [](InterpolationType t) -> std::string {
         return t == InterpolationType::Nearest ? "Nearest" : "Linear";
     };
@@ -247,6 +253,7 @@ void TextureTestsModule::textureRenderingInterpolationTest(test::Test& test) {
     rect.setTexture(&texture);
 
     // draw 2x1 texture without any transformations
+    window.clear(Color::Black);
     window.draw(rect);
     window.display();
     Image image_orig = window.readPixels();
@@ -256,6 +263,7 @@ void TextureTestsModule::textureRenderingInterpolationTest(test::Test& test) {
     // set interpolation to nearest and resize rect
     texture.setInterpolation(InterpolationType::Nearest);
     rect.setSize(Vector2f(4, 1));
+    window.clear(Color::Black);
     window.draw(rect);
     window.display();
     Image image_nearest = window.readPixels();
@@ -266,6 +274,7 @@ void TextureTestsModule::textureRenderingInterpolationTest(test::Test& test) {
 
     // set interpolation to linear
     texture.setInterpolation(InterpolationType::Linear);
+    window.clear(Color::Black);
     window.draw(rect);
     window.display();
     Image image_linear = window.readPixels();
