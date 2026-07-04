@@ -10,6 +10,29 @@
 
 namespace glvis {
 
+static GLenum filterFromInterpolation(InterpolationType interp) {
+    switch (interp) {
+        case InterpolationType::Nearest: return GL_NEAREST;
+        case InterpolationType::Linear: return GL_LINEAR;
+    }
+    return GL_NEAREST;
+}
+
+void AbstractTexture::setInterpolation(InterpolationType type) {
+    this->interpolation = type;
+    if (ID != 0) {
+        GLenum filter = filterFromInterpolation(type);
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter));
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+    }
+}
+
+InterpolationType AbstractTexture::getInterpolation() const {
+    return interpolation;
+}
+
 void AbstractTexture::create(int width, int height, unsigned char* data, int channels, bool is_mask) {
     createTexture(width, height, data, channels, is_mask);
 }
@@ -50,7 +73,7 @@ Image AbstractTexture::readPixels() const {
 }
 
 void AbstractTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
-    resizeTexture(newWidth, newHeight, blitOldContents);
+    resizeTexture(newWidth, newHeight, blitOldContents, this->interpolation);
 }
 
 AbstractTexture::~AbstractTexture() {
@@ -62,7 +85,7 @@ AbstractTexture::~AbstractTexture() {
     GL_CALL(glDeleteTextures(1, &ID));
 }
 
-void AbstractTexture::createTexture(int width, int height, unsigned char* data, int channels, bool is_mask) {
+void AbstractTexture::createTexture(int width, int height, unsigned char* data, int channels, bool is_mask, InterpolationType interp) {
     START_TRY
     assert(glfwGetCurrentContext() != nullptr);
     assert(width > 0);
@@ -95,8 +118,11 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
         default: throw std::runtime_error("Invalid number of channels: " + std::to_string(channels));
     }
     GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+    GLenum filter = filterFromInterpolation(interp);
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
     if (channels == 1) {
         if (is_mask) {
             // return (1, 1, 1, R) instead of (R, 0, 0, 1)
@@ -113,10 +139,11 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     this->width = width;
     this->height = height;
+    this->interpolation = interp;
     END_TRY
 }
 
-void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldContents) {
+void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldContents, InterpolationType interp) {
     assert(ID != 0);
     assert(glfwGetCurrentContext() != nullptr);
     assert(GL_CALL(glIsTexture(ID)));
@@ -131,8 +158,9 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldCon
     GL_CALL(glGenTextures(1, &newTextureID));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, newTextureID));
     GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GLenum filter = filterFromInterpolation(interp);
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
     if (blitOldContents) {
@@ -147,7 +175,8 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldCon
         GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFBO));
         GL_CALL(glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newTextureID, 0));
 
-        GL_CALL(glBlitFramebuffer(0, 0, width, height, 0, 0, newWidth, newHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR));
+        GLenum blitFilter = filterFromInterpolation(interp);
+        GL_CALL(glBlitFramebuffer(0, 0, width, height, 0, 0, newWidth, newHeight, GL_COLOR_BUFFER_BIT, blitFilter));
 
         GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
         GL_CALL(glDeleteFramebuffers(1, &srcFBO));

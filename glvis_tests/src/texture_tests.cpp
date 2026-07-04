@@ -10,6 +10,12 @@ TextureTestsModule::TextureTestsModule(
     auto texture_alpha_test = addTest("texture_alpha", [&](test::Test& test) { textureAlphaTest(test); });
     auto texture_color_multiply_test = addTest("texture_color_multiply", { texture_full_alpha_test }, [&](test::Test& test) { textureColorMultiplyTest(test); });
     auto texture_resize_up_test = addTest("texture_resize", { texture_full_alpha_test }, [&](test::Test& test) { textureResizeTest(test); });
+    auto texture_interpolation_test = addTest("texture_interpolation", { texture_full_alpha_test }, [&](test::Test& test) { textureInterpolationTest(test); });
+    auto texture_rendering_interpolation_test = addTest("texture_rendering_interpolation", { texture_full_alpha_test }, [&](test::Test& test) { textureRenderingInterpolationTest(test); });
+}
+
+std::string TextureTestsModule::interpToString(InterpolationType t) {
+    return t == InterpolationType::Nearest ? "Nearest" : "Linear";
 }
 
 void TextureTestsModule::textureTest(test::Test& test) {
@@ -125,15 +131,16 @@ void TextureTestsModule::textureResizeTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("texture resize interpolation");
 
-    // Test resizing up from 2x1 to 3x1
+    // Test resizing up from 2x1 to 3x1 with linear interpolation
     const Vector2i initial_texture_size = Vector2i(2, 1);
     unsigned char texture_data[8] = {
         0, 0, 0, 0,
         255, 255, 255, 255
     };
-    Texture tex(texture_data, initial_texture_size.x, initial_texture_size.y);
+    Texture tex(texture_data, initial_texture_size.x, initial_texture_size.y, 4, InterpolationType::Linear);
     T_COMPARE(tex.getWidth(), initial_texture_size.x);
     T_COMPARE(tex.getHeight(), initial_texture_size.y);
+    T_COMPARE(tex.getInterpolation(), InterpolationType::Linear, interpToString);
     const Vector2i resized_texture_size = Vector2i(3, 1);
     tex.resize(resized_texture_size.x, resized_texture_size.y);
     T_COMPARE(tex.getWidth(), resized_texture_size.x);
@@ -145,14 +152,14 @@ void TextureTestsModule::textureResizeTest(test::Test& test) {
     T_COMPARE(img.getPixel(1, 0), Color(127, 127, 127, 127), &Color::toString);
     T_COMPARE(img.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
 
-    // Test resizing down from 3x1 to 2x1
+    // Test resizing down from 3x1 to 2x1 with linear interpolation
     const Vector2i down_initial_size = Vector2i(3, 1);
     unsigned char data_down[12] = {
         0, 0, 0, 0,
         127, 127, 127, 127,
         255, 255, 255, 255
     };
-    Texture tex_down(data_down, down_initial_size.x, down_initial_size.y);
+    Texture tex_down(data_down, down_initial_size.x, down_initial_size.y, 4, InterpolationType::Linear);
     const Vector2i down_resized_size = Vector2i(2, 1);
     tex_down.resize(down_resized_size.x, down_resized_size.y);
 
@@ -160,4 +167,113 @@ void TextureTestsModule::textureResizeTest(test::Test& test) {
     Image img_down = tex_down.readPixels();
     T_COMPARE(img_down.getPixel(0, 0), Color(32, 32, 32, 32), &Color::toString);
     T_COMPARE(img_down.getPixel(1, 0), Color(223, 223, 223, 223), &Color::toString);
+}
+
+void TextureTestsModule::textureInterpolationTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("texture interpolation");
+
+    // Test Nearest interpolation: resize 2x1 to 4x1, pixels should not blend
+    unsigned char nearest_data[8] = {
+        0, 0, 0, 255,
+        255, 255, 255, 255
+    };
+    Texture texNearest(nearest_data, 2, 1, 4, InterpolationType::Nearest);
+    T_COMPARE(texNearest.getInterpolation(), InterpolationType::Nearest, interpToString);
+    texNearest.resize(4, 1);
+    Image imgNearest = texNearest.readPixels();
+    T_COMPARE(imgNearest.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imgNearest.getPixel(1, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imgNearest.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imgNearest.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+
+    // Test Linear interpolation: same resize should produce blended pixels
+    Texture texLinear(nearest_data, 2, 1, 4, InterpolationType::Linear);
+    T_COMPARE(texLinear.getInterpolation(), InterpolationType::Linear, interpToString);
+    texLinear.resize(4, 1);
+    Image imgLinear = texLinear.readPixels();
+    T_COMPARE(imgLinear.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imgLinear.getPixel(1, 0), Color(64, 64, 64, 255), &Color::toString);
+    T_COMPARE(imgLinear.getPixel(2, 0), Color(191, 191, 191, 255), &Color::toString);
+    T_COMPARE(imgLinear.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+
+    // Test runtime setInterpolation
+    unsigned char switch_data[8] = {
+        0, 0, 0, 255,
+        255, 255, 255, 255
+    };
+    Texture texSwitch(switch_data, 2, 1, 4, InterpolationType::Nearest);
+    T_COMPARE(texSwitch.getInterpolation(), InterpolationType::Nearest, interpToString);
+    texSwitch.setInterpolation(InterpolationType::Linear);
+    T_COMPARE(texSwitch.getInterpolation(), InterpolationType::Linear, interpToString);
+    texSwitch.resize(4, 1);
+    Image imgSwitch = texSwitch.readPixels();
+    T_COMPARE(imgSwitch.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imgSwitch.getPixel(1, 0), Color(64, 64, 64, 255), &Color::toString);
+    T_COMPARE(imgSwitch.getPixel(2, 0), Color(191, 191, 191, 255), &Color::toString);
+    T_COMPARE(imgSwitch.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+
+    // Switch back to Nearest and verify
+    unsigned char switch_back_data[8] = {
+        0, 0, 0, 255,
+        255, 255, 255, 255
+    };
+    Texture texSwitchBack(switch_back_data, 2, 1, 4, InterpolationType::Linear);
+    texSwitchBack.setInterpolation(InterpolationType::Nearest);
+    T_COMPARE(texSwitchBack.getInterpolation(), InterpolationType::Nearest, interpToString);
+    texSwitchBack.resize(4, 1);
+    Image imgSwitchBack = texSwitchBack.readPixels();
+    T_COMPARE(imgSwitchBack.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imgSwitchBack.getPixel(1, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imgSwitchBack.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imgSwitchBack.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+}
+
+void TextureTestsModule::textureRenderingInterpolationTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("texture rendering interpolation");
+    View view;
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
+    window.setView(view);
+    window.clear(Color::Black);
+
+    unsigned char texture_data[8] = {
+        0, 0, 0, 255,
+        255, 255, 255, 255
+    };
+    Rectangle rect(Vector2f(2, 1));
+    Texture texture(texture_data, 2, 1, 4);
+    rect.setTexture(&texture);
+
+    // draw 2x1 texture without any transformations
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    Image image_orig = window.readPixels();
+    T_COMPARE(image_orig.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_orig.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+
+    // set interpolation to nearest and resize rect
+    texture.setInterpolation(InterpolationType::Nearest);
+    rect.setSize(Vector2f(4, 1));
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    Image image_nearest = window.readPixels();
+    T_COMPARE(image_nearest.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_nearest.getPixel(1, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_nearest.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(image_nearest.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+
+    // set interpolation to linear
+    texture.setInterpolation(InterpolationType::Linear);
+    window.clear(Color::Black);
+    window.draw(rect);
+    window.display();
+    Image image_linear = window.readPixels();
+    T_COMPARE(image_linear.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_linear.getPixel(1, 0), Color(64, 64, 64, 255), &Color::toString);
+    T_COMPARE(image_linear.getPixel(2, 0), Color(191, 191, 191, 255), &Color::toString);
+    T_COMPARE(image_linear.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
 }
