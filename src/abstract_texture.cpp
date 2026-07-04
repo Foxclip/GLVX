@@ -18,6 +18,16 @@ static GLenum filterFromInterpolation(InterpolationType interp) {
     return GL_NEAREST;
 }
 
+static GLenum wrapFromWrapping(WrappingType wrap) {
+    switch (wrap) {
+        case WrappingType::ClampToEdge: return GL_CLAMP_TO_EDGE;
+        case WrappingType::Repeat: return GL_REPEAT;
+        case WrappingType::MirroredRepeat: return GL_MIRRORED_REPEAT;
+        case WrappingType::ClampToBorder: return GL_CLAMP_TO_BORDER;
+    }
+    return GL_CLAMP_TO_EDGE;
+}
+
 void AbstractTexture::setInterpolation(InterpolationType type) {
     this->interpolation = type;
     if (ID != 0) {
@@ -31,6 +41,21 @@ void AbstractTexture::setInterpolation(InterpolationType type) {
 
 InterpolationType AbstractTexture::getInterpolation() const {
     return interpolation;
+}
+
+void AbstractTexture::setWrapping(WrappingType type) {
+    this->wrapping = type;
+    if (ID != 0) {
+        GLenum wrap = wrapFromWrapping(type);
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap));
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+    }
+}
+
+WrappingType AbstractTexture::getWrapping() const {
+    return wrapping;
 }
 
 void AbstractTexture::create(int width, int height, unsigned char* data, int channels, bool is_mask) {
@@ -73,7 +98,7 @@ Image AbstractTexture::readPixels() const {
 }
 
 void AbstractTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
-    resizeTexture(newWidth, newHeight, blitOldContents, this->interpolation);
+    resizeTexture(newWidth, newHeight, blitOldContents, this->interpolation, this->wrapping);
 }
 
 AbstractTexture::~AbstractTexture() {
@@ -85,7 +110,7 @@ AbstractTexture::~AbstractTexture() {
     GL_CALL(glDeleteTextures(1, &ID));
 }
 
-void AbstractTexture::createTexture(int width, int height, unsigned char* data, int channels, bool is_mask, InterpolationType interp) {
+void AbstractTexture::createTexture(int width, int height, unsigned char* data, int channels, bool is_mask, InterpolationType interp, WrappingType wrap) {
     START_TRY
     assert(glfwGetCurrentContext() != nullptr);
     assert(width > 0);
@@ -121,8 +146,9 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
     GLenum filter = filterFromInterpolation(interp);
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    GLenum wrapMode = wrapFromWrapping(wrap);
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
     if (channels == 1) {
         if (is_mask) {
             // return (1, 1, 1, R) instead of (R, 0, 0, 1)
@@ -140,10 +166,11 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
     this->width = width;
     this->height = height;
     this->interpolation = interp;
+    this->wrapping = wrap;
     END_TRY
 }
 
-void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldContents, InterpolationType interp) {
+void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldContents, InterpolationType interp, WrappingType wrap) {
     assert(ID != 0);
     assert(glfwGetCurrentContext() != nullptr);
     assert(GL_CALL(glIsTexture(ID)));
@@ -161,6 +188,9 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldCon
     GLenum filter = filterFromInterpolation(interp);
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter));
+    GLenum wrapMode = wrapFromWrapping(wrap);
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
     if (blitOldContents) {

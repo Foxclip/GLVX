@@ -25,7 +25,7 @@ void RenderTexture::create(int width, int height) {
     }
 
     // Create texture first (while FBO is not bound)
-    AbstractTexture::createTexture(width, height, nullptr, 4, false, interpolation);
+    AbstractTexture::createTexture(width, height, nullptr, 4, false, interpolation, wrapping);
 
     // Then attach to FBO
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, FBO));
@@ -41,7 +41,7 @@ void RenderTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
 
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, FBO));
     GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
-    resizeTexture(newWidth, newHeight, blitOldContents, interpolation);
+    resizeTexture(newWidth, newHeight, blitOldContents, interpolation, wrapping);
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, FBO));
     GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0));
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
