@@ -31,13 +31,8 @@ Texture::Texture(const std::filesystem::path& path, InterpolationType interp) {
     if (!data) {
         throw std::runtime_error("Failed to load texture: " + path.string());
     }
-    this->path = path;
     createTexture(width, height, data.get(), 4, false, interp);
     END_TRY
-}
-
-const std::filesystem::path& Texture::getPath() const {
-    return path;
 }
 
 }
