@@ -1,5 +1,6 @@
 #include "glvis_tests/texture_tests.h"
 #include "glvis/texture.h"
+#include "glvis/vertex_array.h"
 
 TextureTestsModule::TextureTestsModule(
     const std::string& name,
@@ -301,16 +302,22 @@ void TextureTestsModule::textureWrappingTest(test::Test& test) {
         0, 0, 0, 255,
         255, 255, 255, 255
     };
-    Rectangle rect(Vector2f(4, 1));
     Texture texture(texture_data, 2, 1, 4);
 
-    // Draw 2x1 texture stretched to 4x1 with ClampToEdge
-    // UV at pixels 2,3 go beyond [0,1], should clamp to edge pixel (white)
+    // VertexArray with UVs stretched to [0, 2] so wrapping modes take effect
+    VertexArray va(PrimitiveType::TriangleStrip, 4);
+    va[0].position = Vector2f(-2, -0.5f); va[0].texCoords = Vector2f(0, 0);
+    va[1].position = Vector2f( 2, -0.5f); va[1].texCoords = Vector2f(2, 0);
+    va[2].position = Vector2f(-2,  0.5f); va[2].texCoords = Vector2f(0, 1);
+    va[3].position = Vector2f( 2,  0.5f); va[3].texCoords = Vector2f(2, 1);
+    va[0].color = va[1].color = va[2].color = va[3].color = Color::White;
+    va.setTexture(&texture);
+
+    // ClampToEdge: UV beyond [0,1] clamps to edge (white)
     texture.setWrapping(WrappingType::ClampToEdge);
     T_COMPARE(texture.getWrapping(), WrappingType::ClampToEdge, wrapToString);
-    rect.setTexture(&texture);
     window.clear(Color::Black);
-    window.draw(rect);
+    window.draw(va);
     window.display();
     Image imageClampToEdge = window.readPixels();
     T_COMPARE(imageClampToEdge.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
@@ -318,12 +325,11 @@ void TextureTestsModule::textureWrappingTest(test::Test& test) {
     T_COMPARE(imageClampToEdge.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
     T_COMPARE(imageClampToEdge.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
 
-    // Draw with Repeat: texture repeats, so pixels 2,3 repeat the pattern
-    // Pixel 2 -> texture coord 0 (black), pixel 3 -> texture coord 1 (white)
+    // Repeat: UV beyond [0,1] repeats the pattern
     texture.setWrapping(WrappingType::Repeat);
     T_COMPARE(texture.getWrapping(), WrappingType::Repeat, wrapToString);
     window.clear(Color::Black);
-    window.draw(rect);
+    window.draw(va);
     window.display();
     Image imageRepeat = window.readPixels();
     T_COMPARE(imageRepeat.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
@@ -331,12 +337,11 @@ void TextureTestsModule::textureWrappingTest(test::Test& test) {
     T_COMPARE(imageRepeat.getPixel(2, 0), Color(0, 0, 0, 255), &Color::toString);
     T_COMPARE(imageRepeat.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
 
-    // Draw with MirroredRepeat: pixels outside [0,1] are mirrored
-    // Pixel 2 -> mirrored to coord 1 (white), pixel 3 -> mirrored to coord 0 (black)
+    // MirroredRepeat: UV beyond [0,1] mirrors the pattern
     texture.setWrapping(WrappingType::MirroredRepeat);
     T_COMPARE(texture.getWrapping(), WrappingType::MirroredRepeat, wrapToString);
     window.clear(Color::Black);
-    window.draw(rect);
+    window.draw(va);
     window.display();
     Image imageMirroredRepeat = window.readPixels();
     T_COMPARE(imageMirroredRepeat.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
@@ -344,11 +349,11 @@ void TextureTestsModule::textureWrappingTest(test::Test& test) {
     T_COMPARE(imageMirroredRepeat.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
     T_COMPARE(imageMirroredRepeat.getPixel(3, 0), Color(0, 0, 0, 255), &Color::toString);
 
-    // Draw with ClampToBorder: pixels outside [0,1] should be border color (black)
+    // ClampToBorder: UV beyond [0,1] uses border color (black)
     texture.setWrapping(WrappingType::ClampToBorder);
     T_COMPARE(texture.getWrapping(), WrappingType::ClampToBorder, wrapToString);
     window.clear(Color::Black);
-    window.draw(rect);
+    window.draw(va);
     window.display();
     Image imageClampToBorder = window.readPixels();
     T_COMPARE(imageClampToBorder.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
