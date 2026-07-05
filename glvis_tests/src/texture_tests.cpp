@@ -1,5 +1,6 @@
 #include "glvis_tests/texture_tests.h"
 #include "glvis/texture.h"
+#include "glvis/vertex_array.h"
 
 TextureTestsModule::TextureTestsModule(
     const std::string& name,
@@ -12,10 +13,21 @@ TextureTestsModule::TextureTestsModule(
     auto texture_resize_up_test = addTest("texture_resize", { texture_full_alpha_test }, [&](test::Test& test) { textureResizeTest(test); });
     auto texture_interpolation_test = addTest("texture_interpolation", { texture_full_alpha_test }, [&](test::Test& test) { textureInterpolationTest(test); });
     auto texture_rendering_interpolation_test = addTest("texture_rendering_interpolation", { texture_full_alpha_test }, [&](test::Test& test) { textureRenderingInterpolationTest(test); });
+    auto texture_wrapping_test = addTest("texture_wrapping", { texture_full_alpha_test }, [&](test::Test& test) { textureWrappingTest(test); });
 }
 
 std::string TextureTestsModule::interpToString(InterpolationType t) {
     return t == InterpolationType::Nearest ? "Nearest" : "Linear";
+}
+
+std::string TextureTestsModule::wrapToString(WrappingType t) {
+    switch (t) {
+        case WrappingType::ClampToEdge: return "ClampToEdge";
+        case WrappingType::Repeat: return "Repeat";
+        case WrappingType::MirroredRepeat: return "MirroredRepeat";
+        case WrappingType::ClampToBorder: return "ClampToBorder";
+    }
+    return "Unknown";
 }
 
 void TextureTestsModule::textureTest(test::Test& test) {
@@ -276,4 +288,75 @@ void TextureTestsModule::textureRenderingInterpolationTest(test::Test& test) {
     T_COMPARE(image_linear.getPixel(1, 0), Color(64, 64, 64, 255), &Color::toString);
     T_COMPARE(image_linear.getPixel(2, 0), Color(191, 191, 191, 255), &Color::toString);
     T_COMPARE(image_linear.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+}
+
+void TextureTestsModule::textureWrappingTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("texture wrapping");
+    View view;
+    Vector2f window_center = window.getCenter();
+    view.setPosition(window_center);
+    window.setView(view);
+
+    unsigned char texture_data[8] = {
+        0, 0, 0, 255,
+        255, 255, 255, 255
+    };
+    Texture texture(texture_data, 2, 1, 4);
+
+    VertexArray va(PrimitiveType::TriangleStrip, 4);
+    va[0].position = Vector2f(0.0f, 0.0f); va[0].texCoords = Vector2f(0, 0);
+    va[1].position = Vector2f(4.0f, 0.0f); va[1].texCoords = Vector2f(2, 0);
+    va[2].position = Vector2f(0.0f, 1.0f); va[2].texCoords = Vector2f(0, 1);
+    va[3].position = Vector2f(4.0f, 1.0f); va[3].texCoords = Vector2f(2, 1);
+    va[0].color = va[1].color = va[2].color = va[3].color = Color::White;
+    va.setTexture(&texture);
+
+    // ClampToEdge: UV beyond [0,1] clamps to edge (white)
+    texture.setWrapping(WrappingType::ClampToEdge);
+    T_COMPARE(texture.getWrapping(), WrappingType::ClampToEdge, wrapToString);
+    window.clear(Color::Black);
+    window.draw(va);
+    window.display();
+    Image imageClampToEdge = window.readPixels();
+    T_COMPARE(imageClampToEdge.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imageClampToEdge.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imageClampToEdge.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imageClampToEdge.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+
+    // Repeat: UV beyond [0,1] repeats the pattern
+    texture.setWrapping(WrappingType::Repeat);
+    T_COMPARE(texture.getWrapping(), WrappingType::Repeat, wrapToString);
+    window.clear(Color::Black);
+    window.draw(va);
+    window.display();
+    Image imageRepeat = window.readPixels();
+    T_COMPARE(imageRepeat.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imageRepeat.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imageRepeat.getPixel(2, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imageRepeat.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+
+    // MirroredRepeat: UV beyond [0,1] mirrors the pattern
+    texture.setWrapping(WrappingType::MirroredRepeat);
+    T_COMPARE(texture.getWrapping(), WrappingType::MirroredRepeat, wrapToString);
+    window.clear(Color::Black);
+    window.draw(va);
+    window.display();
+    Image imageMirroredRepeat = window.readPixels();
+    T_COMPARE(imageMirroredRepeat.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imageMirroredRepeat.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imageMirroredRepeat.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imageMirroredRepeat.getPixel(3, 0), Color(0, 0, 0, 255), &Color::toString);
+
+    // ClampToBorder: UV beyond [0,1] uses border color (black)
+    texture.setWrapping(WrappingType::ClampToBorder);
+    T_COMPARE(texture.getWrapping(), WrappingType::ClampToBorder, wrapToString);
+    window.clear(Color::Black);
+    window.draw(va);
+    window.display();
+    Image imageClampToBorder = window.readPixels();
+    T_COMPARE(imageClampToBorder.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imageClampToBorder.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(imageClampToBorder.getPixel(2, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(imageClampToBorder.getPixel(3, 0), Color(0, 0, 0, 255), &Color::toString);
 }

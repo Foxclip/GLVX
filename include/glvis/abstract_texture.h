@@ -9,6 +9,13 @@ enum class InterpolationType {
     Linear
 };
 
+enum class WrappingType {
+    ClampToEdge,
+    Repeat,
+    MirroredRepeat,
+    ClampToBorder
+};
+
 class AbstractTexture {
 public:
     void create(
@@ -19,6 +26,8 @@ public:
     int getHeight() const;
     void setInterpolation(InterpolationType type);
     InterpolationType getInterpolation() const;
+    void setWrapping(WrappingType type);
+    WrappingType getWrapping() const;
     void bind() const;
     void unbind() const;
     Image readPixels() const;
@@ -30,11 +39,13 @@ protected:
     int width = 0;
     int height = 0;
     InterpolationType interpolation = InterpolationType::Nearest;
+    WrappingType wrapping = WrappingType::ClampToEdge;
     void createTexture(
         int width, int height, unsigned char* data = nullptr, int channels = 4, bool is_mask = false,
-        InterpolationType interp = InterpolationType::Nearest
+        InterpolationType interp = InterpolationType::Nearest,
+        WrappingType wrap = WrappingType::ClampToEdge
     );
-    void resizeTexture(int newWidth, int newHeight, bool blitOldContents, InterpolationType interp);
+    void resizeTexture(int newWidth, int newHeight, bool blitOldContents, InterpolationType interp, WrappingType wrap);
 
 };
 
