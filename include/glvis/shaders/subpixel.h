@@ -5,7 +5,6 @@ namespace shaders {
 
 inline const char* subpixel_vert = R"(
 #version 330 core
-#extension GL_ARB_shading_language_420pack : enable
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec4 aColor;
 layout (location = 2) in vec2 aTexCoords;
@@ -15,16 +14,15 @@ out vec4 VertexColor;
 out vec4 UBOColor;
 out float UBOHasTexture;
 
-layout(std140, binding = 0) uniform Camera {
+uniform Camera {
     mat4 view;
     mat4 projection;
 };
 
-layout(std140, binding = 1) uniform PerObject {
+uniform PerObject {
     mat4 model;
     vec4 color;
     bool hasTexture;
-    int _padding;
 };
 
 void main() {

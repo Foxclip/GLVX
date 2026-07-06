@@ -127,8 +127,6 @@ void Window::draw(const Drawable& drawable, const RenderStates& states) const {
     GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
     GL_CALL(glEnable(GL_BLEND));
     GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-    uniformBufferUptr->updateCamera(view, projection);
-    uniformBufferUptr->bindCamera();
     drawable.render(view, projection, states);
     GL_CALL(glDisable(GL_BLEND));
 }

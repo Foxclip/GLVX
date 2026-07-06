@@ -73,6 +73,16 @@ void Shader::linkProgram(unsigned int vertexShader, unsigned int fragmentShader)
         GL_CALL(glGetProgramInfoLog(ID, length, NULL, infoLog.data()));
         throw std::format("Linking failed\n{}", std::string(infoLog.data()));
     }
+    if (useUBO) {
+        GLint camIdx = GL_CALL(glGetUniformBlockIndex(ID, "Camera"));
+        if (camIdx >= 0) {
+            GL_CALL(glUniformBlockBinding(ID, camIdx, 0));
+        }
+        GLint poIdx = GL_CALL(glGetUniformBlockIndex(ID, "PerObject"));
+        if (poIdx >= 0) {
+            GL_CALL(glUniformBlockBinding(ID, poIdx, 1));
+        }
+    }
     GL_CALL(glDeleteShader(vertexShader));
     GL_CALL(glDeleteShader(fragmentShader));
     END_TRY
