@@ -124,6 +124,8 @@ void Text::render(const Matrix4& view, const Matrix4& projection, const RenderSt
 }
 
 std::vector<std::string> Text::breakLines() const {
+    assert(font);
+
     std::vector<std::string> result;
 
     size_t start = 0;
@@ -183,6 +185,11 @@ std::vector<std::string> Text::breakLines() const {
 }
 
 float Text::measureWidth(const std::string& text) const {
+    assert(font);
+    if (text.empty()) {
+        return 0.0f;
+    }
+
     float width = 0.0f;
 
     for (size_t i = 0; i < text.size(); i++) {
