@@ -39,34 +39,34 @@ void TextTestsModule::dimensionsTest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    Font font("fonts/LiberationSans-Regular.ttf");
+    Font font("fonts/LiberationSans-Regular.ttf", 15);
     Text text(&font, "A");
-    T_COMPARE(text.getWidth(), 20.0f);
-    T_COMPARE(text.getHeight(), 21.0f);
+    T_COMPARE(text.getWidth(), 10.0f);
+    T_COMPARE(text.getHeight(), 11.0f);
 
     text.setString("AA");
-    T_COMPARE(text.getWidth(), 40.0f);
-    T_COMPARE(text.getHeight(), 21.0f);
+    T_COMPARE(text.getWidth(), 20.0f);
+    T_COMPARE(text.getHeight(), 11.0f);
 
     text.setString(".");
-    T_COMPARE(text.getWidth(), 4.0f);
-    T_COMPARE(text.getHeight(), 3.0f);
+    T_COMPARE(text.getWidth(), 2.0f);
+    T_COMPARE(text.getHeight(), 2.0f);
 
     text.setString(" ");
-    T_COMPARE(text.getWidth(), 8.0f);
+    T_COMPARE(text.getWidth(), 4.0f);
     T_COMPARE(text.getHeight(), 0.0f);
 
     text.setString("A ");
-    T_COMPARE(text.getWidth(), 28.0f);
-    T_COMPARE(text.getHeight(), 21.0f);
+    T_COMPARE(text.getWidth(), 14.0f);
+    T_COMPARE(text.getHeight(), 11.0f);
 
     text.setString("A A");
-    T_COMPARE(text.getWidth(), 46.0f);
-    T_COMPARE(text.getHeight(), 21.0f);
+    T_COMPARE(text.getWidth(), 24.0f);
+    T_COMPARE(text.getHeight(), 11.0f);
 
     text.setString("Q");
-    T_COMPARE(text.getWidth(), 21.0f);
-    T_COMPARE(text.getHeight(), 27.0f);
+    T_COMPARE(text.getWidth(), 11.0f);
+    T_COMPARE(text.getHeight(), 14.0f);
 }
 
 void TextTestsModule::renderCharacterATest(test::Test& test) {
@@ -363,18 +363,18 @@ void TextTestsModule::multilineDimensionsTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("multiline dimensions");
 
-    Font font("fonts/LiberationSans-Regular.ttf");
+    Font font("fonts/LiberationSans-Regular.ttf", 15);
     Text text(&font, "A\nB");
-    T_COMPARE(text.getWidth(), 20.0f);
-    T_COMPARE(text.getHeight(), 56.0f);
+    T_COMPARE(text.getWidth(), 10.0f);
+    T_COMPARE(text.getHeight(), 28.0f);
 
     text.setString("AB\nC");
-    T_COMPARE(text.getWidth(), 39.0f);
-    T_COMPARE(text.getHeight(), 56.0f);
+    T_COMPARE(text.getWidth(), 20.0f);
+    T_COMPARE(text.getHeight(), 28.0f);
 
     text.setString("A\nB\nC");
-    T_COMPARE(text.getWidth(), 21.0f);
-    T_COMPARE(text.getHeight(), 91.0f);
+    T_COMPARE(text.getWidth(), 11.0f);
+    T_COMPARE(text.getHeight(), 45.0f);
 }
 
 void TextTestsModule::multilineTest(test::Test& test) {
