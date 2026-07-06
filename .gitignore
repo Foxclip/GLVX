@@ -1,3 +1,4 @@
-.kilo
+.kilo/*
+!.kilo/rules/
 build/
 tmp/
