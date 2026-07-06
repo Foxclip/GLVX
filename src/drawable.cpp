@@ -36,10 +36,6 @@ void Drawable::setTexture(AbstractTexture* texture) {
     this->texture = texture;
 }
 
-Shader* Drawable::getDefaultShader() const {
-    return nullptr;
-}
-
 void Drawable::renderBase(
     Shader* shader,
     const AbstractTexture* texture,
@@ -51,7 +47,7 @@ void Drawable::renderBase(
 ) const {
     const VertexBuffer& vertexBuffer = getVertexBuffer();
     if (vertexBuffer.getVertexCount() == 0) return;
-    Shader* renderShader = states.shader ? states.shader : (shader ? shader : getDefaultShader());
+    Shader* renderShader = states.shader ? states.shader : shader;
     assert(renderShader);
     const AbstractTexture* renderTexture = states.texture ? states.texture : texture;
     Matrix4 combinedModel = states.transform * getModelMatrix();

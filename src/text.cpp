@@ -25,7 +25,13 @@ Font* Text::getFont() const {
 void Text::setFont(Font* font) {
     this->font = font;
     vertex_buffer = VertexBuffer();
-    setTexture(font ? const_cast<Texture*>(&font->getAtlas()) : nullptr);
+    if (font) {
+        setTexture(const_cast<Texture*>(&font->getAtlas()));
+        setShader(font->isSubpixel() ? common::subpixelShader : common::defaultShader);
+    } else {
+        setTexture(nullptr);
+        setShader(nullptr);
+    }
 }
 
 const std::string& Text::getString() const {
@@ -44,14 +50,14 @@ void Text::setMaxWidth(float max_width) {
 void Text::setString(const std::string& string) {
     this->string = string;
 
-    text_bounds = calculateVisualBounds();
-    Vector2f text_size = text_bounds.size;
-    setSize(text_size);
-
     if (string.empty()) {
         vertex_buffer = VertexBuffer();
         return;
     }
+
+    text_bounds = calculateVisualBounds();
+    Vector2f text_size = text_bounds.size;
+    setSize(text_size);
 
     std::vector<std::string> lines = breakLines();
 
@@ -106,10 +112,6 @@ void Text::setString(const std::string& string) {
 
 const VertexBuffer& Text::getVertexBuffer() const {
     return vertex_buffer;
-}
-
-Shader* Text::getDefaultShader() const {
-    return font->isSubpixel() ? common::subpixelShader : common::defaultShader;
 }
 
 std::vector<std::string> Text::breakLines() const {

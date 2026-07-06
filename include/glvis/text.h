@@ -21,8 +21,6 @@ public:
     float getMaxWidth() const;
     void setMaxWidth(float max_width);
     const VertexBuffer& getVertexBuffer() const override;
-    Shader* getDefaultShader() const override;
-
 private:
     Font* font = nullptr;
     std::string string;

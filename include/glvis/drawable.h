@@ -22,7 +22,6 @@ public:
     void setShader(Shader* shader);
     AbstractTexture* getTexture() const;
     void setTexture(AbstractTexture* texture);
-    virtual Shader* getDefaultShader() const;
     virtual void render(
         const Matrix4& view,
         const Matrix4& projection,
