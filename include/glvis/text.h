@@ -5,6 +5,8 @@
 #include "glvis/vertex_buffer.h"
 #include "glvis/vector.h"
 #include "glvis/rect.h"
+#include <string>
+#include <vector>
 
 namespace glvis {
 
@@ -16,6 +18,8 @@ public:
     void setFont(Font* font);
     const std::string& getString() const;
     void setString(const std::string& string);
+    float getMaxWidth() const;
+    void setMaxWidth(float max_width);
     void render(
         const Matrix4& view,
         const Matrix4& projection,
@@ -25,9 +29,12 @@ public:
 private:
     Font* font = nullptr;
     std::string string;
+    float max_width = 0.0f;
     VertexBuffer vertex_buffer;
     Rect text_bounds;
 
+    std::vector<std::string> breakLines() const;
+    float measureWidth(const std::string& text) const;
     Rect calculateVisualBounds() const;
 
 };
