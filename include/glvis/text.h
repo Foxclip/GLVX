@@ -25,6 +25,8 @@ public:
         const Matrix4& projection,
         const RenderStates& states = RenderStates()
     ) const override;
+    const VertexBuffer& getVertexBuffer() const override;
+    Shader* getDefaultShader() const override;
 
 private:
     Font* font = nullptr;

@@ -22,6 +22,7 @@ public:
     void setShader(Shader* shader);
     AbstractTexture* getTexture() const;
     void setTexture(AbstractTexture* texture);
+    virtual Shader* getDefaultShader() const;
     virtual void render(
         const Matrix4& view,
         const Matrix4& projection,
@@ -35,7 +36,7 @@ protected:
 
     void renderBase(
         Shader* shader,
-        AbstractTexture* texture,
+        const AbstractTexture* texture,
         const Color& color,
         const Matrix4& model,
         const Matrix4& view,

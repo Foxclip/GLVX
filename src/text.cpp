@@ -104,23 +104,15 @@ void Text::setString(const std::string& string) {
 }
 
 void Text::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
-    if (string.empty()) return;
+    renderBase(getShader(), &font->getAtlas(), color, getModelMatrix(), view, projection, states);
+}
 
-    Shader* renderShader = states.shader ? states.shader : (getShader() ? getShader() : (font->isSubpixel() ? common::subpixelShader : common::defaultShader));
-    renderShader->use();
+const VertexBuffer& Text::getVertexBuffer() const {
+    return vertex_buffer;
+}
 
-    Matrix4 model = Transformable::getModelMatrix();
-    Matrix4 combined = states.transform * model;
-
-    renderShader->setVec4("color", Vector4(color.r, color.g, color.b, color.a));
-    renderShader->setMat4("model", combined);
-    renderShader->setMat4("view", view);
-    renderShader->setMat4("projection", projection);
-    renderShader->setInt("tex", 0);
-    renderShader->setBool("hasTexture", true);
-
-    font->getAtlas().bind();
-    vertex_buffer.render();
+Shader* Text::getDefaultShader() const {
+    return font->isSubpixel() ? common::subpixelShader : common::defaultShader;
 }
 
 std::vector<std::string> Text::breakLines() const {
