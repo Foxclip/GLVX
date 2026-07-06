@@ -25,6 +25,7 @@ Font* Text::getFont() const {
 void Text::setFont(Font* font) {
     this->font = font;
     vertex_buffer = VertexBuffer();
+    setTexture(font ? const_cast<Texture*>(&font->getAtlas()) : nullptr);
 }
 
 const std::string& Text::getString() const {
@@ -101,10 +102,6 @@ void Text::setString(const std::string& string) {
         vertex_buffer.create(static_cast<std::size_t>(vertices.size()));
     }
     vertex_buffer.update(vertices);
-}
-
-void Text::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
-    renderBase(getShader(), &font->getAtlas(), color, getModelMatrix(), view, projection, states);
 }
 
 const VertexBuffer& Text::getVertexBuffer() const {

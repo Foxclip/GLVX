@@ -20,11 +20,6 @@ public:
     void setString(const std::string& string);
     float getMaxWidth() const;
     void setMaxWidth(float max_width);
-    void render(
-        const Matrix4& view,
-        const Matrix4& projection,
-        const RenderStates& states = RenderStates()
-    ) const override;
     const VertexBuffer& getVertexBuffer() const override;
     Shader* getDefaultShader() const override;
 
