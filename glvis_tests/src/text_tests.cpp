@@ -15,10 +15,11 @@ TextTestsModule::TextTestsModule(
     auto render_character_dot_test = addTest("render character dot", { dimensions_test }, [&](test::Test& test) { renderCharacterDotTest(test); });
     auto render_string_AA_test = addTest("render string AA", { render_character_A_test }, [&](test::Test& test) { renderStringAATest(test); });
     auto transparency_test = addTest("transparency", { render_character_A_test }, [&](test::Test& test) { transparencyTest(test); });
-    auto kerning_test = addTest("kerning", { dimensions_test }, [&](test::Test& test) { kerningTest(test); });
-    auto descender_test = addTest("descender", { dimensions_test }, [&](test::Test& test) { descenderTest(test); });
-    auto subpixel_test = addTest("subpixel", { font_test }, [&](test::Test& test) { subpixelTest(test); });
-    auto multiline_test = addTest("multiline", { dimensions_test }, [&](test::Test& test) { multilineTest(test); });
+    auto kerning_test = addTest("kerning", { render_string_AA_test }, [&](test::Test& test) { kerningTest(test); });
+    auto descender_test = addTest("descender", { render_string_AA_test }, [&](test::Test& test) { descenderTest(test); });
+    auto subpixel_test = addTest("subpixel", { render_string_AA_test }, [&](test::Test& test) { subpixelTest(test); });
+    auto multiline_dimensions_test = addTest("multiline dimensions", { dimensions_test }, [&](test::Test& test) { multilineDimensionsTest(test); });
+    auto multiline_test = addTest("multiline", { multiline_dimensions_test, render_string_AA_test }, [&](test::Test& test) { multilineTest(test); });
 }
 
 void TextTestsModule::fontTest(test::Test& test) {
@@ -356,6 +357,24 @@ void TextTestsModule::subpixelTest(test::Test& test) {
 (0 0 0) (76 160 244) (255 204 120) (32 0 0) (0 0 0)\n\
 (0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n";
     T_COMPARE_RAW(actual_numbers_rgb, expected_numbers_rgb);
+}
+
+void TextTestsModule::multilineDimensionsTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("multiline dimensions");
+
+    Font font("fonts/LiberationSans-Regular.ttf");
+    Text text(&font, "A\nB");
+    T_COMPARE(text.getWidth(), 20.0f);
+    T_COMPARE(text.getHeight(), 56.0f);
+
+    text.setString("AB\nC");
+    T_COMPARE(text.getWidth(), 39.0f);
+    T_COMPARE(text.getHeight(), 56.0f);
+
+    text.setString("A\nB\nC");
+    T_COMPARE(text.getWidth(), 21.0f);
+    T_COMPARE(text.getHeight(), 91.0f);
 }
 
 void TextTestsModule::multilineTest(test::Test& test) {
