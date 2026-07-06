@@ -5,6 +5,7 @@
 #include "glvis/shaders/simple.h"
 #include "glvis/shaders/subpixel.h"
 #include "glvis/shaders/screen.h"
+#include "glvis/uniform_buffer.h"
 #include "glvis/image.h"
 #include "glvis/utils.h"
 #include <stdexcept>
@@ -17,6 +18,7 @@ Window::~Window() {
     screenShaderUptr.reset();
     defaultShaderUptr.reset();
     subpixelShaderUptr.reset();
+    uniformBufferUptr.reset();
     screenTextureUptr.reset();
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -56,9 +58,14 @@ void Window::create(int width, int height, const char* title) {
     glfwSetMouseButtonCallback(window, mouseButtonCallbackGLFW);
     glfwSetScrollCallback(window, scrollCallbackGLFW);
 
-    defaultShaderUptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag);
+    uniformBufferUptr = std::make_unique<UniformBuffer>();
+    uniformBufferUptr->createCamera();
+    uniformBufferUptr->createPerObject();
+    common::uniformBuffer = uniformBufferUptr.get();
+
+    defaultShaderUptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag, true);
     common::defaultShader = defaultShaderUptr.get();
-    subpixelShaderUptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag);
+    subpixelShaderUptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag, true);
     common::subpixelShader = subpixelShaderUptr.get();
     screenShaderUptr = std::make_unique<Shader>(shaders::screen_vert, shaders::screen_frag);
 
@@ -120,6 +127,8 @@ void Window::draw(const Drawable& drawable, const RenderStates& states) const {
     GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
     GL_CALL(glEnable(GL_BLEND));
     GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    uniformBufferUptr->updateCamera(view, projection);
+    uniformBufferUptr->bindCamera();
     drawable.render(view, projection, states);
     GL_CALL(glDisable(GL_BLEND));
 }

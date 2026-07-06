@@ -15,9 +15,10 @@ enum class ShaderType {
 class Shader {
 public:
     unsigned int ID;
+    bool useUBO;
 
-    Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath);
-    Shader(const char* vertexSource, const char* fragmentSource);
+    Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath, bool useUBO = false);
+    Shader(const char* vertexSource, const char* fragmentSource, bool useUBO = false);
     ~Shader();
     void use();
     void setBool(const std::string& name, bool value) const;

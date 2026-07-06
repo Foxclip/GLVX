@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glvis/glvis_common.h"
+#include "glvis/uniform_buffer.h"
 #include "glvis/view.h"
 #include "glvis/drawable.h"
 #include "glvis/rectangle.h"
@@ -56,6 +57,7 @@ private:
     std::unique_ptr<Shader> subpixelShaderUptr = nullptr;
     std::unique_ptr<Shader> screenShaderUptr = nullptr;
     std::unique_ptr<RenderTexture> screenTextureUptr = nullptr;
+    std::unique_ptr<UniformBuffer> uniformBufferUptr = nullptr;
     Matrix4 view;
     Matrix4 invView;
     Matrix4 projection;

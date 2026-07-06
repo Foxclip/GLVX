@@ -44,6 +44,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/vector.cpp
     ${SRC_DIR}/vertex_array.cpp
     ${SRC_DIR}/vertex_buffer.cpp
+    ${SRC_DIR}/uniform_buffer.cpp
     ${SRC_DIR}/view.cpp
     ${SRC_DIR}/window.cpp
 )

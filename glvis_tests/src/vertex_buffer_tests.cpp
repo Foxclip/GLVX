@@ -24,14 +24,9 @@ public:
     void render(
         const Matrix4& view,
         const Matrix4& projection,
-        const RenderStates& states = RenderStates()
+        const RenderStates& states
     ) const override {
-        shader->use();
-        shader->setVec4("color", Vector4(255, 255, 255, 255));
-        shader->setMat4("model", getModelMatrix());
-        shader->setMat4("view", view);
-        shader->setMat4("projection", projection);
-        vertexBuffer.render();
+        renderBase(shader, nullptr, Color::White, getModelMatrix(), view, projection, states);
     }
 
 private:
