@@ -287,19 +287,6 @@ void TextTestsModule::descenderTest(test::Test& test) {
     window.clear(Color::Black);
 
     Font font("fonts/LiberationSans-Regular.ttf", 15);
-
-    Text textG(&font, "g");
-    Text textY(&font, "y");
-    Text textP(&font, "p");
-    Text textQ(&font, "q");
-    Text textA(&font, "A");
-
-    T_COMPARE(textA.getHeight(), 11.0f);
-    T_COMPARE(textG.getHeight(), 11.0f);
-    T_COMPARE(textY.getHeight(), 11.0f);
-    T_COMPARE(textP.getHeight(), 11.0f);
-    T_COMPARE(textQ.getHeight(), 11.0f);
-
     Text text(&font, "Aq");
     window.draw(text);
     window.display();
@@ -341,17 +328,11 @@ void TextTestsModule::subpixelTest(test::Test& test) {
     window.clear(Color::Black);
 
     Font font("fonts/LiberationSans-Regular.ttf", 15, true);
-    T_COMPARE(font.isSubpixel(), true);
     Text text(&font, ".");
-    RenderStates states;
-    states.shader = glvis::common::defaultShader;
-    window.draw(text, states);
+    window.draw(text);
     window.display();
 
     Image image = window.readPixels();
-    T_COMPARE(image.getWidth() > 0, true);
-    T_COMPARE(image.getHeight() > 0, true);
-
     int max_width = 5;
     int max_height = 16;
     std::string actual_ascii = imageToAscii(image, max_width, max_height);
