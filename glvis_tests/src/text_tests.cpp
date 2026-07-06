@@ -15,9 +15,11 @@ TextTestsModule::TextTestsModule(
     auto render_character_dot_test = addTest("render character dot", { dimensions_test }, [&](test::Test& test) { renderCharacterDotTest(test); });
     auto render_string_AA_test = addTest("render string AA", { render_character_A_test }, [&](test::Test& test) { renderStringAATest(test); });
     auto transparency_test = addTest("transparency", { render_character_A_test }, [&](test::Test& test) { transparencyTest(test); });
-    auto kerning_test = addTest("kerning", { dimensions_test }, [&](test::Test& test) { kerningTest(test); });
-    auto descender_test = addTest("descender", { dimensions_test }, [&](test::Test& test) { descenderTest(test); });
-    auto subpixel_test = addTest("subpixel", { font_test }, [&](test::Test& test) { subpixelTest(test); });
+    auto kerning_test = addTest("kerning", { render_string_AA_test }, [&](test::Test& test) { kerningTest(test); });
+    auto descender_test = addTest("descender", { render_string_AA_test }, [&](test::Test& test) { descenderTest(test); });
+    auto subpixel_test = addTest("subpixel", { render_string_AA_test }, [&](test::Test& test) { subpixelTest(test); });
+    auto multiline_dimensions_test = addTest("multiline dimensions", { dimensions_test }, [&](test::Test& test) { multilineDimensionsTest(test); });
+    auto multiline_test = addTest("multiline", { multiline_dimensions_test, render_string_AA_test }, [&](test::Test& test) { multilineTest(test); });
 }
 
 void TextTestsModule::fontTest(test::Test& test) {
@@ -37,34 +39,34 @@ void TextTestsModule::dimensionsTest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    Font font("fonts/LiberationSans-Regular.ttf");
+    Font font("fonts/LiberationSans-Regular.ttf", 15);
     Text text(&font, "A");
-    T_COMPARE(text.getWidth(), 20.0f);
-    T_COMPARE(text.getHeight(), 21.0f);
+    T_COMPARE(text.getWidth(), 10.0f);
+    T_COMPARE(text.getHeight(), 11.0f);
 
     text.setString("AA");
-    T_COMPARE(text.getWidth(), 40.0f);
-    T_COMPARE(text.getHeight(), 21.0f);
+    T_COMPARE(text.getWidth(), 20.0f);
+    T_COMPARE(text.getHeight(), 11.0f);
 
     text.setString(".");
-    T_COMPARE(text.getWidth(), 4.0f);
-    T_COMPARE(text.getHeight(), 3.0f);
+    T_COMPARE(text.getWidth(), 2.0f);
+    T_COMPARE(text.getHeight(), 2.0f);
 
     text.setString(" ");
-    T_COMPARE(text.getWidth(), 8.0f);
+    T_COMPARE(text.getWidth(), 4.0f);
     T_COMPARE(text.getHeight(), 0.0f);
 
     text.setString("A ");
-    T_COMPARE(text.getWidth(), 28.0f);
-    T_COMPARE(text.getHeight(), 21.0f);
+    T_COMPARE(text.getWidth(), 14.0f);
+    T_COMPARE(text.getHeight(), 11.0f);
 
     text.setString("A A");
-    T_COMPARE(text.getWidth(), 46.0f);
-    T_COMPARE(text.getHeight(), 21.0f);
+    T_COMPARE(text.getWidth(), 24.0f);
+    T_COMPARE(text.getHeight(), 11.0f);
 
     text.setString("Q");
-    T_COMPARE(text.getWidth(), 21.0f);
-    T_COMPARE(text.getHeight(), 27.0f);
+    T_COMPARE(text.getWidth(), 11.0f);
+    T_COMPARE(text.getHeight(), 14.0f);
 }
 
 void TextTestsModule::renderCharacterATest(test::Test& test) {
@@ -355,6 +357,81 @@ void TextTestsModule::subpixelTest(test::Test& test) {
 (0 0 0) (76 160 244) (255 204 120) (32 0 0) (0 0 0)\n\
 (0 0 0) (0 0 0) (0 0 0) (0 0 0) (0 0 0)\n";
     T_COMPARE_RAW(actual_numbers_rgb, expected_numbers_rgb);
+}
+
+void TextTestsModule::multilineDimensionsTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("multiline dimensions");
+
+    Font font("fonts/LiberationSans-Regular.ttf", 15);
+    Text text(&font, "A\nB");
+    T_COMPARE(text.getWidth(), 10.0f);
+    T_COMPARE(text.getHeight(), 28.0f);
+
+    text.setString("AB\nC");
+    T_COMPARE(text.getWidth(), 20.0f);
+    T_COMPARE(text.getHeight(), 28.0f);
+
+    text.setString("A\nB\nC");
+    T_COMPARE(text.getWidth(), 11.0f);
+    T_COMPARE(text.getHeight(), 45.0f);
+}
+
+void TextTestsModule::multilineTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("multiline");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    Font font("fonts/LiberationSans-Regular.ttf", 15);
+    Text text(&font, "A\nB");
+    window.draw(text);
+    window.display();
+
+    Image image = window.readPixels();
+    int width = image.getWidth();
+    int height = image.getHeight();
+    int max_width = 16;
+    int max_height = 33;
+    std::string actual_ascii = imageToAscii(image, max_width, max_height);
+    std::string expected_ascii = "\
+                \n\
+                \n\
+                \n\
+                \n\
+    ##          \n\
+   .##.         \n\
+   ++++         \n\
+   #..#         \n\
+  +#  #+        \n\
+  #+  +#        \n\
+ .#.  .#.       \n\
+ +######+       \n\
+ #+    +#       \n\
++#      #+      \n\
+++      ++      \n\
+                \n\
+                \n\
+                \n\
+                \n\
+                \n\
+                \n\
+ +#####.        \n\
+ ++   +#.       \n\
+ ++    #+       \n\
+ ++    #+       \n\
+ ++   +#        \n\
+ +#####+        \n\
+ ++   .#+       \n\
+ ++    .#       \n\
+ ++    .#       \n\
+ ++   .#+       \n\
+ +#####+        \n\
+                \n\
+";
+    T_COMPARE_RAW(actual_ascii, expected_ascii);
 }
 
 std::string TextTestsModule::imageToAscii(const Image& image, int max_width, int max_height) const {

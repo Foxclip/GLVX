@@ -47,6 +47,13 @@ int Font::getBaselineY() const {
     return face->ascender / 64;
 }
 
+int Font::getLineHeight() const {
+    if (!face) {
+        return 0;
+    }
+    return face->size->metrics.height / 64;
+}
+
 bool Font::isSubpixel() const {
     return _useSubpixel;
 }

@@ -34,6 +34,7 @@ public:
     );
     int getCharacterSize() const;
     int getBaselineY() const;
+    int getLineHeight() const;
     bool isSubpixel() const;
     Character& getCharacter(unsigned char c);
     const Texture& getAtlas() const;

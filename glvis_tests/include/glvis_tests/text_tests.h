@@ -21,6 +21,8 @@ public:
     void kerningTest(test::Test& test);
     void descenderTest(test::Test& test);
     void subpixelTest(test::Test& test);
+    void multilineDimensionsTest(test::Test& test);
+    void multilineTest(test::Test& test);
 
 private:
 
