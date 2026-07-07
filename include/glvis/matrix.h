@@ -18,6 +18,7 @@ public:
     float& get(int row, int col);
     std::string toString() const;
     Matrix4 operator*(const Matrix4& other) const;
+    bool operator==(const Matrix4& other) const;
     static Matrix4 translate(const Matrix4& matrix, const Vector3& v);
     static Matrix4 rotate(const Matrix4& matrix, float angle, const Vector3& axis);
     static Matrix4 scale(const Matrix4& matrix, const Vector3& v);

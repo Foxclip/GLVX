@@ -37,6 +37,9 @@ public:
 private:
     unsigned int cameraID = 0;
     unsigned int objectID = 0;
+    Matrix4 cachedView;
+    Matrix4 cachedProjection;
+    bool firstCameraUBOUpdate = true;
 };
 
 }

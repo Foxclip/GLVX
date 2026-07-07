@@ -30,14 +30,20 @@ void UniformBuffer::createObjectUBO() {
 }
 
 void UniformBuffer::updateCameraUBO(const Matrix4& view, const Matrix4& projection) {
-    GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, cameraID));
+    if (firstCameraUBOUpdate || cachedView != view || cachedProjection != projection) {
+        cachedView = view;
+        cachedProjection = projection;
+        firstCameraUBOUpdate = false;
 
-    CameraUBO ubo;
-    std::memcpy(ubo.view, view.getData(), sizeof(ubo.view));
-    std::memcpy(ubo.projection, projection.getData(), sizeof(ubo.projection));
+        GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, cameraID));
 
-    GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ubo), &ubo));
-    GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+        CameraUBO ubo;
+        std::memcpy(ubo.view, view.getData(), sizeof(ubo.view));
+        std::memcpy(ubo.projection, projection.getData(), sizeof(ubo.projection));
+
+        GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ubo), &ubo));
+        GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+    }
 }
 
 void UniformBuffer::updateObjectUBO(const Matrix4& model, const Color& color, bool hasTexture) {
