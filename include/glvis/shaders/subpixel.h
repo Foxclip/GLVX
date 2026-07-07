@@ -19,7 +19,7 @@ layout(binding = 0) uniform Camera {
     mat4 projection;
 };
 
-layout(binding = 1) uniform PerObject {
+layout(binding = 1) uniform Object {
     mat4 model;
     vec4 color;
     bool hasTexture;

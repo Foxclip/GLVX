@@ -11,8 +11,8 @@ UniformBuffer::~UniformBuffer() {
     if (cameraID) {
         GL_CALL(glDeleteBuffers(1, &cameraID));
     }
-    if (perObjectID) {
-        GL_CALL(glDeleteBuffers(1, &perObjectID));
+    if (objectID) {
+        GL_CALL(glDeleteBuffers(1, &objectID));
     }
 }
 
@@ -23,9 +23,9 @@ void UniformBuffer::createCamera() {
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
-void UniformBuffer::createPerObject() {
-    GL_CALL(glGenBuffers(1, &perObjectID));
-    GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, perObjectID));
+void UniformBuffer::createObject() {
+    GL_CALL(glGenBuffers(1, &objectID));
+    GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, objectID));
     GL_CALL(glBufferData(GL_UNIFORM_BUFFER, 256, nullptr, GL_DYNAMIC_DRAW));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
@@ -37,8 +37,8 @@ void UniformBuffer::updateCamera(const Matrix4& view, const Matrix4& projection)
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
-void UniformBuffer::updatePerObject(const Matrix4& model, const Color& color, bool hasTexture) {
-    GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, perObjectID));
+void UniformBuffer::updateObject(const Matrix4& model, const Color& color, bool hasTexture) {
+    GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, objectID));
 
     float data[21] = {};
     std::memcpy(data, model.getData(), 64);
@@ -56,8 +56,8 @@ void UniformBuffer::bindCamera() const {
     GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, 0, cameraID));
 }
 
-void UniformBuffer::bindPerObject() const {
-    GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, 1, perObjectID));
+void UniformBuffer::bindObject() const {
+    GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, 1, objectID));
 }
 
 }

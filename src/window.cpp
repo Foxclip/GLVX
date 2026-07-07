@@ -60,7 +60,7 @@ void Window::create(int width, int height, const char* title) {
 
     uniformBufferUptr = std::make_unique<UniformBuffer>();
     uniformBufferUptr->createCamera();
-    uniformBufferUptr->createPerObject();
+    uniformBufferUptr->createObject();
     common::uniformBuffer = uniformBufferUptr.get();
 
     defaultShaderUptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag, true);

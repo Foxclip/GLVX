@@ -17,14 +17,14 @@ layout(binding = 0) uniform Camera {
     mat4 projection;
 } camera;
 
-layout(binding = 1) uniform PerObject {
+layout(binding = 1) uniform Object {
     mat4 model;
     vec4 color;
     bool hasTexture;
-} perObject;
+} object;
 
 void main() {
-    gl_Position = camera.projection * camera.view * perObject.model * vec4(aPos, 0.0, 1.0);
+    gl_Position = camera.projection * camera.view * object.model * vec4(aPos, 0.0, 1.0);
     TexCoords = aTexCoords;
     VertexColor = aColor;
 }
@@ -38,17 +38,17 @@ in vec4 VertexColor;
 
 out vec4 FragColor;
 
-layout(binding = 1) uniform PerObject {
+layout(binding = 1) uniform Object {
     mat4 model;
     vec4 color;
     bool hasTexture;
-} perObject;
+} object;
 
 uniform sampler2D tex;
 
 void main() {
-    vec4 colorNormalized = perObject.color / 255.0;
-    if (perObject.hasTexture) {
+    vec4 colorNormalized = object.color / 255.0;
+    if (object.hasTexture) {
         FragColor = texture(tex, TexCoords) * VertexColor * colorNormalized;
     } else {
         FragColor = VertexColor * colorNormalized;

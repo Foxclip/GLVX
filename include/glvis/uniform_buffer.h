@@ -12,20 +12,20 @@ public:
     ~UniformBuffer();
 
     void createCamera();
-    void createPerObject();
+    void createObject();
 
     void updateCamera(const Matrix4& view, const Matrix4& projection);
-    void updatePerObject(const Matrix4& model, const Color& color, bool hasTexture);
+    void updateObject(const Matrix4& model, const Color& color, bool hasTexture);
 
     void bindCamera() const;
-    void bindPerObject() const;
+    void bindObject() const;
 
     unsigned int getCameraID() const { return cameraID; }
-    unsigned int getPerObjectID() const { return perObjectID; }
+    unsigned int getObjectID() const { return objectID; }
 
 private:
     unsigned int cameraID = 0;
-    unsigned int perObjectID = 0;
+    unsigned int objectID = 0;
 };
 
 }
