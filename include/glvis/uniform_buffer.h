@@ -31,15 +31,15 @@ public:
     void bindCameraUBO() const;
     void bindObjectUBO() const;
 
-    unsigned int getCameraID() const { return cameraID; }
-    unsigned int getObjectID() const { return objectID; }
+    unsigned int getCameraID() const { return camera_id; }
+    unsigned int getObjectID() const { return object_id; }
 
 private:
-    unsigned int cameraID = 0;
-    unsigned int objectID = 0;
-    Matrix4 cachedView;
-    Matrix4 cachedProjection;
-    bool firstCameraUBOUpdate = true;
+    unsigned int camera_id = 0;
+    unsigned int object_id = 0;
+    Matrix4 cached_view;
+    Matrix4 cached_projection;
+    bool first_camera_UBO_update = true;
 };
 
 }
