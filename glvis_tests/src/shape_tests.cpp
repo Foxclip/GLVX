@@ -12,6 +12,8 @@ ShapeTestsModule::ShapeTestsModule(
     auto rectangle_set_size_test = addTest("retcangle_set_size", { rectangle_test }, [&](test::Test& test) { rectangleSetSizeTest(test); });
     auto circle_test = addTest("circle", [&](test::Test& test) { circleTest(test); });
     auto circle_set_radius_test = addTest("circle_set_radius", { circle_test }, [&](test::Test& test) { circleSetRadiusTest(test); });
+    auto transparent_rectangle_test = addTest("transparent_rectangle", { rectangle_test }, [&](test::Test& test) { transparentRectangleTest(test); });
+    auto multiple_transparent_rectangles_test = addTest("multiple_transparent_rectangles", { rectangle_test }, [&](test::Test& test) { multipleTransparentRectanglesTest(test); });
 }
 
 void ShapeTestsModule::rectangleTest(test::Test& test) {
@@ -199,4 +201,58 @@ void ShapeTestsModule::circleSetRadiusTest(test::Test& test) {
         circle_center + Vector2f(new_radius_offset + 1, 0)
     );
     T_COMPARE(image.getPixel(outside_check), Color::Black, &Color::toString);
+}
+
+void ShapeTestsModule::transparentRectangleTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("transparent rectangle");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    Rectangle white_rect(rect_size);
+    white_rect.setColor(Color(255, 255, 255, 128));
+    window.draw(white_rect);
+    window.display();
+
+    Image image = window.readPixels();
+    Vector2i corner_check = static_cast<Vector2i>(rect_size) - Vector2i(1, 1);
+    T_COMPARE(image.getPixel(0, 0), Color(128, 128, 128, 191), &Color::toString);
+    T_COMPARE(image.getPixel(5, 5), Color(128, 128, 128, 191), &Color::toString);
+    T_COMPARE(image.getPixel(corner_check), Color(128, 128, 128, 191), &Color::toString);
+    T_COMPARE(image.getPixel(static_cast<Vector2i>(rect_size)), Color::Black, &Color::toString);
+}
+
+void ShapeTestsModule::multipleTransparentRectanglesTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("multiple transparent rectangles");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+
+    Rectangle red_rect(rect_size);
+    red_rect.setColor(Color(255, 0, 0, 128));
+    window.draw(red_rect);
+
+    Rectangle green_rect(rect_size);
+    green_rect.setColor(Color(0, 255, 0, 128));
+    window.draw(green_rect);
+
+    Rectangle blue_rect(rect_size);
+    blue_rect.setColor(Color(0, 0, 255, 128));
+    window.draw(blue_rect);
+
+    window.display();
+
+    Image image = window.readPixels();
+    Vector2i corner_check = static_cast<Vector2i>(rect_size) - Vector2i(1, 1);
+    T_COMPARE(image.getPixel(0, 0), Color(32, 64, 128, 143), &Color::toString);
+    T_COMPARE(image.getPixel(5, 5), Color(32, 64, 128, 143), &Color::toString);
+    T_COMPARE(image.getPixel(corner_check), Color(32, 64, 128, 143), &Color::toString);
+    T_COMPARE(image.getPixel(static_cast<Vector2i>(rect_size)), Color::Black, &Color::toString);
 }

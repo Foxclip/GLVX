@@ -16,6 +16,8 @@ public:
     void rectangleSetSizeTest(test::Test& test);
     void circleTest(test::Test& test);
     void circleSetRadiusTest(test::Test& test);
+    void transparentRectangleTest(test::Test& test);
+    void multipleTransparentRectanglesTest(test::Test& test);
 
 private:
 
