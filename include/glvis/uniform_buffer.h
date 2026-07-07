@@ -6,6 +6,17 @@
 
 namespace glvis {
 
+struct CameraUBO {
+    float view[16];
+    float projection[16];
+};
+
+struct ObjectUBO {
+    float model[16];
+    float color[4];
+    float hasTexture;
+};
+
 class UniformBuffer {
 public:
     UniformBuffer();

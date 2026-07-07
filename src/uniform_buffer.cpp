@@ -4,8 +4,7 @@
 
 namespace glvis {
 
-UniformBuffer::UniformBuffer() {
-}
+UniformBuffer::UniformBuffer() { }
 
 UniformBuffer::~UniformBuffer() {
     if (cameraID) {
@@ -19,37 +18,40 @@ UniformBuffer::~UniformBuffer() {
 void UniformBuffer::createCameraUBO() {
     GL_CALL(glGenBuffers(1, &cameraID));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, cameraID));
-    GL_CALL(glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(Matrix4), nullptr, GL_DYNAMIC_DRAW));
+    GL_CALL(glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraUBO), nullptr, GL_DYNAMIC_DRAW));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
 void UniformBuffer::createObjectUBO() {
     GL_CALL(glGenBuffers(1, &objectID));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, objectID));
-    GL_CALL(glBufferData(GL_UNIFORM_BUFFER, sizeof(Matrix4) + 5 * sizeof(float), nullptr, GL_DYNAMIC_DRAW));
+    GL_CALL(glBufferData(GL_UNIFORM_BUFFER, sizeof(ObjectUBO), nullptr, GL_DYNAMIC_DRAW));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
 void UniformBuffer::updateCameraUBO(const Matrix4& view, const Matrix4& projection) {
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, cameraID));
-    GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix4), view.getData()));
-    GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix4), sizeof(Matrix4), projection.getData()));
+
+    CameraUBO ubo;
+    std::memcpy(ubo.view, view.getData(), sizeof(ubo.view));
+    std::memcpy(ubo.projection, projection.getData(), sizeof(ubo.projection));
+
+    GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ubo), &ubo));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
 void UniformBuffer::updateObjectUBO(const Matrix4& model, const Color& color, bool hasTexture) {
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, objectID));
 
-    float data[sizeof(Matrix4) / sizeof(float) + 5] = {};
-    std::memcpy(data, model.getData(), sizeof(Matrix4));
-    size_t offset = sizeof(Matrix4) / sizeof(float);
-    data[offset + 0] = color.r;
-    data[offset + 1] = color.g;
-    data[offset + 2] = color.b;
-    data[offset + 3] = color.a;
-    data[offset + 4] = hasTexture ? 1.0f : 0.0f;
+    ObjectUBO ubo = {};
+    std::memcpy(ubo.model, model.getData(), sizeof(ubo.model));
+    ubo.color[0] = static_cast<float>(color.r);
+    ubo.color[1] = static_cast<float>(color.g);
+    ubo.color[2] = static_cast<float>(color.b);
+    ubo.color[3] = static_cast<float>(color.a);
+    ubo.hasTexture = hasTexture ? 1.0f : 0.0f;
 
-    GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(data), data));
+    GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ubo), &ubo));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
