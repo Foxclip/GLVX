@@ -11,14 +11,14 @@ public:
     UniformBuffer();
     ~UniformBuffer();
 
-    void createCamera();
-    void createObject();
+    void createCameraUBO();
+    void createObjectUBO();
 
-    void updateCamera(const Matrix4& view, const Matrix4& projection);
-    void updateObject(const Matrix4& model, const Color& color, bool hasTexture);
+    void updateCameraUBO(const Matrix4& view, const Matrix4& projection);
+    void updateObjectUBO(const Matrix4& model, const Color& color, bool hasTexture);
 
-    void bindCamera() const;
-    void bindObject() const;
+    void bindCameraUBO() const;
+    void bindObjectUBO() const;
 
     unsigned int getCameraID() const { return cameraID; }
     unsigned int getObjectID() const { return objectID; }

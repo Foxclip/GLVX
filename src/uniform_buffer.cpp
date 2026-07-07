@@ -16,28 +16,28 @@ UniformBuffer::~UniformBuffer() {
     }
 }
 
-void UniformBuffer::createCamera() {
+void UniformBuffer::createCameraUBO() {
     GL_CALL(glGenBuffers(1, &cameraID));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, cameraID));
     GL_CALL(glBufferData(GL_UNIFORM_BUFFER, 256, nullptr, GL_DYNAMIC_DRAW));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
-void UniformBuffer::createObject() {
+void UniformBuffer::createObjectUBO() {
     GL_CALL(glGenBuffers(1, &objectID));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, objectID));
     GL_CALL(glBufferData(GL_UNIFORM_BUFFER, 256, nullptr, GL_DYNAMIC_DRAW));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
-void UniformBuffer::updateCamera(const Matrix4& view, const Matrix4& projection) {
+void UniformBuffer::updateCameraUBO(const Matrix4& view, const Matrix4& projection) {
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, cameraID));
     GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, view.getData()));
     GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, projection.getData()));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
-void UniformBuffer::updateObject(const Matrix4& model, const Color& color, bool hasTexture) {
+void UniformBuffer::updateObjectUBO(const Matrix4& model, const Color& color, bool hasTexture) {
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, objectID));
 
     float data[21] = {};
@@ -52,11 +52,11 @@ void UniformBuffer::updateObject(const Matrix4& model, const Color& color, bool 
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
-void UniformBuffer::bindCamera() const {
+void UniformBuffer::bindCameraUBO() const {
     GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, 0, cameraID));
 }
 
-void UniformBuffer::bindObject() const {
+void UniformBuffer::bindObjectUBO() const {
     GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, 1, objectID));
 }
 
