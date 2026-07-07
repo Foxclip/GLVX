@@ -3,6 +3,8 @@
 #include "glvis/shader.h"
 #include "glvis/abstract_texture.h"
 #include "glvis/vertex_buffer.h"
+#include "glvis/uniform_buffer.h"
+#include "glvis/glvis_common.h"
 #include "glvis/utils.h"
 #include <cassert>
 
@@ -52,17 +54,30 @@ void Drawable::renderBase(
     const AbstractTexture* renderTexture = states.texture ? states.texture : texture;
     Matrix4 combinedModel = states.transform * getModelMatrix();
     renderShader->use();
-    renderShader->setVec4("color", Vector4(color.r, color.g, color.b, color.a));
-    renderShader->setMat4("model", combinedModel);
-    renderShader->setMat4("view", view);
-    renderShader->setMat4("projection", projection);
-    renderShader->setInt("tex", 0);
-    if (renderTexture) {
-        renderShader->setBool("hasTexture", true);
-        renderTexture->bind();
+
+    if (renderShader->useUBO) {
+        common::uniformBuffer->updateCameraUBO(view, projection);
+        common::uniformBuffer->updateObjectUBO(combinedModel, color, renderTexture != nullptr);
+        common::uniformBuffer->bindCameraUBO();
+        common::uniformBuffer->bindObjectUBO();
+        renderShader->setInt("tex", 0);
+        if (renderTexture) {
+            renderTexture->bind();
+        }
     } else {
-        renderShader->setBool("hasTexture", false);
+        renderShader->setVec4("color", Vector4(color.r, color.g, color.b, color.a));
+        renderShader->setMat4("model", combinedModel);
+        renderShader->setMat4("view", view);
+        renderShader->setMat4("projection", projection);
+        renderShader->setInt("tex", 0);
+        if (renderTexture) {
+            renderShader->setBool("hasTexture", true);
+            renderTexture->bind();
+        } else {
+            renderShader->setBool("hasTexture", false);
+        }
     }
+
     vertexBuffer.render();
 }
 

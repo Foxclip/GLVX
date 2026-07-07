@@ -41,7 +41,6 @@ int main() {
         return 1;
     }
 
-    // TODO: use uniform buffer objects
     // TODO: transparent texture rendering
 
     return 0;

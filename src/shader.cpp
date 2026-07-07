@@ -7,7 +7,7 @@
 
 namespace glvis {
 
-Shader::Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath) {
+Shader::Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath, bool useUBO) : useUBO(useUBO) {
     START_TRY
     unsigned int vertexShader = compileShader(ShaderType::VERTEX, vertexPath);
     unsigned int fragmentShader = compileShader(ShaderType::FRAGMENT, fragmentPath);
@@ -15,7 +15,7 @@ Shader::Shader(const std::filesystem::path& vertexPath, const std::filesystem::p
     END_TRY
 }
 
-Shader::Shader(const char* vertexSource, const char* fragmentSource) {
+Shader::Shader(const char* vertexSource, const char* fragmentSource, bool useUBO) : useUBO(useUBO) {
     START_TRY
     unsigned int vertexShader = compileShader(ShaderType::VERTEX, vertexSource);
     unsigned int fragmentShader = compileShader(ShaderType::FRAGMENT, fragmentSource);
@@ -73,6 +73,7 @@ void Shader::linkProgram(unsigned int vertexShader, unsigned int fragmentShader)
         GL_CALL(glGetProgramInfoLog(ID, length, NULL, infoLog.data()));
         throw std::format("Linking failed\n{}", std::string(infoLog.data()));
     }
+
     GL_CALL(glDeleteShader(vertexShader));
     GL_CALL(glDeleteShader(fragmentShader));
     END_TRY

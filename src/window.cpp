@@ -5,6 +5,7 @@
 #include "glvis/shaders/simple.h"
 #include "glvis/shaders/subpixel.h"
 #include "glvis/shaders/screen.h"
+#include "glvis/uniform_buffer.h"
 #include "glvis/image.h"
 #include "glvis/utils.h"
 #include <stdexcept>
@@ -17,6 +18,7 @@ Window::~Window() {
     screenShaderUptr.reset();
     defaultShaderUptr.reset();
     subpixelShaderUptr.reset();
+    uniformBufferUptr.reset();
     screenTextureUptr.reset();
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -28,8 +30,8 @@ void Window::create(int width, int height, const char* title) {
         throw std::runtime_error("Failed to initialize GLFW");
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     window = glfwCreateWindow(width, height, title, nullptr, nullptr);
@@ -56,9 +58,14 @@ void Window::create(int width, int height, const char* title) {
     glfwSetMouseButtonCallback(window, mouseButtonCallbackGLFW);
     glfwSetScrollCallback(window, scrollCallbackGLFW);
 
-    defaultShaderUptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag);
+    uniformBufferUptr = std::make_unique<UniformBuffer>();
+    uniformBufferUptr->createCameraUBO();
+    uniformBufferUptr->createObjectUBO();
+    common::uniformBuffer = uniformBufferUptr.get();
+
+    defaultShaderUptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag, true);
     common::defaultShader = defaultShaderUptr.get();
-    subpixelShaderUptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag);
+    subpixelShaderUptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag, true);
     common::subpixelShader = subpixelShaderUptr.get();
     screenShaderUptr = std::make_unique<Shader>(shaders::screen_vert, shaders::screen_frag);
 

@@ -1,0 +1,1 @@
+- When running tests, run them from project root, not build/ folder
