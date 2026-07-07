@@ -35,7 +35,7 @@ protected:
 
     void renderBase(
         Shader* shader,
-        AbstractTexture* texture,
+        const AbstractTexture* texture,
         const Color& color,
         const Matrix4& model,
         const Matrix4& view,

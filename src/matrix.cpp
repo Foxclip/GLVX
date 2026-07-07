@@ -87,6 +87,10 @@ Matrix4 Matrix4::operator*(const Matrix4& other) const {
     return Matrix4(data * other.data);
 }
 
+bool Matrix4::operator==(const Matrix4& other) const {
+    return data == other.data;
+}
+
 Matrix4 Matrix4::translate(const Matrix4& matrix, const Vector3& v) {
     return Matrix4(glm::translate(matrix.data, glm::vec3(v.x, v.y, v.z)));
 }

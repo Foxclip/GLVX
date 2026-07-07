@@ -31,17 +31,20 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/font.cpp
     ${SRC_DIR}/image.cpp
     ${SRC_DIR}/matrix.cpp
+    ${SRC_DIR}/rect.cpp
     ${SRC_DIR}/rectangle.cpp
     ${SRC_DIR}/render_states.cpp
     ${SRC_DIR}/render_texture.cpp
     ${SRC_DIR}/shader.cpp
     ${SRC_DIR}/shape.cpp
+    ${SRC_DIR}/text.cpp
     ${SRC_DIR}/texture.cpp
     ${SRC_DIR}/transformable.cpp
     ${SRC_DIR}/utils.cpp
     ${SRC_DIR}/vector.cpp
     ${SRC_DIR}/vertex_array.cpp
     ${SRC_DIR}/vertex_buffer.cpp
+    ${SRC_DIR}/uniform_buffer.cpp
     ${SRC_DIR}/view.cpp
     ${SRC_DIR}/window.cpp
 )

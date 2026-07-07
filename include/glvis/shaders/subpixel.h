@@ -3,7 +3,7 @@
 namespace glvis {
 namespace shaders {
 
-inline const char* simple_vert = R"(
+inline const char* subpixel_vert = R"(
 #version 420 core
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec4 aColor;
@@ -30,7 +30,7 @@ void main() {
 }
 )";
 
-inline const char* simple_frag = R"(
+inline const char* subpixel_frag = R"(
 #version 420 core
 
 in vec2 TexCoords;
@@ -49,7 +49,10 @@ uniform sampler2D tex;
 void main() {
     vec4 colorNormalized = object.color / 255.0;
     if (object.hasTexture) {
-        FragColor = texture(tex, TexCoords) * VertexColor * colorNormalized;
+        vec4 texColor = texture(tex, TexCoords);
+        vec3 subpixel = texColor.rgb;
+        vec4 textColor = VertexColor * colorNormalized;
+        FragColor = mix(vec4(vec3(0.0), 1.0), textColor, vec4(subpixel, 1.0));
     } else {
         FragColor = VertexColor * colorNormalized;
     }

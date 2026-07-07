@@ -10,15 +10,15 @@
 
 namespace glvis {
 
-Texture::Texture(int width, int height) {
-    createTexture(width, height);
+Texture::Texture(int width, int height, InterpolationType interp) {
+    createTexture(width, height, nullptr, 4, false, interp);
 }
 
-Texture::Texture(unsigned char* data, int width, int height, int channels) {
-    createTexture(width, height, data, channels);
+Texture::Texture(unsigned char* data, int width, int height, int channels, InterpolationType interp) {
+    createTexture(width, height, data, channels, false, interp);
 }
 
-Texture::Texture(const std::filesystem::path& path) {
+Texture::Texture(const std::filesystem::path& path, InterpolationType interp) {
     START_TRY
     if (!std::filesystem::exists(path)) {
         throw std::runtime_error("File not found: " + path.string());
@@ -31,13 +31,8 @@ Texture::Texture(const std::filesystem::path& path) {
     if (!data) {
         throw std::runtime_error("Failed to load texture: " + path.string());
     }
-    this->path = path;
-    createTexture(width, height, data.get());
+    createTexture(width, height, data.get(), 4, false, interp);
     END_TRY
-}
-
-const std::filesystem::path& Texture::getPath() const {
-    return path;
 }
 
 }

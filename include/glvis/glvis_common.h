@@ -7,11 +7,14 @@
 namespace glvis {
 
 class Shader;
+class UniformBuffer;
 
 void check_opengl_errors();
 
 namespace common {
     extern Shader* defaultShader;
+    extern Shader* subpixelShader;
+    extern UniformBuffer* uniformBuffer;
 }
 
 template<typename FuncType>
