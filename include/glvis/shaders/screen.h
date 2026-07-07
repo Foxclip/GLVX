@@ -4,7 +4,7 @@ namespace glvis {
 namespace shaders {
 
 const char* screen_vert = R"(
-#version 330 core
+#version 420 core
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec4 aColor;
 layout (location = 2) in vec2 aTexCoords;
@@ -20,7 +20,7 @@ void main() {
 )";
 
 const char* screen_frag = R"(
-#version 330 core
+#version 420 core
 out vec4 FragColor;
 
 in vec4 Color;

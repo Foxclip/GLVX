@@ -4,8 +4,7 @@ namespace glvis {
 namespace shaders {
 
 inline const char* subpixel_vert = R"(
-#version 330 core
-#extension GL_ARB_shading_language_420pack : enable
+#version 420 core
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec4 aColor;
 layout (location = 2) in vec2 aTexCoords;
@@ -36,7 +35,7 @@ void main() {
 )";
 
 inline const char* subpixel_frag = R"(
-#version 330 core
+#version 420 core
 
 in vec2 TexCoords;
 in vec4 VertexColor;
