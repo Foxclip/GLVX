@@ -41,8 +41,6 @@ int main() {
         return 1;
     }
 
-    // TODO: use uniform buffer objects
-    // TODO: remove render method from VertexBufferDrawable in vertex_buffer_tests.cpp
     // TODO: transparent texture rendering
 
     return 0;

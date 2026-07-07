@@ -21,16 +21,7 @@ public:
         return Matrix4(); // Identity
     }
 
-    void render(
-        const Matrix4& view,
-        const Matrix4& projection,
-        const RenderStates& states
-    ) const override {
-        renderBase(shader, nullptr, Color::White, getModelMatrix(), view, projection, states);
-    }
-
 private:
-    Shader* shader = nullptr;
     VertexBuffer& vertexBuffer;
 };
 
