@@ -11,26 +11,22 @@ layout (location = 2) in vec2 aTexCoords;
 
 out vec2 TexCoords;
 out vec4 VertexColor;
-out vec4 UBOColor;
-out float UBOHasTexture;
 
 layout(binding = 0) uniform Camera {
     mat4 view;
     mat4 projection;
-};
+} camera;
 
 layout(binding = 1) uniform PerObject {
     mat4 model;
     vec4 color;
     bool hasTexture;
-};
+} perObject;
 
 void main() {
-    gl_Position = projection * view * model * vec4(aPos, 0.0, 1.0);
+    gl_Position = camera.projection * camera.view * perObject.model * vec4(aPos, 0.0, 1.0);
     TexCoords = aTexCoords;
     VertexColor = aColor;
-    UBOColor = color;
-    UBOHasTexture = hasTexture ? 1.0 : 0.0;
 }
 )";
 
@@ -39,16 +35,20 @@ inline const char* simple_frag = R"(
 
 in vec2 TexCoords;
 in vec4 VertexColor;
-in vec4 UBOColor;
-in float UBOHasTexture;
 
 out vec4 FragColor;
+
+layout(binding = 1) uniform PerObject {
+    mat4 model;
+    vec4 color;
+    bool hasTexture;
+} perObject;
 
 uniform sampler2D tex;
 
 void main() {
-    vec4 colorNormalized = UBOColor / 255.0;
-    if (UBOHasTexture != 0.0) {
+    vec4 colorNormalized = perObject.color / 255.0;
+    if (perObject.hasTexture) {
         FragColor = texture(tex, TexCoords) * VertexColor * colorNormalized;
     } else {
         FragColor = VertexColor * colorNormalized;
