@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "glvis/glvis_common.h"
 #include "glvis/color.h"
+#include "glvis/utils.h"
 
 namespace glvis {
 
@@ -67,6 +68,28 @@ void RenderTexture::draw(const Drawable& drawable, const RenderStates& states) c
     GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     drawable.render(view, projection, states);
     GL_CALL(glDisable(GL_BLEND));
+}
+
+Vector2i RenderTexture::worldToScreen(float x, float y) const {
+    glm::vec4 point = to_glmMat4(view) * glm::vec4(x, y, 0.0f, 1.0f);
+    glm::vec2 result = glm::vec2(point.x, height - point.y);
+    return Vector2i(static_cast<int>(result.x), static_cast<int>(result.y));
+}
+
+Vector2i RenderTexture::worldToScreen(const Vector2f& worldPos) const {
+    return worldToScreen(worldPos.x, worldPos.y);
+}
+
+Vector2f RenderTexture::screenToWorld(int x, int y) const {
+    float x_shifted = x + 0.5f;
+    float y_shifted = y + 0.5f;
+    glm::vec4 point = to_glmMat4(invView) * glm::vec4(x_shifted, height - y_shifted, 0.0f, 1.0f);
+    glm::vec2 result = glm::vec2(point.x, point.y);
+    return from_glmVec2(result);
+}
+
+Vector2f RenderTexture::screenToWorld(const Vector2i& screenPos) const {
+    return screenToWorld(screenPos.x, screenPos.y);
 }
 
 }

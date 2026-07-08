@@ -17,6 +17,10 @@ public:
     void setView(const View& view);
     void clear(const Color& color) const;
     void draw(const Drawable& drawable, const RenderStates& states = RenderStates()) const;
+    Vector2i worldToScreen(float x, float y) const;
+    Vector2i worldToScreen(const Vector2f& worldPos) const;
+    Vector2f screenToWorld(int x, int y) const;
+    Vector2f screenToWorld(const Vector2i& screenPos) const;
 
 private:
     unsigned int FBO = 0;
