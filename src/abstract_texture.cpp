@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glvis/glvis_common.h"
+#include "glvis/utils.h"
 #include <algorithm>
 #include <cmath>
 #include <memory>
@@ -94,6 +95,10 @@ Image AbstractTexture::readPixels() const {
     bind();
     GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data()));
     unbind();
+
+    // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have (0,0) at top-left
+    flip_pixels_y(data, width, height);
+
     return Image(width, height, std::move(data));
 }
 
