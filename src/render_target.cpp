@@ -4,9 +4,11 @@
 namespace glvis {
 
 void RenderTarget::setView(const View& view) {
-    this->view = view.getViewMatrix(static_cast<float>(get_width()), static_cast<float>(get_height()));
-    inv_view = view.getInvViewMatrix(static_cast<float>(get_width()), static_cast<float>(get_height()));
-    projection = view.getProjectionMatrix(static_cast<float>(get_width()), static_cast<float>(get_height()));
+    float width = static_cast<float>(getRenderTargetidth());
+    float height = static_cast<float>(getRenderTargetHeight());
+    this->view = view.getViewMatrix(width, height);
+    this->inv_view = view.getInvViewMatrix(width, height);
+    this->projection = view.getProjectionMatrix(width, height);
 }
 
 void RenderTarget::clear(const Color& color) const {
