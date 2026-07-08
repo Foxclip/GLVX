@@ -47,7 +47,13 @@ void RenderTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
-void RenderTexture::draw(const Drawable& drawable, const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
+void RenderTexture::setView(const View& view) {
+    this->view = view.getViewMatrix(static_cast<float>(width), static_cast<float>(height));
+    invView = view.getInvViewMatrix(static_cast<float>(width), static_cast<float>(height));
+    projection = view.getProjectionMatrix(static_cast<float>(width), static_cast<float>(height));
+}
+
+void RenderTexture::draw(const Drawable& drawable, const RenderStates& states) const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, FBO));
     GL_CALL(glViewport(0, 0, width, height));
     GL_CALL(glEnable(GL_BLEND));
