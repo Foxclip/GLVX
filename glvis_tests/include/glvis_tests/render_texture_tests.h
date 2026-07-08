@@ -1,6 +1,7 @@
 #pragma once
 
 #include "test_lib/test.h"
+#include "glvis_tests/glvis_tests_common.h"
 
 using namespace glvis;
 
@@ -12,6 +13,7 @@ public:
         const std::vector<test::TestNode*>& required_nodes = { }
     );
     void clearTest(test::Test& test);
+    void renderTexturePanTest(test::Test& test);
 
 private:
 
