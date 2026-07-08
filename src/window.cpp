@@ -110,27 +110,6 @@ void Window::setTitle(const std::string& title) const {
     glfwSetWindowTitle(window, title.c_str());
 }
 
-void Window::setView(const View& view) {
-    this->view = view.getViewMatrix(static_cast<float>(current_width), static_cast<float>(current_height));
-    inv_view = view.getInvViewMatrix(static_cast<float>(current_width), static_cast<float>(current_height));
-    projection = view.getProjectionMatrix(static_cast<float>(current_width), static_cast<float>(current_height));
-}
-
-void Window::clear(const Color& color) const {
-    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screen_texture_uptr->getFBO()));
-    GL_CALL(glClearColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f));
-    GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
-}
-
-void Window::draw(const Drawable& drawable, const RenderStates& states) const {
-    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screen_texture_uptr->getFBO()));
-    GL_CALL(glViewport(0, 0, current_width, current_height));
-    GL_CALL(glEnable(GL_BLEND));
-    GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-    drawable.render(view, projection, states);
-    GL_CALL(glDisable(GL_BLEND));
-}
-
 void Window::display() const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
@@ -156,28 +135,6 @@ Image Window::readPixels() const {
     return Image(current_width, current_height, std::move(pixels));
 }
 
-Vector2i Window::worldToScreen(float x, float y) const {
-    glm::vec4 point = to_glmMat4(view) * glm::vec4(x, y, 0.0f, 1.0f);
-    glm::vec2 result = glm::vec2(point.x, current_height - point.y);
-    return Vector2i(static_cast<int>(result.x), static_cast<int>(result.y));
-}
-
-Vector2i Window::worldToScreen(const Vector2f& worldPos) const {
-    return worldToScreen(worldPos.x, worldPos.y);
-}
-
-Vector2f Window::screenToWorld(int x, int y) const {
-    float x_shifted = x + 0.5f;
-    float y_shifted = y + 0.5f;
-    glm::vec4 point = to_glmMat4(inv_view) * glm::vec4(x_shifted, current_height - y_shifted, 0.0f, 1.0f);
-    glm::vec2 result = glm::vec2(point.x, point.y);
-    return from_glmVec2(result);
-}
-
-Vector2f Window::screenToWorld(const Vector2i& screenPos) const {
-    return screenToWorld(screenPos.x, screenPos.y);
-}
-
 void Window::setMouseCallback(const mouseCallbackFuncType& callback) {
     mouse_move_callback = callback;
 }
@@ -188,6 +145,18 @@ void Window::setMouseButtonCallback(const mouseButtonCallbackFuncType& callback)
 
 void Window::setScrollCallback(const scrollCallbackFuncType& callback) {
     scroll_callback = callback;
+}
+
+unsigned int Window::get_fbo() const {
+    return screen_texture_uptr->getFBO();
+}
+
+int Window::get_width() const {
+    return current_width;
+}
+
+int Window::get_height() const {
+    return current_height;
 }
 
 void Window::processWindowSize(int width, int height) {
