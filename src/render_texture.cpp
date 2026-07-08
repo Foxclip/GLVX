@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glvis/glvis_common.h"
+#include "glvis/color.h"
 
 namespace glvis {
 
@@ -51,6 +52,12 @@ void RenderTexture::setView(const View& view) {
     this->view = view.getViewMatrix(static_cast<float>(width), static_cast<float>(height));
     invView = view.getInvViewMatrix(static_cast<float>(width), static_cast<float>(height));
     projection = view.getProjectionMatrix(static_cast<float>(width), static_cast<float>(height));
+}
+
+void RenderTexture::clear(const Color& color) const {
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, FBO));
+    GL_CALL(glClearColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f));
+    GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
 }
 
 void RenderTexture::draw(const Drawable& drawable, const RenderStates& states) const {

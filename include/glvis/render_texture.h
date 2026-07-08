@@ -15,6 +15,7 @@ public:
     void create(int width, int height);
     void resize(int newWidth, int newHeight, bool blitOldContents = true) override;
     void setView(const View& view);
+    void clear(const Color& color) const;
     void draw(const Drawable& drawable, const RenderStates& states = RenderStates()) const;
 
 private:
