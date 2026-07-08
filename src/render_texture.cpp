@@ -47,4 +47,13 @@ void RenderTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
+void RenderTexture::draw(const Drawable& drawable, const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, FBO));
+    GL_CALL(glViewport(0, 0, width, height));
+    GL_CALL(glEnable(GL_BLEND));
+    GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    drawable.render(view, projection, states);
+    GL_CALL(glDisable(GL_BLEND));
+}
+
 }
