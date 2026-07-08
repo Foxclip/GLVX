@@ -147,15 +147,15 @@ void Window::setScrollCallback(const scrollCallbackFuncType& callback) {
     scroll_callback = callback;
 }
 
-unsigned int Window::get_fbo() const {
+unsigned int Window::getRenderTargetFbo() const {
     return screen_texture_uptr->getFBO();
 }
 
-int Window::get_width() const {
+int Window::getRenderTargetidth() const {
     return current_width;
 }
 
-int Window::get_height() const {
+int Window::getRenderTargetHeight() const {
     return current_height;
 }
 

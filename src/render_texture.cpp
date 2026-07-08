@@ -45,15 +45,15 @@ void RenderTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
-unsigned int RenderTexture::get_fbo() const {
+unsigned int RenderTexture::getRenderTargetFbo() const {
     return FBO;
 }
 
-int RenderTexture::get_width() const {
+int RenderTexture::getRenderTargetidth() const {
     return width;
 }
 
-int RenderTexture::get_height() const {
+int RenderTexture::getRenderTargetHeight() const {
     return height;
 }
 

@@ -57,9 +57,9 @@ private:
     mouseButtonCallbackFuncType mouse_button_callback = [](int button, int action, int mods) { };
     scrollCallbackFuncType scroll_callback = [](double xoffset, double yoffset) { };
 
-    unsigned int get_fbo() const override;
-    int get_width() const override;
-    int get_height() const override;
+    unsigned int getRenderTargetFbo() const override;
+    int getRenderTargetidth() const override;
+    int getRenderTargetHeight() const override;
 
     void processWindowSize(int width, int height);
     static void framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height);

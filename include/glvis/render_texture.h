@@ -19,9 +19,9 @@ public:
 private:
     unsigned int FBO = 0;
 
-    unsigned int get_fbo() const override;
-    int get_width() const override;
-    int get_height() const override;
+    unsigned int getRenderTargetFbo() const override;
+    int getRenderTargetidth() const override;
+    int getRenderTargetHeight() const override;
 };
 
 }

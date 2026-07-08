@@ -28,9 +28,9 @@ protected:
     Matrix4 inv_view;
     Matrix4 projection;
 
-    virtual unsigned int get_fbo() const = 0;
-    virtual int get_width() const = 0;
-    virtual int get_height() const = 0;
+    virtual unsigned int getRenderTargetFbo() const = 0;
+    virtual int getRenderTargetidth() const = 0;
+    virtual int getRenderTargetHeight() const = 0;
 };
 
 }
