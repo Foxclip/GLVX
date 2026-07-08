@@ -50,21 +50,21 @@ public:
 
 private:
     GLFWwindow* window = nullptr;
-    int currentWidth = 0;
-    int currentHeight = 0;
-    std::unique_ptr<Rectangle> screenRectangleUptr = nullptr;
-    std::unique_ptr<Shader> defaultShaderUptr = nullptr;
-    std::unique_ptr<Shader> subpixelShaderUptr = nullptr;
-    std::unique_ptr<Shader> screenShaderUptr = nullptr;
-    std::unique_ptr<RenderTexture> screenTextureUptr = nullptr;
-    std::unique_ptr<UniformBuffer> uniformBufferUptr = nullptr;
+    int current_width = 0;
+    int current_height = 0;
+    std::unique_ptr<Rectangle> screen_rectangle_uptr = nullptr;
+    std::unique_ptr<Shader> default_shader_uptr = nullptr;
+    std::unique_ptr<Shader> subpixel_shader_uptr = nullptr;
+    std::unique_ptr<Shader> screen_shader_uptr = nullptr;
+    std::unique_ptr<RenderTexture> screen_texture_uptr = nullptr;
+    std::unique_ptr<UniformBuffer> uniform_buffer_uptr = nullptr;
     Matrix4 view;
-    Matrix4 invView;
+    Matrix4 inv_view;
     Matrix4 projection;
 
-    mouseCallbackFuncType mouseMoveCallback = [](double xpos, double ypos) { };
-    mouseButtonCallbackFuncType mouseButtonCallback = [](int button, int action, int mods) { };
-    scrollCallbackFuncType scrollCallback = [](double xoffset, double yoffset) { };
+    mouseCallbackFuncType mouse_move_callback = [](double xpos, double ypos) { };
+    mouseButtonCallbackFuncType mouse_button_callback = [](int button, int action, int mods) { };
+    scrollCallbackFuncType scroll_callback = [](double xoffset, double yoffset) { };
 
     void processWindowSize(int width, int height);
     static void framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height);
