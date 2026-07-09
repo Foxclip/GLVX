@@ -14,12 +14,12 @@
 namespace glvis {
 
 Window::~Window() {
-    screenRectangleUptr.reset();
-    screenShaderUptr.reset();
-    defaultShaderUptr.reset();
-    subpixelShaderUptr.reset();
-    uniformBufferUptr.reset();
-    screenTextureUptr.reset();
+    screen_rectangle_uptr.reset();
+    screen_shader_uptr.reset();
+    default_shader_uptr.reset();
+    subpixel_shader_uptr.reset();
+    uniform_buffer_uptr.reset();
+    screen_texture_uptr.reset();
     glfwDestroyWindow(window);
     glfwTerminate();
 }
@@ -42,8 +42,8 @@ void Window::create(int width, int height, const char* title) {
 
     glfwMakeContextCurrent(window);
 
-    currentWidth = width;
-    currentHeight = height;
+    current_width = width;
+    current_height = height;
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         glfwDestroyWindow(window);
@@ -58,22 +58,22 @@ void Window::create(int width, int height, const char* title) {
     glfwSetMouseButtonCallback(window, mouseButtonCallbackGLFW);
     glfwSetScrollCallback(window, scrollCallbackGLFW);
 
-    uniformBufferUptr = std::make_unique<UniformBuffer>();
-    uniformBufferUptr->createCameraUBO();
-    uniformBufferUptr->createObjectUBO();
-    common::uniformBuffer = uniformBufferUptr.get();
+    uniform_buffer_uptr = std::make_unique<UniformBuffer>();
+    uniform_buffer_uptr->createCameraUBO();
+    uniform_buffer_uptr->createObjectUBO();
+    common::uniformBuffer = uniform_buffer_uptr.get();
 
-    defaultShaderUptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag, true);
-    common::defaultShader = defaultShaderUptr.get();
-    subpixelShaderUptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag, true);
-    common::subpixelShader = subpixelShaderUptr.get();
-    screenShaderUptr = std::make_unique<Shader>(shaders::screen_vert, shaders::screen_frag);
+    default_shader_uptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag, true);
+    common::defaultShader = default_shader_uptr.get();
+    subpixel_shader_uptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag, true);
+    common::subpixelShader = subpixel_shader_uptr.get();
+    screen_shader_uptr = std::make_unique<Shader>(shaders::screen_vert, shaders::screen_frag);
 
-    screenTextureUptr = std::make_unique<RenderTexture>(width, height);
+    screen_texture_uptr = std::make_unique<RenderTexture>(width, height);
 
-    screenRectangleUptr = std::make_unique<Rectangle>(2.0f, 2.0f);
-    screenRectangleUptr->setShader(screenShaderUptr.get());
-    screenRectangleUptr->setTexture(screenTextureUptr.get());
+    screen_rectangle_uptr = std::make_unique<Rectangle>(2.0f, 2.0f);
+    screen_rectangle_uptr->setShader(screen_shader_uptr.get());
+    screen_rectangle_uptr->setTexture(screen_texture_uptr.get());
     END_TRY
 }
 
@@ -82,19 +82,19 @@ bool Window::isOpen() const {
 }
 
 int Window::getWidth() const {
-    return currentWidth;
+    return current_width;
 }
 
 int Window::getHeight() const {
-    return currentHeight;
+    return current_height;
 }
 
 Vector2i Window::getSize() const {
-    return Vector2i(currentWidth, currentHeight);
+    return Vector2i(current_width, current_height);
 }
 
 Vector2f Window::getCenter() const {
-    return Vector2f(static_cast<float>(currentWidth) / 2.0f, static_cast<float>(currentHeight) / 2.0f);
+    return Vector2f(static_cast<float>(current_width) / 2.0f, static_cast<float>(current_height) / 2.0f);
 }
 
 void Window::setSize(int width, int height) {
@@ -110,98 +110,60 @@ void Window::setTitle(const std::string& title) const {
     glfwSetWindowTitle(window, title.c_str());
 }
 
-void Window::setView(const View& view) {
-    this->view = view.getViewMatrix(static_cast<float>(currentWidth), static_cast<float>(currentHeight));
-    invView = view.getInvViewMatrix(static_cast<float>(currentWidth), static_cast<float>(currentHeight));
-    projection = view.getProjectionMatrix(static_cast<float>(currentWidth), static_cast<float>(currentHeight));
-}
-
-void Window::clear(const Color& color) const {
-    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
-    GL_CALL(glClearColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f));
-    GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
-}
-
-void Window::draw(const Drawable& drawable, const RenderStates& states) const {
-    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, screenTextureUptr->getFBO()));
-    GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
-    GL_CALL(glEnable(GL_BLEND));
-    GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-    drawable.render(view, projection, states);
-    GL_CALL(glDisable(GL_BLEND));
-}
-
 void Window::display() const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
     // render quad with framebuffer to screen
-    GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
+    GL_CALL(glViewport(0, 0, current_width, current_height));
     GL_CALL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
     GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
-    screenRectangleUptr->render(from_glmMat4(glm::mat4(1.0f)), projection);
+    screen_rectangle_uptr->render(from_glmMat4(glm::mat4(1.0f)), projection);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
 
 Image Window::readPixels() const {
-    std::vector<unsigned char> pixels(currentWidth * currentHeight * 4);
+    std::vector<unsigned char> pixels(current_width * current_height * 4);
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     GL_CALL(glReadBuffer(GL_FRONT));
-    GL_CALL(glReadPixels(0, 0, currentWidth, currentHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data()));
+    GL_CALL(glReadPixels(0, 0, current_width, current_height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data()));
 
     // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have (0,0) at top-left
-    std::vector<unsigned char> flippedPixels(currentWidth * currentHeight * 4);
-    size_t rowSize = currentWidth * 4;
-    for (int y = 0; y < currentHeight; ++y) {
-        int srcY = currentHeight - 1 - y;
-        std::copy(pixels.begin() + srcY * rowSize,
-                  pixels.begin() + (srcY + 1) * rowSize,
-                  flippedPixels.begin() + y * rowSize);
-    }
+    flip_pixels_y(pixels, current_width, current_height);
 
-    return Image(currentWidth, currentHeight, std::move(flippedPixels));
-}
-
-Vector2i Window::worldToScreen(float x, float y) const {
-    glm::vec4 point = to_glmMat4(view) * glm::vec4(x, y, 0.0f, 1.0f);
-    glm::vec2 result = glm::vec2(point.x, currentHeight - point.y);
-    return Vector2i(static_cast<int>(result.x), static_cast<int>(result.y));
-}
-
-Vector2i Window::worldToScreen(const Vector2f& worldPos) const {
-    return worldToScreen(worldPos.x, worldPos.y);
-}
-
-Vector2f Window::screenToWorld(int x, int y) const {
-    float x_shifted = x + 0.5f;
-    float y_shifted = y + 0.5f;
-    glm::vec4 point = to_glmMat4(invView) * glm::vec4(x_shifted, currentHeight - y_shifted, 0.0f, 1.0f);
-    glm::vec2 result = glm::vec2(point.x, point.y);
-    return from_glmVec2(result);
-}
-
-Vector2f Window::screenToWorld(const Vector2i& screenPos) const {
-    return screenToWorld(screenPos.x, screenPos.y);
+    return Image(current_width, current_height, std::move(pixels));
 }
 
 void Window::setMouseCallback(const mouseCallbackFuncType& callback) {
-    mouseMoveCallback = callback;
+    mouse_move_callback = callback;
 }
 
 void Window::setMouseButtonCallback(const mouseButtonCallbackFuncType& callback) {
-    mouseButtonCallback = callback;
+    mouse_button_callback = callback;
 }
 
 void Window::setScrollCallback(const scrollCallbackFuncType& callback) {
-    scrollCallback = callback;
+    scroll_callback = callback;
+}
+
+unsigned int Window::getRenderTargetFbo() const {
+    return screen_texture_uptr->getFBO();
+}
+
+int Window::getRenderTargetidth() const {
+    return current_width;
+}
+
+int Window::getRenderTargetHeight() const {
+    return current_height;
 }
 
 void Window::processWindowSize(int width, int height) {
-    currentWidth = width;
-    currentHeight = height;
-    screenTextureUptr->resize(width, height);
-    GL_CALL(glViewport(0, 0, currentWidth, currentHeight));
+    current_width = width;
+    current_height = height;
+    screen_texture_uptr->resize(width, height);
+    GL_CALL(glViewport(0, 0, current_width, current_height));
 }
 
 void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height) {
@@ -212,19 +174,19 @@ void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int heig
 
 void Window::mouseMoveCallbackGLFW(GLFWwindow* glfwWindow, double xpos, double ypos) {
     if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        window->mouseMoveCallback(xpos, ypos);
+        window->mouse_move_callback(xpos, ypos);
     }
 }
 
 void Window::mouseButtonCallbackGLFW(GLFWwindow* glfwWindow, int button, int action, int mods) {
     if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        window->mouseButtonCallback(button, action, mods);
+        window->mouse_button_callback(button, action, mods);
     }
 }
 
 void Window::scrollCallbackGLFW(GLFWwindow* glfwWindow, double xoffset, double yoffset) {
     if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        window->scrollCallback(xoffset, yoffset);
+        window->scroll_callback(xoffset, yoffset);
     }
 }
 

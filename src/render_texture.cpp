@@ -2,6 +2,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glvis/glvis_common.h"
+#include "glvis/color.h"
+#include "glvis/utils.h"
 
 namespace glvis {
 
@@ -19,22 +21,18 @@ unsigned int RenderTexture::getFBO() const {
 }
 
 void RenderTexture::create(int width, int height) {
-    // Create FBO if it doesn't exist
     if (FBO == 0) {
         GL_CALL(glGenFramebuffers(1, &FBO));
     }
 
-    // Create texture first (while FBO is not bound)
     AbstractTexture::createTexture(width, height, nullptr, 4, false, interpolation, wrapping);
 
-    // Then attach to FBO
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, FBO));
     GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0));
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
 void RenderTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
-    // Create FBO if it doesn't exist
     if (FBO == 0) {
         GL_CALL(glGenFramebuffers(1, &FBO));
     }
@@ -45,6 +43,18 @@ void RenderTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, FBO));
     GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0));
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+}
+
+unsigned int RenderTexture::getRenderTargetFbo() const {
+    return FBO;
+}
+
+int RenderTexture::getRenderTargetidth() const {
+    return width;
+}
+
+int RenderTexture::getRenderTargetHeight() const {
+    return height;
 }
 
 }

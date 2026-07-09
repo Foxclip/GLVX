@@ -11,6 +11,7 @@
 #include "glvis/render_texture.h"
 #include "glvis/image.h"
 #include "glvis/vector.h"
+#include "glvis/render_target.h"
 #include <memory>
 #include <functional>
 
@@ -19,7 +20,7 @@ namespace glvis {
 const int DEFAULT_WINDOW_WIDTH = 800;
 const int DEFAULT_WINDOW_HEIGHT = 600;
 
-class Window {
+class Window : public RenderTarget {
 public:
     ~Window();
     void create(int width = DEFAULT_WINDOW_WIDTH, int height = DEFAULT_WINDOW_HEIGHT, const char* title = "GLVis window");
@@ -31,15 +32,8 @@ public:
     void setSize(int width, int height);
     void setSize(const Vector2i& size);
     void setTitle(const std::string& title) const;
-    void setView(const View& view);
-    void clear(const Color& color) const;
-    void draw(const Drawable& drawable, const RenderStates& states = RenderStates()) const;
     void display() const;
     Image readPixels() const;
-    Vector2i worldToScreen(float x, float y) const;
-    Vector2i worldToScreen(const Vector2f& worldPos) const;
-    Vector2f screenToWorld(int x, int y) const;
-    Vector2f screenToWorld(const Vector2i& screenPos) const;
 
     using mouseCallbackFuncType = std::function<void(double xpos, double ypos)>;
     using mouseButtonCallbackFuncType = std::function<void(int button, int action, int mods)>;
@@ -50,21 +44,22 @@ public:
 
 private:
     GLFWwindow* window = nullptr;
-    int currentWidth = 0;
-    int currentHeight = 0;
-    std::unique_ptr<Rectangle> screenRectangleUptr = nullptr;
-    std::unique_ptr<Shader> defaultShaderUptr = nullptr;
-    std::unique_ptr<Shader> subpixelShaderUptr = nullptr;
-    std::unique_ptr<Shader> screenShaderUptr = nullptr;
-    std::unique_ptr<RenderTexture> screenTextureUptr = nullptr;
-    std::unique_ptr<UniformBuffer> uniformBufferUptr = nullptr;
-    Matrix4 view;
-    Matrix4 invView;
-    Matrix4 projection;
+    int current_width = 0;
+    int current_height = 0;
+    std::unique_ptr<Rectangle> screen_rectangle_uptr = nullptr;
+    std::unique_ptr<Shader> default_shader_uptr = nullptr;
+    std::unique_ptr<Shader> subpixel_shader_uptr = nullptr;
+    std::unique_ptr<Shader> screen_shader_uptr = nullptr;
+    std::unique_ptr<RenderTexture> screen_texture_uptr = nullptr;
+    std::unique_ptr<UniformBuffer> uniform_buffer_uptr = nullptr;
 
-    mouseCallbackFuncType mouseMoveCallback = [](double xpos, double ypos) { };
-    mouseButtonCallbackFuncType mouseButtonCallback = [](int button, int action, int mods) { };
-    scrollCallbackFuncType scrollCallback = [](double xoffset, double yoffset) { };
+    mouseCallbackFuncType mouse_move_callback = [](double xpos, double ypos) { };
+    mouseButtonCallbackFuncType mouse_button_callback = [](int button, int action, int mods) { };
+    scrollCallbackFuncType scroll_callback = [](double xoffset, double yoffset) { };
+
+    unsigned int getRenderTargetFbo() const override;
+    int getRenderTargetidth() const override;
+    int getRenderTargetHeight() const override;
 
     void processWindowSize(int width, int height);
     static void framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height);

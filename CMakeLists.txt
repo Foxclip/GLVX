@@ -34,6 +34,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/rect.cpp
     ${SRC_DIR}/rectangle.cpp
     ${SRC_DIR}/render_states.cpp
+    ${SRC_DIR}/render_target.cpp
     ${SRC_DIR}/render_texture.cpp
     ${SRC_DIR}/shader.cpp
     ${SRC_DIR}/shape.cpp

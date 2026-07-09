@@ -1,10 +1,13 @@
 #pragma once
 
 #include "glvis/abstract_texture.h"
+#include "glvis/drawable.h"
+#include "glvis/view.h"
+#include "glvis/render_target.h"
 
 namespace glvis {
 
-class RenderTexture : public AbstractTexture {
+class RenderTexture : public AbstractTexture, public RenderTarget {
 public:
     RenderTexture() = default;
     RenderTexture(int width, int height);
@@ -16,6 +19,9 @@ public:
 private:
     unsigned int FBO = 0;
 
+    unsigned int getRenderTargetFbo() const override;
+    int getRenderTargetidth() const override;
+    int getRenderTargetHeight() const override;
 };
 
 }
