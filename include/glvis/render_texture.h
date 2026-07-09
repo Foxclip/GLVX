@@ -20,7 +20,7 @@ private:
     unsigned int FBO = 0;
 
     unsigned int getRenderTargetFbo() const override;
-    int getRenderTargetidth() const override;
+    int getRenderTargetWidth() const override;
     int getRenderTargetHeight() const override;
 };
 

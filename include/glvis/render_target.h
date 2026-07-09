@@ -29,7 +29,7 @@ protected:
     Matrix4 projection;
 
     virtual unsigned int getRenderTargetFbo() const = 0;
-    virtual int getRenderTargetidth() const = 0;
+    virtual int getRenderTargetWidth() const = 0;
     virtual int getRenderTargetHeight() const = 0;
 };
 

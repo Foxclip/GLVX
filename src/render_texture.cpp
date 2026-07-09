@@ -49,7 +49,7 @@ unsigned int RenderTexture::getRenderTargetFbo() const {
     return FBO;
 }
 
-int RenderTexture::getRenderTargetidth() const {
+int RenderTexture::getRenderTargetWidth() const {
     return width;
 }
 

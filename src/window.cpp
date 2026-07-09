@@ -132,7 +132,7 @@ unsigned int Window::getRenderTargetFbo() const {
     return 0;
 }
 
-int Window::getRenderTargetidth() const {
+int Window::getRenderTargetWidth() const {
     return current_width;
 }
 

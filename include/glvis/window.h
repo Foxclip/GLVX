@@ -53,7 +53,7 @@ private:
     scrollCallbackFuncType scroll_callback = [](double xoffset, double yoffset) { };
 
     unsigned int getRenderTargetFbo() const override;
-    int getRenderTargetidth() const override;
+    int getRenderTargetWidth() const override;
     int getRenderTargetHeight() const override;
 
     void processWindowSize(int width, int height);
