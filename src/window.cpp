@@ -99,7 +99,6 @@ void Window::setTitle(const std::string& title) const {
 
 void Window::display() const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-    GL_CALL(glViewport(0, 0, current_width, current_height));
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
