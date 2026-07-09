@@ -6,9 +6,7 @@
 #include "glvis/uniform_buffer.h"
 #include "glvis/view.h"
 #include "glvis/drawable.h"
-#include "glvis/rectangle.h"
 #include "glvis/shader.h"
-#include "glvis/render_texture.h"
 #include "glvis/image.h"
 #include "glvis/vector.h"
 #include "glvis/render_target.h"
@@ -46,11 +44,8 @@ private:
     GLFWwindow* window = nullptr;
     int current_width = 0;
     int current_height = 0;
-    std::unique_ptr<Rectangle> screen_rectangle_uptr = nullptr;
     std::unique_ptr<Shader> default_shader_uptr = nullptr;
     std::unique_ptr<Shader> subpixel_shader_uptr = nullptr;
-    std::unique_ptr<Shader> screen_shader_uptr = nullptr;
-    std::unique_ptr<RenderTexture> screen_texture_uptr = nullptr;
     std::unique_ptr<UniformBuffer> uniform_buffer_uptr = nullptr;
 
     mouseCallbackFuncType mouse_move_callback = [](double xpos, double ypos) { };

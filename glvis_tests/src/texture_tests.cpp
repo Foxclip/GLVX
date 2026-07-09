@@ -1,5 +1,6 @@
 #include "glvis_tests/texture_tests.h"
 #include "glvis/texture.h"
+#include "glvis/rectangle.h"
 #include "glvis/vertex_array.h"
 
 TextureTestsModule::TextureTestsModule(

@@ -1,10 +1,7 @@
 #include "glvis/window.h"
-#include "glvis/render_texture.h"
-#include "glvis/rectangle.h"
 #include "glvis/shader.h"
 #include "glvis/shaders/simple.h"
 #include "glvis/shaders/subpixel.h"
-#include "glvis/shaders/screen.h"
 #include "glvis/uniform_buffer.h"
 #include "glvis/image.h"
 #include "glvis/utils.h"
@@ -14,12 +11,9 @@
 namespace glvis {
 
 Window::~Window() {
-    screen_rectangle_uptr.reset();
-    screen_shader_uptr.reset();
     default_shader_uptr.reset();
     subpixel_shader_uptr.reset();
     uniform_buffer_uptr.reset();
-    screen_texture_uptr.reset();
     glfwDestroyWindow(window);
     glfwTerminate();
 }
@@ -67,13 +61,6 @@ void Window::create(int width, int height, const char* title) {
     common::defaultShader = default_shader_uptr.get();
     subpixel_shader_uptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag, true);
     common::subpixelShader = subpixel_shader_uptr.get();
-    screen_shader_uptr = std::make_unique<Shader>(shaders::screen_vert, shaders::screen_frag);
-
-    screen_texture_uptr = std::make_unique<RenderTexture>(width, height);
-
-    screen_rectangle_uptr = std::make_unique<Rectangle>(2.0f, 2.0f);
-    screen_rectangle_uptr->setShader(screen_shader_uptr.get());
-    screen_rectangle_uptr->setTexture(screen_texture_uptr.get());
     END_TRY
 }
 
@@ -112,13 +99,7 @@ void Window::setTitle(const std::string& title) const {
 
 void Window::display() const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    // render quad with framebuffer to screen
     GL_CALL(glViewport(0, 0, current_width, current_height));
-    GL_CALL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
-    GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
-    screen_rectangle_uptr->render(from_glmMat4(glm::mat4(1.0f)), projection);
-
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
@@ -148,7 +129,7 @@ void Window::setScrollCallback(const scrollCallbackFuncType& callback) {
 }
 
 unsigned int Window::getRenderTargetFbo() const {
-    return screen_texture_uptr->getFBO();
+    return 0;
 }
 
 int Window::getRenderTargetidth() const {
@@ -162,7 +143,6 @@ int Window::getRenderTargetHeight() const {
 void Window::processWindowSize(int width, int height) {
     current_width = width;
     current_height = height;
-    screen_texture_uptr->resize(width, height);
     GL_CALL(glViewport(0, 0, current_width, current_height));
 }
 

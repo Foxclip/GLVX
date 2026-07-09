@@ -1,5 +1,6 @@
 #include "glvis_tests/shape_tests.h"
 #include "glvis/circle.h"
+#include "glvis/rectangle.h"
 
 using namespace glvis;
 

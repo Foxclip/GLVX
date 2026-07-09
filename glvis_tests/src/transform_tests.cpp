@@ -1,4 +1,5 @@
 #include "glvis_tests/transform_tests.h"
+#include "glvis/rectangle.h"
 
 TransformTestsModule::TransformTestsModule(
     const std::string& name,

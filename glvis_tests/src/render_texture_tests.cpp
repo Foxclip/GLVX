@@ -1,4 +1,5 @@
 #include "glvis_tests/render_texture_tests.h"
+#include "glvis/rectangle.h"
 #include "glvis/view.h"
 #include "glvis/render_texture.h"
 #include "glvis_tests/glvis_tests_common.h"

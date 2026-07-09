@@ -1,4 +1,5 @@
 #include "glvis_tests/window_tests.h"
+#include "glvis/rectangle.h"
 
 WindowTestsModule::WindowTestsModule(
     const std::string& name,

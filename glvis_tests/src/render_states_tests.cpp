@@ -1,5 +1,6 @@
 #include "glvis_tests/render_states_tests.h"
 
+#include "glvis/rectangle.h"
 #include "glvis/render_states.h"
 #include "glvis/shader.h"
 #include "glvis/texture.h"
