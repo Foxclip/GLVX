@@ -11,6 +11,7 @@ RenderTextureTestsModule::RenderTextureTestsModule(
 ) : test::TestModule(name, parent, required_nodes) {
     auto clear_test = addTest("clear", [&](test::Test& test) { clearTest(test); });
     auto pan_test = addTest("pan", [&](test::Test& test) { renderTexturePanTest(test); });
+    auto transparent_rect_test = addTest("transparent_rectangle", [&](test::Test& test) { transparentRectangleTest(test); });
 }
 
 void RenderTextureTestsModule::clearTest(test::Test& test) {
@@ -72,4 +73,50 @@ void RenderTextureTestsModule::renderTexturePanTest(test::Test& test) {
     T_COMPARE(image.getPixel(panned_rect_start), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(panned_rect_end - Vector2i(1, 1)), Color::Red, &Color::toString);
     T_COMPARE(image.getPixel(panned_rect_end), Color::Black, &Color::toString);
+}
+
+void RenderTextureTestsModule::transparentRectangleTest(test::Test& test) {
+    RenderTexture render_texture(WINDOW_SIZE.x, WINDOW_SIZE.y);
+    View rt_view;
+    rt_view.setPosition(static_cast<Vector2f>(WINDOW_SIZE) / 2.0f);
+    render_texture.setView(rt_view);
+    render_texture.clear(Color(0, 0, 0, 0));
+
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    Rectangle white_rect(rect_size);
+    white_rect.setColor(Color(255, 255, 255, 128));
+    render_texture.draw(white_rect);
+
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("render texture transparent rectangle");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    Rectangle screen_rect(static_cast<Vector2f>(WINDOW_SIZE));
+    screen_rect.setTexture(&render_texture);
+    window.draw(screen_rect);
+    window.display();
+
+    Image image = window.readPixels();
+    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
+    const Vector2i rect_start = Vector2i(0, 0);
+    const Vector2i rect_end = rect_start + rect_size_int;
+    T_WRAP_CONTAINER(checkPixelColor(test, image, rect_start, rect_end, Color(32, 32, 32, 207)));
+    T_WRAP_CONTAINER(checkPixelColor(
+        test, image,
+        Vector2i(rect_size_int.x, 0), Vector2i(WINDOW_SIZE.x, rect_size_int.y),
+        Color::Black
+    ));
+    T_WRAP_CONTAINER(checkPixelColor(
+        test, image,
+        Vector2i(0, rect_size_int.y), Vector2i(rect_size_int.x, WINDOW_SIZE.y),
+        Color::Black
+    ));
+    T_WRAP_CONTAINER(checkPixelColor(
+        test, image,
+        rect_size_int, WINDOW_SIZE,
+        Color::Black
+    ));
 }

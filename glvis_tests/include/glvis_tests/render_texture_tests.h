@@ -14,6 +14,7 @@ public:
     );
     void clearTest(test::Test& test);
     void renderTexturePanTest(test::Test& test);
+    void transparentRectangleTest(test::Test& test);
 
 private:
 
