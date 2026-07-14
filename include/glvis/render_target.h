@@ -15,7 +15,7 @@ class RenderTarget {
 public:
     virtual ~RenderTarget() = default;
 
-    void setView(const View& view);
+    virtual void setView(const View& view);
     void clear(const Color& color) const;
     void draw(const Drawable& drawable, const RenderStates& states = RenderStates()) const;
     Vector2i worldToScreen(float x, float y) const;

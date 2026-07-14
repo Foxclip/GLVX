@@ -84,6 +84,23 @@ Vector2f Window::getCenter() const {
     return Vector2f(static_cast<float>(current_width) / 2.0f, static_cast<float>(current_height) / 2.0f);
 }
 
+void glvis::Window::setView(const View& view) {
+    this->view = view.getViewMatrix(
+        static_cast<float>(current_width),
+        static_cast<float>(current_height),
+        true // cooridnate system is y-down, not y-up like opengl
+    );
+    this->inv_view = view.getInvViewMatrix(
+        static_cast<float>(current_width),
+        static_cast<float>(current_height),
+        true
+    );
+    this->projection = view.getProjectionMatrix(
+        static_cast<float>(current_width),
+        static_cast<float>(current_height)
+    );
+}
+
 void Window::setSize(int width, int height) {
     glfwSetWindowSize(window, width, height);
     processWindowSize(width, height);
