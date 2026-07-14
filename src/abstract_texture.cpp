@@ -2,7 +2,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glvis/glvis_common.h"
-#include "glvis/utils.h"
 #include <algorithm>
 #include <cmath>
 #include <memory>
@@ -88,6 +87,10 @@ void AbstractTexture::unbind() const {
     assert(glfwGetCurrentContext() != nullptr);
     assert(GL_CALL(glIsTexture(ID)));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+Image AbstractTexture::readPixels() const {
+    return readPixelsRaw();
 }
 
 void AbstractTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
@@ -212,15 +215,11 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldCon
     this->height = newHeight;
 }
 
-Image AbstractTexture::readPixelsInternal(bool flip_y) const {
+Image AbstractTexture::readPixelsRaw() const {
     std::vector<unsigned char> data(width * height * 4);
     bind();
     GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data()));
     unbind();
-
-    if (flip_y) {
-        flip_pixels_y(data, width, height);
-    }
 
     return Image(width, height, std::move(data));
 }

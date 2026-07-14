@@ -36,7 +36,9 @@ Texture::Texture(const std::filesystem::path& path, InterpolationType interp) {
 }
 
 Image Texture::readPixels() const {
-    return readPixelsInternal(true);
+    Image img = readPixelsRaw();
+    img.flipY();
+    return img;
 }
 
 }

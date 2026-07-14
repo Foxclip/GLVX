@@ -1,6 +1,7 @@
 #include "glvis/image.h"
 #include "glvis/color.h"
 #include "glvis/vector.h"
+#include "glvis/utils.h"
 #include <cassert>
 
 namespace glvis {
@@ -29,6 +30,10 @@ Color Image::getPixel(int x, int y) const {
 
 Color Image::getPixel(const Vector2i& pos) const {
     return getPixel(pos.x, pos.y);
+}
+
+void Image::flipY() {
+    flip_pixels_y(data, width, height);
 }
 
 }

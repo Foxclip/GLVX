@@ -15,6 +15,7 @@ public:
     const std::vector<unsigned char>& getData() const;
     Color getPixel(int x, int y) const;
     Color getPixel(const Vector2i& pos) const;
+    void flipY();
 
 private:
     int width;
