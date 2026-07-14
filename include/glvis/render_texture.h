@@ -15,6 +15,7 @@ public:
     unsigned int getFBO() const;
     void create(int width, int height);
     void resize(int newWidth, int newHeight, bool blitOldContents = true) override;
+    Image readPixels() const override;
 
 private:
     unsigned int FBO = 0;

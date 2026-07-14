@@ -90,18 +90,6 @@ void AbstractTexture::unbind() const {
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-Image AbstractTexture::readPixels() const {
-    std::vector<unsigned char> data(width * height * 4);
-    bind();
-    GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data()));
-    unbind();
-
-    // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have (0,0) at top-left
-    flip_pixels_y(data, width, height);
-
-    return Image(width, height, std::move(data));
-}
-
 void AbstractTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
     resizeTexture(newWidth, newHeight, blitOldContents, this->interpolation, this->wrapping);
 }
@@ -222,6 +210,19 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldCon
     ID = newTextureID;
     this->width = newWidth;
     this->height = newHeight;
+}
+
+Image AbstractTexture::readPixelsInternal(bool flip_y) const {
+    std::vector<unsigned char> data(width * height * 4);
+    bind();
+    GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data()));
+    unbind();
+
+    if (flip_y) {
+        flip_pixels_y(data, width, height);
+    }
+
+    return Image(width, height, std::move(data));
 }
 
 }

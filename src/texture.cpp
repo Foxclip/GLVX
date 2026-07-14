@@ -35,4 +35,8 @@ Texture::Texture(const std::filesystem::path& path, InterpolationType interp) {
     END_TRY
 }
 
+Image Texture::readPixels() const {
+    return readPixelsInternal(true);
+}
+
 }

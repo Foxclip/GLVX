@@ -30,7 +30,7 @@ public:
     WrappingType getWrapping() const;
     void bind() const;
     void unbind() const;
-    Image readPixels() const;
+    virtual Image readPixels() const = 0;
     virtual void resize(int newWidth, int newHeight, bool blitOldContents = true);
     ~AbstractTexture();
 
@@ -46,6 +46,7 @@ protected:
         WrappingType wrap = WrappingType::ClampToEdge
     );
     void resizeTexture(int newWidth, int newHeight, bool blitOldContents, InterpolationType interp, WrappingType wrap);
+    Image readPixelsInternal(bool flip_y) const;
 
 };
 
