@@ -99,9 +99,9 @@ void TextureTestsModule::textureAlphaTest(test::Test& test) {
 
     Image image = window.readPixels();
     T_COMPARE(image.getPixel(0, 0), Color(255, 0, 0, 255), &Color::toString);
-    T_COMPARE(image.getPixel(1, 0), Color(0, 128, 0, 191), &Color::toString);
-    T_COMPARE(image.getPixel(0, 1), Color(0, 0, 64, 207), &Color::toString);
-    T_COMPARE(image.getPixel(1, 1), Color(32, 32, 0, 227), &Color::toString);
+    T_COMPARE(image.getPixel(1, 0), Color(0, 128, 0, 255), &Color::toString);
+    T_COMPARE(image.getPixel(0, 1), Color(0, 0, 64, 255), &Color::toString);
+    T_COMPARE(image.getPixel(1, 1), Color(32, 32, 0, 255), &Color::toString);
 
     // Check outside of the texture
     T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);

@@ -220,9 +220,9 @@ void ShapeTestsModule::transparentRectangleTest(test::Test& test) {
 
     Image image = window.readPixels();
     Vector2i corner_check = static_cast<Vector2i>(rect_size) - Vector2i(1, 1);
-    T_COMPARE(image.getPixel(0, 0), Color(128, 128, 128, 191), &Color::toString);
-    T_COMPARE(image.getPixel(5, 5), Color(128, 128, 128, 191), &Color::toString);
-    T_COMPARE(image.getPixel(corner_check), Color(128, 128, 128, 191), &Color::toString);
+    T_COMPARE(image.getPixel(0, 0), Color(128, 128, 128, 255), &Color::toString);
+    T_COMPARE(image.getPixel(5, 5), Color(128, 128, 128, 255), &Color::toString);
+    T_COMPARE(image.getPixel(corner_check), Color(128, 128, 128, 255), &Color::toString);
     T_COMPARE(image.getPixel(static_cast<Vector2i>(rect_size)), Color::Black, &Color::toString);
 }
 
@@ -252,8 +252,8 @@ void ShapeTestsModule::multipleTransparentRectanglesTest(test::Test& test) {
 
     Image image = window.readPixels();
     Vector2i corner_check = static_cast<Vector2i>(rect_size) - Vector2i(1, 1);
-    T_COMPARE(image.getPixel(0, 0), Color(32, 64, 128, 143), &Color::toString);
-    T_COMPARE(image.getPixel(5, 5), Color(32, 64, 128, 143), &Color::toString);
-    T_COMPARE(image.getPixel(corner_check), Color(32, 64, 128, 143), &Color::toString);
+    T_COMPARE(image.getPixel(0, 0), Color(32, 64, 128, 255), &Color::toString);
+    T_COMPARE(image.getPixel(5, 5), Color(32, 64, 128, 255), &Color::toString);
+    T_COMPARE(image.getPixel(corner_check), Color(32, 64, 128, 255), &Color::toString);
     T_COMPARE(image.getPixel(static_cast<Vector2i>(rect_size)), Color::Black, &Color::toString);
 }

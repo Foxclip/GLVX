@@ -21,7 +21,7 @@ void RenderTarget::draw(const Drawable& drawable, const RenderStates& states) co
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, getRenderTargetFbo()));
     GL_CALL(glViewport(0, 0, getRenderTargetWidth(), getRenderTargetHeight()));
     GL_CALL(glEnable(GL_BLEND));
-    GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    GL_CALL(glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA));
     drawable.render(view, projection, states);
     GL_CALL(glDisable(GL_BLEND));
 }

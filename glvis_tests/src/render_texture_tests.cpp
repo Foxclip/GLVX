@@ -231,7 +231,7 @@ void RenderTextureTestsModule::transparentRectangleTest(test::Test& test) {
     const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
     const Vector2i rect_start = Vector2i(0, 0);
     const Vector2i rect_end = rect_start + rect_size_int;
-    T_WRAP_CONTAINER(checkPixelColor(test, image_rt, rect_start, rect_end, Color(128, 0, 0, 192)));
+    T_WRAP_CONTAINER(checkPixelColor(test, image_rt, rect_start, rect_end, Color(128, 0, 0, 128)));
     T_WRAP_CONTAINER(checkPixelColor(
         test, image_rt,
         Vector2i(rect_size_int.x, 0), Vector2i(WINDOW_SIZE.x, rect_size_int.y),
@@ -261,7 +261,7 @@ void RenderTextureTestsModule::transparentRectangleTest(test::Test& test) {
     window.display();
 
     Image image_window = window.readPixels();
-    T_WRAP_CONTAINER(checkPixelColor(test, image_window, rect_start, rect_end, Color(128, 0, 0, 192)));
+    T_WRAP_CONTAINER(checkPixelColor(test, image_window, rect_start, rect_end, Color(128, 0, 0, 255)));
     T_WRAP_CONTAINER(checkPixelColor(
         test, image_window,
         Vector2i(rect_size_int.x, 0), Vector2i(WINDOW_SIZE.x, rect_size_int.y),

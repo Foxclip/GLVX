@@ -53,6 +53,7 @@ void main() {
     } else {
         FragColor = VertexColor * colorNormalized;
     }
+    FragColor = vec4(FragColor.rgb * FragColor.a, FragColor.a);
 }
 )";
 
