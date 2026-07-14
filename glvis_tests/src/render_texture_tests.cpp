@@ -219,12 +219,34 @@ void RenderTextureTestsModule::transparentRectangleTest(test::Test& test) {
     View rt_view;
     rt_view.setPosition(static_cast<Vector2f>(WINDOW_SIZE) / 2.0f);
     render_texture.setView(rt_view);
-    render_texture.clear(Color(0, 0, 0, 0));
+    Color render_texture_background = Color(0, 0, 0, 0);
+    render_texture.clear(render_texture_background);
 
     const Vector2f rect_size = Vector2f(10.0f, 10.0f);
     Rectangle white_rect(rect_size);
-    white_rect.setColor(Color(255, 255, 255, 128));
+    white_rect.setColor(Color(255, 0, 0, 128));
     render_texture.draw(white_rect);
+
+    Image image_rt = render_texture.readPixels();
+    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
+    const Vector2i rect_start = Vector2i(0, 0);
+    const Vector2i rect_end = rect_start + rect_size_int;
+    T_WRAP_CONTAINER(checkPixelColor(test, image_rt, rect_start, rect_end, Color(128, 0, 0, 192)));
+    T_WRAP_CONTAINER(checkPixelColor(
+        test, image_rt,
+        Vector2i(rect_size_int.x, 0), Vector2i(WINDOW_SIZE.x, rect_size_int.y),
+        render_texture_background
+    ));
+    T_WRAP_CONTAINER(checkPixelColor(
+        test, image_rt,
+        Vector2i(0, rect_size_int.y), Vector2i(rect_size_int.x, WINDOW_SIZE.y),
+        render_texture_background
+    ));
+    T_WRAP_CONTAINER(checkPixelColor(
+        test, image_rt,
+        rect_size_int, WINDOW_SIZE,
+        render_texture_background
+    ));
 
     window.setSize(WINDOW_SIZE);
     window.setTitle("transparent rectangle");
@@ -238,23 +260,20 @@ void RenderTextureTestsModule::transparentRectangleTest(test::Test& test) {
     window.draw(screen_rect);
     window.display();
 
-    Image image = window.readPixels();
-    const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
-    const Vector2i rect_start = Vector2i(0, 0);
-    const Vector2i rect_end = rect_start + rect_size_int;
-    T_WRAP_CONTAINER(checkPixelColor(test, image, rect_start, rect_end, Color(32, 32, 32, 207)));
+    Image image_window = window.readPixels();
+    T_WRAP_CONTAINER(checkPixelColor(test, image_window, rect_start, rect_end, Color(128, 0, 0, 192)));
     T_WRAP_CONTAINER(checkPixelColor(
-        test, image,
+        test, image_window,
         Vector2i(rect_size_int.x, 0), Vector2i(WINDOW_SIZE.x, rect_size_int.y),
         Color::Black
     ));
     T_WRAP_CONTAINER(checkPixelColor(
-        test, image,
+        test, image_window,
         Vector2i(0, rect_size_int.y), Vector2i(rect_size_int.x, WINDOW_SIZE.y),
         Color::Black
     ));
     T_WRAP_CONTAINER(checkPixelColor(
-        test, image,
+        test, image_window,
         rect_size_int, WINDOW_SIZE,
         Color::Black
     ));
