@@ -51,22 +51,6 @@ Matrix4 from_glmMat4(const glm::mat4& m) {
     return Matrix4(glm::value_ptr(m));
 }
 
-void flip_pixels_y(std::vector<unsigned char>& pixels, int width, int height) {
-    size_t rowSize = width * 4;
-    for (int y = 0; y < height / 2; ++y) {
-        int flipY = height - 1 - y;
-        for (int x = 0; x < width; ++x) {
-            size_t idxTop = y * rowSize + x * 4;
-            size_t idxBottom = flipY * rowSize + x * 4;
-            std::swap_ranges(
-                pixels.begin() + idxTop,
-                pixels.begin() + idxTop + 4,
-                pixels.begin() + idxBottom
-            );
-        }
-    }
-}
-
 void blit_bitmap(
     const unsigned char* src, int srcPitch,
     unsigned char* dst, int dstPitch,

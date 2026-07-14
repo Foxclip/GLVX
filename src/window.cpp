@@ -4,7 +4,6 @@
 #include "glvis/shaders/subpixel.h"
 #include "glvis/uniform_buffer.h"
 #include "glvis/image.h"
-#include "glvis/utils.h"
 #include <stdexcept>
 #include <filesystem>
 
@@ -126,10 +125,9 @@ Image Window::readPixels() const {
     GL_CALL(glReadBuffer(GL_FRONT));
     GL_CALL(glReadPixels(0, 0, current_width, current_height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data()));
 
-    // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have (0,0) at top-left
-    flip_pixels_y(pixels, current_width, current_height);
-
-    return Image(current_width, current_height, std::move(pixels));
+    Image image(current_width, current_height, std::move(pixels));
+    image.flipY();
+    return image;
 }
 
 void Window::setMouseCallback(const mouseCallbackFuncType& callback) {
