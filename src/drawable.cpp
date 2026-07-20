@@ -65,8 +65,7 @@ void Drawable::renderBase(
         if (renderTexture) {
             renderTexture->bind();
         }
-        GLint premultLoc = GL_CALL(glGetUniformLocation(renderShader->ID, "premultiplyOutput"));
-        if (premultLoc != -1) {
+        if (renderShader->uniformExists("premultiplyOutput")) {
             renderShader->setBool("premultiplyOutput", !textureIsPremultiplied);
         }
     } else {
@@ -81,8 +80,7 @@ void Drawable::renderBase(
         } else {
             renderShader->setBool("hasTexture", false);
         }
-        GLint premultLoc = GL_CALL(glGetUniformLocation(renderShader->ID, "premultiplyOutput"));
-        if (premultLoc != -1) {
+        if (renderShader->uniformExists("premultiplyOutput")) {
             renderShader->setBool("premultiplyOutput", !textureIsPremultiplied);
         }
     }

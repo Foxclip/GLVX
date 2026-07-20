@@ -58,6 +58,11 @@ void Shader::setMat4(const std::string& name, const Matrix4& value) const {
     GL_CALL(glUniformMatrix4fv(GL_CALL(glGetUniformLocation(ID, name.c_str())), 1, GL_FALSE, value.getData()));
 }
 
+bool Shader::uniformExists(const std::string& name) const {
+    assert(ID != 0);
+    return GL_CALL(glGetUniformLocation(ID, name.c_str())) != -1;
+}
+
 void Shader::linkProgram(unsigned int vertexShader, unsigned int fragmentShader) {
     START_TRY
     ID = GL_CALL(glCreateProgram());
