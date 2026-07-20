@@ -31,7 +31,6 @@ void Shader::use() {
 void Shader::setBool(const std::string& name, bool value) const {
     assert(ID != 0);
     GLint loc = GL_CALL(glGetUniformLocation(ID, name.c_str()));
-    assert(loc != -1);
     if (loc == -1) return;
     GL_CALL(glUniform1i(loc, static_cast<int>(value)));
 }
@@ -39,7 +38,6 @@ void Shader::setBool(const std::string& name, bool value) const {
 void Shader::setInt(const std::string& name, int value) const {
     assert(ID != 0);
     GLint loc = GL_CALL(glGetUniformLocation(ID, name.c_str()));
-    assert(loc != -1);
     if (loc == -1) return;
     GL_CALL(glUniform1i(loc, value));
 }
@@ -47,7 +45,6 @@ void Shader::setInt(const std::string& name, int value) const {
 void Shader::setFloat(const std::string& name, float value) const {
     assert(ID != 0);
     GLint loc = GL_CALL(glGetUniformLocation(ID, name.c_str()));
-    assert(loc != -1);
     if (loc == -1) return;
     GL_CALL(glUniform1f(loc, value));
 }
@@ -55,7 +52,6 @@ void Shader::setFloat(const std::string& name, float value) const {
 void Shader::setVec3(const std::string &name, const Vector3& value) const {
     assert(ID != 0);
     GLint loc = GL_CALL(glGetUniformLocation(ID, name.c_str()));
-    assert(loc != -1);
     if (loc == -1) return;
     GL_CALL(glUniform3fv(loc, 1, &value.x));
 }
@@ -63,7 +59,6 @@ void Shader::setVec3(const std::string &name, const Vector3& value) const {
 void Shader::setVec4(const std::string &name, const Vector4& value) const {
     assert(ID != 0);
     GLint loc = GL_CALL(glGetUniformLocation(ID, name.c_str()));
-    assert(loc != -1);
     if (loc == -1) return;
     GL_CALL(glUniform4fv(loc, 1, &value.x));
 }
@@ -71,7 +66,6 @@ void Shader::setVec4(const std::string &name, const Vector4& value) const {
 void Shader::setMat4(const std::string& name, const Matrix4& value) const {
     assert(ID != 0);
     GLint loc = GL_CALL(glGetUniformLocation(ID, name.c_str()));
-    assert(loc != -1);
     if (loc == -1) return;
     GL_CALL(glUniformMatrix4fv(loc, 1, GL_FALSE, value.getData()));
 }

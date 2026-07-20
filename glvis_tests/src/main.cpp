@@ -43,9 +43,5 @@ int main() {
         return 1;
     }
 
-    // TODO: transparent texture rendering
-    // TODO: Shader: add method uniformExists
-    // TODO: Shader: check if shader uniform location is valid before setting uniforms
-
     return 0;
 }
