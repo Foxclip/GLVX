@@ -97,6 +97,10 @@ void AbstractTexture::resize(int newWidth, int newHeight, bool blitOldContents) 
     resizeTexture(newWidth, newHeight, blitOldContents, this->interpolation, this->wrapping);
 }
 
+bool AbstractTexture::isRenderTexture() const {
+    return false;
+}
+
 AbstractTexture::~AbstractTexture() {
     if (ID == 0) {
         return;

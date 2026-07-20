@@ -46,6 +46,8 @@ layout(binding = 1) uniform Object {
 
 uniform sampler2D tex;
 
+uniform bool premultiplyOutput = true;
+
 void main() {
     vec4 colorNormalized = object.color / 255.0;
     if (object.hasTexture) {
@@ -53,7 +55,9 @@ void main() {
     } else {
         FragColor = VertexColor * colorNormalized;
     }
-    FragColor = vec4(FragColor.rgb * FragColor.a, FragColor.a);
+    if (premultiplyOutput) {
+        FragColor = vec4(FragColor.rgb * FragColor.a, FragColor.a);
+    }
 }
 )";
 

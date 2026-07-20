@@ -53,6 +53,7 @@ void Drawable::renderBase(
     assert(renderShader);
     const AbstractTexture* renderTexture = states.texture ? states.texture : texture;
     Matrix4 combinedModel = states.transform * getModelMatrix();
+    bool textureIsPremultiplied = renderTexture != nullptr && renderTexture->isRenderTexture();
     renderShader->use();
 
     if (renderShader->useUBO) {
@@ -63,6 +64,10 @@ void Drawable::renderBase(
         renderShader->setInt("tex", 0);
         if (renderTexture) {
             renderTexture->bind();
+        }
+        GLint premultLoc = GL_CALL(glGetUniformLocation(renderShader->ID, "premultiplyOutput"));
+        if (premultLoc != -1) {
+            renderShader->setBool("premultiplyOutput", !textureIsPremultiplied);
         }
     } else {
         renderShader->setVec4("color", Vector4(color.r, color.g, color.b, color.a));
@@ -75,6 +80,10 @@ void Drawable::renderBase(
             renderTexture->bind();
         } else {
             renderShader->setBool("hasTexture", false);
+        }
+        GLint premultLoc = GL_CALL(glGetUniformLocation(renderShader->ID, "premultiplyOutput"));
+        if (premultLoc != -1) {
+            renderShader->setBool("premultiplyOutput", !textureIsPremultiplied);
         }
     }
 

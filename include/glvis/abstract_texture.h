@@ -32,6 +32,7 @@ public:
     void unbind() const;
     virtual Image readPixels() const;
     virtual void resize(int newWidth, int newHeight, bool blitOldContents = true);
+    virtual bool isRenderTexture() const;
     ~AbstractTexture();
 
 protected:

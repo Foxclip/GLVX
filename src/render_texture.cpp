@@ -45,6 +45,10 @@ void RenderTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
+bool RenderTexture::isRenderTexture() const {
+    return true;
+}
+
 unsigned int RenderTexture::getRenderTargetFbo() const {
     return FBO;
 }

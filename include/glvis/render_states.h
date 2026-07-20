@@ -14,6 +14,7 @@ public:
     Matrix4 transform;
     AbstractTexture* texture;
     Shader* shader;
+    bool texture_is_premultiplied;
 };
 
 } // namespace glvis
