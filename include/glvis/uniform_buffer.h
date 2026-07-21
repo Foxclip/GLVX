@@ -20,17 +20,19 @@ public:
     ~UniformBuffer();
 
     void createObjectUBO();
-
-    void setVP(const Matrix4& view, const Matrix4& projection);
-    void updateObjectUBO(const Matrix4& model, const Color& color, bool hasTexture, bool premultiplyOutput);
-
+    void updateObjectUBO(
+        const Matrix4& model,
+        const Color& color,
+        bool hasTexture,
+        bool premultiplyOutput,
+        const Matrix4& view,
+        const Matrix4& projection
+    );
     void bindObjectUBO() const;
-
     unsigned int getObjectID() const { return object_id; }
 
 private:
     unsigned int object_id = 0;
-    Matrix4 cached_vp;
 };
 
 }

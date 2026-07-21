@@ -19,18 +19,19 @@ void UniformBuffer::createObjectUBO() {
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
-void UniformBuffer::setVP(const Matrix4& view, const Matrix4& projection) {
-    Matrix4 vp = projection * view;
-    if (cached_vp != vp) {
-        cached_vp = vp;
-    }
-}
-
-void UniformBuffer::updateObjectUBO(const Matrix4& model, const Color& color, bool hasTexture, bool premultiplyOutput) {
+void UniformBuffer::updateObjectUBO(
+    const Matrix4& model,
+    const Color& color,
+    bool hasTexture,
+    bool premultiplyOutput,
+    const Matrix4& view,
+    const Matrix4& projection
+) {
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, object_id));
 
     ObjectUBO ubo = {};
-    std::memcpy(ubo.vp, cached_vp.getData(), sizeof(ubo.vp));
+    Matrix4 vp = projection * view;
+    std::memcpy(ubo.vp, vp.getData(), sizeof(ubo.vp));
     std::memcpy(ubo.model, model.getData(), sizeof(ubo.model));
     ubo.color[0] = static_cast<float>(color.r);
     ubo.color[1] = static_cast<float>(color.g);
