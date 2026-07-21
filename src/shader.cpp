@@ -142,13 +142,6 @@ std::string Shader::combineFragmentShader(
     const char* templateSource,
     const std::vector<ShaderPart>& parts
 ) {
-    std::istringstream stream(templateSource);
-    std::vector<std::string> combined_lines;
-    std::string line;
-    while (std::getline(stream, line)) {
-        combined_lines.push_back(line);
-    }
-
     auto trim = [](const std::string& str) -> std::string {
         size_t start = str.find_first_not_of(" \t\r\n");
         if (start == std::string::npos) return "";
@@ -156,76 +149,69 @@ std::string Shader::combineFragmentShader(
         return str.substr(start, end - start + 1);
     };
 
-    ptrdiff_t include_line_index = -1;
-    ptrdiff_t apply_line_index = -1;
-    for (size_t i = 0; i < combined_lines.size(); i++) {
-        std::string trimmed = trim(combined_lines[i]);
-        if (trimmed == "%INCLUDE%") {
-            include_line_index = static_cast<ptrdiff_t>(i);
-        } else if (trimmed == "%APPLY%") {
-            apply_line_index = static_cast<ptrdiff_t>(i);
-        }
+    std::istringstream stream(templateSource);
+    std::vector<std::string> lines;
+    std::string line;
+    while (std::getline(stream, line)) {
+        lines.push_back(line);
     }
 
-    if (include_line_index == -1) {
+    bool found_include = false, found_apply = false;
+    for (const auto& l : lines) {
+        if (trim(l) == "%INCLUDE%") {
+            found_include = true;
+        } else if (trim(l) == "%APPLY%") {
+            found_apply = true;
+        }
+    }
+    if (!found_include)
         throw std::runtime_error(std::format("Unable to find %INCLUDE% in fragment template"));
-    }
-    if (apply_line_index == -1) {
+    if (!found_apply)
         throw std::runtime_error(std::format("Unable to find %APPLY% in fragment template"));
-    }
+
+    std::string separator(32, '=');
+
+    std::string include_block;
+    std::string apply_block;
 
     if (parts.empty()) {
-        combined_lines[include_line_index] = "// No shaders here";
-        combined_lines[apply_line_index] = "    // No shaders here";
+        include_block = "// No shaders here";
+        apply_block = "    // No shaders here";
     } else {
-        combined_lines.erase(combined_lines.begin() + include_line_index);
-        size_t current_line_index = static_cast<size_t>(include_line_index);
-
-        std::string eq;
-        for (int i = 0; i < 32; i++) {
-            eq += "=";
-        }
-
         for (const auto& part : parts) {
+            std::string header = "// " + separator + " BEGIN " + part.name + " " + separator;
+            std::string footer = "// " + separator + " END " + part.name + " " + separator;
+
+            if (!include_block.empty()) include_block += '\n';
+            include_block += header;
+
             std::istringstream part_stream(part.source);
-            std::vector<std::string> shader_lines;
-            std::string pLine;
-            while (std::getline(part_stream, pLine)) {
-                shader_lines.push_back(pLine);
+            std::string pline;
+            while (std::getline(part_stream, pline)) {
+                include_block += '\n';
+                include_block += pline;
             }
+            include_block += '\n';
+            include_block += footer;
 
-            shader_lines.insert(shader_lines.begin(), "// " + eq + " BEGIN " + part.name + " " + eq);
-            shader_lines.insert(shader_lines.end(), "// " + eq + " END " + part.name + " " + eq);
-
-            combined_lines.insert(
-                combined_lines.begin() + current_line_index,
-                shader_lines.begin(),
-                shader_lines.end()
-            );
-            current_line_index += shader_lines.size();
-            apply_line_index += static_cast<ptrdiff_t>(shader_lines.size());
-        }
-
-        apply_line_index -= 1;
-
-        combined_lines.erase(combined_lines.begin() + apply_line_index);
-        size_t current_apply_index = static_cast<size_t>(apply_line_index);
-
-        for (const auto& part : parts) {
-            combined_lines.insert(
-                combined_lines.begin() + current_apply_index,
-                "    color = " + part.name + "_apply(color);"
-            );
-            current_apply_index++;
+            if (!apply_block.empty()) apply_block += '\n';
+            apply_block += "    color = " + part.name + "_apply(color);";
         }
     }
 
     std::string result;
-    for (size_t i = 0; i < combined_lines.size(); i++) {
-        if (i != 0) {
-            result += "\n";
+    for (const auto& l : lines) {
+        std::string trimmed = trim(l);
+        if (trimmed == "%INCLUDE%") {
+            if (!result.empty()) result += '\n';
+            result += include_block;
+        } else if (trimmed == "%APPLY%") {
+            if (!result.empty()) result += '\n';
+            result += apply_block;
+        } else {
+            if (!result.empty()) result += '\n';
+            result += l;
         }
-        result += combined_lines[i];
     }
 
     return result;
