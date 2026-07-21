@@ -43,5 +43,7 @@ int main() {
         return 1;
     }
 
+    // TODO: add shader generation from Box2D_Editor
+
     return 0;
 }

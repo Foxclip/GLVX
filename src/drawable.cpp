@@ -65,9 +65,7 @@ void Drawable::renderBase(
         if (renderTexture) {
             renderTexture->bind();
         }
-        if (renderShader->uniformExists("premultiplyOutput")) {
-            renderShader->setBool("premultiplyOutput", !textureIsPremultiplied);
-        }
+        renderShader->setBool("premultiplyOutput", !textureIsPremultiplied);
     } else {
         renderShader->setVec4("color", Vector4(color.r, color.g, color.b, color.a));
         renderShader->setMat4("model", combinedModel);
@@ -80,9 +78,7 @@ void Drawable::renderBase(
         } else {
             renderShader->setBool("hasTexture", false);
         }
-        if (renderShader->uniformExists("premultiplyOutput")) {
-            renderShader->setBool("premultiplyOutput", !textureIsPremultiplied);
-        }
+        renderShader->setBool("premultiplyOutput", !textureIsPremultiplied);
     }
 
     vertexBuffer.render();
