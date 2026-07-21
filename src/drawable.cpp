@@ -1,5 +1,4 @@
 #include "glvis/drawable.h"
-#include <glad/glad.h>
 #include "glvis/shader.h"
 #include "glvis/abstract_texture.h"
 #include "glvis/vertex_buffer.h"
