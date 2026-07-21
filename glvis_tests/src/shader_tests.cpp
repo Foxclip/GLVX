@@ -1,6 +1,5 @@
 #include "glvis_tests/shader_tests.h"
 #include "glvis/rectangle.h"
-#include "glvis/render_states.h"
 #include "glvis/shader.h"
 
 ShaderTestsModule::ShaderTestsModule(
@@ -68,11 +67,10 @@ void ShaderTestsModule::shaderCombinedTest(test::Test& test) {
     const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
     Rectangle rect(rect_size);
     rect.setColor(Color::Red);
+    rect.setShader(&combinedShader);
 
     window.clear(Color::Black);
-    RenderStates states;
-    states.shader = &combinedShader;
-    window.draw(rect, states);
+    window.draw(rect);
     window.display();
 
     Image image = window.readPixels();
