@@ -58,14 +58,13 @@ void Drawable::renderBase(
 
     if (renderShader->useUBO) {
         common::uniformBuffer->updateCameraUBO(view, projection);
-        common::uniformBuffer->updateObjectUBO(combinedModel, color, renderTexture != nullptr);
+        common::uniformBuffer->updateObjectUBO(combinedModel, color, renderTexture != nullptr, !textureIsPremultiplied);
         common::uniformBuffer->bindCameraUBO();
         common::uniformBuffer->bindObjectUBO();
         renderShader->setInt("tex", 0);
         if (renderTexture) {
             renderTexture->bind();
         }
-        renderShader->setBool("premultiplyOutput", !textureIsPremultiplied);
     } else {
         renderShader->setVec4("color", Vector4(color.r, color.g, color.b, color.a));
         renderShader->setMat4("model", combinedModel);
@@ -78,7 +77,6 @@ void Drawable::renderBase(
         } else {
             renderShader->setBool("hasTexture", false);
         }
-        renderShader->setBool("premultiplyOutput", !textureIsPremultiplied);
     }
 
     vertexBuffer.render();
