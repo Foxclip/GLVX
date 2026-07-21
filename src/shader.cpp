@@ -149,70 +149,59 @@ std::string Shader::combineFragmentShader(
         return str.substr(start, end - start + 1);
     };
 
-    std::istringstream stream(templateSource);
-    std::vector<std::string> lines;
-    std::string line;
-    while (std::getline(stream, line)) {
-        lines.push_back(line);
-    }
+    std::string separator(32, '=');
 
+    auto buildBlock = [&](const std::string& label) -> std::string {
+        if (parts.empty()) {
+            return label == "include" ? "// No shaders here" : "    // No shaders here";
+        }
+        std::string block;
+        for (const auto& part : parts) {
+            if (label == "include") {
+                if (!block.empty()) block += '\n';
+                block += "// " + separator + " BEGIN " + part.name + " " + separator;
+                std::istringstream part_stream(part.source);
+                std::string pline;
+                while (std::getline(part_stream, pline)) {
+                    block += '\n';
+                    block += pline;
+                }
+                block += '\n';
+                block += "// " + separator + " END " + part.name + " " + separator;
+            } else {
+                if (!block.empty()) block += '\n';
+                block += "    color = " + part.name + "_apply(color);";
+            }
+        }
+        return block;
+    };
+
+    std::string include_block = buildBlock("include");
+    std::string apply_block = buildBlock("apply");
+
+    std::istringstream stream(templateSource);
+    std::string line;
     bool found_include = false, found_apply = false;
-    for (const auto& l : lines) {
-        if (trim(l) == "%INCLUDE%") {
+    std::string result;
+    while (std::getline(stream, line)) {
+        std::string trimmed = trim(line);
+        if (trimmed == "%INCLUDE%") {
             found_include = true;
-        } else if (trim(l) == "%APPLY%") {
+            if (!result.empty()) result += '\n';
+            result += include_block;
+        } else if (trimmed == "%APPLY%") {
             found_apply = true;
+            if (!result.empty()) result += '\n';
+            result += apply_block;
+        } else {
+            if (!result.empty()) result += '\n';
+            result += line;
         }
     }
     if (!found_include)
         throw std::runtime_error(std::format("Unable to find %INCLUDE% in fragment template"));
     if (!found_apply)
         throw std::runtime_error(std::format("Unable to find %APPLY% in fragment template"));
-
-    std::string separator(32, '=');
-
-    std::string include_block;
-    std::string apply_block;
-
-    if (parts.empty()) {
-        include_block = "// No shaders here";
-        apply_block = "    // No shaders here";
-    } else {
-        for (const auto& part : parts) {
-            std::string header = "// " + separator + " BEGIN " + part.name + " " + separator;
-            std::string footer = "// " + separator + " END " + part.name + " " + separator;
-
-            if (!include_block.empty()) include_block += '\n';
-            include_block += header;
-
-            std::istringstream part_stream(part.source);
-            std::string pline;
-            while (std::getline(part_stream, pline)) {
-                include_block += '\n';
-                include_block += pline;
-            }
-            include_block += '\n';
-            include_block += footer;
-
-            if (!apply_block.empty()) apply_block += '\n';
-            apply_block += "    color = " + part.name + "_apply(color);";
-        }
-    }
-
-    std::string result;
-    for (const auto& l : lines) {
-        std::string trimmed = trim(l);
-        if (trimmed == "%INCLUDE%") {
-            if (!result.empty()) result += '\n';
-            result += include_block;
-        } else if (trimmed == "%APPLY%") {
-            if (!result.empty()) result += '\n';
-            result += apply_block;
-        } else {
-            if (!result.empty()) result += '\n';
-            result += l;
-        }
-    }
 
     return result;
 }
