@@ -151,33 +151,31 @@ std::string Shader::combineFragmentShader(
 
     std::string separator(32, '=');
 
-    auto buildBlock = [&](const std::string& label) -> std::string {
-        if (parts.empty()) {
-            return label == "include" ? "// No shaders here" : "    // No shaders here";
-        }
-        std::string block;
+    // Build include block
+    std::string include_block;
+    if (parts.empty()) {
+        include_block = "// No shaders here";
+    } else {
         for (const auto& part : parts) {
-            if (label == "include") {
-                if (!block.empty()) block += '\n';
-                block += "// " + separator + " BEGIN " + part.name + " " + separator;
-                std::istringstream part_stream(part.source);
-                std::string pline;
-                while (std::getline(part_stream, pline)) {
-                    block += '\n';
-                    block += pline;
-                }
-                block += '\n';
-                block += "// " + separator + " END " + part.name + " " + separator;
-            } else {
-                if (!block.empty()) block += '\n';
-                block += "    color = " + part.name + "_apply(color);";
-            }
+            if (!include_block.empty()) include_block += '\n';
+            include_block += "// " + separator + " BEGIN " + part.name + " " + separator;
+            include_block += '\n';
+            include_block += part.source;
+            include_block += '\n';
+            include_block += "// " + separator + " END " + part.name + " " + separator;
         }
-        return block;
-    };
+    }
 
-    std::string include_block = buildBlock("include");
-    std::string apply_block = buildBlock("apply");
+    // Build apply block
+    std::string apply_block;
+    if (parts.empty()) {
+        apply_block = "    // No shaders here";
+    } else {
+        for (const auto& part : parts) {
+            if (!apply_block.empty()) apply_block += '\n';
+            apply_block += "    color = " + part.name + "_apply(color);";
+        }
+    }
 
     std::istringstream stream(templateSource);
     std::string line;
