@@ -21,6 +21,7 @@ layout(binding = 1) uniform Object {
     mat4 model;
     vec4 color;
     bool hasTexture;
+    bool premultiplyOutput;
 } object;
 
 void main() {
@@ -42,6 +43,7 @@ layout(binding = 1) uniform Object {
     mat4 model;
     vec4 color;
     bool hasTexture;
+    bool premultiplyOutput;
 } object;
 
 uniform sampler2D tex;
@@ -52,6 +54,9 @@ void main() {
         FragColor = texture(tex, TexCoords) * VertexColor * colorNormalized;
     } else {
         FragColor = VertexColor * colorNormalized;
+    }
+    if (object.premultiplyOutput) {
+        FragColor = vec4(FragColor.rgb * FragColor.a, FragColor.a);
     }
 }
 )";

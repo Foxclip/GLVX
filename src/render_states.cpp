@@ -3,7 +3,7 @@
 namespace glvis {
 
 RenderStates::RenderStates()
-    : texture(nullptr), shader(nullptr) {
+    : texture(nullptr), shader(nullptr), texture_is_premultiplied(false) {
     // transform is default-constructed to identity via Matrix4()
 }
 

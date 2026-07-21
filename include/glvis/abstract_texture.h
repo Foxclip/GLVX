@@ -30,8 +30,9 @@ public:
     WrappingType getWrapping() const;
     void bind() const;
     void unbind() const;
-    Image readPixels() const;
+    virtual Image readPixels() const;
     virtual void resize(int newWidth, int newHeight, bool blitOldContents = true);
+    virtual bool isRenderTexture() const;
     ~AbstractTexture();
 
 protected:
@@ -46,6 +47,7 @@ protected:
         WrappingType wrap = WrappingType::ClampToEdge
     );
     void resizeTexture(int newWidth, int newHeight, bool blitOldContents, InterpolationType interp, WrappingType wrap);
+    Image readPixelsRaw() const;
 
 };
 

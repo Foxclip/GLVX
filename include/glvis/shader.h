@@ -27,6 +27,7 @@ public:
     void setVec3(const std::string& name, const Vector3& value) const;
     void setVec4(const std::string& name, const Vector4& value) const;
     void setMat4(const std::string& name, const Matrix4& value) const;
+    bool uniformExists(const std::string& name) const;
 
 private:
     int compileShader(ShaderType type, const std::filesystem::path& path);

@@ -15,6 +15,7 @@ struct ObjectUBO {
     float model[16];
     float color[4];
     float hasTexture;
+    float premultiplyOutput;
 };
 
 class UniformBuffer {
@@ -26,7 +27,7 @@ public:
     void createObjectUBO();
 
     void updateCameraUBO(const Matrix4& view, const Matrix4& projection);
-    void updateObjectUBO(const Matrix4& model, const Color& color, bool hasTexture);
+    void updateObjectUBO(const Matrix4& model, const Color& color, bool hasTexture, bool premultiplyOutput);
 
     void bindCameraUBO() const;
     void bindObjectUBO() const;

@@ -15,7 +15,7 @@ class RenderTarget {
 public:
     virtual ~RenderTarget() = default;
 
-    void setView(const View& view);
+    virtual void setView(const View& view);
     void clear(const Color& color) const;
     void draw(const Drawable& drawable, const RenderStates& states = RenderStates()) const;
     Vector2i worldToScreen(float x, float y) const;
@@ -29,7 +29,7 @@ protected:
     Matrix4 projection;
 
     virtual unsigned int getRenderTargetFbo() const = 0;
-    virtual int getRenderTargetidth() const = 0;
+    virtual int getRenderTargetWidth() const = 0;
     virtual int getRenderTargetHeight() const = 0;
 };
 

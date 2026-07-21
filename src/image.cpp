@@ -1,6 +1,7 @@
 #include "glvis/image.h"
 #include "glvis/color.h"
 #include "glvis/vector.h"
+#include <algorithm>
 #include <cassert>
 
 namespace glvis {
@@ -29,6 +30,22 @@ Color Image::getPixel(int x, int y) const {
 
 Color Image::getPixel(const Vector2i& pos) const {
     return getPixel(pos.x, pos.y);
+}
+
+void Image::flipY() {
+    size_t rowSize = width * 4;
+    for (int y = 0; y < height / 2; ++y) {
+        int flipY = height - 1 - y;
+        for (int x = 0; x < width; ++x) {
+            size_t idxTop = y * rowSize + x * 4;
+            size_t idxBottom = flipY * rowSize + x * 4;
+            std::swap_ranges(
+                data.begin() + idxTop,
+                data.begin() + idxTop + 4,
+                data.begin() + idxBottom
+            );
+        }
+    }
 }
 
 }

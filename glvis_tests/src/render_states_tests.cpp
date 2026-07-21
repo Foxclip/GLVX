@@ -1,5 +1,6 @@
 #include "glvis_tests/render_states_tests.h"
 
+#include "glvis/rectangle.h"
 #include "glvis/render_states.h"
 #include "glvis/shader.h"
 #include "glvis/texture.h"
@@ -93,12 +94,11 @@ void RenderStatesTestsModule::renderStatesTextureTest(test::Test& test) {
     window.display();
 
     // Check that the texture is rendered correctly
-    // Alpha blending with opaque black background modifies all channels
     Image image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), Color(0, 0, 0, 251), &Color::toString);
-    T_COMPARE(image.getPixel(1, 0), Color(0, 0, 0, 247), &Color::toString);
-    T_COMPARE(image.getPixel(0, 1), Color(0, 0, 1, 244), &Color::toString);
-    T_COMPARE(image.getPixel(1, 1), Color(1, 1, 1, 240), &Color::toString);
+    T_COMPARE(image.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image.getPixel(1, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image.getPixel(0, 1), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image.getPixel(1, 1), Color(1, 1, 1, 255), &Color::toString);
 
     // Check outside of the texture
     T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);

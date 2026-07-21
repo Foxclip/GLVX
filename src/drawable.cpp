@@ -53,11 +53,12 @@ void Drawable::renderBase(
     assert(renderShader);
     const AbstractTexture* renderTexture = states.texture ? states.texture : texture;
     Matrix4 combinedModel = states.transform * getModelMatrix();
+    bool textureIsPremultiplied = renderTexture != nullptr && renderTexture->isRenderTexture();
     renderShader->use();
 
     if (renderShader->useUBO) {
         common::uniformBuffer->updateCameraUBO(view, projection);
-        common::uniformBuffer->updateObjectUBO(combinedModel, color, renderTexture != nullptr);
+        common::uniformBuffer->updateObjectUBO(combinedModel, color, renderTexture != nullptr, !textureIsPremultiplied);
         common::uniformBuffer->bindCameraUBO();
         common::uniformBuffer->bindObjectUBO();
         renderShader->setInt("tex", 0);

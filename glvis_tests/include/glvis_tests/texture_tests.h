@@ -1,6 +1,7 @@
 #pragma once
 
 #include "test_lib/test.h"
+#include "glvis/abstract_texture.h"
 #include "glvis_tests/glvis_tests_common.h"
 
 using namespace glvis;

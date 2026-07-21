@@ -46,7 +46,7 @@ void UniformBuffer::updateCameraUBO(const Matrix4& view, const Matrix4& projecti
     }
 }
 
-void UniformBuffer::updateObjectUBO(const Matrix4& model, const Color& color, bool hasTexture) {
+void UniformBuffer::updateObjectUBO(const Matrix4& model, const Color& color, bool hasTexture, bool premultiplyOutput) {
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, object_id));
 
     ObjectUBO ubo = {};
@@ -56,6 +56,7 @@ void UniformBuffer::updateObjectUBO(const Matrix4& model, const Color& color, bo
     ubo.color[2] = static_cast<float>(color.b);
     ubo.color[3] = static_cast<float>(color.a);
     ubo.hasTexture = hasTexture ? 1.0f : 0.0f;
+    ubo.premultiplyOutput = premultiplyOutput ? 1.0f : 0.0f;
 
     GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ubo), &ubo));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));

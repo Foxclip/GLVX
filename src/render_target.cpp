@@ -4,7 +4,7 @@
 namespace glvis {
 
 void RenderTarget::setView(const View& view) {
-    float width = static_cast<float>(getRenderTargetidth());
+    float width = static_cast<float>(getRenderTargetWidth());
     float height = static_cast<float>(getRenderTargetHeight());
     this->view = view.getViewMatrix(width, height);
     this->inv_view = view.getInvViewMatrix(width, height);
@@ -19,9 +19,9 @@ void RenderTarget::clear(const Color& color) const {
 
 void RenderTarget::draw(const Drawable& drawable, const RenderStates& states) const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, getRenderTargetFbo()));
-    GL_CALL(glViewport(0, 0, getRenderTargetidth(), getRenderTargetHeight()));
+    GL_CALL(glViewport(0, 0, getRenderTargetWidth(), getRenderTargetHeight()));
     GL_CALL(glEnable(GL_BLEND));
-    GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    GL_CALL(glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA));
     drawable.render(view, projection, states);
     GL_CALL(glDisable(GL_BLEND));
 }

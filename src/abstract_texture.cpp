@@ -2,7 +2,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glvis/glvis_common.h"
-#include "glvis/utils.h"
 #include <algorithm>
 #include <cmath>
 #include <memory>
@@ -91,19 +90,15 @@ void AbstractTexture::unbind() const {
 }
 
 Image AbstractTexture::readPixels() const {
-    std::vector<unsigned char> data(width * height * 4);
-    bind();
-    GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data()));
-    unbind();
-
-    // Flip Y axis: OpenGL has (0,0) at bottom-left, but images typically have (0,0) at top-left
-    flip_pixels_y(data, width, height);
-
-    return Image(width, height, std::move(data));
+    return readPixelsRaw();
 }
 
 void AbstractTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
     resizeTexture(newWidth, newHeight, blitOldContents, this->interpolation, this->wrapping);
+}
+
+bool AbstractTexture::isRenderTexture() const {
+    return false;
 }
 
 AbstractTexture::~AbstractTexture() {
@@ -222,6 +217,15 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldCon
     ID = newTextureID;
     this->width = newWidth;
     this->height = newHeight;
+}
+
+Image AbstractTexture::readPixelsRaw() const {
+    std::vector<unsigned char> data(width * height * 4);
+    bind();
+    GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data()));
+    unbind();
+
+    return Image(width, height, std::move(data));
 }
 
 }
