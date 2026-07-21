@@ -2,6 +2,42 @@
 #include "glvis/rectangle.h"
 #include "glvis/shader.h"
 
+const char* ShaderTestsModule::vertex_shader = R"(
+    #version 420 core
+    layout (location = 0) in vec2 aPos;
+    layout (location = 1) in vec4 aColor;
+    layout (location = 2) in vec2 aTexCoords;
+
+    out vec4 VertexColor;
+
+    uniform mat4 model;
+    uniform mat4 view;
+    uniform mat4 projection;
+
+    void main() {
+        gl_Position = projection * view * model * vec4(aPos, 0.0, 1.0);
+        VertexColor = aColor;
+    }
+)";
+
+const char* ShaderTestsModule::fragment_template = R"(
+    #version 420 core
+
+    in vec4 VertexColor;
+
+    out vec4 FragColor;
+
+    %INCLUDE%
+
+    void main() {
+        vec4 color = VertexColor;
+
+        %APPLY%
+
+        FragColor = color;
+    }
+)";
+
 ShaderTestsModule::ShaderTestsModule(
     const std::string& name,
     test::TestModule* parent,
@@ -18,51 +54,17 @@ void ShaderTestsModule::shaderCombinedTest(test::Test& test) {
     view.setPosition(window.getCenter());
     window.setView(view);
 
-    const char* vert = R"(
-        #version 420 core
-        layout (location = 0) in vec2 aPos;
-        layout (location = 1) in vec4 aColor;
-        layout (location = 2) in vec2 aTexCoords;
-
-        out vec4 VertexColor;
-
-        uniform mat4 model;
-        uniform mat4 view;
-        uniform mat4 projection;
-
-        void main() {
-            gl_Position = projection * view * model * vec4(aPos, 0.0, 1.0);
-            VertexColor = aColor;
-        }
-    )";
-
-    const char* frag_template = R"(
-        #version 420 core
-
-        in vec4 VertexColor;
-
-        out vec4 FragColor;
-
-        %INCLUDE%
-
-        void main() {
-            vec4 color = VertexColor;
-
-            %APPLY%
-
-            FragColor = color;
-        }
-    )";
-
     const char* blue_part_source = R"(
         vec4 blue_apply(vec4 c) {
             return vec4(0.0, 0.0, 1.0, 1.0);
         }
     )";
 
-    std::vector<ShaderPart> parts = { {"blue", blue_part_source} };
+    std::vector<ShaderPart> parts = {
+        {"blue", blue_part_source}
+    };
 
-    Shader combinedShader(vert, frag_template, parts);
+    Shader combinedShader(vertex_shader, fragment_template, parts);
 
     const Vector2f rect_size = Vector2f(10.0f, 10.0f);
     const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
@@ -86,42 +88,6 @@ void ShaderTestsModule::shaderCombinedTwoPartsTest(test::Test& test) {
     view.setPosition(window.getCenter());
     window.setView(view);
 
-    const char* vert = R"(
-        #version 420 core
-        layout (location = 0) in vec2 aPos;
-        layout (location = 1) in vec4 aColor;
-        layout (location = 2) in vec2 aTexCoords;
-
-        out vec4 VertexColor;
-
-        uniform mat4 model;
-        uniform mat4 view;
-        uniform mat4 projection;
-
-        void main() {
-            gl_Position = projection * view * model * vec4(aPos, 0.0, 1.0);
-            VertexColor = aColor;
-        }
-    )";
-
-    const char* frag_template = R"(
-        #version 420 core
-
-        in vec4 VertexColor;
-
-        out vec4 FragColor;
-
-        %INCLUDE%
-
-        void main() {
-            vec4 color = VertexColor;
-
-            %APPLY%
-
-            FragColor = color;
-        }
-    )";
-
     const char* green_part_source = R"(
         vec4 green_apply(vec4 c) {
             return vec4(0.0, 1.0, 0.0, 1.0);
@@ -134,9 +100,12 @@ void ShaderTestsModule::shaderCombinedTwoPartsTest(test::Test& test) {
         }
     )";
 
-    std::vector<ShaderPart> parts = { {"green", green_part_source}, {"blue", blue_part_source} };
+    std::vector<ShaderPart> parts = {
+        {"green", green_part_source},
+        {"blue", blue_part_source}
+    };
 
-    Shader combinedShader(vert, frag_template, parts);
+    Shader combinedShader(vertex_shader, fragment_template, parts);
 
     const Vector2f rect_size = Vector2f(10.0f, 10.0f);
     const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);

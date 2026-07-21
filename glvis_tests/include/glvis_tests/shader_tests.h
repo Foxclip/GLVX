@@ -17,5 +17,6 @@ public:
     void shaderCombinedTwoPartsTest(test::Test& test);
 
 private:
-
+    static const char* vertex_shader;
+    static const char* fragment_template;
 };
