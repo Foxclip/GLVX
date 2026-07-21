@@ -57,9 +57,8 @@ void Drawable::renderBase(
     renderShader->use();
 
     if (renderShader->useUBO) {
-        common::uniformBuffer->updateCameraUBO(view, projection);
+        common::uniformBuffer->setVP(view, projection);
         common::uniformBuffer->updateObjectUBO(combinedModel, color, renderTexture != nullptr, !textureIsPremultiplied);
-        common::uniformBuffer->bindCameraUBO();
         common::uniformBuffer->bindObjectUBO();
         renderShader->setInt("tex", 0);
         if (renderTexture) {

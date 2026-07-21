@@ -52,7 +52,6 @@ void Window::create(int width, int height, const char* title) {
     glfwSetScrollCallback(window, scrollCallbackGLFW);
 
     uniform_buffer_uptr = std::make_unique<UniformBuffer>();
-    uniform_buffer_uptr->createCameraUBO();
     uniform_buffer_uptr->createObjectUBO();
     common::uniformBuffer = uniform_buffer_uptr.get();
 

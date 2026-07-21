@@ -7,19 +7,9 @@ namespace glvis {
 UniformBuffer::UniformBuffer() { }
 
 UniformBuffer::~UniformBuffer() {
-    if (camera_id) {
-        GL_CALL(glDeleteBuffers(1, &camera_id));
-    }
     if (object_id) {
         GL_CALL(glDeleteBuffers(1, &object_id));
     }
-}
-
-void UniformBuffer::createCameraUBO() {
-    GL_CALL(glGenBuffers(1, &camera_id));
-    GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, camera_id));
-    GL_CALL(glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraUBO), nullptr, GL_DYNAMIC_DRAW));
-    GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
 void UniformBuffer::createObjectUBO() {
@@ -29,20 +19,10 @@ void UniformBuffer::createObjectUBO() {
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
-void UniformBuffer::updateCameraUBO(const Matrix4& view, const Matrix4& projection) {
-    if (first_camera_UBO_update || cached_view != view || cached_projection != projection) {
-        cached_view = view;
-        cached_projection = projection;
-        first_camera_UBO_update = false;
-
-        GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, camera_id));
-
-        CameraUBO ubo;
-        Matrix4 vp = projection * view;
-        std::memcpy(ubo.vp, vp.getData(), sizeof(ubo.vp));
-
-        GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ubo), &ubo));
-        GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+void UniformBuffer::setVP(const Matrix4& view, const Matrix4& projection) {
+    Matrix4 vp = projection * view;
+    if (cached_vp != vp) {
+        cached_vp = vp;
     }
 }
 
@@ -50,6 +30,7 @@ void UniformBuffer::updateObjectUBO(const Matrix4& model, const Color& color, bo
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, object_id));
 
     ObjectUBO ubo = {};
+    std::memcpy(ubo.vp, cached_vp.getData(), sizeof(ubo.vp));
     std::memcpy(ubo.model, model.getData(), sizeof(ubo.model));
     ubo.color[0] = static_cast<float>(color.r);
     ubo.color[1] = static_cast<float>(color.g);
@@ -60,10 +41,6 @@ void UniformBuffer::updateObjectUBO(const Matrix4& model, const Color& color, bo
 
     GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ubo), &ubo));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
-}
-
-void UniformBuffer::bindCameraUBO() const {
-    GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, 0, camera_id));
 }
 
 void UniformBuffer::bindObjectUBO() const {
