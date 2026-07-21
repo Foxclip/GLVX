@@ -14,6 +14,7 @@ public:
     );
 
     void shaderCombinedTest(test::Test& test);
+    void shaderCombinedTwoPartsTest(test::Test& test);
 
 private:
 
