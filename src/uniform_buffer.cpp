@@ -38,8 +38,8 @@ void UniformBuffer::updateCameraUBO(const Matrix4& view, const Matrix4& projecti
         GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, camera_id));
 
         CameraUBO ubo;
-        std::memcpy(ubo.view, view.getData(), sizeof(ubo.view));
-        std::memcpy(ubo.projection, projection.getData(), sizeof(ubo.projection));
+        Matrix4 vp = projection * view;
+        std::memcpy(ubo.vp, vp.getData(), sizeof(ubo.vp));
 
         GL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ubo), &ubo));
         GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));

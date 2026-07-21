@@ -7,8 +7,7 @@
 namespace glvis {
 
 struct CameraUBO {
-    float view[16];
-    float projection[16];
+    float vp[16];
 };
 
 struct ObjectUBO {

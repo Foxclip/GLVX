@@ -13,8 +13,7 @@ out vec2 TexCoords;
 out vec4 VertexColor;
 
 layout(binding = 0) uniform Camera {
-    mat4 view;
-    mat4 projection;
+    mat4 vp;
 } camera;
 
 layout(binding = 1) uniform Object {
@@ -25,7 +24,7 @@ layout(binding = 1) uniform Object {
 } object;
 
 void main() {
-    gl_Position = camera.projection * camera.view * object.model * vec4(aPos, 0.0, 1.0);
+    gl_Position = camera.vp * object.model * vec4(aPos, 0.0, 1.0);
     TexCoords = aTexCoords;
     VertexColor = aColor;
 }
