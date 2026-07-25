@@ -7,7 +7,9 @@ Vector2f::Vector2f() : glm::vec2(0.0f, 0.0f) {}
 
 Vector2f::Vector2f(float x, float y) : glm::vec2(x, y) {}
 
-Vector2f::Vector2f(const Vector2i& v) : glm::vec2(static_cast<float>(v.x), static_cast<float>(v.y)) {}
+Vector2f::Vector2f(const Vector2i& v) : glm::vec2(
+    static_cast<float>(v.x), static_cast<float>(v.y)
+) {}
 
 Vector2f Vector2f::operator+(const Vector2f& other) const {
     return Vector2f(x + other.x, y + other.y);
@@ -40,7 +42,9 @@ Vector2i::Vector2i() : glm::ivec2(0, 0) {}
 
 Vector2i::Vector2i(int x, int y) : glm::ivec2(x, y) {}
 
-Vector2i::Vector2i(const Vector2f& v) : glm::ivec2(static_cast<int>(v.x), static_cast<int>(v.y)) {}
+Vector2i::Vector2i(const Vector2f& v) : glm::ivec2(
+    static_cast<int>(v.x), static_cast<int>(v.y)
+) {}
 
 Vector2i Vector2i::operator+(const Vector2i& other) const {
     return Vector2i(x + other.x, y + other.y);
@@ -60,6 +64,35 @@ Vector2i Vector2i::operator/(int scalar) const {
 
 Vector2i Vector2i::operator-() const {
     return Vector2i(-x, -y);
+}
+
+// Vector2u
+Vector2u::Vector2u() : glm::uvec2(0, 0) {}
+
+Vector2u::Vector2u(unsigned int x, unsigned int y) : glm::uvec2(x, y) {}
+
+Vector2u::Vector2u(const Vector2f& v) : glm::uvec2(
+    static_cast<unsigned int>(v.x), static_cast<unsigned int>(v.y)
+) {}
+
+Vector2u::Vector2u(const Vector2i& v) : glm::uvec2(
+    static_cast<unsigned int>(v.x), static_cast<unsigned int>(v.y)
+) {}
+
+Vector2u Vector2u::operator+(const Vector2u& other) const {
+    return Vector2u(x + other.x, y + other.y);
+}
+
+Vector2u Vector2u::operator-(const Vector2u& other) const {
+    return Vector2u(x - other.x, y - other.y);
+}
+
+Vector2u Vector2u::operator*(unsigned int scalar) const {
+    return Vector2u(x * scalar, y * scalar);
+}
+
+Vector2u Vector2u::operator/(unsigned int scalar) const {
+    return Vector2u(x / scalar, y / scalar);
 }
 
 // Vector3
