@@ -13,6 +13,7 @@
 #include "glvis_tests/coordinate_transform_tests.h"
 #include "glvis_tests/text_tests.h"
 #include "glvis_tests/render_texture_tests.h"
+#include "glvis_tests/shader_tests.h"
 
 int main() {
 
@@ -32,6 +33,7 @@ int main() {
         auto coordinate_transform_tests_module = root.addModule<CoordinateTransformTestsModule>("CoordinateTransform", { view_tests_module });
         auto text_tests_module = root.addModule<TextTestsModule>("Text", { shape_tests_module });
         auto render_texture_tests_module = root.addModule<RenderTextureTestsModule>("RenderTexture", { basic_tests_module });
+        auto shader_tests_module = root.addModule<ShaderTestsModule>("Shader", { shape_tests_module });
         root.run();
         root.printSummary();
 
@@ -42,8 +44,6 @@ int main() {
         std::cerr << "ERROR: " << e.what() << std::endl;
         return 1;
     }
-
-    // TODO: add shader generation from Box2D_Editor
 
     return 0;
 }

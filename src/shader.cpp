@@ -4,6 +4,8 @@
 #include "glvis/glvis_common.h"
 #include <vector>
 #include <cassert>
+#include <sstream>
+#include <algorithm>
 
 namespace glvis {
 
@@ -19,6 +21,19 @@ Shader::Shader(const char* vertexSource, const char* fragmentSource, bool useUBO
     START_TRY
     unsigned int vertexShader = compileShader(ShaderType::VERTEX, vertexSource);
     unsigned int fragmentShader = compileShader(ShaderType::FRAGMENT, fragmentSource);
+    linkProgram(vertexShader, fragmentShader);
+    END_TRY
+}
+
+Shader::Shader(
+    const char* vertexSource,
+    const char* fragmentTemplate,
+    const std::vector<ShaderPart>& fragmentParts, bool useUBO)
+: useUBO(useUBO) {
+    START_TRY
+    std::string combinedFrag = combineFragmentShader(fragmentTemplate, fragmentParts);
+    unsigned int vertexShader = compileShader(ShaderType::VERTEX, vertexSource);
+    unsigned int fragmentShader = compileShader(ShaderType::FRAGMENT, combinedFrag.c_str());
     linkProgram(vertexShader, fragmentShader);
     END_TRY
 }
@@ -121,6 +136,72 @@ int Shader::compileShader(ShaderType type, const char* source) {
 
 Shader::~Shader() {
     GL_CALL(glDeleteProgram(ID));
+}
+
+std::string Shader::combineFragmentShader(
+    const char* templateSource,
+    const std::vector<ShaderPart>& parts
+) {
+    auto trim = [](const std::string& str) -> std::string {
+        size_t start = str.find_first_not_of(" \t\r\n");
+        if (start == std::string::npos) return "";
+        size_t end = str.find_last_not_of(" \t\r\n");
+        return str.substr(start, end - start + 1);
+    };
+
+    std::string separator(32, '=');
+
+    // Build include block
+    std::string include_block;
+    if (parts.empty()) {
+        include_block = "// No shaders here";
+    } else {
+        for (const auto& part : parts) {
+            if (!include_block.empty()) include_block += '\n';
+            include_block += "// " + separator + " BEGIN " + part.name + " " + separator;
+            include_block += '\n';
+            include_block += part.source;
+            include_block += '\n';
+            include_block += "// " + separator + " END " + part.name + " " + separator;
+        }
+    }
+
+    // Build apply block
+    std::string apply_block;
+    if (parts.empty()) {
+        apply_block = "    // No shaders here";
+    } else {
+        for (const auto& part : parts) {
+            if (!apply_block.empty()) apply_block += '\n';
+            apply_block += "    color = " + part.name + "_apply(color);";
+        }
+    }
+
+    std::istringstream stream(templateSource);
+    std::string line;
+    bool found_include = false, found_apply = false;
+    std::string result;
+    while (std::getline(stream, line)) {
+        std::string trimmed = trim(line);
+        if (trimmed == "%INCLUDE%") {
+            found_include = true;
+            if (!result.empty()) result += '\n';
+            result += include_block;
+        } else if (trimmed == "%APPLY%") {
+            found_apply = true;
+            if (!result.empty()) result += '\n';
+            result += apply_block;
+        } else {
+            if (!result.empty()) result += '\n';
+            result += line;
+        }
+    }
+    if (!found_include)
+        throw std::runtime_error(std::format("Unable to find %INCLUDE% in fragment template"));
+    if (!found_apply)
+        throw std::runtime_error(std::format("Unable to find %APPLY% in fragment template"));
+
+    return result;
 }
 
 }
