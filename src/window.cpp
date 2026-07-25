@@ -17,7 +17,7 @@ Window::~Window() {
     glfwTerminate();
 }
 
-void Window::create(int width, int height, const char* title) {
+void Window::create(int width, int height, const char* title, int msaa_samples) {
     START_TRY
     if (!glfwInit()) {
         throw std::runtime_error("Failed to initialize GLFW");
@@ -26,6 +26,7 @@ void Window::create(int width, int height, const char* title) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, msaa_samples);
 
     window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (!window) {
@@ -37,6 +38,7 @@ void Window::create(int width, int height, const char* title) {
 
     current_width = width;
     current_height = height;
+    this->msaa_samples = glfwGetWindowAttrib(window, GLFW_SAMPLES);
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         glfwDestroyWindow(window);
@@ -72,6 +74,10 @@ int Window::getWidth() const {
 
 int Window::getHeight() const {
     return current_height;
+}
+
+int Window::getSamples() const {
+    return msaa_samples;
 }
 
 Vector2i Window::getSize() const {

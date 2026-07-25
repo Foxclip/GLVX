@@ -21,10 +21,16 @@ const int DEFAULT_WINDOW_HEIGHT = 600;
 class Window : public RenderTarget {
 public:
     ~Window();
-    void create(int width = DEFAULT_WINDOW_WIDTH, int height = DEFAULT_WINDOW_HEIGHT, const char* title = "GLVis window");
+    void create(
+        int width = DEFAULT_WINDOW_WIDTH,
+        int height = DEFAULT_WINDOW_HEIGHT,
+        const char* title = "GLVis window",
+        int msaa_samples = 0
+    );
     bool isOpen() const;
     int getWidth() const;
     int getHeight() const;
+    int getSamples() const;
     Vector2i getSize() const;
     Vector2f getCenter() const;
     void setView(const View& view) override;
@@ -48,6 +54,7 @@ private:
     std::unique_ptr<Shader> default_shader_uptr = nullptr;
     std::unique_ptr<Shader> subpixel_shader_uptr = nullptr;
     std::unique_ptr<UniformBuffer> uniform_buffer_uptr = nullptr;
+    int msaa_samples = 0;
 
     mouseCallbackFuncType mouse_move_callback = [](double xpos, double ypos) { };
     mouseButtonCallbackFuncType mouse_button_callback = [](int button, int action, int mods) { };
