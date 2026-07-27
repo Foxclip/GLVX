@@ -2,7 +2,7 @@
 
 #include "glvis/vector.h"
 #include "glvis/matrix.h"
-#include "glvis/rect.h"
+#include "glvis/float_rect.h"
 
 namespace glvis {
 
@@ -26,7 +26,7 @@ public:
     Vector2f transformPoint(float x, float y) const;
     Vector2f transformPoint(const Vector2f& point) const;
 
-    Rect transformRect(const Rect& rect) const;
+    FloatRect transformRect(const FloatRect& rect) const;
 
     Transform getInverse() const;
 

@@ -66,7 +66,7 @@ Vector2f Transform::transformPoint(const Vector2f& point) const {
     return transformPoint(point.x, point.y);
 }
 
-Rect Transform::transformRect(const Rect& rect) const {
+FloatRect Transform::transformRect(const FloatRect& rect) const {
     Vector2f p0 = transformPoint(rect.position.x, rect.position.y);
     Vector2f p1 = transformPoint(rect.position.x + rect.size.x, rect.position.y);
     Vector2f p2 = transformPoint(rect.position.x, rect.position.y + rect.size.y);
@@ -77,7 +77,7 @@ Rect Transform::transformRect(const Rect& rect) const {
     float max_x = std::max({ p0.x, p1.x, p2.x, p3.x });
     float max_y = std::max({ p0.y, p1.y, p2.y, p3.y });
 
-    return Rect(min_x, min_y, max_x - min_x, max_y - min_y);
+    return FloatRect(min_x, min_y, max_x - min_x, max_y - min_y);
 }
 
 Transform Transform::getInverse() const {

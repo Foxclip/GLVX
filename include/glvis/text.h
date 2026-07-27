@@ -4,7 +4,7 @@
 #include "glvis/font.h"
 #include "glvis/vertex_buffer.h"
 #include "glvis/vector.h"
-#include "glvis/rect.h"
+#include "glvis/float_rect.h"
 #include <string>
 #include <vector>
 
@@ -26,11 +26,11 @@ private:
     std::string string;
     float max_width = 0.0f;
     VertexBuffer vertex_buffer;
-    Rect text_bounds;
+    FloatRect text_bounds;
 
     std::vector<std::string> breakLines() const;
     float measureWidth(const std::string& text) const;
-    Rect calculateVisualBounds() const;
+    FloatRect calculateVisualBounds() const;
 
 };
 
