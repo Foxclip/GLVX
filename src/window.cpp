@@ -9,18 +9,32 @@
 
 namespace glvis {
 
+int Window::active_window_count = 0;
+bool Window::glfw_initialized = false;
+
 Window::~Window() {
+    --active_window_count;
+    glfwMakeContextCurrent(window);
+
     default_shader_uptr.reset();
     subpixel_shader_uptr.reset();
     uniform_buffer_uptr.reset();
+
     glfwDestroyWindow(window);
-    glfwTerminate();
+
+    if (active_window_count == 0) {
+        glfwTerminate();
+        glfw_initialized = false;
+    }
 }
 
 void Window::create(int width, int height, const char* title, int msaa_samples) {
     START_TRY
-    if (!glfwInit()) {
-        throw std::runtime_error("Failed to initialize GLFW");
+    if (!glfw_initialized) {
+        if (!glfwInit()) {
+            throw std::runtime_error("Failed to initialize GLFW");
+        }
+        glfw_initialized = true;
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -30,7 +44,6 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
 
     window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (!window) {
-        glfwTerminate();
         throw std::runtime_error("Failed to create GLFW window");
     }
 
@@ -42,7 +55,6 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         glfwDestroyWindow(window);
-        glfwTerminate();
         throw std::runtime_error("Failed to initialize GLAD");
     }
 
@@ -61,6 +73,7 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
     common::defaultShader = default_shader_uptr.get();
     subpixel_shader_uptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag, true);
     common::subpixelShader = subpixel_shader_uptr.get();
+    ++active_window_count;
     END_TRY
 }
 
