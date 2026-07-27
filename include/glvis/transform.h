@@ -16,8 +16,10 @@ public:
 
     Transform& rotate(float angle, const Vector2f& center);
 
-    Transform& scale(float factor_x, float factor_y, const Vector2f& center);
+    Transform& scale(float factor_x, float factor_y, float center_x, float center_y);
     Transform& scale(float factor_x, float factor_y);
+    Transform& scale(const Vector2f& factor, const Vector2f& center);
+    Transform& scale(const Vector2f& factor);
 
     Transform& combine(const Transform& transform);
 

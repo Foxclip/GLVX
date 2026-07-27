@@ -29,17 +29,25 @@ Transform& Transform::rotate(float angle, const Vector2f& center) {
     return *this;
 }
 
-Transform& Transform::scale(float factor_x, float factor_y, const Vector2f& center) {
+Transform& Transform::scale(float factor_x, float factor_y, float center_x, float center_y) {
     glm::mat4 scaling = glm::mat4(1.0f);
-    scaling = glm::translate(scaling, glm::vec3(center.x, center.y, 0.0f));
+    scaling = glm::translate(scaling, glm::vec3(center_x, center_y, 0.0f));
     scaling = glm::scale(scaling, glm::vec3(factor_x, factor_y, 1.0f));
-    scaling = glm::translate(scaling, glm::vec3(-center.x, -center.y, 0.0f));
+    scaling = glm::translate(scaling, glm::vec3(-center_x, -center_y, 0.0f));
     m_matrix = m_matrix * scaling;
     return *this;
 }
 
 Transform& Transform::scale(float factor_x, float factor_y) {
-    return scale(factor_x, factor_y, Vector2f(0.0f, 0.0f));
+    return scale(factor_x, factor_y, 0.0f, 0.0f);
+}
+
+Transform& Transform::scale(const Vector2f& factor, const Vector2f& center) {
+    return scale(factor.x, factor.y, center.x, center.y);
+}
+
+Transform& Transform::scale(const Vector2f& factor) {
+    return scale(factor.x, factor.y);
 }
 
 Transform& Transform::combine(const Transform& transform) {
