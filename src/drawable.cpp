@@ -9,8 +9,8 @@
 
 namespace glvis {
 
-Matrix4 Drawable::getModelMatrix() const {
-    return Matrix4(); // Identity
+Transform Drawable::getTransform() const {
+    return Transform();
 }
 
 Color Drawable::getColor() const {
@@ -41,7 +41,7 @@ void Drawable::renderBase(
     Shader* shader,
     const AbstractTexture* texture,
     const Color& color,
-    const Matrix4& model,
+    const Transform& model,
     const Matrix4& view,
     const Matrix4& projection,
     const RenderStates& states
@@ -51,7 +51,7 @@ void Drawable::renderBase(
     Shader* renderShader = states.shader ? states.shader : shader;
     assert(renderShader);
     const AbstractTexture* renderTexture = states.texture ? states.texture : texture;
-    Matrix4 combinedModel = states.transform.toMatrix4() * model;
+    Matrix4 combinedModel = (states.transform * model).toMatrix4();
     bool textureIsPremultiplied = renderTexture != nullptr && renderTexture->isRenderTexture();
     renderShader->use();
 
@@ -86,7 +86,7 @@ void Drawable::render(
     const Matrix4& projection,
     const RenderStates& states
 ) const {
-    renderBase(shader, texture, color, getModelMatrix(), view, projection, states);
+    renderBase(shader, texture, color, getTransform(), view, projection, states);
 }
 
 }

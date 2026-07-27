@@ -7,7 +7,7 @@ namespace glvis {
 
 class Shape : public VertexArray, public Transformable {
 public:
-    Matrix4 getModelMatrix() const override;
+    Transform getTransform() const override;
 
 protected:
     using VertexArray::VertexArray;  // Inherit constructors from VertexArray

@@ -2,7 +2,7 @@
 
 #include "glvis/vector.h"
 #include "glvis/angle.h"
-#include "glvis/matrix.h"
+#include "glvis/transform.h"
 
 namespace glvis {
 
@@ -14,7 +14,7 @@ public:
     const Angle& getRotation() const;
     const Vector2f& getScale() const;
     const Vector2f& getOrigin() const;
-    Matrix4 getModelMatrix() const;
+    Transform getTransform() const;
     void setPosition(float x, float y);
     void setPosition(const Vector2f& position);
     void setRotation(const Angle& rotation);

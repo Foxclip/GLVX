@@ -2,8 +2,8 @@
 
 namespace glvis {
 
-Matrix4 Shape::getModelMatrix() const {
-    return Transformable::getModelMatrix();
+Transform Shape::getTransform() const {
+    return Transformable::getTransform();
 }
 
 }

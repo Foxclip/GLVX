@@ -1,7 +1,5 @@
 #include "glvis/transformable.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include "glvis/utils.h"
+#include "glvis/transform.h"
 
 namespace glvis {
 
@@ -69,13 +67,13 @@ void Transformable::move(const Vector2f& offset) {
     position += offset;
 }
 
-Matrix4 Transformable::getModelMatrix() const {
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));
-    model = glm::rotate(model, rotation.asRadians(), glm::vec3(0.0f, 0.0f, -1.0f));
-    model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.0f));
-    model = glm::translate(model, glm::vec3(-origin.x, -origin.y, 0.0f));
-    return from_glmMat4(model);
+Transform Transformable::getTransform() const {
+    Transform result;
+    result.translate(position.x, position.y);
+    result.rotate(degrees(-rotation.asDegrees()), Vector2f(0, 0));
+    result.scale(scale.x, scale.y);
+    result.translate(-origin.x, -origin.y);
+    return result;
 }
 
 }

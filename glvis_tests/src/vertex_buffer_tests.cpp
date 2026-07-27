@@ -17,8 +17,8 @@ public:
         return vertexBuffer;
     }
 
-    Matrix4 getModelMatrix() const override {
-        return Matrix4(); // Identity
+    Transform getTransform() const override {
+        return Transform();
     }
 
 private:
