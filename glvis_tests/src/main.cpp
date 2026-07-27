@@ -14,6 +14,7 @@
 #include "glvis_tests/text_tests.h"
 #include "glvis_tests/render_texture_tests.h"
 #include "glvis_tests/shader_tests.h"
+#include "glvis_tests/antialiasing_tests.h"
 
 int main() {
 
@@ -34,6 +35,7 @@ int main() {
         auto text_tests_module = root.addModule<TextTestsModule>("Text", { shape_tests_module });
         auto render_texture_tests_module = root.addModule<RenderTextureTestsModule>("RenderTexture", { basic_tests_module });
         auto shader_tests_module = root.addModule<ShaderTestsModule>("Shader", { shape_tests_module });
+        auto antialiasing_tests_module = root.addModule<AntialiasingTestsModule>("Antialiasing", { shape_tests_module });
         root.run();
         root.printSummary();
 
@@ -45,7 +47,6 @@ int main() {
         return 1;
     }
 
-    // TODO: add antialiasing
     // TODO: add Transform class
     // TODO: add Cursor class
     // TODO: add Event class
