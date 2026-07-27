@@ -39,7 +39,8 @@ Transform& Transform::scale(float factor_x, float factor_y, float center_x, floa
 }
 
 Transform& Transform::scale(float factor_x, float factor_y) {
-    return scale(factor_x, factor_y, 0.0f, 0.0f);
+    m_matrix = m_matrix * glm::scale(glm::mat4(1.0f), glm::vec3(factor_x, factor_y, 1.0f));
+    return *this;
 }
 
 Transform& Transform::scale(const Vector2f& factor, const Vector2f& center) {
@@ -47,7 +48,8 @@ Transform& Transform::scale(const Vector2f& factor, const Vector2f& center) {
 }
 
 Transform& Transform::scale(const Vector2f& factor) {
-    return scale(factor.x, factor.y);
+    m_matrix = m_matrix * glm::scale(glm::mat4(1.0f), glm::vec3(factor.x, factor.y, 1.0f));
+    return *this;
 }
 
 Transform& Transform::combine(const Transform& transform) {
