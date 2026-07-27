@@ -7,28 +7,28 @@ namespace glvis {
 Angle::Angle() { }
 
 float Angle::asDegrees() const {
-    return glm::degrees(radians);
+    return glm::degrees(m_radians);
 }
 
 float Angle::asRadians() const {
-    return radians;
+    return m_radians;
 }
 
-Angle degrees(float degrees) {
+Angle Angle::fromDegrees(float degrees) {
     Angle angle;
-    angle.radians = glm::radians(degrees);
+    angle.m_radians = glm::radians(degrees);
     return angle;
 }
 
-Angle radians(float radians) {
+Angle Angle::fromRadians(float radians) {
     Angle angle;
-    angle.radians = radians;
+    angle.m_radians = radians;
     return angle;
 }
 
 Angle Angle::operator-() const {
     Angle result;
-    result.radians = -this->radians;
+    result.m_radians = -m_radians;
     return result;
 }
 

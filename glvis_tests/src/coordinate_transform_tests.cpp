@@ -118,7 +118,7 @@ void CoordinateTransformTestsModule::worldToScreenRotateTest(test::Test& test) {
 
     // Set view at (50.5, 50.5) with rotation = 0
     view.setPosition(Vector2f(50.0f, 50.0f));
-    view.setRotation(degrees(0.0f));
+    view.setRotation(Angle::fromDegrees(0.0f));
     window.setView(view);
 
     // Test with no rotation
@@ -144,7 +144,7 @@ void CoordinateTransformTestsModule::worldToScreenRotateTest(test::Test& test) {
     T_VEC2_COMPARE(result, Vector2i(50, 50));
 
     // Rotate 90 degrees clockwise
-    view.setRotation(degrees(90.0f));
+    view.setRotation(Angle::fromDegrees(90.0f));
     window.setView(view);
 
     // With 90-degree rotation, the coordinate system rotates
@@ -257,7 +257,7 @@ void CoordinateTransformTestsModule::screenToWorldRotateTest(test::Test& test) {
     window.setTitle("screen to world rotate");
     View view;
     view.setPosition(Vector2f(50.0f, 50.0f));
-    view.setRotation(degrees(0.0f));
+    view.setRotation(Angle::fromDegrees(0.0f));
     window.setView(view);
 
     Vector2f result = window.screenToWorld(60, 50);
@@ -267,7 +267,7 @@ void CoordinateTransformTestsModule::screenToWorldRotateTest(test::Test& test) {
     T_VEC2_APPROX_COMPARE(result, Vector2f(50.5f, 60.5f));
 
     // Rotate 90 degrees clockwise
-    view.setRotation(degrees(90.0f));
+    view.setRotation(Angle::fromDegrees(90.0f));
     window.setView(view);
 
     result = window.screenToWorld(50, 100);

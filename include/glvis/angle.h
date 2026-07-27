@@ -5,19 +5,15 @@ namespace glvis {
 class Angle {
 public:
     Angle();
+    static Angle fromDegrees(float degrees);
+    static Angle fromRadians(float radians);
     float asDegrees() const;
     float asRadians() const;
     Angle operator-() const;
 
 private:
-    friend Angle degrees(float degrees);
-    friend Angle radians(float radians);
-
-    float radians = 0.0f;
+    float m_radians = 0.0f;
 
 };
-
-Angle degrees(float degrees);
-Angle radians(float radians);
 
 }

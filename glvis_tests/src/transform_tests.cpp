@@ -126,7 +126,7 @@ void TransformTestsModule::rotateTopLeftTest(test::Test& test) {
     window.setView(view);
 
     // rotate rect 45 degrees around top-left
-    rect.setRotation(degrees(45.0f));
+    rect.setRotation(Angle::fromDegrees(45.0f));
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
@@ -179,7 +179,7 @@ void TransformTestsModule::rotateCenterTest(test::Test& test) {
 
     // rotate rect 45 degrees around center
     rect.setOrigin(rect_half_size);
-    rect.setRotation(degrees(45.0f));
+    rect.setRotation(Angle::fromDegrees(45.0f));
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
