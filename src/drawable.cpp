@@ -51,7 +51,7 @@ void Drawable::renderBase(
     Shader* renderShader = states.shader ? states.shader : shader;
     assert(renderShader);
     const AbstractTexture* renderTexture = states.texture ? states.texture : texture;
-    Matrix4 combinedModel = states.transform * model;
+    Matrix4 combinedModel = states.transform.toMatrix4() * model;
     bool textureIsPremultiplied = renderTexture != nullptr && renderTexture->isRenderTexture();
     renderShader->use();
 
