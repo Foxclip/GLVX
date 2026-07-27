@@ -70,7 +70,7 @@ void Transformable::move(const Vector2f& offset) {
 Transform Transformable::getTransform() const {
     Transform result;
     result.translate(position.x, position.y);
-    result.rotate(degrees(-rotation.asDegrees()), Vector2f(0, 0));
+    result.rotate(-rotation, Vector2f(0, 0));
     result.scale(scale.x, scale.y);
     result.translate(-origin.x, -origin.y);
     return result;

@@ -7,6 +7,7 @@ public:
     Angle();
     float asDegrees() const;
     float asRadians() const;
+    Angle operator-() const;
 
 private:
     friend Angle degrees(float degrees);

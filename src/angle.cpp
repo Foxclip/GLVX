@@ -26,4 +26,10 @@ Angle radians(float radians) {
     return angle;
 }
 
+Angle Angle::operator-() const {
+    Angle result;
+    result.radians = -this->radians;
+    return result;
+}
+
 }
