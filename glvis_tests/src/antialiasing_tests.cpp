@@ -35,7 +35,7 @@ void AntialiasingTestsModule::windowAASolidRectTest(test::Test& test) {
     aaWindow.display();
 
     Image image = aaWindow.readPixels();
-    const Vector2i rect_size_int(static_cast<int>(rect_size.x), static_cast<int>(rect_size.y));
+    const Vector2i rect_size_int(static_cast<Vector2i>(rect_size));
     T_WRAP_CONTAINER(checkPixelColor(
         test, image, Vector2i(0, 0), rect_size_int, Color::Red
     ));
@@ -59,7 +59,7 @@ void AntialiasingTestsModule::windowAASubpixelRectTest(test::Test& test) {
     aaWindow.clear(Color::Black);
 
     const Vector2f rect_size(10.0f, 10.0f);
-    const Vector2i rect_size_int(static_cast<int>(rect_size.x), static_cast<int>(rect_size.y));
+    const Vector2i rect_size_int(static_cast<Vector2i>(rect_size));
     Rectangle rect(rect_size);
     rect.setPosition(0.5f, 0.5f); // move rect so that its border is in the middle of a pixel
     rect.setColor(Color::Red);
@@ -101,7 +101,7 @@ void AntialiasingTestsModule::renderTextureAASolidRectTest(test::Test& test) {
     render_texture.display();
 
     Image image = render_texture.readPixels();
-    const Vector2i rect_size_int(static_cast<int>(rect_size.x), static_cast<int>(rect_size.y));
+    const Vector2i rect_size_int(static_cast<Vector2i>(rect_size));
     T_WRAP_CONTAINER(checkPixelColor(
         test, image, Vector2i(0, 0), rect_size_int, Color::Red
     ));
@@ -124,7 +124,7 @@ void AntialiasingTestsModule::renderTextureAASubpixelRectTest(test::Test& test) 
     render_texture.clear(Color::Black);
 
     const Vector2f rect_size(10.0f, 10.0f);
-    const Vector2i rect_size_int(static_cast<int>(rect_size.x), static_cast<int>(rect_size.y));
+    const Vector2i rect_size_int(static_cast<Vector2i>(rect_size));
     Rectangle rect(rect_size);
     rect.setPosition(0.5f, 0.5f);
     rect.setColor(Color::Red);
