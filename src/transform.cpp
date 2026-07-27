@@ -20,10 +20,10 @@ Transform& Transform::translate(const Vector2f& vector) {
     return *this;
 }
 
-Transform& Transform::rotate(float angle, const Vector2f& center) {
+Transform& Transform::rotate(const Angle& angle, const Vector2f& center) {
     glm::mat4 rotation = glm::mat4(1.0f);
     rotation = glm::translate(rotation, glm::vec3(center.x, center.y, 0.0f));
-    rotation = glm::rotate(rotation, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+    rotation = glm::rotate(rotation, angle.asRadians(), glm::vec3(0.0f, 0.0f, 1.0f));
     rotation = glm::translate(rotation, glm::vec3(-center.x, -center.y, 0.0f));
     m_matrix = m_matrix * rotation;
     return *this;

@@ -3,6 +3,7 @@
 #include "glvis/vector.h"
 #include "glvis/matrix.h"
 #include "glvis/float_rect.h"
+#include "glvis/angle.h"
 
 namespace glvis {
 
@@ -13,7 +14,7 @@ public:
 
     Transform& translate(float x, float y);
     Transform& translate(const Vector2f& vector);
-    Transform& rotate(float angle, const Vector2f& center);
+    Transform& rotate(const Angle& angle, const Vector2f& center);
     Transform& scale(float factor_x, float factor_y, float center_x, float center_y);
     Transform& scale(float factor_x, float factor_y);
     Transform& scale(const Vector2f& factor, const Vector2f& center);
