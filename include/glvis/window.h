@@ -64,6 +64,9 @@ private:
     int getRenderTargetWidth() const override;
     int getRenderTargetHeight() const override;
 
+    static int active_window_count;
+    static bool glfw_initialized;
+
     void processWindowSize(int width, int height);
     static void framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height);
     static void mouseMoveCallbackGLFW(GLFWwindow* window, double xpos, double ypos);
