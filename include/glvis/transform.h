@@ -1,0 +1,45 @@
+#pragma once
+
+#include "glvis/vector.h"
+#include "glvis/matrix.h"
+#include "glvis/rect.h"
+
+namespace glvis {
+
+class Transform {
+public:
+    Transform();
+    explicit Transform(const Matrix4& matrix);
+
+    Transform& translate(float x, float y);
+    Transform& translate(const Vector2f& vector);
+
+    Transform& rotate(float angle, const Vector2f& center);
+
+    Transform& scale(float factor_x, float factor_y, const Vector2f& center);
+    Transform& scale(float factor_x, float factor_y);
+
+    Transform& combine(const Transform& transform);
+
+    Vector2f transformPoint(float x, float y) const;
+    Vector2f transformPoint(const Vector2f& point) const;
+
+    Rect transformRect(const Rect& rect) const;
+
+    Transform getInverse() const;
+
+    Matrix4 toMatrix4() const;
+
+    Transform& operator*=(const Transform& transform);
+    Vector2f operator*(const Vector2f& point) const;
+
+    bool operator==(const Transform& other) const;
+    bool operator!=(const Transform& other) const;
+
+private:
+    glm::mat4 m_matrix;
+};
+
+Transform operator*(const Transform& left, const Transform& right);
+
+}

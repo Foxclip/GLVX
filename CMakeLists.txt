@@ -40,6 +40,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/shape.cpp
     ${SRC_DIR}/text.cpp
     ${SRC_DIR}/texture.cpp
+    ${SRC_DIR}/transform.cpp
     ${SRC_DIR}/transformable.cpp
     ${SRC_DIR}/utils.cpp
     ${SRC_DIR}/vector.cpp
