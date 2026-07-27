@@ -10,11 +10,13 @@
 namespace glvis {
 
 Window::~Window() {
+    glfwMakeContextCurrent(window);
+
     default_shader_uptr.reset();
     subpixel_shader_uptr.reset();
     uniform_buffer_uptr.reset();
+
     glfwDestroyWindow(window);
-    glfwTerminate();
 }
 
 void Window::create(int width, int height, const char* title, int msaa_samples) {
