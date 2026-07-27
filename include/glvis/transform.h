@@ -25,6 +25,7 @@ public:
     FloatRect transformRect(const FloatRect& rect) const;
     Transform getInverse() const;
     Matrix4 toMatrix4() const;
+    const float* getData() const;
     Transform& operator*=(const Transform& transform);
     Vector2f operator*(const Vector2f& point) const;
     bool operator==(const Transform& other) const;

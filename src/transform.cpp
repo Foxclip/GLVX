@@ -94,6 +94,10 @@ Matrix4 Transform::toMatrix4() const {
     return from_glmMat4(m_matrix);
 }
 
+const float* Transform::getData() const {
+    return glm::value_ptr(m_matrix);
+}
+
 Transform& Transform::operator*=(const Transform& transform) {
     return combine(transform);
 }
