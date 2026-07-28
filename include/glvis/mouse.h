@@ -19,7 +19,7 @@ public:
         Count = 5
     };
 
-    static bool isButtonPressed(Button button, const Window& window);
+    static bool isButtonPressed(const Window& window, Button button);
     static Vector2i getPosition(const Window& window);
     static void setPosition(const Window& window, const Vector2i& position);
 

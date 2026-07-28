@@ -5,16 +5,16 @@ namespace glvis {
 
 std::unordered_map<GLFWwindow*, Mouse::MouseState> Mouse::window_states;
 
-bool Mouse::isButtonPressed(Mouse::Button button, const Window& window) {
+bool Mouse::isButtonPressed(const Window& window, Button button) {
     auto it = window_states.find(window.getWindowHandle());
-    if (it != window_states.end()) {
-        size_t idx = static_cast<size_t>(button);
-        if (idx >= static_cast<size_t>(Mouse::Button::Count)) {
-            return false;
-        }
-        return it->second.button_states[idx];
+    if (it == window_states.end()) {
+        return false;
     }
-    return false;
+    size_t idx = static_cast<size_t>(button);
+    if (idx >= static_cast<size_t>(Button::Count)) {
+        return false;
+    }
+    return it->second.button_states[idx];
 }
 
 Vector2i Mouse::getPosition(const Window& window) {
@@ -35,13 +35,13 @@ void Mouse::updatePosition(GLFWwindow* handle, double x, double y) {
     state.position = Vector2i(static_cast<int>(x), static_cast<int>(y));
 }
 
-void Mouse::setButtonState(GLFWwindow* handle, Mouse::Button button, bool pressed) {
+void Mouse::setButtonState(GLFWwindow* handle, Button button, bool pressed) {
     auto it = window_states.find(handle);
     if (it == window_states.end()) {
         return;
     }
     size_t idx = static_cast<size_t>(button);
-    if (idx < static_cast<size_t>(Mouse::Button::Count)) {
+    if (idx < static_cast<size_t>(Button::Count)) {
         it->second.button_states[idx] = pressed;
     }
 }
