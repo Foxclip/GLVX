@@ -50,7 +50,7 @@ public:
     bool waitEvent(Event& event);
     void clearEventQueue();
 
-    GLFWwindow* getWindowHandle();
+    GLFWwindow* getWindowHandle() const;
 
 private:
     GLFWwindow* window = nullptr;

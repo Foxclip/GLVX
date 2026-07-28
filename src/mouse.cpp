@@ -1,4 +1,5 @@
 #include "glvis/mouse.h"
+#include "glvis/window.h"
 
 namespace glvis {
 
@@ -19,8 +20,8 @@ bool Mouse::isButtonPressed(Mouse::Button button) {
     return false;
 }
 
-bool Mouse::isButtonPressed(Mouse::Button button, GLFWwindow* window) {
-    auto it = window_states.find(window);
+bool Mouse::isButtonPressed(Mouse::Button button, const Window& window) {
+    auto it = window_states.find(window.getWindowHandle());
     if (it != window_states.end()) {
         size_t idx = static_cast<size_t>(button);
         if (idx >= static_cast<size_t>(Mouse::Button::Count)) {
@@ -41,18 +42,18 @@ Vector2i Mouse::getPosition() {
     return Vector2i{0, 0};
 }
 
-Vector2i Mouse::getPosition(GLFWwindow* window) {
-    auto it = window_states.find(window);
+Vector2i Mouse::getPosition(const Window& window) {
+    auto it = window_states.find(window.getWindowHandle());
     if (it != window_states.end()) {
         return it->second.position;
     }
     return Vector2i{0, 0};
 }
 
-void Mouse::setPosition(GLFWwindow* window, const Vector2i& position) {
-    current_window = window;
-    glfwSetCursorPos(window, position.x, position.y);
-    updatePosition(window, position.x, position.y);
+void Mouse::setPosition(const Window& window, const Vector2i& position) {
+    current_window = window.getWindowHandle();
+    glfwSetCursorPos(window.getWindowHandle(), position.x, position.y);
+    updatePosition(window.getWindowHandle(), position.x, position.y);
 }
 
 void Mouse::setPosition(const Vector2i& position) {

@@ -1,10 +1,15 @@
 #pragma once
 
 #include <glvis/vector.h>
+#ifndef GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_NONE
+#endif
 #include <GLFW/glfw3.h>
 #include <unordered_map>
 
 namespace glvis {
+
+class Window;
 
 class Mouse {
 public:
@@ -18,11 +23,11 @@ public:
     };
 
     static bool isButtonPressed(Button button);
-    static bool isButtonPressed(Button button, GLFWwindow* window);
+    static bool isButtonPressed(Button button, const Window& window);
     static Vector2i getPosition();
-    static Vector2i getPosition(GLFWwindow* window);
+    static Vector2i getPosition(const Window& window);
     static void setPosition(const Vector2i& position);
-    static void setPosition(GLFWwindow* window, const Vector2i& position);
+    static void setPosition(const Window& window, const Vector2i& position);
 
 private:
     friend class Window;

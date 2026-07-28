@@ -171,7 +171,7 @@ void Window::setMouseGrabEnabled(bool enabled) {
     glfwSetInputMode(window, GLFW_CURSOR, enabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
 
-GLFWwindow* Window::getWindowHandle() {
+GLFWwindow* Window::getWindowHandle() const {
     return window;
 }
 
