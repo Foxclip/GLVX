@@ -29,17 +29,17 @@ glm::ivec2 Mouse::getGlobalPosition(GLFWwindow* window) {
     return default_state.global_position;
 }
 
-bool Mouse::isButtonPressed(mouse::Button button) {
+bool Mouse::isButtonPressed(Mouse::Button button) {
     size_t idx = static_cast<size_t>(button);
-    if (idx >= static_cast<size_t>(mouse::Button::Count)) return false;
+    if (idx >= static_cast<size_t>(Mouse::Button::Count)) return false;
     return default_state.button_states[idx];
 }
 
-bool Mouse::isButtonPressed(mouse::Button button, GLFWwindow* window) {
+bool Mouse::isButtonPressed(Mouse::Button button, GLFWwindow* window) {
     auto it = window_states.find(window);
     if (it != window_states.end()) {
         size_t idx = static_cast<size_t>(button);
-        if (idx >= static_cast<size_t>(mouse::Button::Count)) return false;
+        if (idx >= static_cast<size_t>(Mouse::Button::Count)) return false;
         return it->second.button_states[idx];
     }
     return isButtonPressed(button);
@@ -57,16 +57,16 @@ void Mouse::setPositionForWindow(GLFWwindow* handle, double x, double y) {
     state.global_position = glm::ivec2(static_cast<int>(x) + wx, static_cast<int>(y) + wy);
 }
 
-void Mouse::setButtonState(mouse::Button button, bool pressed) {
+void Mouse::setButtonState(Mouse::Button button, bool pressed) {
     size_t idx = static_cast<size_t>(button);
-    if (idx < static_cast<size_t>(mouse::Button::Count)) {
+    if (idx < static_cast<size_t>(Mouse::Button::Count)) {
         default_state.button_states[idx] = pressed;
     }
 }
 
-void Mouse::setButtonStateForWindow(GLFWwindow* handle, mouse::Button button, bool pressed) {
+void Mouse::setButtonStateForWindow(GLFWwindow* handle, Mouse::Button button, bool pressed) {
     size_t idx = static_cast<size_t>(button);
-    if (idx < static_cast<size_t>(mouse::Button::Count)) {
+    if (idx < static_cast<size_t>(Mouse::Button::Count)) {
         window_states[handle].button_states[idx] = pressed;
     }
 }

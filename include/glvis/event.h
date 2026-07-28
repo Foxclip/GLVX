@@ -51,7 +51,7 @@ struct Event {
     };
 
     struct MouseButtonEvent {
-        mouse::Button button = mouse::Button::Left;
+        Mouse::Button button = Mouse::Button::Left;
         int x = 0;
         int y = 0;
     };

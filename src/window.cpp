@@ -252,7 +252,7 @@ void Window::mouseButtonCallbackGLFW(GLFWwindow* glfwWindow, int button, int act
         double xpos, ypos;
         glfwGetCursorPos(glfwWindow, &xpos, &ypos);
 
-        mouse::Button mb = static_cast<mouse::Button>(button);
+        Mouse::Button mb = static_cast<Mouse::Button>(button);
         bool pressed = (action == GLFW_PRESS);
         Mouse::setButtonStateForWindow(glfwWindow, mb, pressed);
 
