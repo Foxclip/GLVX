@@ -7,11 +7,14 @@ std::unordered_map<void*, Mouse::MouseState> Mouse::window_states;
 
 bool Mouse::isButtonPressed(Mouse::Button button) {
     size_t idx = static_cast<size_t>(button);
-    if (idx >= static_cast<size_t>(Mouse::Button::Count)) return false;
+    if (idx >= static_cast<size_t>(Mouse::Button::Count)) {
+        return false;
+    }
     if (current_window) {
         auto it = window_states.find(current_window);
-        if (it != window_states.end())
+        if (it != window_states.end()) {
             return it->second.button_states[idx];
+        }
     }
     return false;
 }
@@ -20,7 +23,9 @@ bool Mouse::isButtonPressed(Mouse::Button button, GLFWwindow* window) {
     auto it = window_states.find(window);
     if (it != window_states.end()) {
         size_t idx = static_cast<size_t>(button);
-        if (idx >= static_cast<size_t>(Mouse::Button::Count)) return false;
+        if (idx >= static_cast<size_t>(Mouse::Button::Count)) {
+            return false;
+        }
         return it->second.button_states[idx];
     }
     return false;
@@ -29,8 +34,9 @@ bool Mouse::isButtonPressed(Mouse::Button button, GLFWwindow* window) {
 Vector2i Mouse::getPosition() {
     if (current_window) {
         auto it = window_states.find(current_window);
-        if (it != window_states.end())
+        if (it != window_states.end()) {
             return it->second.global_position;
+        }
     }
     return Vector2i{0, 0};
 }
