@@ -4,7 +4,7 @@
 namespace glvis {
 
 GLFWwindow* Mouse::current_window = nullptr;
-std::unordered_map<void*, Mouse::MouseState> Mouse::window_states;
+std::unordered_map<GLFWwindow*, Mouse::MouseState> Mouse::window_states;
 
 bool Mouse::isButtonPressed(Mouse::Button button) {
     size_t idx = static_cast<size_t>(button);

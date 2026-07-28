@@ -36,7 +36,7 @@ private:
     };
 
     static GLFWwindow* current_window;
-    static std::unordered_map<void*, MouseState> window_states;
+    static std::unordered_map<GLFWwindow*, MouseState> window_states;
 
     static void updatePosition(GLFWwindow* handle, double x, double y);
     static void setButtonState(GLFWwindow* handle, Button button, bool pressed);
