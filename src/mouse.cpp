@@ -36,9 +36,13 @@ void Mouse::updatePosition(GLFWwindow* handle, double x, double y) {
 }
 
 void Mouse::setButtonState(GLFWwindow* handle, Mouse::Button button, bool pressed) {
+    auto it = window_states.find(handle);
+    if (it == window_states.end()) {
+        return;
+    }
     size_t idx = static_cast<size_t>(button);
     if (idx < static_cast<size_t>(Mouse::Button::Count)) {
-        window_states[handle].button_states[idx] = pressed;
+        it->second.button_states[idx] = pressed;
     }
 }
 
