@@ -28,7 +28,6 @@ private:
 
     struct MouseState {
         Vector2i position = {0, 0};
-        Vector2i global_position = {0, 0};
         bool button_states[static_cast<size_t>(Button::Count)] = {};
     };
 

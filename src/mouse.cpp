@@ -33,9 +33,6 @@ void Mouse::setPosition(const Window& window, const Vector2i& position) {
 void Mouse::updatePosition(GLFWwindow* handle, double x, double y) {
     auto& state = window_states[handle];
     state.position = Vector2i(static_cast<int>(x), static_cast<int>(y));
-    int wx, wy;
-    glfwGetWindowPos(handle, &wx, &wy);
-    state.global_position = Vector2i(static_cast<int>(x) + wx, static_cast<int>(y) + wy);
 }
 
 void Mouse::setButtonState(GLFWwindow* handle, Mouse::Button button, bool pressed) {
