@@ -17,10 +17,12 @@ public:
         Count = 5
     };
 
-    static Vector2i getPosition();
-    static Vector2i getPosition(GLFWwindow* window);
     static bool isButtonPressed(Button button);
     static bool isButtonPressed(Button button, GLFWwindow* window);
+    static Vector2i getPosition();
+    static Vector2i getPosition(GLFWwindow* window);
+    static void setPosition(const Vector2i& position);
+    static void setPosition(GLFWwindow* window, const Vector2i& position);
 
 private:
     friend class Window;
@@ -34,7 +36,7 @@ private:
     static GLFWwindow* current_window;
     static std::unordered_map<void*, MouseState> window_states;
 
-    static void setPosition(GLFWwindow* handle, double x, double y);
+    static void updatePosition(GLFWwindow* handle, double x, double y);
     static void setButtonState(GLFWwindow* handle, Button button, bool pressed);
     static void reset();
 };
