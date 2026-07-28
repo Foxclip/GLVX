@@ -6,10 +6,9 @@ namespace glvis {
 
 class Keyboard {
 public:
-    static bool isKeyPressed(key::Key key);
-    static bool isModifierActive(key::Modifier modifier);
-
-    static void setKeyState(key::Key key, bool pressed);
+    static bool isKeyPressed(Key key);
+    static bool isModifierActive(Modifier modifier);
+    static void setKeyState(Key key, bool pressed);
     static void reset();
 
 private:

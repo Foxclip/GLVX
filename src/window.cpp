@@ -281,8 +281,8 @@ void Window::scrollCallbackGLFW(GLFWwindow* glfwWindow, double xoffset, double y
 
 void Window::keyCallbackGLFW(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods) {
     if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        key::Key k = key::glfwToKey(key);
-        key::Modifier modifier = key::glfwToModifier(mods);
+        Key k = glfwToKey(key);
+        Modifier modifier = glfwToModifier(mods);
 
         bool pressed = (action == GLFW_PRESS);
         bool repeated = (action == GLFW_REPEAT);

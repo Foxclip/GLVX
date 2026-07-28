@@ -3,7 +3,6 @@
 #include <GLFW/glfw3.h>
 
 namespace glvis {
-namespace key {
 
 enum class Key {
     Unknown = -1,
@@ -159,5 +158,4 @@ inline Modifier glfwToModifier(int glfw_mods) {
     return result;
 }
 
-}
 }
