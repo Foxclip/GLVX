@@ -3,7 +3,6 @@
 namespace glvis {
 
 bool Keyboard::key_states[Keyboard::NumKeys] = {};
-int Keyboard::key_state_refs = 0;
 
 bool Keyboard::isKeyPressed(Key key) {
     int idx = static_cast<int>(key);

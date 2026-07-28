@@ -14,7 +14,6 @@ public:
 private:
     static constexpr int NumKeys = 350;
     static bool key_states[NumKeys];
-    static int key_state_refs;
 };
 
 }
