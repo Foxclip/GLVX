@@ -27,13 +27,9 @@ public:
     static bool isButtonPressed(mouse::Button button);
     static bool isButtonPressed(mouse::Button button, GLFWwindow* window);
 
-    static void setPosition(double x, double y);
-    static void setPositionForWindow(GLFWwindow* handle, double x, double y);
-    static void setButtonState(mouse::Button button, bool pressed);
-    static void setButtonStateForWindow(GLFWwindow* handle, mouse::Button button, bool pressed);
-    static void reset();
-
 private:
+    friend class Window;
+
     struct MouseState {
         glm::ivec2 position = {0, 0};
         glm::ivec2 global_position = {0, 0};
@@ -42,6 +38,12 @@ private:
 
     static MouseState default_state;
     static std::unordered_map<void*, MouseState> window_states;
+
+    static void setPosition(double x, double y);
+    static void setPositionForWindow(GLFWwindow* handle, double x, double y);
+    static void setButtonState(mouse::Button button, bool pressed);
+    static void setButtonStateForWindow(GLFWwindow* handle, mouse::Button button, bool pressed);
+    static void reset();
 };
 
 }
