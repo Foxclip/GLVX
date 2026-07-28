@@ -5,11 +5,11 @@ namespace glvis {
 Mouse::MouseState Mouse::default_state;
 std::unordered_map<void*, Mouse::MouseState> Mouse::window_states;
 
-glm::ivec2 Mouse::getPosition() {
+Vector2i Mouse::getPosition() {
     return default_state.position;
 }
 
-glm::ivec2 Mouse::getPosition(GLFWwindow* window) {
+Vector2i Mouse::getPosition(GLFWwindow* window) {
     auto it = window_states.find(window);
     if (it != window_states.end()) {
         return it->second.position;
@@ -17,11 +17,11 @@ glm::ivec2 Mouse::getPosition(GLFWwindow* window) {
     return default_state.position;
 }
 
-glm::ivec2 Mouse::getGlobalPosition() {
+Vector2i Mouse::getGlobalPosition() {
     return default_state.global_position;
 }
 
-glm::ivec2 Mouse::getGlobalPosition(GLFWwindow* window) {
+Vector2i Mouse::getGlobalPosition(GLFWwindow* window) {
     auto it = window_states.find(window);
     if (it != window_states.end()) {
         return it->second.global_position;
@@ -46,15 +46,15 @@ bool Mouse::isButtonPressed(Mouse::Button button, GLFWwindow* window) {
 }
 
 void Mouse::setPosition(double x, double y) {
-    default_state.position = glm::ivec2(static_cast<int>(x), static_cast<int>(y));
+    default_state.position = Vector2i(static_cast<int>(x), static_cast<int>(y));
 }
 
 void Mouse::setPositionForWindow(GLFWwindow* handle, double x, double y) {
     auto& state = window_states[handle];
-    state.position = glm::ivec2(static_cast<int>(x), static_cast<int>(y));
+    state.position = Vector2i(static_cast<int>(x), static_cast<int>(y));
     int wx, wy;
     glfwGetWindowPos(handle, &wx, &wy);
-    state.global_position = glm::ivec2(static_cast<int>(x) + wx, static_cast<int>(y) + wy);
+    state.global_position = Vector2i(static_cast<int>(x) + wx, static_cast<int>(y) + wy);
 }
 
 void Mouse::setButtonState(Mouse::Button button, bool pressed) {

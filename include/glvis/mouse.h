@@ -1,7 +1,7 @@
 #pragma once
 
+#include <glvis/vector.h>
 #include <GLFW/glfw3.h>
-#include <glm/vec2.hpp>
 #include <unordered_map>
 
 namespace glvis {
@@ -17,10 +17,10 @@ public:
         Count = 5
     };
 
-    static glm::ivec2 getPosition();
-    static glm::ivec2 getPosition(GLFWwindow* window);
-    static glm::ivec2 getGlobalPosition();
-    static glm::ivec2 getGlobalPosition(GLFWwindow* window);
+    static Vector2i getPosition();
+    static Vector2i getPosition(GLFWwindow* window);
+    static Vector2i getGlobalPosition();
+    static Vector2i getGlobalPosition(GLFWwindow* window);
     static bool isButtonPressed(Button button);
     static bool isButtonPressed(Button button, GLFWwindow* window);
 
@@ -28,8 +28,8 @@ private:
     friend class Window;
 
     struct MouseState {
-        glm::ivec2 position = {0, 0};
-        glm::ivec2 global_position = {0, 0};
+        Vector2i position = {0, 0};
+        Vector2i global_position = {0, 0};
         bool button_states[static_cast<size_t>(Button::Count)] = {};
     };
 
