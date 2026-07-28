@@ -194,14 +194,14 @@ float Text::measureWidth(const std::string& text) const {
     return width;
 }
 
-Rect Text::calculateVisualBounds() const {
+FloatRect Text::calculateVisualBounds() const {
     std::vector<std::string> lines = breakLines();
 
     if (lines.empty()) {
-        return Rect();
+        return FloatRect();
     }
 
-    Rect result;
+    FloatRect result;
     float line_height = static_cast<float>(font->getLineHeight());
     bool first = true;
 
@@ -215,7 +215,7 @@ Rect Text::calculateVisualBounds() const {
             const Character& ch = font->getCharacter(c);
             float effective_char_width = (ch.width > 0) ? static_cast<float>(ch.width) : static_cast<float>(ch.advance);
 
-            Rect char_rect;
+            FloatRect char_rect;
             int font_size = font->getCharacterSize();
             char_rect.position.x = current_x + static_cast<float>(ch.x);
             float part_below_baseline = static_cast<float>(ch.glyph_height - ch.top);

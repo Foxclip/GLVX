@@ -1,15 +1,15 @@
-#include "glvis/rect.h"
+#include "glvis/float_rect.h"
 #include <algorithm>
 
 namespace glvis {
 
-Rect::Rect() : position(0.0f, 0.0f), size(0.0f, 0.0f) {}
+FloatRect::FloatRect() : position(0.0f, 0.0f), size(0.0f, 0.0f) {}
 
-Rect::Rect(float x, float y, float width, float height) : position(x, y), size(width, height) {}
+FloatRect::FloatRect(float x, float y, float width, float height) : position(x, y), size(width, height) {}
 
-Rect::Rect(const Vector2f& position, const Vector2f& size) : position(position), size(size) {}
+FloatRect::FloatRect(const Vector2f& position, const Vector2f& size) : position(position), size(size) {}
 
-void Rect::extend(const Rect& other) {
+void FloatRect::extend(const FloatRect& other) {
     float right = position.x + size.x;
     float other_right = other.position.x + other.size.x;
     float bottom = position.y + size.y;

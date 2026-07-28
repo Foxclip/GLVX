@@ -14,7 +14,7 @@ class Drawable {
 public:
     virtual ~Drawable() = default;
 
-    virtual Matrix4 getModelMatrix() const;
+    virtual Transform getTransform() const;
     virtual const VertexBuffer& getVertexBuffer() const = 0;
     Color getColor() const;
     void setColor(const Color& color);
@@ -37,7 +37,7 @@ protected:
         Shader* shader,
         const AbstractTexture* texture,
         const Color& color,
-        const Matrix4& model,
+        const Transform& model,
         const Matrix4& view,
         const Matrix4& projection,
         const RenderStates& states = RenderStates()

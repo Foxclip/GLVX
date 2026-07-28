@@ -75,7 +75,7 @@ void VertexArray::setPrimitiveType(PrimitiveType type) {
 void VertexArray::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
     START_TRY
     vertexBuffer.update(vertices);
-    renderBase(shader, texture, color, getModelMatrix(), view, projection, states);
+    renderBase(shader, texture, color, getTransform(), view, projection, states);
     END_TRY
 }
 
@@ -115,8 +115,8 @@ Vector2f VertexArray::getBoundsMax() const {
     return Vector2f(maxX, maxY);
 }
 
-Matrix4 VertexArray::getModelMatrix() const {
-    return Matrix4(); // Identity
+Transform VertexArray::getTransform() const {
+    return Transform();
 }
 
 }

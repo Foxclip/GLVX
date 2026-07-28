@@ -32,7 +32,7 @@ public:
         const RenderStates& states = RenderStates()
     ) const override;
     const VertexBuffer& getVertexBuffer() const override;
-    Matrix4 getModelMatrix() const override;
+    Transform getTransform() const override;
 
 private:
     std::vector<Vertex> vertices;

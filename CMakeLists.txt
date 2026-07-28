@@ -31,7 +31,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/font.cpp
     ${SRC_DIR}/image.cpp
     ${SRC_DIR}/matrix.cpp
-    ${SRC_DIR}/rect.cpp
+    ${SRC_DIR}/float_rect.cpp
     ${SRC_DIR}/rectangle.cpp
     ${SRC_DIR}/render_states.cpp
     ${SRC_DIR}/render_target.cpp
@@ -40,6 +40,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/shape.cpp
     ${SRC_DIR}/text.cpp
     ${SRC_DIR}/texture.cpp
+    ${SRC_DIR}/transform.cpp
     ${SRC_DIR}/transformable.cpp
     ${SRC_DIR}/utils.cpp
     ${SRC_DIR}/vector.cpp

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glvis/matrix.h"
+#include "glvis/transform.h"
 
 namespace glvis {
 
@@ -11,7 +11,7 @@ class RenderStates {
 public:
     RenderStates();
 
-    Matrix4 transform;
+    Transform transform;
     AbstractTexture* texture;
     Shader* shader;
     bool texture_is_premultiplied;

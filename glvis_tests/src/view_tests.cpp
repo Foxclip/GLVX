@@ -138,7 +138,7 @@ void ViewTestsModule::viewRotateTest(test::Test& test) {
     const Vector2f rotated_rect_size = Vector2f(rect_size.y, rect_size.x);
     const Vector2i rotated_rect_size_int = static_cast<Vector2i>(rotated_rect_size);
     view.setPosition(rotated_view_pos);
-    const Angle rotation_angle = degrees(90.0f);
+    const Angle rotation_angle = Angle::fromDegrees(90.0f);
     view.setRotation(rotation_angle);
     window.setView(view);
     window.clear(Color::Black);
