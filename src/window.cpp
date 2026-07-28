@@ -4,6 +4,8 @@
 #include "glvis/shaders/subpixel.h"
 #include "glvis/uniform_buffer.h"
 #include "glvis/image.h"
+#include "glvis/keyboard.h"
+#include "glvis/mouse_position.h"
 #include <stdexcept>
 #include <filesystem>
 
@@ -23,6 +25,8 @@ Window::~Window() {
     glfwDestroyWindow(window);
 
     if (active_window_count == 0) {
+        Keyboard::reset();
+        MousePosition::reset();
         glfwTerminate();
         glfw_initialized = false;
     }
@@ -64,6 +68,10 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
     glfwSetCursorPosCallback(window, mouseMoveCallbackGLFW);
     glfwSetMouseButtonCallback(window, mouseButtonCallbackGLFW);
     glfwSetScrollCallback(window, scrollCallbackGLFW);
+    glfwSetKeyCallback(window, keyCallbackGLFW);
+    glfwSetCharCallback(window, charCallbackGLFW);
+    glfwSetWindowFocusCallback(window, focusCallbackGLFW);
+    glfwSetWindowPosCallback(window, windowPosCallbackGLFW);
 
     uniform_buffer_uptr = std::make_unique<UniformBuffer>();
     uniform_buffer_uptr->createObjectUBO();
@@ -105,7 +113,7 @@ void glvis::Window::setView(const View& view) {
     this->view = view.getViewMatrix(
         static_cast<float>(current_width),
         static_cast<float>(current_height),
-        true // cooridnate system is y-down, not y-up like opengl
+        true
     );
     this->inv_view = view.getInvViewMatrix(
         static_cast<float>(current_width),
@@ -134,7 +142,6 @@ void Window::setTitle(const std::string& title) const {
 void Window::display() const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     glfwSwapBuffers(window);
-    glfwPollEvents();
 }
 
 Image Window::readPixels() const {
@@ -146,18 +153,6 @@ Image Window::readPixels() const {
     Image image(current_width, current_height, std::move(pixels));
     image.flipY();
     return image;
-}
-
-void Window::setMouseCallback(const mouseCallbackFuncType& callback) {
-    mouse_move_callback = callback;
-}
-
-void Window::setMouseButtonCallback(const mouseButtonCallbackFuncType& callback) {
-    mouse_button_callback = callback;
-}
-
-void Window::setScrollCallback(const scrollCallbackFuncType& callback) {
-    scroll_callback = callback;
 }
 
 void Window::setMouseCursor(const Cursor& cursor) {
@@ -174,6 +169,40 @@ void Window::setCursorVisible(bool visible) {
 
 void Window::setMouseGrabEnabled(bool enabled) {
     glfwSetInputMode(window, GLFW_CURSOR, enabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}
+
+GLFWwindow* Window::getWindowHandle() {
+    return window;
+}
+
+void Window::pushEvent(const Event& event) {
+    if (event_queue.size() > MaxEventQueueSize) {
+        event_queue.pop();
+    }
+    event_queue.push(event);
+}
+
+bool Window::pollEvent(Event& event) {
+    if (event_queue.empty()) {
+        return false;
+    }
+    event = event_queue.front();
+    event_queue.pop();
+    return true;
+}
+
+bool Window::waitEvent(Event& event) {
+    while (event_queue.empty()) {
+        glfwWaitEvents();
+    }
+    event = event_queue.front();
+    event_queue.pop();
+    return true;
+}
+
+void Window::clearEventQueue() {
+    std::queue<Event> empty;
+    std::swap(event_queue, empty);
 }
 
 unsigned int Window::getRenderTargetFbo() const {
@@ -195,26 +224,104 @@ void Window::processWindowSize(int width, int height) {
 }
 
 void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height) {
-    if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        window->processWindowSize(width, height);
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        win->processWindowSize(width, height);
+
+        Event event;
+        event.type = EventType::Resized;
+        event.size.width = static_cast<unsigned int>(width);
+        event.size.height = static_cast<unsigned int>(height);
+        win->pushEvent(event);
     }
 }
 
 void Window::mouseMoveCallbackGLFW(GLFWwindow* glfwWindow, double xpos, double ypos) {
-    if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        window->mouse_move_callback(xpos, ypos);
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        MousePosition::setPositionForWindow(glfwWindow, xpos, ypos);
+
+        Event event;
+        event.type = EventType::MouseMoved;
+        event.mouseMove.x = static_cast<int>(xpos);
+        event.mouseMove.y = static_cast<int>(ypos);
+        win->pushEvent(event);
     }
 }
 
 void Window::mouseButtonCallbackGLFW(GLFWwindow* glfwWindow, int button, int action, int mods) {
-    if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        window->mouse_button_callback(button, action, mods);
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        double xpos, ypos;
+        glfwGetCursorPos(glfwWindow, &xpos, &ypos);
+
+        mouse::Button mb = static_cast<mouse::Button>(button);
+        bool pressed = (action == GLFW_PRESS);
+        MousePosition::setButtonStateForWindow(glfwWindow, mb, pressed);
+
+        Event event;
+        event.type = pressed ? EventType::MouseButtonPressed : EventType::MouseButtonReleased;
+        event.mouseButton.button = mb;
+        event.mouseButton.x = static_cast<int>(xpos);
+        event.mouseButton.y = static_cast<int>(ypos);
+        win->pushEvent(event);
     }
 }
 
 void Window::scrollCallbackGLFW(GLFWwindow* glfwWindow, double xoffset, double yoffset) {
-    if (Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        window->scroll_callback(xoffset, yoffset);
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        double xpos, ypos;
+        glfwGetCursorPos(glfwWindow, &xpos, &ypos);
+
+        Event event;
+        event.type = EventType::MouseWheelScrolled;
+        event.mouseWheel.delta = static_cast<float>(yoffset);
+        event.mouseWheel.x = static_cast<int>(xpos);
+        event.mouseWheel.y = static_cast<int>(ypos);
+        win->pushEvent(event);
+    }
+}
+
+void Window::keyCallbackGLFW(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        key::Key k = key::glfwToKey(key);
+        key::Modifier modifier = key::glfwToModifier(mods);
+
+        bool pressed = (action == GLFW_PRESS);
+        bool repeated = (action == GLFW_REPEAT);
+
+        Keyboard::setKeyState(k, pressed);
+
+        Event event;
+        event.type = pressed ? EventType::KeyPressed : EventType::KeyReleased;
+        event.key.code = k;
+        event.key.modifier = modifier;
+        event.key.altGr = (mods == (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
+        win->pushEvent(event);
+    }
+}
+
+void Window::charCallbackGLFW(GLFWwindow* glfwWindow, unsigned int codepoint) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        Event event;
+        event.type = EventType::TextEntered;
+        event.text.unicode = static_cast<char32_t>(codepoint);
+        win->pushEvent(event);
+    }
+}
+
+void Window::focusCallbackGLFW(GLFWwindow* glfwWindow, int focused) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        Event event;
+        event.type = focused ? EventType::FocusGained : EventType::FocusLost;
+        win->pushEvent(event);
+    }
+}
+
+void Window::windowPosCallbackGLFW(GLFWwindow* glfwWindow, int x, int y) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        Event event;
+        event.type = EventType::Moved;
+        event.pos.x = x;
+        event.pos.y = y;
+        win->pushEvent(event);
     }
 }
 

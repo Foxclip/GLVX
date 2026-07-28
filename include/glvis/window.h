@@ -11,8 +11,9 @@
 #include "glvis/vector.h"
 #include "glvis/render_target.h"
 #include "glvis/cursor.h"
+#include "glvis/event.h"
 #include <memory>
-#include <functional>
+#include <queue>
 
 namespace glvis {
 
@@ -41,16 +42,15 @@ public:
     void display() const;
     Image readPixels() const;
 
-    using mouseCallbackFuncType = std::function<void(double xpos, double ypos)>;
-    using mouseButtonCallbackFuncType = std::function<void(int button, int action, int mods)>;
-    using scrollCallbackFuncType = std::function<void(double xoffset, double yoffset)>;
-    void setMouseCallback(const mouseCallbackFuncType& callback);
-    void setMouseButtonCallback(const mouseButtonCallbackFuncType& callback);
-    void setScrollCallback(const scrollCallbackFuncType& callback);
-
     void setMouseCursor(const Cursor& cursor);
     void setCursorVisible(bool visible);
     void setMouseGrabEnabled(bool enabled);
+
+    bool pollEvent(Event& event);
+    bool waitEvent(Event& event);
+    void clearEventQueue();
+
+    GLFWwindow* getWindowHandle();
 
 private:
     GLFWwindow* window = nullptr;
@@ -61,9 +61,8 @@ private:
     std::unique_ptr<UniformBuffer> uniform_buffer_uptr = nullptr;
     int msaa_samples = 0;
 
-    mouseCallbackFuncType mouse_move_callback = [](double xpos, double ypos) { };
-    mouseButtonCallbackFuncType mouse_button_callback = [](int button, int action, int mods) { };
-    scrollCallbackFuncType scroll_callback = [](double xoffset, double yoffset) { };
+    static constexpr size_t MaxEventQueueSize = 512;
+    std::queue<Event> event_queue;
 
     unsigned int getRenderTargetFbo() const override;
     int getRenderTargetWidth() const override;
@@ -73,10 +72,15 @@ private:
     static bool glfw_initialized;
 
     void processWindowSize(int width, int height);
+    void pushEvent(const Event& event);
     static void framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height);
     static void mouseMoveCallbackGLFW(GLFWwindow* window, double xpos, double ypos);
     static void mouseButtonCallbackGLFW(GLFWwindow* window, int button, int action, int mods);
     static void scrollCallbackGLFW(GLFWwindow* window, double x, double y);
+    static void keyCallbackGLFW(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void charCallbackGLFW(GLFWwindow* window, unsigned int codepoint);
+    static void focusCallbackGLFW(GLFWwindow* window, int focused);
+    static void windowPosCallbackGLFW(GLFWwindow* window, int x, int y);
 
 };
 

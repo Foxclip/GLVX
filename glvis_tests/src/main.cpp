@@ -47,8 +47,6 @@ int main() {
         return 1;
     }
 
-    // TODO: add Transform class
-    // TODO: add Cursor class
     // TODO: add Event class
 
     return 0;
