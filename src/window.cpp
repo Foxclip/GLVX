@@ -5,7 +5,7 @@
 #include "glvis/uniform_buffer.h"
 #include "glvis/image.h"
 #include "glvis/keyboard.h"
-#include "glvis/mouse_position.h"
+#include "glvis/mouse.h"
 #include <stdexcept>
 #include <filesystem>
 
@@ -26,7 +26,7 @@ Window::~Window() {
 
     if (active_window_count == 0) {
         Keyboard::reset();
-        MousePosition::reset();
+        Mouse::reset();
         glfwTerminate();
         glfw_initialized = false;
     }
@@ -237,7 +237,7 @@ void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int heig
 
 void Window::mouseMoveCallbackGLFW(GLFWwindow* glfwWindow, double xpos, double ypos) {
     if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        MousePosition::setPositionForWindow(glfwWindow, xpos, ypos);
+        Mouse::setPositionForWindow(glfwWindow, xpos, ypos);
 
         Event event;
         event.type = EventType::MouseMoved;
@@ -254,7 +254,7 @@ void Window::mouseButtonCallbackGLFW(GLFWwindow* glfwWindow, int button, int act
 
         mouse::Button mb = static_cast<mouse::Button>(button);
         bool pressed = (action == GLFW_PRESS);
-        MousePosition::setButtonStateForWindow(glfwWindow, mb, pressed);
+        Mouse::setButtonStateForWindow(glfwWindow, mb, pressed);
 
         Event event;
         event.type = pressed ? EventType::MouseButtonPressed : EventType::MouseButtonReleased;

@@ -34,7 +34,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/keyboard.cpp
     ${SRC_DIR}/matrix.cpp
     ${SRC_DIR}/float_rect.cpp
-    ${SRC_DIR}/mouse_position.cpp
+    ${SRC_DIR}/mouse.cpp
     ${SRC_DIR}/rectangle.cpp
     ${SRC_DIR}/render_states.cpp
     ${SRC_DIR}/render_target.cpp
