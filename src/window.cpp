@@ -237,7 +237,7 @@ void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int heig
 
 void Window::mouseMoveCallbackGLFW(GLFWwindow* glfwWindow, double xpos, double ypos) {
     if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        Mouse::setPositionForWindow(glfwWindow, xpos, ypos);
+        Mouse::setPosition(glfwWindow, xpos, ypos);
 
         Event event;
         event.type = EventType::MouseMoved;
@@ -254,7 +254,7 @@ void Window::mouseButtonCallbackGLFW(GLFWwindow* glfwWindow, int button, int act
 
         Mouse::Button mb = static_cast<Mouse::Button>(button);
         bool pressed = (action == GLFW_PRESS);
-        Mouse::setButtonStateForWindow(glfwWindow, mb, pressed);
+        Mouse::setButtonState(glfwWindow, mb, pressed);
 
         Event event;
         event.type = pressed ? EventType::MouseButtonPressed : EventType::MouseButtonReleased;
