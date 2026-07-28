@@ -10,6 +10,7 @@
 #include "glvis/image.h"
 #include "glvis/vector.h"
 #include "glvis/render_target.h"
+#include "glvis/cursor.h"
 #include <memory>
 #include <functional>
 
@@ -46,6 +47,10 @@ public:
     void setMouseCallback(const mouseCallbackFuncType& callback);
     void setMouseButtonCallback(const mouseButtonCallbackFuncType& callback);
     void setScrollCallback(const scrollCallbackFuncType& callback);
+
+    void setMouseCursor(const Cursor& cursor);
+    void setCursorVisible(bool visible);
+    void setMouseGrabEnabled(bool enabled);
 
 private:
     GLFWwindow* window = nullptr;
