@@ -160,6 +160,22 @@ void Window::setScrollCallback(const scrollCallbackFuncType& callback) {
     scroll_callback = callback;
 }
 
+void Window::setMouseCursor(const Cursor& cursor) {
+    if (cursor.glfw_cursor) {
+        glfwSetCursor(window, cursor.glfw_cursor);
+    } else {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    }
+}
+
+void Window::setCursorVisible(bool visible) {
+    glfwSetInputMode(window, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
+}
+
+void Window::setMouseGrabEnabled(bool enabled) {
+    glfwSetInputMode(window, GLFW_CURSOR, enabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}
+
 unsigned int Window::getRenderTargetFbo() const {
     return 0;
 }
