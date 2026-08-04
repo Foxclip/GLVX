@@ -16,7 +16,6 @@ VertexArray::VertexArray() : vertexBuffer(Usage::StreamDraw) {
 VertexArray::VertexArray(PrimitiveType type, std::size_t vertexCount) : vertexBuffer(type, Usage::StreamDraw) {
     if (vertexCount > 0) {
         vertices.resize(vertexCount);
-        vertexBuffer.create(vertexCount);
     }
     shader = common::defaultShader;
 }

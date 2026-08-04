@@ -104,9 +104,6 @@ void Text::setString(const std::string& string) {
         }
     }
 
-    if (!vertex_buffer.getVAO()) {
-        vertex_buffer.create(static_cast<std::size_t>(vertices.size()));
-    }
     vertex_buffer.update(vertices);
 }
 
