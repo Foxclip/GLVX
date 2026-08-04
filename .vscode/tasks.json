@@ -8,6 +8,7 @@
       "args": [
         "-S", ".",
         "-B", "build",
+        "-DGLVX_BUILD_TESTS=ON"
       ],
       "group": {
         "kind": "none",
