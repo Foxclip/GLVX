@@ -72,6 +72,7 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
     glfwSetCharCallback(window, charCallbackGLFW);
     glfwSetWindowFocusCallback(window, focusCallbackGLFW);
     glfwSetWindowPosCallback(window, windowPosCallbackGLFW);
+    glfwSetWindowCloseCallback(window, closeCallbackGLFW);
 
     uniform_buffer_uptr = std::make_unique<UniformBuffer>();
     uniform_buffer_uptr->createObjectUBO();
@@ -322,6 +323,18 @@ void Window::windowPosCallbackGLFW(GLFWwindow* glfwWindow, int x, int y) {
         event.pos.y = y;
         win->pushEvent(event);
     }
+}
+
+void Window::closeCallbackGLFW(GLFWwindow* glfwWindow) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+        Event event;
+        event.type = EventType::Closed;
+        win->pushEvent(event);
+    }
+}
+
+void Window::close() {
+    glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
 }

@@ -31,6 +31,7 @@ public:
         const char* title = "GLVis window",
         int msaa_samples = 0
     );
+    void close();
     bool isOpen() const;
     int getWidth() const;
     int getHeight() const;
@@ -85,6 +86,7 @@ private:
     static void charCallbackGLFW(GLFWwindow* window, unsigned int codepoint);
     static void focusCallbackGLFW(GLFWwindow* window, int focused);
     static void windowPosCallbackGLFW(GLFWwindow* window, int x, int y);
+    static void closeCallbackGLFW(GLFWwindow* window);
 
 };
 
