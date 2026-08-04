@@ -183,6 +183,7 @@ void Window::pushEvent(const Event& event) {
 }
 
 bool Window::pollEvent(Event& event) {
+    glfwPollEvents();
     if (event_queue.empty()) {
         return false;
     }
