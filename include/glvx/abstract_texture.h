@@ -1,0 +1,54 @@
+#pragma once
+
+#include "glvx/image.h"
+
+namespace glvx {
+
+enum class InterpolationType {
+    Nearest,
+    Linear
+};
+
+enum class WrappingType {
+    ClampToEdge,
+    Repeat,
+    MirroredRepeat,
+    ClampToBorder
+};
+
+class AbstractTexture {
+public:
+    void create(
+        int width, int height, unsigned char* data = nullptr, int channels = 4, bool is_mask = false
+    );
+    int getID() const;
+    int getWidth() const;
+    int getHeight() const;
+    void setInterpolation(InterpolationType type);
+    InterpolationType getInterpolation() const;
+    void setWrapping(WrappingType type);
+    WrappingType getWrapping() const;
+    void bind() const;
+    void unbind() const;
+    virtual Image readPixels() const;
+    virtual void resize(int newWidth, int newHeight, bool blitOldContents = true);
+    virtual bool isRenderTexture() const;
+    ~AbstractTexture();
+
+protected:
+    unsigned int ID = 0;
+    int width = 0;
+    int height = 0;
+    InterpolationType interpolation = InterpolationType::Nearest;
+    WrappingType wrapping = WrappingType::ClampToEdge;
+    void createTexture(
+        int width, int height, unsigned char* data = nullptr, int channels = 4, bool is_mask = false,
+        InterpolationType interp = InterpolationType::Nearest,
+        WrappingType wrap = WrappingType::ClampToEdge
+    );
+    void resizeTexture(int newWidth, int newHeight, bool blitOldContents, InterpolationType interp, WrappingType wrap);
+    Image readPixelsRaw() const;
+
+};
+
+}

@@ -1,6 +1,6 @@
-#include "glvis/shape.h"
+#include "glvx/shape.h"
 
-namespace glvis {
+namespace glvx {
 
 Transform Shape::getTransform() const {
     return Transformable::getTransform();

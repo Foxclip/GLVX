@@ -1,13 +1,13 @@
-#include "glvis/vertex_array.h"
+#include "glvx/vertex_array.h"
 #include <algorithm>
 #include <limits>
 #include <cassert>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "glvis/shader.h"
-#include "glvis/glvis_common.h"
+#include "glvx/shader.h"
+#include "glvx/glvx_common.h"
 
-namespace glvis {
+namespace glvx {
 
 VertexArray::VertexArray() : vertexBuffer(Usage::StreamDraw) { }
 

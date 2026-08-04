@@ -1,15 +1,15 @@
-#include "glvis/circle.h"
+#include "glvx/circle.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <corecrt_math_defines.h>
 #include <cassert>
-#include "glvis/glvis_common.h"
-#include "glvis/texture.h"
-#include "glvis/shader.h"
+#include "glvx/glvx_common.h"
+#include "glvx/texture.h"
+#include "glvx/shader.h"
 #include <iostream>
 
-namespace glvis {
+namespace glvx {
 
 Circle::Circle(float radius, size_t numSegments) : Shape(PrimitiveType::TriangleFan, numSegments + 2) {
     assert(radius >= 0);

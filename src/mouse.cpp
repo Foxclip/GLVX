@@ -1,7 +1,7 @@
-#include "glvis/mouse.h"
-#include "glvis/window.h"
+#include "glvx/mouse.h"
+#include "glvx/window.h"
 
-namespace glvis {
+namespace glvx {
 
 std::unordered_map<GLFWwindow*, Mouse::MouseState> Mouse::window_states;
 

@@ -1,8 +1,8 @@
-#include "glvis/angle.h"
+#include "glvx/angle.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace glvis {
+namespace glvx {
 
 Angle::Angle() { }
 

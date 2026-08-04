@@ -1,9 +1,9 @@
-#include "glvis/view.h"
-#include "glvis/vector.h"
-#include "glvis/utils.h"
-#include "glvis/matrix.h"
+#include "glvx/view.h"
+#include "glvx/vector.h"
+#include "glvx/utils.h"
+#include "glvx/matrix.h"
 
-namespace glvis {
+namespace glvx {
 
 float View::getZoom() const {
     return getScale().x;

@@ -1,7 +1,7 @@
-#include "glvis/render_target.h"
-#include "glvis/utils.h"
+#include "glvx/render_target.h"
+#include "glvx/utils.h"
 
-namespace glvis {
+namespace glvx {
 
 void RenderTarget::setView(const View& view) {
     float width = static_cast<float>(getRenderTargetWidth());

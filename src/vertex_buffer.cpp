@@ -1,11 +1,11 @@
-#include "glvis/vertex_buffer.h"
+#include "glvx/vertex_buffer.h"
 #include <stdexcept>
 #include <cassert>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "glvis/vertex.h"
+#include "glvx/vertex.h"
 
-namespace glvis {
+namespace glvx {
 
 VertexBuffer::VertexBuffer(PrimitiveType type) : VertexBuffer(type, Usage::StaticDraw) { }
 

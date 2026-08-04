@@ -1,7 +1,7 @@
-#include "glvis/transformable.h"
-#include "glvis/transform.h"
+#include "glvx/transformable.h"
+#include "glvx/transform.h"
 
-namespace glvis {
+namespace glvx {
 
 float Transformable::getX() const {
     return position.x;

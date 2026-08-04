@@ -1,8 +1,8 @@
-#include "glvis/uniform_buffer.h"
-#include "glvis/glvis_common.h"
+#include "glvx/uniform_buffer.h"
+#include "glvx/glvx_common.h"
 #include <cstring>
 
-namespace glvis {
+namespace glvx {
 
 UniformBuffer::UniformBuffer() { }
 

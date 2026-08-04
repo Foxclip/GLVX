@@ -1,13 +1,13 @@
-#include "glvis/drawable.h"
-#include "glvis/shader.h"
-#include "glvis/abstract_texture.h"
-#include "glvis/vertex_buffer.h"
-#include "glvis/uniform_buffer.h"
-#include "glvis/glvis_common.h"
-#include "glvis/utils.h"
+#include "glvx/drawable.h"
+#include "glvx/shader.h"
+#include "glvx/abstract_texture.h"
+#include "glvx/vertex_buffer.h"
+#include "glvx/uniform_buffer.h"
+#include "glvx/glvx_common.h"
+#include "glvx/utils.h"
 #include <cassert>
 
-namespace glvis {
+namespace glvx {
 
 Transform Drawable::getTransform() const {
     return Transform();

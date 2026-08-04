@@ -1,6 +1,6 @@
-#include "glvis/vector.h"
+#include "glvx/vector.h"
 
-namespace glvis {
+namespace glvx {
 
 // Vector2f
 Vector2f::Vector2f() : glm::vec2(0.0f, 0.0f) {}

@@ -1,10 +1,10 @@
-#include "glvis/image.h"
-#include "glvis/color.h"
-#include "glvis/vector.h"
+#include "glvx/image.h"
+#include "glvx/color.h"
+#include "glvx/vector.h"
 #include <algorithm>
 #include <cassert>
 
-namespace glvis {
+namespace glvx {
 
 Image::Image(int width, int height, std::vector<unsigned char> data)
     : width(width), height(height), data(std::move(data)) {}

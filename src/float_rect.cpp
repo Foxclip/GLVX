@@ -1,7 +1,7 @@
-#include "glvis/float_rect.h"
+#include "glvx/float_rect.h"
 #include <algorithm>
 
-namespace glvis {
+namespace glvx {
 
 FloatRect::FloatRect() : position(0.0f, 0.0f), size(0.0f, 0.0f) {}
 

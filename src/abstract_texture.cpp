@@ -1,14 +1,14 @@
-#include "glvis/abstract_texture.h"
+#include "glvx/abstract_texture.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "glvis/glvis_common.h"
+#include "glvx/glvx_common.h"
 #include <algorithm>
 #include <cmath>
 #include <memory>
 #include <vector>
 #include <cassert>
 
-namespace glvis {
+namespace glvx {
 
 static GLenum filterFromInterpolation(InterpolationType interp) {
     switch (interp) {

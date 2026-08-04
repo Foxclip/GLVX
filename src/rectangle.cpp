@@ -1,13 +1,13 @@
-#include "glvis/rectangle.h"
+#include "glvx/rectangle.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <cassert>
-#include "glvis/glvis_common.h"
-#include "glvis/texture.h"
-#include "glvis/shader.h"
+#include "glvx/glvx_common.h"
+#include "glvx/texture.h"
+#include "glvx/shader.h"
 
-namespace glvis {
+namespace glvx {
 
 Rectangle::Rectangle(float width, float height) : Shape(PrimitiveType::Triangles, 6) {
     assert(width >= 0);

@@ -1,11 +1,11 @@
-#include "glvis/matrix.h"
+#include "glvx/matrix.h"
 #include <cstring>
 #include <cassert>
 #include <string>
 #include <glm/gtc/matrix_transform.hpp>
-#include "glvis/utils.h"
+#include "glvx/utils.h"
 
-namespace glvis {
+namespace glvx {
 
 Matrix4::Matrix4() : data(1.0f) {}
 

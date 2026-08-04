@@ -1,6 +1,6 @@
-#include "glvis/keyboard.h"
+#include "glvx/keyboard.h"
 
-namespace glvis {
+namespace glvx {
 
 bool Keyboard::key_states[Keyboard::NumKeys] = {};
 

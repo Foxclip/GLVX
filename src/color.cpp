@@ -1,7 +1,7 @@
-#include "glvis/color.h"
+#include "glvx/color.h"
 #include <cassert>
 
-namespace glvis {
+namespace glvx {
 
 Color::Color(int r, int g, int b, int a) {
     assert(r >= 0 && r <= 255);

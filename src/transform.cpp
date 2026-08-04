@@ -1,10 +1,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <cmath>
-#include "glvis/transform.h"
-#include "glvis/utils.h"
+#include "glvx/transform.h"
+#include "glvx/utils.h"
 
-namespace glvis {
+namespace glvx {
 
 Transform::Transform() : m_matrix(glm::mat4(1.0f)) { }
 

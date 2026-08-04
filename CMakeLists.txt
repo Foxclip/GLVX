@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(glvis LANGUAGES CXX)
+project(glvx LANGUAGES CXX)
 set (CMAKE_CXX_STANDARD 20)
 
 set(GLFW_BUILD_DOCS OFF CACHE INTERNAL "" FORCE)
@@ -11,14 +11,14 @@ set(GLFW_INSTALL OFF CACHE INTERNAL "" FORCE)
 set(GLM_BUILD_TESTS OFF CACHE INTERNAL "" FORCE)
 set(GLM_BUILD_INSTALL OFF CACHE INTERNAL "" FORCE)
 
-option(GLVIS_BUILD_TESTS "Build glvis tests" OFF)
+option(GLVX_BUILD_TESTS "Build glvx tests" OFF)
 
 add_subdirectory(glfw)
 add_subdirectory(glad)
 add_subdirectory(glm)
 add_subdirectory(freetype)
-if(GLVIS_BUILD_TESTS)
-    add_subdirectory(glvis_tests)
+if(GLVX_BUILD_TESTS)
+    add_subdirectory(glvx_tests)
 endif()
 
 add_library(${PROJECT_NAME})
@@ -35,7 +35,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/color.cpp
     ${SRC_DIR}/cursor.cpp
     ${SRC_DIR}/drawable.cpp
-    ${SRC_DIR}/glvis_common.cpp
+    ${SRC_DIR}/glvx_common.cpp
     ${SRC_DIR}/font.cpp
     ${SRC_DIR}/image.cpp
     ${SRC_DIR}/keyboard.cpp

@@ -1,6 +1,6 @@
-#include "glvis/cursor.h"
+#include "glvx/cursor.h"
 
-namespace glvis {
+namespace glvx {
 
 Cursor::Cursor() { }
 

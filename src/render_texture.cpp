@@ -1,12 +1,12 @@
-#include "glvis/render_texture.h"
+#include "glvx/render_texture.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "glvis/glvis_common.h"
-#include "glvis/color.h"
-#include "glvis/utils.h"
+#include "glvx/glvx_common.h"
+#include "glvx/color.h"
+#include "glvx/utils.h"
 #include <algorithm>
 
-namespace glvis {
+namespace glvx {
 
 RenderTexture::RenderTexture(int width, int height, int msaa_samples) {
     GL_CALL(glGenFramebuffers(1, &FBO));

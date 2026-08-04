@@ -1,10 +1,10 @@
-#include "glvis/utils.h"
+#include "glvx/utils.h"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <memory>
 
-namespace glvis {
+namespace glvx {
 
 std::string file_to_str(const std::filesystem::path& path) {
     try {

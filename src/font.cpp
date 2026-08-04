@@ -1,11 +1,11 @@
-#include "glvis/font.h"
-#include "glvis/glvis_common.h"
-#include "glvis/utils.h"
+#include "glvx/font.h"
+#include "glvx/glvx_common.h"
+#include "glvx/utils.h"
 #include <vector>
 #include <cmath>
 #include <glad/glad.h>
 
-namespace glvis {
+namespace glvx {
 
 bool Font::is_library_initialized = false;
 FT_Library Font::library = nullptr;

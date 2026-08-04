@@ -1,17 +1,17 @@
-#include "glvis/text.h"
-#include "glvis/shader.h"
-#include "glvis/shaders/simple.h"
-#include "glvis/shaders/subpixel.h"
-#include "glvis/vertex.h"
-#include "glvis/vertex_buffer.h"
-#include "glvis/render_states.h"
-#include "glvis/glvis_common.h"
+#include "glvx/text.h"
+#include "glvx/shader.h"
+#include "glvx/shaders/simple.h"
+#include "glvx/shaders/subpixel.h"
+#include "glvx/vertex.h"
+#include "glvx/vertex_buffer.h"
+#include "glvx/render_states.h"
+#include "glvx/glvx_common.h"
 #include <glad/glad.h>
 #include <vector>
 #include <cassert>
 #include <cmath>
 
-namespace glvis {
+namespace glvx {
 
 Text::Text(Font* font, const std::string& string) : Rectangle(0.0f, 0.0f) {
     setFont(font);

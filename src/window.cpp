@@ -1,15 +1,15 @@
-#include "glvis/window.h"
-#include "glvis/shader.h"
-#include "glvis/shaders/simple.h"
-#include "glvis/shaders/subpixel.h"
-#include "glvis/uniform_buffer.h"
-#include "glvis/image.h"
-#include "glvis/keyboard.h"
-#include "glvis/mouse.h"
+#include "glvx/window.h"
+#include "glvx/shader.h"
+#include "glvx/shaders/simple.h"
+#include "glvx/shaders/subpixel.h"
+#include "glvx/uniform_buffer.h"
+#include "glvx/image.h"
+#include "glvx/keyboard.h"
+#include "glvx/mouse.h"
 #include <stdexcept>
 #include <filesystem>
 
-namespace glvis {
+namespace glvx {
 
 int Window::active_window_count = 0;
 bool Window::glfw_initialized = false;
@@ -110,7 +110,7 @@ Vector2f Window::getCenter() const {
     return Vector2f(static_cast<float>(current_width) / 2.0f, static_cast<float>(current_height) / 2.0f);
 }
 
-void glvis::Window::setView(const View& view) {
+void glvx::Window::setView(const View& view) {
     this->view = view.getViewMatrix(
         static_cast<float>(current_width),
         static_cast<float>(current_height),

@@ -1,0 +1,22 @@
+#pragma once
+
+#include "glvx_tests/glvx_tests_common.h"
+
+using namespace glvx;
+
+class RenderTextureTestsModule : public test::TestModule {
+public:
+    RenderTextureTestsModule(
+        const std::string& name,
+        test::TestModule* parent,
+        const std::vector<test::TestNode*>& required_nodes = { }
+    );
+    void clearTest(test::Test& test);
+    void drawRectTest(test::Test& test);
+    void drawRectFullTest(test::Test& test);
+    void panTest(test::Test& test);
+    void transparentRectangleTest(test::Test& test);
+
+private:
+
+};

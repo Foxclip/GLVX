@@ -1,13 +1,13 @@
-#include "glvis/shader.h"
-#include "glvis/utils.h"
+#include "glvx/shader.h"
+#include "glvx/utils.h"
 #include <glad/glad.h>
-#include "glvis/glvis_common.h"
+#include "glvx/glvx_common.h"
 #include <vector>
 #include <cassert>
 #include <sstream>
 #include <algorithm>
 
-namespace glvis {
+namespace glvx {
 
 Shader::Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath, bool useUBO) : useUBO(useUBO) {
     START_TRY

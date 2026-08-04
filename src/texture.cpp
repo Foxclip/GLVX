@@ -1,14 +1,14 @@
-#include "glvis/texture.h"
+#include "glvx/texture.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <cassert>
 #include <filesystem>
 #define STB_IMAGE_IMPLEMENTATION
-#include "glvis/stb_image.h"
-#include "glvis/glvis_common.h"
+#include "glvx/stb_image.h"
+#include "glvx/glvx_common.h"
 #include <memory>
 
-namespace glvis {
+namespace glvx {
 
 Texture::Texture(int width, int height, InterpolationType interp) {
     createTexture(width, height, nullptr, 4, false, interp);
