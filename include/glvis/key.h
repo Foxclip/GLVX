@@ -145,10 +145,6 @@ enum class Modifier {
     System = 8
 };
 
-inline Key glfwToKey(int glfw_key) {
-    return static_cast<Key>(glfw_key);
-}
-
 inline Modifier glfwToModifier(int glfw_mods) {
     Modifier result = Modifier::None;
     if (glfw_mods & GLFW_MOD_CONTROL) result = static_cast<Modifier>(static_cast<int>(result) | static_cast<int>(Modifier::Control));

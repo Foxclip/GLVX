@@ -279,7 +279,7 @@ void Window::scrollCallbackGLFW(GLFWwindow* glfwWindow, double xoffset, double y
 
 void Window::keyCallbackGLFW(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods) {
     if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        Key k = glfwToKey(key);
+        Key k = static_cast<Key>(key);
         Modifier modifier = glfwToModifier(mods);
 
         bool pressed = (action == GLFW_PRESS);
