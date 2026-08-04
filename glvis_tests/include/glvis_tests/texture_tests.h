@@ -1,7 +1,5 @@
 #pragma once
 
-#include "test_lib/test.h"
-#include "glvis/abstract_texture.h"
 #include "glvis_tests/glvis_tests_common.h"
 
 using namespace glvis;
@@ -20,9 +18,5 @@ public:
     void textureInterpolationTest(test::Test& test);
     void textureRenderingInterpolationTest(test::Test& test);
     void textureWrappingTest(test::Test& test);
-
-private:
-    static std::string interpToString(InterpolationType t);
-    static std::string wrapToString(WrappingType t);
 
 };

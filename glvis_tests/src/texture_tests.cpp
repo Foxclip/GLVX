@@ -17,11 +17,11 @@ TextureTestsModule::TextureTestsModule(
     auto texture_wrapping_test = addTest("texture_wrapping", { texture_full_alpha_test }, [&](test::Test& test) { textureWrappingTest(test); });
 }
 
-std::string TextureTestsModule::interpToString(InterpolationType t) {
+static std::string interpToString(InterpolationType t) {
     return t == InterpolationType::Nearest ? "Nearest" : "Linear";
 }
 
-std::string TextureTestsModule::wrapToString(WrappingType t) {
+static std::string wrapToString(WrappingType t) {
     switch (t) {
         case WrappingType::ClampToEdge: return "ClampToEdge";
         case WrappingType::Repeat: return "Repeat";

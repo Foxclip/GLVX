@@ -21,6 +21,9 @@ add_library(${PROJECT_NAME})
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 
+# Prevent GLFW from auto-including OpenGL headers; we use glad instead
+target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE)
+
 target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/abstract_texture.cpp
     ${SRC_DIR}/angle.cpp
@@ -31,8 +34,10 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/glvis_common.cpp
     ${SRC_DIR}/font.cpp
     ${SRC_DIR}/image.cpp
+    ${SRC_DIR}/keyboard.cpp
     ${SRC_DIR}/matrix.cpp
     ${SRC_DIR}/float_rect.cpp
+    ${SRC_DIR}/mouse.cpp
     ${SRC_DIR}/rectangle.cpp
     ${SRC_DIR}/render_states.cpp
     ${SRC_DIR}/render_target.cpp
