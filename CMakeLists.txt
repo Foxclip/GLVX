@@ -11,11 +11,15 @@ set(GLFW_INSTALL OFF CACHE INTERNAL "" FORCE)
 set(GLM_BUILD_TESTS OFF CACHE INTERNAL "" FORCE)
 set(GLM_BUILD_INSTALL OFF CACHE INTERNAL "" FORCE)
 
+option(GLVIS_BUILD_TESTS "Build glvis tests" OFF)
+
 add_subdirectory(glfw)
 add_subdirectory(glad)
 add_subdirectory(glm)
 add_subdirectory(freetype)
-add_subdirectory(glvis_tests)
+if(GLVIS_BUILD_TESTS)
+    add_subdirectory(glvis_tests)
+endif()
 
 add_library(${PROJECT_NAME})
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
