@@ -237,8 +237,6 @@ void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int heig
 
 void Window::mouseMoveCallbackGLFW(GLFWwindow* glfwWindow, double xpos, double ypos) {
     if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        Mouse::updatePosition(glfwWindow, xpos, ypos);
-
         Event event;
         event.type = EventType::MouseMoved;
         event.mouseMove.x = static_cast<int>(xpos);

@@ -18,21 +18,13 @@ bool Mouse::isButtonPressed(const Window& window, Button button) {
 }
 
 Vector2i Mouse::getPosition(const Window& window) {
-    auto it = window_states.find(window.getWindowHandle());
-    if (it != window_states.end()) {
-        return it->second.position;
-    }
-    return Vector2i{0, 0};
+    double x, y;
+    glfwGetCursorPos(window.getWindowHandle(), &x, &y);
+    return Vector2i(static_cast<int>(x), static_cast<int>(y));
 }
 
 void Mouse::setPosition(const Window& window, const Vector2i& position) {
     glfwSetCursorPos(window.getWindowHandle(), position.x, position.y);
-    updatePosition(window.getWindowHandle(), position.x, position.y);
-}
-
-void Mouse::updatePosition(GLFWwindow* handle, double x, double y) {
-    auto& state = window_states[handle];
-    state.position = Vector2i(static_cast<int>(x), static_cast<int>(y));
 }
 
 void Mouse::setButtonState(GLFWwindow* handle, Button button, bool pressed) {

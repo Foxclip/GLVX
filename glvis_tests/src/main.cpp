@@ -47,7 +47,5 @@ int main() {
         return 1;
     }
 
-    // TODO: add Event class
-
     return 0;
 }
