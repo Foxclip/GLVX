@@ -15,6 +15,8 @@
 #include <memory>
 #include <queue>
 
+class InputTestsModule;
+
 namespace glvis {
 
 const int DEFAULT_WINDOW_WIDTH = 800;
@@ -53,6 +55,8 @@ public:
     GLFWwindow* getWindowHandle() const;
 
 private:
+    friend class ::InputTestsModule;
+
     GLFWwindow* window = nullptr;
     int current_width = 0;
     int current_height = 0;

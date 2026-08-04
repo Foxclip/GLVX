@@ -1,0 +1,20 @@
+#pragma once
+
+#include "test_lib/test.h"
+#include "glvis_tests/glvis_tests_common.h"
+
+using namespace glvis;
+
+class InputTestsModule : public test::TestModule {
+public:
+    InputTestsModule(
+        const std::string& name,
+        test::TestModule* parent,
+        const std::vector<test::TestNode*>& required_nodes = { }
+    );
+
+    void mouseMoveTest(test::Test& test);
+    void mouseButtonPressedTest(test::Test& test);
+    void mouseButtonReleasedTest(test::Test& test);
+    void mouseWheelScrolledTest(test::Test& test);
+};
