@@ -28,9 +28,10 @@ VertexBuffer::~VertexBuffer() {
 }
 
 bool VertexBuffer::create(std::size_t vertexCount) {
-    assert(VAO == 0);
     this->vertexCount = vertexCount;
-    GL_CALL(glGenVertexArrays(1, &VAO));
+    if (VAO == 0) {
+        GL_CALL(glGenVertexArrays(1, &VAO));
+    }
     recreateBuffer(vertexCount);
     return true;
 }
@@ -39,7 +40,18 @@ std::size_t VertexBuffer::getVertexCount() const {
     return vertexCount;
 }
 
+void VertexBuffer::ensureInitialized(std::size_t size) {
+    if (size == 0) {
+        return;
+    }
+    if (VAO == 0) {
+        GL_CALL(glGenVertexArrays(1, &VAO));
+    }
+    recreateBuffer(size);
+}
+
 bool VertexBuffer::update(const std::vector<Vertex>& newVertices) {
+    ensureInitialized(newVertices.size());
     if (newVertices.size() != vertexCount) {
         vertexCount = newVertices.size();
         recreateBuffer(vertexCount);
@@ -57,7 +69,9 @@ bool VertexBuffer::update(const std::vector<Vertex>& newVertices, std::size_t ve
 }
 
 void VertexBuffer::updateBuffer(const void* data, unsigned int offset, std::size_t size) {
-    assert(isInitialized);
+    if (VBO == 0) {
+        return;
+    }
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
     GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, offset, size, data));
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
@@ -108,8 +122,12 @@ unsigned int VertexBuffer::getVAO() const {
 }
 
 void VertexBuffer::render() const {
-    assert(VAO != 0);
-    if (vertexCount == 0) return;
+    if (vertexCount == 0) {
+        return;
+    }
+    if (VAO == 0) {
+        return;
+    }
     GL_CALL(glBindVertexArray(VAO));
     GL_CALL(glDrawArrays(static_cast<GLenum>(type), 0, static_cast<GLsizei>(getVertexCount())));
 }

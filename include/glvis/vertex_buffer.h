@@ -39,6 +39,7 @@ private:
     unsigned int VBO = 0;
     unsigned int VAO = 0;
 
+    void ensureInitialized(std::size_t size);
     void recreateBuffer(std::size_t size);
     void updateBuffer(const void* data, unsigned int offset, std::size_t size);
 
