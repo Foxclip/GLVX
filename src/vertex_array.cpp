@@ -50,17 +50,13 @@ const Vertex& VertexArray::getVertex(std::size_t index) const {
 
 void VertexArray::clear() {
     vertices.clear();
-    if (vertexBuffer.getVAO() != 0) {
-        vertexBuffer.create(0);
-    }
+    vertexBuffer.create(0);
 }
 
 void VertexArray::resize(unsigned int newSize) {
     vertices.resize(newSize);
     if (vertices.empty()) {
-        if (vertexBuffer.getVAO() != 0) {
-            vertexBuffer.create(0);
-        }
+        vertexBuffer.create(0);
     } else {
         vertexBuffer.update(vertices);
     }

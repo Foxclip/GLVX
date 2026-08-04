@@ -30,7 +30,7 @@ VertexBuffer::~VertexBuffer() {
 bool VertexBuffer::create(std::size_t vertexCount) {
     this->vertexCount = vertexCount;
     if (VAO == 0) {
-        GL_CALL(glGenVertexArrays(1, &VAO));
+        return true;
     }
     recreateBuffer(vertexCount);
     return true;
