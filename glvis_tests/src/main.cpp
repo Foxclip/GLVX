@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cmath>
 #include "glvis_tests/glvis_tests_common.h"
 #include "glvis_tests/basic_tests.h"
 #include "glvis_tests/shape_tests.h"
@@ -48,6 +47,12 @@ int main() {
         std::cerr << "ERROR: " << e.what() << std::endl;
         return 1;
     }
+
+    // TODO: RenderStates: add BlendMode
+    // TODO: FloatRect: add intersects()
+    // TODO: Drawable: add texture rect
+    // TODO: rename project to GLVX
+    // TODO: add big integration test that has a main loop, draws a bunch of stuff, and uses input events
 
     return 0;
 }
