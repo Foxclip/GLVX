@@ -9,6 +9,7 @@ using namespace glvx;
 static const int TEST_APP_WINDOW_WIDTH = 100;
 static const int TEST_APP_WINDOW_HEIGHT = 100;
 static const Vector2i TEST_APP_RECT_SIZE = Vector2i(10, 10);
+static const float TEST_APP_MOVE_STEP = 5.0f;
 static const Color TEST_APP_CLEAR_COLOR = Color(64, 128, 255);
 
 class TestApplication {
@@ -20,6 +21,8 @@ public:
     void advance();
     glvx::Image readPixels();
     void toggleRectangle();
+    Vector2f getRectanglePosition() const;
+    Window& getWindow();
 
 private:
     void process_input();

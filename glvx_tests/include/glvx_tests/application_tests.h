@@ -12,6 +12,7 @@ public:
     void initTest(test::Test& test);
     void clearTest(test::Test& test);
     void rectangleTest(test::Test& test);
+    void moveRectangleTest(test::Test& test);
 
 private:
 

@@ -16,6 +16,7 @@
 #include <queue>
 
 class InputTestsModule;
+class ApplicationTestsModule;
 
 namespace glvx {
 
@@ -57,6 +58,7 @@ public:
 
 private:
     friend class ::InputTestsModule;
+    friend class ::ApplicationTestsModule;
 
     GLFWwindow* window = nullptr;
     int current_width = 0;

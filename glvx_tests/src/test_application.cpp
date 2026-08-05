@@ -24,11 +24,33 @@ void TestApplication::toggleRectangle() {
     m_draw_rectangle = !m_draw_rectangle;
 }
 
+Vector2f TestApplication::getRectanglePosition() const {
+    return m_rectangle.getPosition();
+}
+
+Window& TestApplication::getWindow() {
+    return m_window;
+}
+
 void TestApplication::process_input() {
     Event event;
     while (m_window.pollEvent(event)) {
         if (event.type == glvx::EventType::Closed) {
             m_window.close();
+        }
+        if (event.type == glvx::EventType::KeyPressed) {
+            if (event.key.code == Key::Up) {
+                m_rectangle.move(0, -TEST_APP_MOVE_STEP);
+            }
+            if (event.key.code == Key::Down) {
+                m_rectangle.move(0, TEST_APP_MOVE_STEP);
+            }
+            if (event.key.code == Key::Left) {
+                m_rectangle.move(-TEST_APP_MOVE_STEP, 0);
+            }
+            if (event.key.code == Key::Right) {
+                m_rectangle.move(TEST_APP_MOVE_STEP, 0);
+            }
         }
     }
 }
