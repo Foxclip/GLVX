@@ -1,0 +1,37 @@
+#pragma once
+
+#include "glvx_tests/glvx_tests_common.h"
+#include "glvx/window.h"
+#include "glvx/rectangle.h"
+
+using namespace glvx;
+
+static const int TEST_APP_WINDOW_WIDTH = 100;
+static const int TEST_APP_WINDOW_HEIGHT = 100;
+static const Vector2i TEST_APP_RECT_SIZE = Vector2i(10, 10);
+static const float TEST_APP_MOVE_STEP = 5.0f;
+static const Color TEST_APP_CLEAR_COLOR = Color(64, 128, 255);
+
+class TestApplication {
+public:
+
+    TestApplication();
+
+    void init();
+    void advance();
+    glvx::Image readPixels();
+    void toggleRectangle();
+    Vector2f getRectanglePosition() const;
+    Window& getWindow();
+
+private:
+    void process_input();
+    void render();
+
+    Window m_window;
+    View m_view;
+    Rectangle m_rectangle;
+    bool m_draw_rectangle = false;
+};
+
+extern TestApplication app;
