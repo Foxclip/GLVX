@@ -8,7 +8,8 @@ ApplicationTestsModule::ApplicationTestsModule(
     const std::vector<test::TestNode *>& required_nodes
 ) : test::TestModule(name, parent, required_nodes) { {
         auto init_test = addTest("init", [&](test::Test& test) { initTest(test); });
-        auto clear_test = addTest("clear", [&](test::Test& test) { clearTest(test); });
+        auto clear_test = addTest("clear", { init_test }, [&](test::Test& test) { clearTest(test); });
+        auto rectangle_test = addTest("rectangle", { clear_test }, [&](test::Test& test) { rectangleTest(test); });
     }
 }
 
@@ -29,12 +30,25 @@ void ApplicationTestsModule::clearTest(test::Test& test) {
     ));
 }
 
+void ApplicationTestsModule::rectangleTest(test::Test& test) {
+    app.toggleRectangle();
+    app.advance();
+
+    Image image = app.readPixels();
+    Vector2i rectangle_corner = TEST_APP_RECT_SIZE - Vector2i(1, 1);
+    Vector2i rectangle_outside = rectangle_corner + Vector2i(1, 1);
+    T_COMPARE(image.getPixel(0, 0), glvx::Color(255, 0, 0), &Color::toString);
+    T_COMPARE(image.getPixel(rectangle_corner), glvx::Color(255, 0, 0), &Color::toString);
+    T_COMPARE(image.getPixel(rectangle_outside), TEST_APP_CLEAR_COLOR, &Color::toString);
+}
+
 TestApplication::TestApplication() : m_window(), m_rectangle(100, 100) { }
 
 void TestApplication::init() {
     m_window.create(TEST_APP_WINDOW_WIDTH, TEST_APP_WINDOW_HEIGHT, "glvx test application");
     m_view.setPosition(m_window.getCenter());
     m_rectangle.setColor(glvx::Color(255, 0, 0));
+    m_rectangle.setSize(static_cast<Vector2f>(TEST_APP_RECT_SIZE));
 }
 
 void TestApplication::advance() {
@@ -46,8 +60,12 @@ glvx::Image TestApplication::readPixels() {
     return m_window.readPixels();
 }
 
+void TestApplication::toggleRectangle() {
+    m_draw_rectangle = !m_draw_rectangle;
+}
+
 void TestApplication::process_input() {
-    glvx::Event event;
+    Event event;
     while (m_window.pollEvent(event)) {
         if (event.type == glvx::EventType::Closed) {
             m_window.close();
@@ -57,7 +75,9 @@ void TestApplication::process_input() {
 
 void TestApplication::render() {
     m_window.setView(m_view);
-    m_window.clear(glvx::Color(64, 128, 255));
-    // m_window.draw(m_rectangle);
+    m_window.clear(Color(TEST_APP_CLEAR_COLOR));
+    if (m_draw_rectangle) {
+        m_window.draw(m_rectangle);
+    }
     m_window.display();
 }
