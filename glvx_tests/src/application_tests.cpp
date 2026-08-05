@@ -44,12 +44,16 @@ void ApplicationTestsModule::rectangleTest(test::Test& test) {
 }
 
 void ApplicationTestsModule::moveRectangleTest(test::Test& test) {
-    Vector2f initial_pos = app.getRectanglePosition();
-
-    Window::keyCallbackGLFW(app.getWindow().getWindowHandle(), GLFW_KEY_UP, 0, GLFW_PRESS, 0);
+    Window::keyCallbackGLFW(app.getWindow().getWindowHandle(), GLFW_KEY_RIGHT, 0, GLFW_PRESS, 0);
+    Window::keyCallbackGLFW(app.getWindow().getWindowHandle(), GLFW_KEY_DOWN, 0, GLFW_PRESS, 0);
     app.advance();
 
-    Vector2f new_pos = app.getRectanglePosition();
-    T_COMPARE(new_pos.x, initial_pos.x);
-    T_COMPARE(new_pos.y, initial_pos.y - TEST_APP_MOVE_STEP);
+    Image image = app.readPixels();
+    Vector2i new_rectangle_pos(static_cast<int>(TEST_APP_MOVE_STEP), static_cast<int>(TEST_APP_MOVE_STEP));
+    Vector2i rectangle_corner = new_rectangle_pos + TEST_APP_RECT_SIZE - Vector2i(1, 1);
+    Vector2i rectangle_outside = new_rectangle_pos - Vector2i(1, 1);
+    T_COMPARE(image.getPixel(0, 0), TEST_APP_CLEAR_COLOR, &Color::toString);
+    T_COMPARE(image.getPixel(new_rectangle_pos), glvx::Color(255, 0, 0), &Color::toString);
+    T_COMPARE(image.getPixel(rectangle_corner), glvx::Color(255, 0, 0), &Color::toString);
+    T_COMPARE(image.getPixel(rectangle_outside), TEST_APP_CLEAR_COLOR, &Color::toString);
 }
