@@ -29,7 +29,7 @@ public:
     void create(
         int width = DEFAULT_WINDOW_WIDTH,
         int height = DEFAULT_WINDOW_HEIGHT,
-        const char* title = "GLVis window",
+        const char* title = "GLVX window",
         int msaa_samples = 0
     );
     void close();
