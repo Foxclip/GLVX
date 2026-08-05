@@ -36,11 +36,11 @@ void ApplicationTestsModule::rectangleTest(test::Test& test) {
     app.advance();
 
     Image image = app.readPixels();
-    Vector2i rectangle_corner = TEST_APP_RECT_SIZE - Vector2i(1, 1);
-    Vector2i rectangle_outside = rectangle_corner + Vector2i(1, 1);
+    Vector2i rectangle_bottom_right = TEST_APP_RECT_SIZE - Vector2i(1, 1);
+    Vector2i rectangle_outside_bottom_right = rectangle_bottom_right + Vector2i(1, 1);
     T_COMPARE(image.getPixel(0, 0), glvx::Color(255, 0, 0), &Color::toString);
-    T_COMPARE(image.getPixel(rectangle_corner), glvx::Color(255, 0, 0), &Color::toString);
-    T_COMPARE(image.getPixel(rectangle_outside), TEST_APP_CLEAR_COLOR, &Color::toString);
+    T_COMPARE(image.getPixel(rectangle_bottom_right), glvx::Color(255, 0, 0), &Color::toString);
+    T_COMPARE(image.getPixel(rectangle_outside_bottom_right), TEST_APP_CLEAR_COLOR, &Color::toString);
 }
 
 void ApplicationTestsModule::moveRectangleTest(test::Test& test) {
@@ -50,10 +50,10 @@ void ApplicationTestsModule::moveRectangleTest(test::Test& test) {
 
     Image image = app.readPixels();
     Vector2i new_rectangle_pos(static_cast<int>(TEST_APP_MOVE_STEP), static_cast<int>(TEST_APP_MOVE_STEP));
-    Vector2i rectangle_corner = new_rectangle_pos + TEST_APP_RECT_SIZE - Vector2i(1, 1);
-    Vector2i rectangle_outside = new_rectangle_pos - Vector2i(1, 1);
+    Vector2i rectangle_bottom_right = new_rectangle_pos + TEST_APP_RECT_SIZE - Vector2i(1, 1);
+    Vector2i rectangle_outside_bottom_right = rectangle_bottom_right + Vector2i(1, 1);
     T_COMPARE(image.getPixel(0, 0), TEST_APP_CLEAR_COLOR, &Color::toString);
     T_COMPARE(image.getPixel(new_rectangle_pos), glvx::Color(255, 0, 0), &Color::toString);
-    T_COMPARE(image.getPixel(rectangle_corner), glvx::Color(255, 0, 0), &Color::toString);
-    T_COMPARE(image.getPixel(rectangle_outside), TEST_APP_CLEAR_COLOR, &Color::toString);
+    T_COMPARE(image.getPixel(rectangle_bottom_right), glvx::Color(255, 0, 0), &Color::toString);
+    T_COMPARE(image.getPixel(rectangle_outside_bottom_right), TEST_APP_CLEAR_COLOR, &Color::toString);
 }
