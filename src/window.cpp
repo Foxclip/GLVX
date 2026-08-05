@@ -172,6 +172,10 @@ void Window::setMouseGrabEnabled(bool enabled) {
     glfwSetInputMode(window, GLFW_CURSOR, enabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
 
+void Window::setVerticalSyncEnabled(bool enabled) {
+    glfwSwapInterval(enabled ? 1 : 0);
+}
+
 GLFWwindow* Window::getWindowHandle() const {
     return window;
 }

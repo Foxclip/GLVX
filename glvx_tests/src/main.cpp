@@ -50,7 +50,7 @@ int main() {
         return 1;
     }
 
-    // TODO: add big integration test that has a main loop, draws a bunch of stuff, and uses input events
+    // TODO: use prefixes like `p_` for function parameters and `m_` for member variables
     // TODO: RenderStates: add BlendMode
     // TODO: FloatRect: add intersects()
     // TODO: Drawable: add texture rect

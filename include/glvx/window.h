@@ -50,6 +50,8 @@ public:
     void setCursorVisible(bool visible);
     void setMouseGrabEnabled(bool enabled);
 
+    void setVerticalSyncEnabled(bool enabled);
+
     bool pollEvent(Event& event);
     bool waitEvent(Event& event);
     void clearEventQueue();
