@@ -33,6 +33,7 @@ public:
         int msaa_samples = 0
     );
     void close();
+    void destroy();
     bool isOpen() const;
     int getWidth() const;
     int getHeight() const;
