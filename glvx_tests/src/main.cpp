@@ -15,6 +15,7 @@
 #include "glvx_tests/shader_tests.h"
 #include "glvx_tests/antialiasing_tests.h"
 #include "glvx_tests/input_tests.h"
+#include "glvx_tests/application_tests.h"
 
 int main() {
 
@@ -37,6 +38,7 @@ int main() {
         auto shader_tests_module = root.addModule<ShaderTestsModule>("Shader", { shape_tests_module });
         auto antialiasing_tests_module = root.addModule<AntialiasingTestsModule>("Antialiasing", { shape_tests_module });
         auto input_tests_module = root.addModule<InputTestsModule>("Input", { basic_tests_module });
+        auto application_tests_module = root.addModule<ApplicationTestsModule>("Application", { basic_tests_module });
         root.run();
         root.printSummary();
 
@@ -48,7 +50,6 @@ int main() {
         return 1;
     }
 
-    // TODO: rename project to GLVX
     // TODO: add big integration test that has a main loop, draws a bunch of stuff, and uses input events
     // TODO: RenderStates: add BlendMode
     // TODO: FloatRect: add intersects()
