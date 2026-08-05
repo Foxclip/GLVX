@@ -38,7 +38,7 @@ int main() {
         auto shader_tests_module = root.addModule<ShaderTestsModule>("Shader", { shape_tests_module });
         auto antialiasing_tests_module = root.addModule<AntialiasingTestsModule>("Antialiasing", { shape_tests_module });
         auto input_tests_module = root.addModule<InputTestsModule>("Input", { basic_tests_module });
-        auto application_tests_module = root.addModule<ApplicationTestsModule>("Application", { basic_tests_module });
+        auto application_tests_module = root.addModule<ApplicationTestsModule>("Application", { input_tests_module });
         root.run();
         root.printSummary();
 
