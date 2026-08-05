@@ -20,6 +20,10 @@ void AntialiasingTestsModule::beforeRunModule() {
     aaWindow.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "aa window", AA_WINDOW_SAMPLES);
 }
 
+void AntialiasingTestsModule::afterRunModule() {
+    aaWindow.close();
+}
+
 void AntialiasingTestsModule::windowAASolidRectTest(test::Test& test) {
     aaWindow.setSize(WINDOW_SIZE);
     aaWindow.setTitle("window aa solid rect");
