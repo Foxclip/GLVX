@@ -56,9 +56,9 @@ void WindowTestsModule::windowResizeTest(test::Test& test) {
 void WindowTestsModule::windowRecreateAfterCloseTest(test::Test& test) {
     window.close();
     window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "recreated");
-    T_ASSERT(window.isOpen() == true);
-    T_ASSERT(window.getWidth() == WINDOW_SIZE.x);
-    T_ASSERT(window.getHeight() == WINDOW_SIZE.y);
+    T_CHECK(window.isOpen() == true);
+    T_CHECK(window.getWidth() == WINDOW_SIZE.x);
+    T_CHECK(window.getHeight() == WINDOW_SIZE.y);
 }
 
 void WindowTestsModule::windowCloseIdempotentTest(test::Test& test) {
