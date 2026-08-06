@@ -29,7 +29,7 @@ public:
         const Matrix4& projection
     );
     void bindObjectUBO() const;
-    unsigned int getObjectID() const { return m_object_id; }
+    unsigned int getObjectID() const;
 
 private:
     unsigned int m_object_id = 0;

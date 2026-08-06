@@ -51,4 +51,8 @@ void UniformBuffer::bindObjectUBO() const {
     GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_object_id));
 }
 
+unsigned int UniformBuffer::getObjectID() const {
+    return m_object_id;
+}
+
 }
