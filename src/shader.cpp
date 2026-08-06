@@ -38,6 +38,14 @@ Shader::Shader(
     END_TRY
 }
 
+unsigned int Shader::getId() const {
+    return m_id;
+}
+
+bool Shader::isUsingUBO() const {
+    return m_use_ubo;
+}
+
 void Shader::use() {
     assert(m_id != 0);
     GL_CALL(glUseProgram(m_id));

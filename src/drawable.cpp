@@ -55,7 +55,7 @@ void Drawable::renderBase(
     bool textureIsPremultiplied = renderTexture != nullptr && renderTexture->isRenderTexture();
     renderShader->use();
 
-    if (renderShader->m_use_ubo) {
+    if (renderShader->isUsingUBO()) {
         common::uniformBuffer->updateObjectUBO(
             combinedModel, color, renderTexture != nullptr, !textureIsPremultiplied, view, projection
         );

@@ -20,9 +20,6 @@ struct ShaderPart {
 
 class Shader {
 public:
-    unsigned int m_id;
-    bool m_use_ubo;
-
     Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath, bool useUBO = false);
     Shader(const char* vertexSource, const char* fragmentSource, bool useUBO = false);
     Shader(
@@ -32,6 +29,8 @@ public:
         bool useUBO = false
     );
     ~Shader();
+    unsigned int getId() const;
+    bool isUsingUBO() const;
     void use();
     void setBool(const std::string& name, bool value) const;
     void setInt(const std::string& name, int value) const;
@@ -42,6 +41,9 @@ public:
     bool uniformExists(const std::string& name) const;
 
 private:
+    unsigned int m_id = 0;
+    bool m_use_ubo = false;
+
     int compileShader(ShaderType type, const std::filesystem::path& path);
     int compileShader(ShaderType type, const char* source);
     void linkProgram(unsigned int vertexShader, unsigned int fragmentShader);
