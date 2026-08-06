@@ -34,7 +34,7 @@ void RenderStatesTestsModule::renderStatesTransformTest(test::Test& test) {
     RenderStates states;
     Transform transform;
     transform.translate(transform_offset.x, transform_offset.y);
-    states.m_transform = transform;
+    states.transform = transform;
     window.draw(rect, states);
     window.display();
 
@@ -88,7 +88,7 @@ void RenderStatesTestsModule::renderStatesTextureTest(test::Test& test) {
     // Use RenderStates to set the texture
     Texture tex(texture_data, texture_size.x, texture_size.y);
     RenderStates states;
-    states.m_texture = &tex;
+    states.texture = &tex;
     rect.setColor(Color::White);
     window.clear(Color::Black);
     window.draw(rect, states);
@@ -169,7 +169,7 @@ void RenderStatesTestsModule::renderStatesShaderTest(test::Test& test) {
 
     // Render a rectangle with custom shader using RenderStates
     RenderStates states;
-    states.m_shader = &customShader;
+    states.shader = &customShader;
     window.clear(Color::Black);
     window.draw(rect, states);
     window.display();

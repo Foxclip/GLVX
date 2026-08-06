@@ -11,10 +11,10 @@ class RenderStates {
 public:
     RenderStates();
 
-    Transform m_transform;
-    AbstractTexture* m_texture;
-    Shader* m_shader;
-    bool m_texture_is_premultiplied;
+    Transform transform;
+    AbstractTexture* texture;
+    Shader* shader;
+    bool texture_is_premultiplied;
 };
 
 } // namespace glvx

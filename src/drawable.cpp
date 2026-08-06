@@ -48,10 +48,10 @@ void Drawable::renderBase(
 ) const {
     const VertexBuffer& vertexBuffer = getVertexBuffer();
     if (vertexBuffer.getVertexCount() == 0) return;
-    Shader* renderShader = states.m_shader ? states.m_shader : shader ? shader : common::defaultShader;
+    Shader* renderShader = states.shader ? states.shader : shader ? shader : common::defaultShader;
     assert(renderShader);
-    const AbstractTexture* renderTexture = states.m_texture ? states.m_texture : texture;
-    Matrix4 combinedModel = (states.m_transform * model).toMatrix4();
+    const AbstractTexture* renderTexture = states.texture ? states.texture : texture;
+    Matrix4 combinedModel = (states.transform * model).toMatrix4();
     bool textureIsPremultiplied = renderTexture != nullptr && renderTexture->isRenderTexture();
     renderShader->use();
 
