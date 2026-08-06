@@ -135,6 +135,9 @@ int Shader::compileShader(ShaderType type, const char* source) {
 }
 
 Shader::~Shader() {
+    if (!has_active_gl_context()) {
+        return;
+    }
     GL_CALL(glDeleteProgram(ID));
 }
 

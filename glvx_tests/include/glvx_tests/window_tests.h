@@ -13,7 +13,12 @@ public:
     );
 
     void windowResizeTest(test::Test& test);
+    void windowRecreateTest(test::Test& test);
+    void windowDoubleCloseTest(test::Test& test);
+    void windowDrawAfterRecreateTest(test::Test& test);
 
 private:
+
+    void afterRunModule() override;
 
 };

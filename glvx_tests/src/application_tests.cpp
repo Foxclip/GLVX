@@ -43,6 +43,10 @@ void ApplicationTestsModule::rectangleTest(test::Test& test) {
     T_COMPARE(image.getPixel(rectangle_outside_bottom_right), TEST_APP_CLEAR_COLOR, &Color::toString);
 }
 
+void ApplicationTestsModule::afterRunModule() {
+    app.getWindow().close();
+}
+
 void ApplicationTestsModule::moveRectangleTest(test::Test& test) {
     Window::keyCallbackGLFW(app.getWindow().getWindowHandle(), GLFW_KEY_RIGHT, 0, GLFW_PRESS, 0);
     Window::keyCallbackGLFW(app.getWindow().getWindowHandle(), GLFW_KEY_DOWN, 0, GLFW_PRESS, 0);

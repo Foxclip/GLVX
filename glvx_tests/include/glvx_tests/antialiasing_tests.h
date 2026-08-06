@@ -23,5 +23,6 @@ public:
 private:
 
     void beforeRunModule() override;
+    void afterRunModule() override;
 
 };

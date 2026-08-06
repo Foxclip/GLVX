@@ -15,25 +15,13 @@ int Window::active_window_count = 0;
 bool Window::glfw_initialized = false;
 
 Window::~Window() {
-    --active_window_count;
-    glfwMakeContextCurrent(window);
-
-    default_shader_uptr.reset();
-    subpixel_shader_uptr.reset();
-    uniform_buffer_uptr.reset();
-
-    glfwDestroyWindow(window);
-
-    if (active_window_count == 0) {
-        Keyboard::reset();
-        Mouse::reset();
-        glfwTerminate();
-        glfw_initialized = false;
-    }
+    close();
 }
 
 void Window::create(int width, int height, const char* title, int msaa_samples) {
     START_TRY
+    close();
+
     if (!glfw_initialized) {
         if (!glfwInit()) {
             throw std::runtime_error("Failed to initialize GLFW");
@@ -87,7 +75,7 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
 }
 
 bool Window::isOpen() const {
-    return !glfwWindowShouldClose(window);
+    return window != nullptr;
 }
 
 int Window::getWidth() const {
@@ -338,7 +326,29 @@ void Window::closeCallbackGLFW(GLFWwindow* glfwWindow) {
 }
 
 void Window::close() {
-    glfwSetWindowShouldClose(window, GLFW_TRUE);
+    if (window == nullptr) {
+        return;
+    }
+
+    --active_window_count;
+
+    if (glfw_initialized) {
+        glfwMakeContextCurrent(window);
+
+        default_shader_uptr.reset();
+        subpixel_shader_uptr.reset();
+        uniform_buffer_uptr.reset();
+
+        glfwDestroyWindow(window);
+        window = nullptr;
+    }
+
+    if (active_window_count == 0) {
+        Keyboard::reset();
+        Mouse::reset();
+        glfwTerminate();
+        glfw_initialized = false;
+    }
 }
 
 }
