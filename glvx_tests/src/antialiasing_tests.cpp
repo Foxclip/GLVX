@@ -21,7 +21,7 @@ void AntialiasingTestsModule::beforeRunModule() {
 }
 
 void AntialiasingTestsModule::afterRunModule() {
-    aaWindow.destroy();
+    aaWindow.close();
 }
 
 void AntialiasingTestsModule::windowAASolidRectTest(test::Test& test) {

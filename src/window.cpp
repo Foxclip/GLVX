@@ -15,13 +15,13 @@ int Window::active_window_count = 0;
 bool Window::glfw_initialized = false;
 
 Window::~Window() {
-    if (window) {
-        destroy();
-    }
+    close();
 }
 
 void Window::create(int width, int height, const char* title, int msaa_samples) {
     START_TRY
+    close();
+
     if (!glfw_initialized) {
         if (!glfwInit()) {
             throw std::runtime_error("Failed to initialize GLFW");
@@ -75,7 +75,7 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
 }
 
 bool Window::isOpen() const {
-    return !glfwWindowShouldClose(window);
+    return window != nullptr;
 }
 
 int Window::getWidth() const {
@@ -326,10 +326,10 @@ void Window::closeCallbackGLFW(GLFWwindow* glfwWindow) {
 }
 
 void Window::close() {
-    glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
+    if (window == nullptr) {
+        return;
+    }
 
-void Window::destroy() {
     --active_window_count;
 
     if (glfw_initialized) {

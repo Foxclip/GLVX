@@ -44,7 +44,7 @@ void ApplicationTestsModule::rectangleTest(test::Test& test) {
 }
 
 void ApplicationTestsModule::afterRunModule() {
-    app.getWindow().destroy();
+    app.getWindow().close();
 }
 
 void ApplicationTestsModule::moveRectangleTest(test::Test& test) {
