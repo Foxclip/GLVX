@@ -2,6 +2,10 @@
 
 namespace glvx {
 
+bool has_active_gl_context() {
+    return glfwGetCurrentContext() != nullptr;
+}
+
 void check_opengl_errors() {
     START_TRY
     GLenum error = glGetError();

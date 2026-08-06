@@ -105,7 +105,9 @@ AbstractTexture::~AbstractTexture() {
     if (ID == 0) {
         return;
     }
-    assert(glfwGetCurrentContext() != nullptr);
+    if (!has_active_gl_context()) {
+        return;
+    }
     assert(GL_CALL(glIsTexture(ID)));
     GL_CALL(glDeleteTextures(1, &ID));
 }

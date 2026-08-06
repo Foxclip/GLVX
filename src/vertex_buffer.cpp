@@ -17,6 +17,9 @@ VertexBuffer::VertexBuffer(PrimitiveType type, Usage usage): VBO(0), VAO(0) {
 }
 
 VertexBuffer::~VertexBuffer() {
+    if (!has_active_gl_context()) {
+        return;
+    }
     if (VAO != 0) {
         GL_CALL(glDeleteVertexArrays(1, &VAO));
         VAO = 0;

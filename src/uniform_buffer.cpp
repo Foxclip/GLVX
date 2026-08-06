@@ -7,6 +7,9 @@ namespace glvx {
 UniformBuffer::UniformBuffer() { }
 
 UniformBuffer::~UniformBuffer() {
+    if (!has_active_gl_context()) {
+        return;
+    }
     if (object_id) {
         GL_CALL(glDeleteBuffers(1, &object_id));
     }

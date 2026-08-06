@@ -331,14 +331,17 @@ void Window::close() {
 
 void Window::destroy() {
     --active_window_count;
-    glfwMakeContextCurrent(window);
 
-    default_shader_uptr.reset();
-    subpixel_shader_uptr.reset();
-    uniform_buffer_uptr.reset();
+    if (glfw_initialized) {
+        glfwMakeContextCurrent(window);
 
-    glfwDestroyWindow(window);
-    window = nullptr;
+        default_shader_uptr.reset();
+        subpixel_shader_uptr.reset();
+        uniform_buffer_uptr.reset();
+
+        glfwDestroyWindow(window);
+        window = nullptr;
+    }
 
     if (active_window_count == 0) {
         Keyboard::reset();

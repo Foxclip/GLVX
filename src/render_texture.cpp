@@ -14,6 +14,9 @@ RenderTexture::RenderTexture(int width, int height, int msaa_samples) {
 }
 
 RenderTexture::~RenderTexture() {
+    if (!has_active_gl_context()) {
+        return;
+    }
     if (msaa_texture != 0) {
         GL_CALL(glDeleteTextures(1, &msaa_texture));
         msaa_texture = 0;

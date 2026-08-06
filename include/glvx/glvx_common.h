@@ -11,6 +11,8 @@ class UniformBuffer;
 
 void check_opengl_errors();
 
+bool has_active_gl_context();
+
 namespace common {
     extern Shader* defaultShader;
     extern Shader* subpixelShader;
