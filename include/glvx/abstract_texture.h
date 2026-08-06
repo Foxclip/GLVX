@@ -36,11 +36,11 @@ public:
     ~AbstractTexture();
 
 protected:
-    unsigned int ID = 0;
-    int width = 0;
-    int height = 0;
-    InterpolationType interpolation = InterpolationType::Nearest;
-    WrappingType wrapping = WrappingType::ClampToEdge;
+    unsigned int m_id = 0;
+    int m_width = 0;
+    int m_height = 0;
+    InterpolationType m_interpolation = InterpolationType::Nearest;
+    WrappingType m_wrapping = WrappingType::ClampToEdge;
     void createTexture(
         int width, int height, unsigned char* data = nullptr, int channels = 4, bool is_mask = false,
         InterpolationType interp = InterpolationType::Nearest,

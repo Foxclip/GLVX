@@ -3,7 +3,7 @@
 namespace glvx {
 
 RenderStates::RenderStates()
-    : texture(nullptr), shader(nullptr), texture_is_premultiplied(false) {
+    : m_texture(nullptr), m_shader(nullptr), m_texture_is_premultiplied(false) {
     // transform is default-constructed to identity via Transform()
 }
 

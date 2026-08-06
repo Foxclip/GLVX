@@ -7,8 +7,8 @@
 
 namespace glvx {
 
-bool Font::is_library_initialized = false;
-FT_Library Font::library = nullptr;
+bool Font::m_is_library_initialized = false;
+FT_Library Font::m_library = nullptr;
 
 #define FREETYPE_CALL(func, messageGetter) \
     { \
@@ -27,8 +27,8 @@ Font::Font(const std::filesystem::path& filename, unsigned int character_size, b
 }
 
 Font::~Font() {
-    if (face) {
-        FT_Done_Face(face);
+    if (m_face) {
+        FT_Done_Face(m_face);
     }
 }
 
@@ -37,75 +37,75 @@ void Font::openFromFile(const std::filesystem::path& filename, unsigned int char
 }
 
 int Font::getCharacterSize() const {
-    return character_size;
+    return m_character_size;
 }
 
 int Font::getBaselineY() const {
-    if (!face) {
+    if (!m_face) {
         return 0;
     }
-    return face->ascender / 64;
+    return m_face->ascender / 64;
 }
 
 int Font::getLineHeight() const {
-    if (!face) {
+    if (!m_face) {
         return 0;
     }
-    return face->size->metrics.height / 64;
+    return m_face->size->metrics.height / 64;
 }
 
 bool Font::isSubpixel() const {
-    return _useSubpixel;
+    return m_use_subpixel;
 }
 
 Character& Font::getCharacter(unsigned char c) {
-    return characters[c];
+    return m_characters[c];
 }
 
 const Texture& Font::getAtlas() const {
-    return atlas;
+    return m_atlas;
 }
 
 int Font::getKerning(unsigned char left, unsigned char right) const {
-    auto it = kerning.find({left, right});
-    if (it != kerning.end()) {
+    auto it = m_kerning.find({left, right});
+    if (it != m_kerning.end()) {
         return it->second;
     }
     return 0;
 }
 
 void Font::loadFont(const std::filesystem::path& filename, unsigned int character_size, bool useSubpixel) {
-    this->character_size = character_size;
-    this->_useSubpixel = useSubpixel;
-    if (!is_library_initialized) {
-        FREETYPE_CALL(FT_Init_FreeType(&library), []() { return "Failed to initialize FreeType library"; });
-        is_library_initialized = true;
+    m_character_size = character_size;
+    m_use_subpixel = useSubpixel;
+    if (!m_is_library_initialized) {
+        FREETYPE_CALL(FT_Init_FreeType(&m_library), []() { return "Failed to initialize FreeType library"; });
+        m_is_library_initialized = true;
     }
-    FT_Done_Face(face);
-    face = nullptr;
-    characters.clear();
-    kerning.clear();
+    FT_Done_Face(m_face);
+    m_face = nullptr;
+    m_characters.clear();
+    m_kerning.clear();
 
-    FREETYPE_CALL(FT_New_Face(library, filename.string().c_str(), 0, &face), []() { return "Failed to load font file"; });
-    FREETYPE_CALL(FT_Set_Pixel_Sizes(face, 0, character_size), []() { return "Failed to set font size"; });
+    FREETYPE_CALL(FT_New_Face(m_library, filename.string().c_str(), 0, &m_face), []() { return "Failed to load font file"; });
+    FREETYPE_CALL(FT_Set_Pixel_Sizes(m_face, 0, character_size), []() { return "Failed to set font size"; });
 
     // Load kerning data
-    if (FT_HAS_KERNING(face)) {
+    if (FT_HAS_KERNING(m_face)) {
         FT_Vector kernVec;
         for (unsigned char left = 32; left < 126; left++) {
             for (unsigned char right = 33; right < 127; right++) {
-                FT_UInt leftGlyph = FT_Get_Char_Index(face, left);
-                FT_UInt rightGlyph = FT_Get_Char_Index(face, right);
+                FT_UInt leftGlyph = FT_Get_Char_Index(m_face, left);
+                FT_UInt rightGlyph = FT_Get_Char_Index(m_face, right);
                 if (leftGlyph && rightGlyph) {
                     FREETYPE_CALL(
-                        FT_Get_Kerning(face, leftGlyph, rightGlyph, FT_KERNING_DEFAULT, &kernVec),
+                        FT_Get_Kerning(m_face, leftGlyph, rightGlyph, FT_KERNING_DEFAULT, &kernVec),
                         [&]() {
                             return "Failed to get kerning for characters: " + std::to_string(left) + ", " + std::to_string(right);
                         }
                     );
                     int kerningValue = kernVec.x / 64;
                     if (kerningValue != 0) {
-                        kerning[{left, right}] = kerningValue;
+                        m_kerning[{left, right}] = kerningValue;
                     }
                 }
             }
@@ -118,22 +118,22 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
     int totalArea = 0;
     for (unsigned char c = 32; c < 127; c++) {
         FREETYPE_CALL(
-            FT_Load_Char(face, c, loadFlag),
+            FT_Load_Char(m_face, c, loadFlag),
             [&]() {
                 return "Failed to load character: " + std::to_string(c) + " (" + std::string(1, c) + ")";
             }
         );
-        unsigned int width = face->glyph->bitmap.width;
-        unsigned int height = face->glyph->bitmap.rows;
-        FT_Pos advance = face->glyph->advance.x;
-        Character& ch = characters[c];
-        ch.x = face->glyph->bitmap_left;
-        ch.top = face->glyph->bitmap_top;
+        unsigned int width = m_face->glyph->bitmap.width;
+        unsigned int height = m_face->glyph->bitmap.rows;
+        FT_Pos advance = m_face->glyph->advance.x;
+        Character& ch = m_characters[c];
+        ch.x = m_face->glyph->bitmap_left;
+        ch.top = m_face->glyph->bitmap_top;
         ch.advance = advance / 64;
         ch.width = static_cast<int>(useSubpixel ? width / 3 : width);
         ch.glyph_height = static_cast<int>(height);
 
-        if (width > 0 && height > 0 && face->glyph->bitmap.buffer) {
+        if (width > 0 && height > 0 && m_face->glyph->bitmap.buffer) {
             totalArea += static_cast<int>(useSubpixel ? width / 3 : width) * height;
         }
     }
@@ -157,13 +157,13 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
 
     for (unsigned char c = 32; c < 127; c++) {
         FREETYPE_CALL(
-            FT_Load_Char(face, c, loadFlag),
+            FT_Load_Char(m_face, c, loadFlag),
             [&]() {
                 return "Failed to load character: " + std::to_string(c) + " (" + std::string(1, c) + ")";
             }
         );
-        int width = static_cast<int>(face->glyph->bitmap.width);
-        int height = static_cast<int>(face->glyph->bitmap.rows);
+        int width = static_cast<int>(m_face->glyph->bitmap.width);
+        int height = static_cast<int>(m_face->glyph->bitmap.rows);
         int atlasPixelWidth = useSubpixel ? width / 3 : width;
 
         if (currentX + atlasPixelWidth > atlasWidth) {
@@ -172,16 +172,16 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
             rowHeight = 0;
         }
 
-        if (width > 0 && height > 0 && face->glyph->bitmap.buffer) {
+        if (width > 0 && height > 0 && m_face->glyph->bitmap.buffer) {
             if (useSubpixel) {
                 blit_bitmap_subpixel(
-                    face->glyph->bitmap.buffer, face->glyph->bitmap.pitch,
+                    m_face->glyph->bitmap.buffer, m_face->glyph->bitmap.pitch,
                     atlasData.data(), atlasWidth * 3,
                     currentX, currentY, width, height
                 );
             } else {
                 blit_bitmap(
-                    face->glyph->bitmap.buffer, face->glyph->bitmap.pitch,
+                    m_face->glyph->bitmap.buffer, m_face->glyph->bitmap.pitch,
                     atlasData.data(), atlasWidth,
                     currentX, currentY, width, height
                 );
@@ -190,7 +190,7 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
 
         if (height > rowHeight) rowHeight = height;
 
-        Character& ch = characters[c];
+        Character& ch = m_characters[c];
         ch.uv_top_left = Vector2f(static_cast<float>(currentX) * invW, static_cast<float>(currentY + height) * invH);
         ch.uv_bottom_right = Vector2f(static_cast<float>(currentX + atlasPixelWidth) * invW, static_cast<float>(currentY) * invH);
 
@@ -198,10 +198,10 @@ void Font::loadFont(const std::filesystem::path& filename, unsigned int characte
     }
 
     GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
-    atlas.create(atlasWidth, atlasHeight, atlasData.data(), useSubpixel ? 3 : 1, useSubpixel ? false : true);
+    m_atlas.create(atlasWidth, atlasHeight, atlasData.data(), useSubpixel ? 3 : 1, useSubpixel ? false : true);
 
     if (useSubpixel) {
-        GL_CALL(glBindTexture(GL_TEXTURE_2D, atlas.getID()));
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, m_atlas.getID()));
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
     }

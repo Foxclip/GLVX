@@ -9,85 +9,85 @@
 
 namespace glvx {
 
-VertexArray::VertexArray() : vertexBuffer(Usage::StreamDraw) { }
+VertexArray::VertexArray() : m_vertex_buffer(Usage::StreamDraw) { }
 
-VertexArray::VertexArray(PrimitiveType type, std::size_t vertexCount) : vertexBuffer(type, Usage::StreamDraw) {
+VertexArray::VertexArray(PrimitiveType type, std::size_t vertexCount) : m_vertex_buffer(type, Usage::StreamDraw) {
     if (vertexCount > 0) {
-        vertices.resize(vertexCount);
+        m_vertices.resize(vertexCount);
     }
 }
 
 std::size_t VertexArray::getVertexCount() const {
-    return vertices.size();
+    return m_vertices.size();
 }
 
 PrimitiveType VertexArray::getPrimitiveType() const {
-    return vertexBuffer.getPrimitiveType();
+    return m_vertex_buffer.getPrimitiveType();
 }
 
 Vertex& VertexArray::operator[](std::size_t index) {
-    assert(index < vertices.size());
-    return vertices[index];
+    assert(index < m_vertices.size());
+    return m_vertices[index];
 }
 
 const Vertex& VertexArray::operator[](std::size_t index) const {
-    assert(index < vertices.size());
-    return vertices[index];
+    assert(index < m_vertices.size());
+    return m_vertices[index];
 }
 
 Vertex& VertexArray::getVertex(std::size_t index) {
-    assert(index < vertices.size());
-    return vertices[index];
+    assert(index < m_vertices.size());
+    return m_vertices[index];
 }
 
 const Vertex& VertexArray::getVertex(std::size_t index) const {
-    assert(index < vertices.size());
-    return vertices[index];
+    assert(index < m_vertices.size());
+    return m_vertices[index];
 }
 
 void VertexArray::clear() {
-    vertices.clear();
-    vertexBuffer.create(0);
+    m_vertices.clear();
+    m_vertex_buffer.create(0);
 }
 
 void VertexArray::resize(unsigned int newSize) {
-    vertices.resize(newSize);
-    if (vertices.empty()) {
-        vertexBuffer.create(0);
+    m_vertices.resize(newSize);
+    if (m_vertices.empty()) {
+        m_vertex_buffer.create(0);
     } else {
-        vertexBuffer.update(vertices);
+        m_vertex_buffer.update(m_vertices);
     }
 }
 
 void VertexArray::append(const Vertex& vertex) {
-    vertices.push_back(vertex);
-    vertexBuffer.update(vertices);
+    m_vertices.push_back(vertex);
+    m_vertex_buffer.update(m_vertices);
 }
 
 void VertexArray::setPrimitiveType(PrimitiveType type) {
-    vertexBuffer.setPrimitiveType(type);
+    m_vertex_buffer.setPrimitiveType(type);
 }
 
 void VertexArray::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
     START_TRY
-    vertexBuffer.update(vertices);
-    renderBase(shader, texture, color, getTransform(), view, projection, states);
+    m_vertex_buffer.update(m_vertices);
+    renderBase(m_shader, m_texture, m_color, getTransform(), view, projection, states);
     END_TRY
 }
 
 const VertexBuffer& VertexArray::getVertexBuffer() const {
-    return vertexBuffer;
+    return m_vertex_buffer;
 }
 
 Vector2f VertexArray::getBoundsMin() const {
-    if (vertices.empty()) {
+    if (m_vertices.empty()) {
         return Vector2f(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
     }
 
     float minX = std::numeric_limits<float>::max();
     float minY = std::numeric_limits<float>::max();
 
-    for (const auto& vertex : vertices) {
+    for (const auto& vertex : m_vertices) {
         if (vertex.position.x < minX) minX = vertex.position.x;
         if (vertex.position.y < minY) minY = vertex.position.y;
     }
@@ -96,14 +96,14 @@ Vector2f VertexArray::getBoundsMin() const {
 }
 
 Vector2f VertexArray::getBoundsMax() const {
-    if (vertices.empty()) {
+    if (m_vertices.empty()) {
         return Vector2f(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
     }
 
     float maxX = std::numeric_limits<float>::lowest();
     float maxY = std::numeric_limits<float>::lowest();
 
-    for (const auto& vertex : vertices) {
+    for (const auto& vertex : m_vertices) {
         if (vertex.position.x > maxX) maxX = vertex.position.x;
         if (vertex.position.y > maxY) maxY = vertex.position.y;
     }

@@ -19,8 +19,8 @@ public:
     void setSize(const Vector2f& size);
 
 private:
-    float width = 0.0f;
-    float height = 0.0f;
+    float m_width = 0.0f;
+    float m_height = 0.0f;
 
 };
 

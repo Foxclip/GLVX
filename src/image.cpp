@@ -7,25 +7,25 @@
 namespace glvx {
 
 Image::Image(int width, int height, std::vector<unsigned char> data)
-    : width(width), height(height), data(std::move(data)) {}
+    : m_width(width), m_height(height), m_data(std::move(data)) {}
 
 int Image::getWidth() const {
-    return width;
+    return m_width;
 }
 
 int Image::getHeight() const {
-    return height;
+    return m_height;
 }
 
 const std::vector<unsigned char>& Image::getData() const {
-    return data;
+    return m_data;
 }
 
 Color Image::getPixel(int x, int y) const {
-    assert(x >= 0 && x < width);
-    assert(y >= 0 && y < height);
-    size_t index = (y * width + x) * 4;
-    return Color(data[index], data[index + 1], data[index + 2], data[index + 3]);
+    assert(x >= 0 && x < m_width);
+    assert(y >= 0 && y < m_height);
+    size_t index = (y * m_width + x) * 4;
+    return Color(m_data[index], m_data[index + 1], m_data[index + 2], m_data[index + 3]);
 }
 
 Color Image::getPixel(const Vector2i& pos) const {
@@ -33,16 +33,16 @@ Color Image::getPixel(const Vector2i& pos) const {
 }
 
 void Image::flipY() {
-    size_t rowSize = width * 4;
-    for (int y = 0; y < height / 2; ++y) {
-        int flipY = height - 1 - y;
-        for (int x = 0; x < width; ++x) {
+    size_t rowSize = m_width * 4;
+    for (int y = 0; y < m_height / 2; ++y) {
+        int flipY = m_height - 1 - y;
+        for (int x = 0; x < m_width; ++x) {
             size_t idxTop = y * rowSize + x * 4;
             size_t idxBottom = flipY * rowSize + x * 4;
             std::swap_ranges(
-                data.begin() + idxTop,
-                data.begin() + idxTop + 4,
-                data.begin() + idxBottom
+                m_data.begin() + idxTop,
+                m_data.begin() + idxTop + 4,
+                m_data.begin() + idxBottom
             );
         }
     }

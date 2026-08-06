@@ -14,27 +14,27 @@ Transform Drawable::getTransform() const {
 }
 
 Color Drawable::getColor() const {
-    return color;
+    return m_color;
 }
 
 void Drawable::setColor(const Color& color) {
-    this->color = color;
+    m_color = color;
 }
 
 Shader* Drawable::getShader() const {
-    return shader;
+    return m_shader;
 }
 
 void Drawable::setShader(Shader* shader) {
-    this->shader = shader;
+    m_shader = shader;
 }
 
 AbstractTexture* Drawable::getTexture() const {
-    return texture;
+    return m_texture;
 }
 
 void Drawable::setTexture(AbstractTexture* texture) {
-    this->texture = texture;
+    m_texture = texture;
 }
 
 void Drawable::renderBase(
@@ -48,14 +48,14 @@ void Drawable::renderBase(
 ) const {
     const VertexBuffer& vertexBuffer = getVertexBuffer();
     if (vertexBuffer.getVertexCount() == 0) return;
-    Shader* renderShader = states.shader ? states.shader : shader ? shader : common::defaultShader;
+    Shader* renderShader = states.m_shader ? states.m_shader : shader ? shader : common::defaultShader;
     assert(renderShader);
-    const AbstractTexture* renderTexture = states.texture ? states.texture : texture;
-    Matrix4 combinedModel = (states.transform * model).toMatrix4();
+    const AbstractTexture* renderTexture = states.m_texture ? states.m_texture : texture;
+    Matrix4 combinedModel = (states.m_transform * model).toMatrix4();
     bool textureIsPremultiplied = renderTexture != nullptr && renderTexture->isRenderTexture();
     renderShader->use();
 
-    if (renderShader->useUBO) {
+    if (renderShader->m_use_ubo) {
         common::uniformBuffer->updateObjectUBO(
             combinedModel, color, renderTexture != nullptr, !textureIsPremultiplied, view, projection
         );
@@ -86,7 +86,7 @@ void Drawable::render(
     const Matrix4& projection,
     const RenderStates& states
 ) const {
-    renderBase(shader, texture, color, getTransform(), view, projection, states);
+    renderBase(m_shader, m_texture, m_color, getTransform(), view, projection, states);
 }
 
 }

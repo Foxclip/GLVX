@@ -20,8 +20,8 @@ struct ShaderPart {
 
 class Shader {
 public:
-    unsigned int ID;
-    bool useUBO;
+    unsigned int m_id;
+    bool m_use_ubo;
 
     Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath, bool useUBO = false);
     Shader(const char* vertexSource, const char* fragmentSource, bool useUBO = false);

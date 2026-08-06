@@ -31,13 +31,13 @@ public:
     void render() const;
 
 private:
-    bool isInitialized = false;
-    size_t gpuBuffferSize = 0;
-    size_t vertexCount = 0;
-    PrimitiveType type = PrimitiveType::Triangles;
-    Usage usage = Usage::StaticDraw;
-    unsigned int VBO = 0;
-    unsigned int VAO = 0;
+    bool m_is_initialized = false;
+    size_t m_gpu_buffer_size = 0;
+    size_t m_vertex_count = 0;
+    PrimitiveType m_type = PrimitiveType::Triangles;
+    Usage m_usage = Usage::StaticDraw;
+    unsigned int m_vbo = 0;
+    unsigned int m_vao = 0;
 
     void ensureInitialized(std::size_t size);
     void recreateBuffer(std::size_t size);

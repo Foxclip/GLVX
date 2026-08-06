@@ -20,10 +20,10 @@ public:
     void display();
 
 private:
-    unsigned int FBO = 0;
-    unsigned int msaa_fbo = 0;
-    unsigned int msaa_texture = 0;
-    int msaa_samples = 0;
+    unsigned int m_fbo = 0;
+    unsigned int m_msaa_fbo = 0;
+    unsigned int m_msaa_texture = 0;
+    int m_msaa_samples = 0;
 
     unsigned int getRenderTargetFbo() const override;
     int getRenderTargetWidth() const override;

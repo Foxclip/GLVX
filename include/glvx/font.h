@@ -42,14 +42,14 @@ public:
 
 private:
     friend class TextTestsModule;
-    static bool is_library_initialized;
-    static FT_Library library;
-    Texture atlas;
-    FT_Face face = nullptr;
-    std::map<unsigned char, Character> characters;
-    std::map<std::pair<unsigned char, unsigned char>, int> kerning;
-    unsigned int character_size = FONT_DEFAULT_SIZE;
-    bool _useSubpixel = false;
+    static bool m_is_library_initialized;
+    static FT_Library m_library;
+    Texture m_atlas;
+    FT_Face m_face = nullptr;
+    std::map<unsigned char, Character> m_characters;
+    std::map<std::pair<unsigned char, unsigned char>, int> m_kerning;
+    unsigned int m_character_size = FONT_DEFAULT_SIZE;
+    bool m_use_subpixel = false;
 
     void loadFont(const std::filesystem::path& filename, unsigned int size, bool useSubpixel);
 

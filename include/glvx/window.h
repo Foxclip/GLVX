@@ -62,23 +62,23 @@ private:
     friend class ::InputTestsModule;
     friend class ::ApplicationTestsModule;
 
-    GLFWwindow* window = nullptr;
-    int current_width = 0;
-    int current_height = 0;
-    std::unique_ptr<Shader> default_shader_uptr = nullptr;
-    std::unique_ptr<Shader> subpixel_shader_uptr = nullptr;
-    std::unique_ptr<UniformBuffer> uniform_buffer_uptr = nullptr;
-    int msaa_samples = 0;
+    GLFWwindow* m_window = nullptr;
+    int m_current_width = 0;
+    int m_current_height = 0;
+    std::unique_ptr<Shader> m_default_shader_uptr = nullptr;
+    std::unique_ptr<Shader> m_subpixel_shader_uptr = nullptr;
+    std::unique_ptr<UniformBuffer> m_uniform_buffer_uptr = nullptr;
+    int m_msaa_samples = 0;
 
     static constexpr size_t MaxEventQueueSize = 512;
-    std::queue<Event> event_queue;
+    std::queue<Event> m_event_queue;
 
     unsigned int getRenderTargetFbo() const override;
     int getRenderTargetWidth() const override;
     int getRenderTargetHeight() const override;
 
-    static int active_window_count;
-    static bool glfw_initialized;
+    static int m_active_window_count;
+    static bool m_glfw_initialized;
 
     void processWindowSize(int width, int height);
     void pushEvent(const Event& event);

@@ -14,8 +14,8 @@ public:
 private:
     void createVertices();
 
-    float radius = 0.0f;
-    size_t numSegments = 0;
+    float m_radius = 0.0f;
+    size_t m_num_segments = 0;
 
 };
 

@@ -19,12 +19,12 @@ Text::Text(Font* font, const std::string& string) : Rectangle(0.0f, 0.0f) {
 }
 
 Font* Text::getFont() const {
-    return font;
+    return m_font;
 }
 
 void Text::setFont(Font* font) {
-    this->font = font;
-    vertex_buffer = VertexBuffer();
+    m_font = font;
+    m_vertex_buffer = VertexBuffer();
     if (font) {
         setTexture(const_cast<Texture*>(&font->getAtlas()));
         setShader(font->isSubpixel() ? common::subpixelShader : common::defaultShader);
@@ -35,34 +35,34 @@ void Text::setFont(Font* font) {
 }
 
 const std::string& Text::getString() const {
-    return string;
+    return m_string;
 }
 
 float Text::getMaxWidth() const {
-    return max_width;
+    return m_max_width;
 }
 
 void Text::setMaxWidth(float max_width) {
-    this->max_width = max_width;
-    setString(string);
+    m_max_width = max_width;
+    setString(m_string);
 }
 
 void Text::setString(const std::string& string) {
-    this->string = string;
+    m_string = string;
 
     if (string.empty()) {
-        vertex_buffer = VertexBuffer();
+        m_vertex_buffer = VertexBuffer();
         return;
     }
 
-    text_bounds = calculateVisualBounds();
-    Vector2f text_size = text_bounds.size;
+    m_text_bounds = calculateVisualBounds();
+    Vector2f text_size = m_text_bounds.size;
     setSize(text_size);
 
     std::vector<std::string> lines = breakLines();
 
     std::vector<Vertex> vertices;
-    float line_height = static_cast<float>(font->getLineHeight());
+    float line_height = static_cast<float>(m_font->getLineHeight());
 
     for (size_t line_idx = 0; line_idx < lines.size(); line_idx++) {
         const std::string& line = lines[line_idx];
@@ -70,18 +70,18 @@ void Text::setString(const std::string& string) {
         float current_y = static_cast<float>(line_idx) * line_height;
 
         for (size_t i = 0; i < line.size(); i++) {
-            const Character& ch = font->getCharacter(line[i]);
+            const Character& ch = m_font->getCharacter(line[i]);
             if (ch.width <= 0) {
                 current_x += static_cast<float>(ch.advance);
                 if (i + 1 < line.size()) {
-                    current_x += static_cast<float>(font->getKerning(line[i], line[i + 1]));
+                current_x += static_cast<float>(m_font->getKerning(line[i], line[i + 1]));
                 }
                 continue;
             }
 
             float char_x = current_x + static_cast<float>(ch.x);
             float part_below_baseline = static_cast<float>(ch.glyph_height - ch.top);
-            float char_y = static_cast<float>(font->getCharacterSize() + part_below_baseline) + current_y;
+            float char_y = static_cast<float>(m_font->getCharacterSize() + part_below_baseline) + current_y;
             float char_w = static_cast<float>(ch.width);
             float char_h = static_cast<float>(ch.glyph_height);
 
@@ -99,31 +99,31 @@ void Text::setString(const std::string& string) {
 
             current_x += static_cast<float>(ch.advance);
             if (i + 1 < line.size()) {
-                current_x += static_cast<float>(font->getKerning(line[i], line[i + 1]));
+                current_x += static_cast<float>(m_font->getKerning(line[i], line[i + 1]));
             }
         }
     }
 
-    vertex_buffer.update(vertices);
+    m_vertex_buffer.update(vertices);
 }
 
 const VertexBuffer& Text::getVertexBuffer() const {
-    return vertex_buffer;
+    return m_vertex_buffer;
 }
 
 std::vector<std::string> Text::breakLines() const {
-    assert(font);
+    assert(m_font);
 
     std::vector<std::string> result;
 
     size_t start = 0;
-    while (start < string.size()) {
-        size_t end = string.find('\n', start);
-        size_t paragraph_end = (end == std::string::npos) ? string.size() : end;
+    while (start < m_string.size()) {
+        size_t end = m_string.find('\n', start);
+        size_t paragraph_end = (end == std::string::npos) ? m_string.size() : end;
 
-        std::string paragraph = string.substr(start, paragraph_end - start);
+        std::string paragraph = m_string.substr(start, paragraph_end - start);
 
-        if (max_width <= 0.0f) {
+        if (m_max_width <= 0.0f) {
             result.push_back(paragraph);
         } else {
             if (paragraph.empty()) {
@@ -151,7 +151,7 @@ std::vector<std::string> Text::breakLines() const {
                         candidate = current_line + " " + words[w];
                     }
 
-                    if (measureWidth(candidate) <= max_width) {
+                    if (measureWidth(candidate) <= m_max_width) {
                         current_line = candidate;
                     } else {
                         if (!current_line.empty()) {
@@ -166,14 +166,14 @@ std::vector<std::string> Text::breakLines() const {
             }
         }
 
-        start = (end == std::string::npos) ? string.size() : end + 1;
+        start = (end == std::string::npos) ? m_string.size() : end + 1;
     }
 
     return result;
 }
 
 float Text::measureWidth(const std::string& text) const {
-    assert(font);
+    assert(m_font);
     if (text.empty()) {
         return 0.0f;
     }
@@ -181,10 +181,10 @@ float Text::measureWidth(const std::string& text) const {
     float width = 0.0f;
 
     for (size_t i = 0; i < text.size(); i++) {
-        const Character& ch = font->getCharacter(text[i]);
+        const Character& ch = m_font->getCharacter(text[i]);
         width += static_cast<float>(ch.advance);
         if (i + 1 < text.size()) {
-            width += static_cast<float>(font->getKerning(text[i], text[i + 1]));
+            width += static_cast<float>(m_font->getKerning(text[i], text[i + 1]));
         }
     }
 
@@ -199,7 +199,7 @@ FloatRect Text::calculateVisualBounds() const {
     }
 
     FloatRect result;
-    float line_height = static_cast<float>(font->getLineHeight());
+    float line_height = static_cast<float>(m_font->getLineHeight());
     bool first = true;
 
     for (size_t line_idx = 0; line_idx < lines.size(); line_idx++) {
@@ -209,11 +209,11 @@ FloatRect Text::calculateVisualBounds() const {
 
         for (size_t i = 0; i < line.size(); i++) {
             char c = line[i];
-            const Character& ch = font->getCharacter(c);
+            const Character& ch = m_font->getCharacter(c);
             float effective_char_width = (ch.width > 0) ? static_cast<float>(ch.width) : static_cast<float>(ch.advance);
 
             FloatRect char_rect;
-            int font_size = font->getCharacterSize();
+            int font_size = m_font->getCharacterSize();
             char_rect.position.x = current_x + static_cast<float>(ch.x);
             float part_below_baseline = static_cast<float>(ch.glyph_height - ch.top);
             char_rect.position.y = static_cast<float>(font_size - ch.top + part_below_baseline) + line_y_offset;
@@ -229,7 +229,7 @@ FloatRect Text::calculateVisualBounds() const {
 
             current_x += static_cast<float>(ch.advance);
             if (i + 1 < line.size()) {
-                current_x += static_cast<float>(font->getKerning(line[i], line[i + 1]));
+                current_x += static_cast<float>(m_font->getKerning(line[i], line[i + 1]));
             }
         }
     }
