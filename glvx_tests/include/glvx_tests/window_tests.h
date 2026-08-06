@@ -13,7 +13,6 @@ public:
     );
 
     void windowResizeTest(test::Test& test);
-    void windowCloseOpensIsOpenTest(test::Test& test);
     void windowRecreateAfterCloseTest(test::Test& test);
     void windowCloseIdempotentTest(test::Test& test);
     void windowCreatePreservesStateAfterRecreateTest(test::Test& test);

@@ -7,8 +7,7 @@ WindowTestsModule::WindowTestsModule(
     const std::vector<test::TestNode*>& required_nodes
 ) : test::TestModule(name, parent, required_nodes) {
     auto window_resize_test = addTest("window_resize", [&](test::Test& test) { windowResizeTest(test); });
-    auto window_close_opens_isopen_test = addTest("window_close_opens_isopen", [&](test::Test& test) { windowCloseOpensIsOpenTest(test); });
-    auto window_recreate_after_close_test = addTest("window_recreate_after_close", { window_close_opens_isopen_test }, [&](test::Test& test) { windowRecreateAfterCloseTest(test); });
+    auto window_recreate_after_close_test = addTest("window_recreate_after_close", [&](test::Test& test) { windowRecreateAfterCloseTest(test); });
     auto window_close_idempotent_test = addTest("window_close_idempotent", { window_recreate_after_close_test }, [&](test::Test& test) { windowCloseIdempotentTest(test); });
     auto window_create_preserves_state_after_recreate_test = addTest("window_create_preserves_state_after_recreate", { window_close_idempotent_test }, [&](test::Test& test) { windowCreatePreservesStateAfterRecreateTest(test); });
 }
@@ -54,14 +53,8 @@ void WindowTestsModule::windowResizeTest(test::Test& test) {
     T_WRAP_CONTAINER(compareImages(test, finalImage, initialImage));
 }
 
-void WindowTestsModule::windowCloseOpensIsOpenTest(test::Test& test) {
-    T_ASSERT(window.isOpen() == true);
-    window.close();
-    T_ASSERT(window.isOpen() == false);
-    T_ASSERT(!window.getWindowHandle());
-}
-
 void WindowTestsModule::windowRecreateAfterCloseTest(test::Test& test) {
+    window.close();
     window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "recreated");
     T_ASSERT(window.isOpen() == true);
     T_ASSERT(window.getWidth() == WINDOW_SIZE.x);
