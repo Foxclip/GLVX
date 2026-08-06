@@ -7,6 +7,10 @@ WindowTestsModule::WindowTestsModule(
     const std::vector<test::TestNode*>& required_nodes
 ) : test::TestModule(name, parent, required_nodes) {
     auto window_resize_test = addTest("window_resize", [&](test::Test& test) { windowResizeTest(test); });
+    auto window_close_opens_isopen_test = addTest("window_close_opens_isopen", [&](test::Test& test) { windowCloseOpensIsOpenTest(test); });
+    auto window_recreate_after_close_test = addTest("window_recreate_after_close", { window_close_opens_isopen_test }, [&](test::Test& test) { windowRecreateAfterCloseTest(test); });
+    auto window_close_idempotent_test = addTest("window_close_idempotent", { window_recreate_after_close_test }, [&](test::Test& test) { windowCloseIdempotentTest(test); });
+    auto window_create_preserves_state_after_recreate_test = addTest("window_create_preserves_state_after_recreate", { window_close_idempotent_test }, [&](test::Test& test) { windowCreatePreservesStateAfterRecreateTest(test); });
 }
 
 void WindowTestsModule::windowResizeTest(test::Test& test) {
@@ -48,4 +52,41 @@ void WindowTestsModule::windowResizeTest(test::Test& test) {
 
     // Compare initial and final images pixel by pixel
     T_WRAP_CONTAINER(compareImages(test, finalImage, initialImage));
+}
+
+void WindowTestsModule::windowCloseOpensIsOpenTest(test::Test& test) {
+    T_ASSERT(window.isOpen() == true);
+    window.close();
+    T_ASSERT(window.isOpen() == false);
+    T_ASSERT(!window.getWindowHandle());
+}
+
+void WindowTestsModule::windowRecreateAfterCloseTest(test::Test& test) {
+    window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "recreated");
+    T_ASSERT(window.isOpen() == true);
+    T_ASSERT(window.getWidth() == WINDOW_SIZE.x);
+    T_ASSERT(window.getHeight() == WINDOW_SIZE.y);
+}
+
+void WindowTestsModule::windowCloseIdempotentTest(test::Test& test) {
+    window.close();
+    window.close();
+}
+
+void WindowTestsModule::windowCreatePreservesStateAfterRecreateTest(test::Test& test) {
+    window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "post-cycle");
+    window.clear(Color::Black);
+    const Vector2f rect_size = Vector2f(10.0f, 10.0f);
+    Rectangle rect(rect_size);
+    rect.setColor(Color::Red);
+    window.draw(rect);
+    window.display();
+    Image image = window.readPixels();
+    T_WRAP_CONTAINER(checkPixelColor(test, image, Vector2i(0, 0), Vector2i(9, 9), Color::Red));
+}
+
+void WindowTestsModule::afterRunModule() {
+    if (!window.isOpen()) {
+        window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "glvx tests");
+    }
 }
