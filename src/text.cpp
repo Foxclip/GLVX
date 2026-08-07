@@ -13,7 +13,7 @@
 
 namespace glvx {
 
-Text::Text(Font* font, const std::string& string) : Rectangle(0.0f, 0.0f) {
+Text::Text(Font* font, const std::string& string) : Shape(PrimitiveType::Triangles, 0) {
     setFont(font);
     setString(string);
 }
@@ -41,6 +41,18 @@ float Text::getMaxWidth() const {
     return m_max_width;
 }
 
+float Text::getWidth() const {
+    return m_width;
+}
+
+float Text::getHeight() const {
+    return m_height;
+}
+
+Vector2f Text::getSize() const {
+    return Vector2f(m_width, m_height);
+}
+
 void Text::setMaxWidth(float max_width) {
     m_max_width = max_width;
     setString(m_string);
@@ -57,8 +69,7 @@ void Text::setString(const std::string& string) {
         return;
     }
 
-    m_text_bounds = calculateVisualBounds();
-    Vector2f text_size = m_text_bounds.size;
+    Vector2f text_size = calculateVisualBounds().size;
 
     std::vector<std::string> lines = breakLines();
 
