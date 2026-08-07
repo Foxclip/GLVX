@@ -306,10 +306,10 @@ void TextureTestsModule::textureWrappingTest(test::Test& test) {
     Texture texture(texture_data, 2, 1, 4);
 
     VertexArray va(PrimitiveType::TriangleStrip, 4);
-    va[0].position = Vector2f(0.0f, 0.0f); va[0].texCoords = Vector2f(0, 0);
-    va[1].position = Vector2f(4.0f, 0.0f); va[1].texCoords = Vector2f(2, 0);
-    va[2].position = Vector2f(0.0f, 1.0f); va[2].texCoords = Vector2f(0, 1);
-    va[3].position = Vector2f(4.0f, 1.0f); va[3].texCoords = Vector2f(2, 1);
+    va[0].position = Vector2f(0.0f, 0.0f); va[0].tex_coords = Vector2f(0, 0);
+    va[1].position = Vector2f(4.0f, 0.0f); va[1].tex_coords = Vector2f(2, 0);
+    va[2].position = Vector2f(0.0f, 1.0f); va[2].tex_coords = Vector2f(0, 1);
+    va[3].position = Vector2f(4.0f, 1.0f); va[3].tex_coords = Vector2f(2, 1);
     va[0].color = va[1].color = va[2].color = va[3].color = Color::White;
     va.setTexture(&texture);
 
