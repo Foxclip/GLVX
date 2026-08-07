@@ -22,11 +22,11 @@ public:
     void setMaxWidth(float max_width);
     const VertexBuffer& getVertexBuffer() const override;
 private:
-    Font* font = nullptr;
-    std::string string;
-    float max_width = 0.0f;
-    VertexBuffer vertex_buffer;
-    FloatRect text_bounds;
+    Font* m_font = nullptr;
+    std::string m_string;
+    float m_max_width = 0.0f;
+    VertexBuffer m_vertex_buffer;
+    FloatRect m_text_bounds;
 
     std::vector<std::string> breakLines() const;
     float measureWidth(const std::string& text) const;

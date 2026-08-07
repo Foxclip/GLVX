@@ -5,8 +5,8 @@ namespace glvx {
 Cursor::Cursor() { }
 
 Cursor::~Cursor() {
-    if (glfw_cursor) {
-        glfwDestroyCursor(glfw_cursor);
+    if (m_glfw_cursor) {
+        glfwDestroyCursor(m_glfw_cursor);
     }
 }
 
@@ -24,12 +24,12 @@ bool Cursor::loadFromSystem(Type type) {
         case Type::ResizeAll:        glfw_type = GLFW_RESIZE_ALL_CURSOR;  break;
     }
 
-    if (glfw_cursor) {
-        glfwDestroyCursor(glfw_cursor);
+    if (m_glfw_cursor) {
+        glfwDestroyCursor(m_glfw_cursor);
     }
 
-    glfw_cursor = glfwCreateStandardCursor(glfw_type);
-    return glfw_cursor != nullptr;
+    m_glfw_cursor = glfwCreateStandardCursor(glfw_type);
+    return m_glfw_cursor != nullptr;
 }
 
 }

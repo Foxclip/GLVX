@@ -18,9 +18,9 @@ public:
     void flipY();
 
 private:
-    int width;
-    int height;
-    std::vector<unsigned char> data;
+    int m_width;
+    int m_height;
+    std::vector<unsigned char> m_data;
 };
 
 }

@@ -29,10 +29,10 @@ static GLenum wrapFromWrapping(WrappingType wrap) {
 }
 
 void AbstractTexture::setInterpolation(InterpolationType type) {
-    this->interpolation = type;
-    if (ID != 0) {
+    m_interpolation = type;
+    if (m_id != 0) {
         GLenum filter = filterFromInterpolation(type);
-        GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, m_id));
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter));
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter));
         GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
@@ -40,14 +40,14 @@ void AbstractTexture::setInterpolation(InterpolationType type) {
 }
 
 InterpolationType AbstractTexture::getInterpolation() const {
-    return interpolation;
+    return m_interpolation;
 }
 
 void AbstractTexture::setWrapping(WrappingType type) {
-    this->wrapping = type;
-    if (ID != 0) {
+    m_wrapping = type;
+    if (m_id != 0) {
         GLenum wrap = wrapFromWrapping(type);
-        GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, m_id));
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap));
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap));
         GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
@@ -55,7 +55,7 @@ void AbstractTexture::setWrapping(WrappingType type) {
 }
 
 WrappingType AbstractTexture::getWrapping() const {
-    return wrapping;
+    return m_wrapping;
 }
 
 void AbstractTexture::create(int width, int height, unsigned char* data, int channels, bool is_mask) {
@@ -63,29 +63,29 @@ void AbstractTexture::create(int width, int height, unsigned char* data, int cha
 }
 
 int AbstractTexture::getID() const {
-    return ID;
+    return m_id;
 }
 
 int AbstractTexture::getWidth() const {
-    return width;
+    return m_width;
 }
 
 int AbstractTexture::getHeight() const {
-    return height;
+    return m_height;
 }
 
 void AbstractTexture::bind() const {
-    assert(ID != 0);
+    assert(m_id != 0);
     assert(glfwGetCurrentContext() != nullptr);
-    assert(GL_CALL(glIsTexture(ID)));
+    assert(GL_CALL(glIsTexture(m_id)));
     GL_CALL(glActiveTexture(GL_TEXTURE0));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
+    GL_CALL(glBindTexture(GL_TEXTURE_2D, m_id));
 }
 
 void AbstractTexture::unbind() const {
-    assert(ID != 0);
+    assert(m_id != 0);
     assert(glfwGetCurrentContext() != nullptr);
-    assert(GL_CALL(glIsTexture(ID)));
+    assert(GL_CALL(glIsTexture(m_id)));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
@@ -94,7 +94,7 @@ Image AbstractTexture::readPixels() const {
 }
 
 void AbstractTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
-    resizeTexture(newWidth, newHeight, blitOldContents, this->interpolation, this->wrapping);
+    resizeTexture(newWidth, newHeight, blitOldContents, m_interpolation, m_wrapping);
 }
 
 bool AbstractTexture::isRenderTexture() const {
@@ -102,14 +102,14 @@ bool AbstractTexture::isRenderTexture() const {
 }
 
 AbstractTexture::~AbstractTexture() {
-    if (ID == 0) {
+    if (m_id == 0) {
         return;
     }
     if (!has_active_gl_context()) {
         return;
     }
-    assert(GL_CALL(glIsTexture(ID)));
-    GL_CALL(glDeleteTextures(1, &ID));
+    assert(GL_CALL(glIsTexture(m_id)));
+    GL_CALL(glDeleteTextures(1, &m_id));
 }
 
 void AbstractTexture::createTexture(int width, int height, unsigned char* data, int channels, bool is_mask, InterpolationType interp, WrappingType wrap) {
@@ -120,11 +120,11 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
     assert(!is_mask || channels == 1); // only 1 channel for masks
 
     // Delete existing texture if any
-    if (ID != 0) {
+    if (m_id != 0) {
         assert(glfwGetCurrentContext() != nullptr);
-        assert(GL_CALL(glIsTexture(ID)));
-        GL_CALL(glDeleteTextures(1, &ID));
-        ID = 0;
+        assert(GL_CALL(glIsTexture(m_id)));
+        GL_CALL(glDeleteTextures(1, &m_id));
+        m_id = 0;
     }
 
     switch (channels) {
@@ -134,8 +134,8 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
         case 1: GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1)); break;
         default: throw std::runtime_error("Invalid number of channels: " + std::to_string(channels));
     }
-    GL_CALL(glGenTextures(1, &ID));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, ID));
+    GL_CALL(glGenTextures(1, &m_id));
+    GL_CALL(glBindTexture(GL_TEXTURE_2D, m_id));
     GLenum format;
     switch (channels) {
         case 1: format = GL_RED; break;
@@ -165,20 +165,20 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
         }
     }
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
-    this->width = width;
-    this->height = height;
-    this->interpolation = interp;
-    this->wrapping = wrap;
+    m_width = width;
+    m_height = height;
+    m_interpolation = interp;
+    m_wrapping = wrap;
     END_TRY
 }
 
 void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldContents, InterpolationType interp, WrappingType wrap) {
-    assert(ID != 0);
+    assert(m_id != 0);
     assert(glfwGetCurrentContext() != nullptr);
-    assert(GL_CALL(glIsTexture(ID)));
+    assert(GL_CALL(glIsTexture(m_id)));
     assert(newWidth > 0);
     assert(newHeight > 0);
-    if (newWidth == width && newHeight == height) {
+    if (newWidth == m_width && newHeight == m_height) {
         return;
     }
 
@@ -201,33 +201,33 @@ void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldCon
         GL_CALL(glGenFramebuffers(1, &dstFBO));
 
         GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFBO));
-        GL_CALL(glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0));
+        GL_CALL(glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_id, 0));
         assert(GL_CALL(glCheckFramebufferStatus(GL_READ_FRAMEBUFFER)) == GL_FRAMEBUFFER_COMPLETE);
 
         GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFBO));
         GL_CALL(glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newTextureID, 0));
 
         GLenum blitFilter = filterFromInterpolation(interp);
-        GL_CALL(glBlitFramebuffer(0, 0, width, height, 0, 0, newWidth, newHeight, GL_COLOR_BUFFER_BIT, blitFilter));
+        GL_CALL(glBlitFramebuffer(0, 0, m_width, m_height, 0, 0, newWidth, newHeight, GL_COLOR_BUFFER_BIT, blitFilter));
 
         GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
         GL_CALL(glDeleteFramebuffers(1, &srcFBO));
         GL_CALL(glDeleteFramebuffers(1, &dstFBO));
     }
 
-    GL_CALL(glDeleteTextures(1, &ID));
-    ID = newTextureID;
-    this->width = newWidth;
-    this->height = newHeight;
+    GL_CALL(glDeleteTextures(1, &m_id));
+    m_id = newTextureID;
+    m_width = newWidth;
+    m_height = newHeight;
 }
 
 Image AbstractTexture::readPixelsRaw() const {
-    std::vector<unsigned char> data(width * height * 4);
+    std::vector<unsigned char> data(m_width * m_height * 4);
     bind();
     GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data()));
     unbind();
 
-    return Image(width, height, std::move(data));
+    return Image(m_width, m_height, std::move(data));
 }
 
 }

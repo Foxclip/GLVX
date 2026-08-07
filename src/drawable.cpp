@@ -14,27 +14,27 @@ Transform Drawable::getTransform() const {
 }
 
 Color Drawable::getColor() const {
-    return color;
+    return m_color;
 }
 
 void Drawable::setColor(const Color& color) {
-    this->color = color;
+    m_color = color;
 }
 
 Shader* Drawable::getShader() const {
-    return shader;
+    return m_shader;
 }
 
 void Drawable::setShader(Shader* shader) {
-    this->shader = shader;
+    m_shader = shader;
 }
 
 AbstractTexture* Drawable::getTexture() const {
-    return texture;
+    return m_texture;
 }
 
 void Drawable::setTexture(AbstractTexture* texture) {
-    this->texture = texture;
+    m_texture = texture;
 }
 
 void Drawable::renderBase(
@@ -55,7 +55,7 @@ void Drawable::renderBase(
     bool textureIsPremultiplied = renderTexture != nullptr && renderTexture->isRenderTexture();
     renderShader->use();
 
-    if (renderShader->useUBO) {
+    if (renderShader->isUsingUBO()) {
         common::uniformBuffer->updateObjectUBO(
             combinedModel, color, renderTexture != nullptr, !textureIsPremultiplied, view, projection
         );
@@ -86,7 +86,7 @@ void Drawable::render(
     const Matrix4& projection,
     const RenderStates& states
 ) const {
-    renderBase(shader, texture, color, getTransform(), view, projection, states);
+    renderBase(m_shader, m_texture, m_color, getTransform(), view, projection, states);
 }
 
 }

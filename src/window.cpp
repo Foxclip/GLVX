@@ -11,8 +11,8 @@
 
 namespace glvx {
 
-int Window::active_window_count = 0;
-bool Window::glfw_initialized = false;
+int Window::m_active_window_count = 0;
+bool Window::m_glfw_initialized = false;
 
 Window::~Window() {
     close();
@@ -22,11 +22,11 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
     START_TRY
     close();
 
-    if (!glfw_initialized) {
+    if (!m_glfw_initialized) {
         if (!glfwInit()) {
             throw std::runtime_error("Failed to initialize GLFW");
         }
-        glfw_initialized = true;
+        m_glfw_initialized = true;
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -34,89 +34,89 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, msaa_samples);
 
-    window = glfwCreateWindow(width, height, title, nullptr, nullptr);
-    if (!window) {
+    m_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+    if (!m_window) {
         throw std::runtime_error("Failed to create GLFW window");
     }
 
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(m_window);
 
-    current_width = width;
-    current_height = height;
-    this->msaa_samples = glfwGetWindowAttrib(window, GLFW_SAMPLES);
+    m_current_width = width;
+    m_current_height = height;
+    m_msaa_samples = glfwGetWindowAttrib(m_window, GLFW_SAMPLES);
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-        glfwDestroyWindow(window);
+        glfwDestroyWindow(m_window);
         throw std::runtime_error("Failed to initialize GLAD");
     }
 
-    glfwSetWindowUserPointer(window, this);
+    glfwSetWindowUserPointer(m_window, this);
 
-    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-    glfwSetCursorPosCallback(window, mouseMoveCallbackGLFW);
-    glfwSetMouseButtonCallback(window, mouseButtonCallbackGLFW);
-    glfwSetScrollCallback(window, scrollCallbackGLFW);
-    glfwSetKeyCallback(window, keyCallbackGLFW);
-    glfwSetCharCallback(window, charCallbackGLFW);
-    glfwSetWindowFocusCallback(window, focusCallbackGLFW);
-    glfwSetWindowPosCallback(window, windowPosCallbackGLFW);
-    glfwSetWindowCloseCallback(window, closeCallbackGLFW);
+    glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
+    glfwSetCursorPosCallback(m_window, mouseMoveCallbackGLFW);
+    glfwSetMouseButtonCallback(m_window, mouseButtonCallbackGLFW);
+    glfwSetScrollCallback(m_window, scrollCallbackGLFW);
+    glfwSetKeyCallback(m_window, keyCallbackGLFW);
+    glfwSetCharCallback(m_window, charCallbackGLFW);
+    glfwSetWindowFocusCallback(m_window, focusCallbackGLFW);
+    glfwSetWindowPosCallback(m_window, windowPosCallbackGLFW);
+    glfwSetWindowCloseCallback(m_window, closeCallbackGLFW);
 
-    uniform_buffer_uptr = std::make_unique<UniformBuffer>();
-    uniform_buffer_uptr->createObjectUBO();
-    common::uniformBuffer = uniform_buffer_uptr.get();
+    m_uniform_buffer_uptr = std::make_unique<UniformBuffer>();
+    m_uniform_buffer_uptr->createObjectUBO();
+    common::uniformBuffer = m_uniform_buffer_uptr.get();
 
-    default_shader_uptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag, true);
-    common::defaultShader = default_shader_uptr.get();
-    subpixel_shader_uptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag, true);
-    common::subpixelShader = subpixel_shader_uptr.get();
-    ++active_window_count;
+    m_default_shader_uptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag, true);
+    common::defaultShader = m_default_shader_uptr.get();
+    m_subpixel_shader_uptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag, true);
+    common::subpixelShader = m_subpixel_shader_uptr.get();
+    ++m_active_window_count;
     END_TRY
 }
 
 bool Window::isOpen() const {
-    return window != nullptr;
+    return m_window != nullptr;
 }
 
 int Window::getWidth() const {
-    return current_width;
+    return m_current_width;
 }
 
 int Window::getHeight() const {
-    return current_height;
+    return m_current_height;
 }
 
 int Window::getSamples() const {
-    return msaa_samples;
+    return m_msaa_samples;
 }
 
 Vector2i Window::getSize() const {
-    return Vector2i(current_width, current_height);
+    return Vector2i(m_current_width, m_current_height);
 }
 
 Vector2f Window::getCenter() const {
-    return Vector2f(static_cast<float>(current_width) / 2.0f, static_cast<float>(current_height) / 2.0f);
+    return Vector2f(static_cast<float>(m_current_width) / 2.0f, static_cast<float>(m_current_height) / 2.0f);
 }
 
 void glvx::Window::setView(const View& view) {
-    this->view = view.getViewMatrix(
-        static_cast<float>(current_width),
-        static_cast<float>(current_height),
+    m_view = view.getViewMatrix(
+        static_cast<float>(m_current_width),
+        static_cast<float>(m_current_height),
         true
     );
-    this->inv_view = view.getInvViewMatrix(
-        static_cast<float>(current_width),
-        static_cast<float>(current_height),
+    m_inv_view = view.getInvViewMatrix(
+        static_cast<float>(m_current_width),
+        static_cast<float>(m_current_height),
         true
     );
-    this->projection = view.getProjectionMatrix(
-        static_cast<float>(current_width),
-        static_cast<float>(current_height)
+    m_projection = view.getProjectionMatrix(
+        static_cast<float>(m_current_width),
+        static_cast<float>(m_current_height)
     );
 }
 
 void Window::setSize(int width, int height) {
-    glfwSetWindowSize(window, width, height);
+    glfwSetWindowSize(m_window, width, height);
     processWindowSize(width, height);
 }
 
@@ -125,39 +125,39 @@ void Window::setSize(const Vector2i& size) {
 }
 
 void Window::setTitle(const std::string& title) const {
-    glfwSetWindowTitle(window, title.c_str());
+    glfwSetWindowTitle(m_window, title.c_str());
 }
 
 void Window::display() const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-    glfwSwapBuffers(window);
+    glfwSwapBuffers(m_window);
 }
 
 Image Window::readPixels() const {
-    std::vector<unsigned char> pixels(current_width * current_height * 4);
+    std::vector<unsigned char> pixels(m_current_width * m_current_height * 4);
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     GL_CALL(glReadBuffer(GL_FRONT));
-    GL_CALL(glReadPixels(0, 0, current_width, current_height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data()));
+    GL_CALL(glReadPixels(0, 0, m_current_width, m_current_height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data()));
 
-    Image image(current_width, current_height, std::move(pixels));
+    Image image(m_current_width, m_current_height, std::move(pixels));
     image.flipY();
     return image;
 }
 
 void Window::setMouseCursor(const Cursor& cursor) {
-    if (cursor.glfw_cursor) {
-        glfwSetCursor(window, cursor.glfw_cursor);
+    if (cursor.m_glfw_cursor) {
+        glfwSetCursor(m_window, cursor.m_glfw_cursor);
     } else {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     }
 }
 
 void Window::setCursorVisible(bool visible) {
-    glfwSetInputMode(window, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
+    glfwSetInputMode(m_window, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
 }
 
 void Window::setMouseGrabEnabled(bool enabled) {
-    glfwSetInputMode(window, GLFW_CURSOR, enabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+    glfwSetInputMode(m_window, GLFW_CURSOR, enabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
 
 void Window::setVerticalSyncEnabled(bool enabled) {
@@ -165,38 +165,38 @@ void Window::setVerticalSyncEnabled(bool enabled) {
 }
 
 GLFWwindow* Window::getWindowHandle() const {
-    return window;
+    return m_window;
 }
 
 void Window::pushEvent(const Event& event) {
-    if (event_queue.size() > MaxEventQueueSize) {
-        event_queue.pop();
+    if (m_event_queue.size() > MaxEventQueueSize) {
+        m_event_queue.pop();
     }
-    event_queue.push(event);
+    m_event_queue.push(event);
 }
 
 bool Window::pollEvent(Event& event) {
     glfwPollEvents();
-    if (event_queue.empty()) {
+    if (m_event_queue.empty()) {
         return false;
     }
-    event = event_queue.front();
-    event_queue.pop();
+    event = m_event_queue.front();
+    m_event_queue.pop();
     return true;
 }
 
 bool Window::waitEvent(Event& event) {
-    while (event_queue.empty()) {
+    while (m_event_queue.empty()) {
         glfwWaitEvents();
     }
-    event = event_queue.front();
-    event_queue.pop();
+    event = m_event_queue.front();
+    m_event_queue.pop();
     return true;
 }
 
 void Window::clearEventQueue() {
     std::queue<Event> empty;
-    std::swap(event_queue, empty);
+    std::swap(m_event_queue, empty);
 }
 
 unsigned int Window::getRenderTargetFbo() const {
@@ -204,17 +204,17 @@ unsigned int Window::getRenderTargetFbo() const {
 }
 
 int Window::getRenderTargetWidth() const {
-    return current_width;
+    return m_current_width;
 }
 
 int Window::getRenderTargetHeight() const {
-    return current_height;
+    return m_current_height;
 }
 
 void Window::processWindowSize(int width, int height) {
-    current_width = width;
-    current_height = height;
-    GL_CALL(glViewport(0, 0, current_width, current_height));
+    m_current_width = width;
+    m_current_height = height;
+    GL_CALL(glViewport(0, 0, m_current_width, m_current_height));
 }
 
 void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height) {
@@ -326,28 +326,28 @@ void Window::closeCallbackGLFW(GLFWwindow* glfwWindow) {
 }
 
 void Window::close() {
-    if (window == nullptr) {
+    if (m_window == nullptr) {
         return;
     }
 
-    --active_window_count;
+    --m_active_window_count;
 
-    if (glfw_initialized) {
-        glfwMakeContextCurrent(window);
+    if (m_glfw_initialized) {
+        glfwMakeContextCurrent(m_window);
 
-        default_shader_uptr.reset();
-        subpixel_shader_uptr.reset();
-        uniform_buffer_uptr.reset();
+        m_default_shader_uptr.reset();
+        m_subpixel_shader_uptr.reset();
+        m_uniform_buffer_uptr.reset();
 
-        glfwDestroyWindow(window);
-        window = nullptr;
+        glfwDestroyWindow(m_window);
+        m_window = nullptr;
     }
 
-    if (active_window_count == 0) {
+    if (m_active_window_count == 0) {
         Keyboard::reset();
         Mouse::reset();
         glfwTerminate();
-        glfw_initialized = false;
+        m_glfw_initialized = false;
     }
 }
 

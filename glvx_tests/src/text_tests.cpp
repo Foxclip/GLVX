@@ -27,7 +27,7 @@ void TextTestsModule::fontTest(test::Test& test) {
     window.setTitle("font");
 
     Font font("fonts/LiberationSans-Regular.ttf");
-    int num_glyphs = font.face->num_glyphs;
+    int num_glyphs = font.m_face->num_glyphs;
     T_COMPARE(num_glyphs, 2587);
 }
 

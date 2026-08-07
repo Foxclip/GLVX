@@ -26,7 +26,7 @@ public:
     friend class Window;
 
 private:
-    GLFWcursor* glfw_cursor = nullptr;
+    GLFWcursor* m_glfw_cursor = nullptr;
 };
 
 }

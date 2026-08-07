@@ -11,28 +11,28 @@ VertexBuffer::VertexBuffer(PrimitiveType type) : VertexBuffer(type, Usage::Stati
 
 VertexBuffer::VertexBuffer(Usage usage) : VertexBuffer(PrimitiveType::Triangles, usage) { }
 
-VertexBuffer::VertexBuffer(PrimitiveType type, Usage usage): VBO(0), VAO(0) {
-    this->type = type;
-    this->usage = usage;
+VertexBuffer::VertexBuffer(PrimitiveType type, Usage usage): m_vbo(0), m_vao(0) {
+    m_type = type;
+    m_usage = usage;
 }
 
 VertexBuffer::~VertexBuffer() {
     if (!has_active_gl_context()) {
         return;
     }
-    if (VAO != 0) {
-        GL_CALL(glDeleteVertexArrays(1, &VAO));
-        VAO = 0;
+    if (m_vao != 0) {
+        GL_CALL(glDeleteVertexArrays(1, &m_vao));
+        m_vao = 0;
     }
-    if (VBO != 0) {
-        GL_CALL(glDeleteBuffers(1, &VBO));
-        VBO = 0;
+    if (m_vbo != 0) {
+        GL_CALL(glDeleteBuffers(1, &m_vbo));
+        m_vbo = 0;
     }
 }
 
 bool VertexBuffer::create(std::size_t vertexCount) {
-    this->vertexCount = vertexCount;
-    if (VAO == 0) {
+    m_vertex_count = vertexCount;
+    if (m_vao == 0) {
         return true;
     }
     recreateBuffer(vertexCount);
@@ -40,31 +40,31 @@ bool VertexBuffer::create(std::size_t vertexCount) {
 }
 
 std::size_t VertexBuffer::getVertexCount() const {
-    return vertexCount;
+    return m_vertex_count;
 }
 
 void VertexBuffer::ensureInitialized(std::size_t size) {
     if (size == 0) {
         return;
     }
-    if (VAO == 0) {
-        GL_CALL(glGenVertexArrays(1, &VAO));
+    if (m_vao == 0) {
+        GL_CALL(glGenVertexArrays(1, &m_vao));
     }
     recreateBuffer(size);
 }
 
 bool VertexBuffer::update(const std::vector<Vertex>& newVertices) {
     ensureInitialized(newVertices.size());
-    if (newVertices.size() != vertexCount) {
-        vertexCount = newVertices.size();
-        recreateBuffer(vertexCount);
+    if (newVertices.size() != m_vertex_count) {
+        m_vertex_count = newVertices.size();
+        recreateBuffer(m_vertex_count);
     }
     updateBuffer(newVertices.data(), 0, newVertices.size() * sizeof(Vertex));
     return true;
 }
 
 bool VertexBuffer::update(const std::vector<Vertex>& newVertices, std::size_t vertexCount, unsigned int offset) {
-    if (offset + vertexCount > this->vertexCount) {
+    if (offset + vertexCount > m_vertex_count) {
         return false;
     }
     updateBuffer(newVertices.data(), offset * sizeof(Vertex), vertexCount * sizeof(Vertex));
@@ -72,24 +72,24 @@ bool VertexBuffer::update(const std::vector<Vertex>& newVertices, std::size_t ve
 }
 
 void VertexBuffer::updateBuffer(const void* data, unsigned int offset, std::size_t size) {
-    if (VBO == 0) {
+    if (m_vbo == 0) {
         return;
     }
-    GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
+    GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_vbo));
     GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, offset, size, data));
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
 void VertexBuffer::recreateBuffer(std::size_t size) {
-    if (VBO != 0) {
-        GL_CALL(glDeleteBuffers(1, &VBO));
-        VBO = 0;
+    if (m_vbo != 0) {
+        GL_CALL(glDeleteBuffers(1, &m_vbo));
+        m_vbo = 0;
     }
-    GL_CALL(glGenBuffers(1, &VBO));
-    GL_CALL(glBindVertexArray(VAO));
-    GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, VBO));
+    GL_CALL(glGenBuffers(1, &m_vbo));
+    GL_CALL(glBindVertexArray(m_vao));
+    GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_vbo));
     GLenum usageGLenum;
-    switch (usage) {
+    switch (m_usage) {
         case Usage::StaticDraw: usageGLenum = GL_STATIC_DRAW; break;
         case Usage::DynamicDraw: usageGLenum = GL_DYNAMIC_DRAW; break;
         case Usage::StreamDraw: usageGLenum = GL_STREAM_DRAW; break;
@@ -104,35 +104,35 @@ void VertexBuffer::recreateBuffer(std::size_t size) {
     GL_CALL(glEnableVertexAttribArray(2));
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
     GL_CALL(glBindVertexArray(0));
-    isInitialized = true;
-    gpuBuffferSize = size;
+    m_is_initialized = true;
+    m_gpu_buffer_size = size;
 }
 
 PrimitiveType VertexBuffer::getPrimitiveType() const {
-    return type;
+    return m_type;
 }
 
 void VertexBuffer::setPrimitiveType(PrimitiveType type) {
-    this->type = type;
+    m_type = type;
 }
 
 void VertexBuffer::setUsage(Usage usage) {
-    this->usage = usage;
+    m_usage = usage;
 }
 
 unsigned int VertexBuffer::getVAO() const {
-    return VAO;
+    return m_vao;
 }
 
 void VertexBuffer::render() const {
-    if (vertexCount == 0) {
+    if (m_vertex_count == 0) {
         return;
     }
-    if (VAO == 0) {
+    if (m_vao == 0) {
         return;
     }
-    GL_CALL(glBindVertexArray(VAO));
-    GL_CALL(glDrawArrays(static_cast<GLenum>(type), 0, static_cast<GLsizei>(getVertexCount())));
+    GL_CALL(glBindVertexArray(m_vao));
+    GL_CALL(glDrawArrays(static_cast<GLenum>(m_type), 0, static_cast<GLsizei>(getVertexCount())));
 }
 
 }

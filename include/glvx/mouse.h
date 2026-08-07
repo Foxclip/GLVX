@@ -30,7 +30,7 @@ private:
         bool button_states[static_cast<size_t>(Button::Count)] = {};
     };
 
-    static std::unordered_map<GLFWwindow*, MouseState> window_states;
+    static std::unordered_map<GLFWwindow*, MouseState> m_window_states;
 
     static void setButtonState(GLFWwindow* handle, Button button, bool pressed);
     static void reset();

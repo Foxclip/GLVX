@@ -7,34 +7,34 @@
 
 namespace glvx {
 
-Matrix4::Matrix4() : data(1.0f) {}
+Matrix4::Matrix4() : m_data(1.0f) {}
 
-Matrix4::Matrix4(const std::array<float, 16>& data) : data(
+Matrix4::Matrix4(const std::array<float, 16>& data) : m_data(
     data[0], data[1], data[2], data[3],
     data[4], data[5], data[6], data[7],
     data[8], data[9], data[10], data[11],
     data[12], data[13], data[14], data[15]
 ) {}
 
-Matrix4::Matrix4(const float* data) : data(
+Matrix4::Matrix4(const float* data) : m_data(
     data[0], data[1], data[2], data[3],
     data[4], data[5], data[6], data[7],
     data[8], data[9], data[10], data[11],
     data[12], data[13], data[14], data[15]
 ) {}
 
-Matrix4::Matrix4(const glm::mat4& data) : data(data) {}
+Matrix4::Matrix4(const glm::mat4& data) : m_data(data) {}
 
 const float* Matrix4::getData() const {
-    return &data[0][0];
+    return &m_data[0][0];
 }
 
 float Matrix4::get(int row, int col) const {
-    return data[row][col];
+    return m_data[row][col];
 }
 
 float& Matrix4::get(int row, int col) {
-    return data[row][col];
+    return m_data[row][col];
 }
 
 std::string Matrix4::toString() const {
@@ -84,23 +84,23 @@ std::string Matrix4::toString() const {
 }
 
 Matrix4 Matrix4::operator*(const Matrix4& other) const {
-    return Matrix4(data * other.data);
+    return Matrix4(m_data * other.m_data);
 }
 
 bool Matrix4::operator==(const Matrix4& other) const {
-    return data == other.data;
+    return m_data == other.m_data;
 }
 
 Matrix4 Matrix4::translate(const Matrix4& matrix, const Vector3& v) {
-    return Matrix4(glm::translate(matrix.data, glm::vec3(v.x, v.y, v.z)));
+    return Matrix4(glm::translate(matrix.m_data, glm::vec3(v.x, v.y, v.z)));
 }
 
 Matrix4 Matrix4::rotate(const Matrix4& matrix, float angle, const Vector3& axis) {
-    return Matrix4(glm::rotate(matrix.data, angle, glm::vec3(axis.x, axis.y, axis.z)));
+    return Matrix4(glm::rotate(matrix.m_data, angle, glm::vec3(axis.x, axis.y, axis.z)));
 }
 
 Matrix4 Matrix4::scale(const Matrix4& matrix, const Vector3& v) {
-    return Matrix4(glm::scale(matrix.data, glm::vec3(v.x, v.y, v.z)));
+    return Matrix4(glm::scale(matrix.m_data, glm::vec3(v.x, v.y, v.z)));
 }
 
 Matrix4 Matrix4::ortho(float left, float right, float bottom, float top, float zNear, float zFar) {

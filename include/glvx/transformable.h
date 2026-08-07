@@ -26,10 +26,10 @@ public:
     void move(const Vector2f& offset);
 
 protected:
-    Vector2f position;
-    Angle rotation;
-    Vector2f scale = Vector2f(1.0f, 1.0f);
-    Vector2f origin = Vector2f(0.0f, 0.0f);
+    Vector2f m_position;
+    Angle m_rotation;
+    Vector2f m_scale = Vector2f(1.0f, 1.0f);
+    Vector2f m_origin = Vector2f(0.0f, 0.0f);
 };
 
 }

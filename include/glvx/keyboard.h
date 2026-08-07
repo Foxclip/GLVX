@@ -16,7 +16,7 @@ private:
     static void setKeyState(Key key, bool pressed);
 
     static constexpr int NumKeys = 350;
-    static bool key_states[NumKeys];
+    static bool m_key_states[NumKeys];
 };
 
 }

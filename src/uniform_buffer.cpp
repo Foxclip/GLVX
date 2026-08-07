@@ -10,14 +10,14 @@ UniformBuffer::~UniformBuffer() {
     if (!has_active_gl_context()) {
         return;
     }
-    if (object_id) {
-        GL_CALL(glDeleteBuffers(1, &object_id));
+    if (m_object_id) {
+        GL_CALL(glDeleteBuffers(1, &m_object_id));
     }
 }
 
 void UniformBuffer::createObjectUBO() {
-    GL_CALL(glGenBuffers(1, &object_id));
-    GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, object_id));
+    GL_CALL(glGenBuffers(1, &m_object_id));
+    GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, m_object_id));
     GL_CALL(glBufferData(GL_UNIFORM_BUFFER, sizeof(ObjectUBO), nullptr, GL_DYNAMIC_DRAW));
     GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
@@ -30,7 +30,7 @@ void UniformBuffer::updateObjectUBO(
     const Matrix4& view,
     const Matrix4& projection
 ) {
-    GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, object_id));
+    GL_CALL(glBindBuffer(GL_UNIFORM_BUFFER, m_object_id));
 
     ObjectUBO ubo = {};
     Matrix4 vp = projection * view;
@@ -48,7 +48,11 @@ void UniformBuffer::updateObjectUBO(
 }
 
 void UniformBuffer::bindObjectUBO() const {
-    GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, 1, object_id));
+    GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_object_id));
+}
+
+unsigned int UniformBuffer::getObjectID() const {
+    return m_object_id;
 }
 
 }

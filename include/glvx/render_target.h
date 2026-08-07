@@ -24,9 +24,9 @@ public:
     Vector2f screenToWorld(const Vector2i& screenPos) const;
 
 protected:
-    Matrix4 view;
-    Matrix4 inv_view;
-    Matrix4 projection;
+    Matrix4 m_view;
+    Matrix4 m_inv_view;
+    Matrix4 m_projection;
 
     virtual unsigned int getRenderTargetFbo() const = 0;
     virtual int getRenderTargetWidth() const = 0;

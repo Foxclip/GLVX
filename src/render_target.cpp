@@ -6,9 +6,9 @@ namespace glvx {
 void RenderTarget::setView(const View& view) {
     float width = static_cast<float>(getRenderTargetWidth());
     float height = static_cast<float>(getRenderTargetHeight());
-    this->view = view.getViewMatrix(width, height);
-    this->inv_view = view.getInvViewMatrix(width, height);
-    this->projection = view.getProjectionMatrix(width, height);
+    m_view = view.getViewMatrix(width, height);
+    m_inv_view = view.getInvViewMatrix(width, height);
+    m_projection = view.getProjectionMatrix(width, height);
 }
 
 void RenderTarget::clear(const Color& color) const {
@@ -22,12 +22,12 @@ void RenderTarget::draw(const Drawable& drawable, const RenderStates& states) co
     GL_CALL(glViewport(0, 0, getRenderTargetWidth(), getRenderTargetHeight()));
     GL_CALL(glEnable(GL_BLEND));
     GL_CALL(glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA));
-    drawable.render(view, projection, states);
+    drawable.render(m_view, m_projection, states);
     GL_CALL(glDisable(GL_BLEND));
 }
 
 Vector2i RenderTarget::worldToScreen(float x, float y) const {
-    glm::vec4 point = to_glmMat4(view) * glm::vec4(x, y, 0.0f, 1.0f);
+    glm::vec4 point = to_glmMat4(m_view) * glm::vec4(x, y, 0.0f, 1.0f);
     glm::vec2 result = glm::vec2(point.x, getRenderTargetHeight() - point.y);
     return Vector2i(static_cast<int>(result.x), static_cast<int>(result.y));
 }
@@ -39,7 +39,7 @@ Vector2i RenderTarget::worldToScreen(const Vector2f& worldPos) const {
 Vector2f RenderTarget::screenToWorld(int x, int y) const {
     float x_shifted = x + 0.5f;
     float y_shifted = y + 0.5f;
-    glm::vec4 point = to_glmMat4(inv_view) * glm::vec4(
+    glm::vec4 point = to_glmMat4(m_inv_view) * glm::vec4(
         x_shifted,
         getRenderTargetHeight() - y_shifted,
         0.0f,

@@ -3,11 +3,11 @@
 
 namespace glvx {
 
-std::unordered_map<GLFWwindow*, Mouse::MouseState> Mouse::window_states;
+std::unordered_map<GLFWwindow*, Mouse::MouseState> Mouse::m_window_states;
 
 bool Mouse::isButtonPressed(const Window& window, Button button) {
-    auto it = window_states.find(window.getWindowHandle());
-    if (it == window_states.end()) {
+    auto it = m_window_states.find(window.getWindowHandle());
+    if (it == m_window_states.end()) {
         return false;
     }
     size_t idx = static_cast<size_t>(button);
@@ -28,8 +28,8 @@ void Mouse::setPosition(const Window& window, const Vector2i& position) {
 }
 
 void Mouse::setButtonState(GLFWwindow* handle, Button button, bool pressed) {
-    auto it = window_states.find(handle);
-    if (it == window_states.end()) {
+    auto it = m_window_states.find(handle);
+    if (it == m_window_states.end()) {
         return;
     }
     size_t idx = static_cast<size_t>(button);
@@ -39,7 +39,7 @@ void Mouse::setButtonState(GLFWwindow* handle, Button button, bool pressed) {
 }
 
 void Mouse::reset() {
-    window_states.clear();
+    m_window_states.clear();
 }
 
 }

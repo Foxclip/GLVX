@@ -25,7 +25,7 @@ public:
     static Matrix4 ortho(float left, float right, float bottom, float top, float zNear, float zFar);
 
 private:
-    glm::mat4 data;
+    glm::mat4 m_data;
 };
 
 }

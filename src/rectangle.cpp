@@ -12,8 +12,8 @@ namespace glvx {
 Rectangle::Rectangle(float width, float height) : Shape(PrimitiveType::Triangles, 6) {
     assert(width >= 0);
     assert(height >= 0);
-    this->width = width;
-    this->height = height;
+    m_width = width;
+    m_height = height;
 
     // Create vertices for rectangle (2 triangles, 6 vertices total)
     // First triangle (0, height), (0, 0), (width, height)
@@ -49,22 +49,22 @@ Rectangle::~Rectangle() {
 }
 
 float Rectangle::getWidth() const {
-    return width;
+    return m_width;
 }
 
 float Rectangle::getHeight() const {
-    return height;
+    return m_height;
 }
 
 Vector2f Rectangle::getSize() const {
-    return Vector2f(width, height);
+    return Vector2f(m_width, m_height);
 }
 
 void Rectangle::setSize(float width, float height) {
     assert(width >= 0);
     assert(height >= 0);
-    this->width = width;
-    this->height = height;
+    m_width = width;
+    m_height = height;
 
     // Update vertices for rectangle
     getVertex(0).position = Vector2f(0.0f, height);

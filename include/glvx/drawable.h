@@ -29,9 +29,9 @@ public:
     ) const;
 
 protected:
-    Color color = Color::White;
-    Shader* shader = nullptr;
-    AbstractTexture* texture = nullptr;
+    Color m_color = Color::White;
+    Shader* m_shader = nullptr;
+    AbstractTexture* m_texture = nullptr;
 
     void renderBase(
         Shader* shader,
