@@ -26,11 +26,11 @@ class Font {
 public:
     Font() = default;
     ~Font();
-    Font(const std::filesystem::path& filename, unsigned int character_size = FONT_DEFAULT_SIZE, bool useSubpixel = false);
+    Font(const std::filesystem::path& filename, unsigned int character_size = FONT_DEFAULT_SIZE, bool use_subpixel = false);
     void openFromFile(
         const std::filesystem::path& filename,
         unsigned int character_size = FONT_DEFAULT_SIZE,
-        bool useSubpixel = false
+        bool use_subpixel = false
     );
     int getCharacterSize() const;
     int getBaselineY() const;
@@ -51,7 +51,7 @@ private:
     unsigned int m_character_size = FONT_DEFAULT_SIZE;
     bool m_use_subpixel = false;
 
-    void loadFont(const std::filesystem::path& filename, unsigned int size, bool useSubpixel);
+    void loadFont(const std::filesystem::path& filename, unsigned int size, bool use_subpixel);
 
 };
 

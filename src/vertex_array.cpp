@@ -11,9 +11,9 @@ namespace glvx {
 
 VertexArray::VertexArray() : m_vertex_buffer(Usage::StreamDraw) { }
 
-VertexArray::VertexArray(PrimitiveType type, std::size_t vertexCount) : m_vertex_buffer(type, Usage::StreamDraw) {
-    if (vertexCount > 0) {
-        m_vertices.resize(vertexCount);
+VertexArray::VertexArray(PrimitiveType type, std::size_t vertex_count) : m_vertex_buffer(type, Usage::StreamDraw) {
+    if (vertex_count > 0) {
+        m_vertices.resize(vertex_count);
     }
 }
 
@@ -50,8 +50,8 @@ void VertexArray::clear() {
     m_vertex_buffer.create(0);
 }
 
-void VertexArray::resize(unsigned int newSize) {
-    m_vertices.resize(newSize);
+void VertexArray::resize(unsigned int new_size) {
+    m_vertices.resize(new_size);
     if (m_vertices.empty()) {
         m_vertex_buffer.create(0);
     } else {
@@ -84,15 +84,15 @@ Vector2f VertexArray::getBoundsMin() const {
         return Vector2f(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
     }
 
-    float minX = std::numeric_limits<float>::max();
-    float minY = std::numeric_limits<float>::max();
+    float min_x = std::numeric_limits<float>::max();
+    float min_y = std::numeric_limits<float>::max();
 
     for (const auto& vertex : m_vertices) {
-        if (vertex.position.x < minX) minX = vertex.position.x;
-        if (vertex.position.y < minY) minY = vertex.position.y;
+        if (vertex.position.x < min_x) min_x = vertex.position.x;
+        if (vertex.position.y < min_y) min_y = vertex.position.y;
     }
 
-    return Vector2f(minX, minY);
+    return Vector2f(min_x, min_y);
 }
 
 Vector2f VertexArray::getBoundsMax() const {
@@ -100,15 +100,15 @@ Vector2f VertexArray::getBoundsMax() const {
         return Vector2f(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest());
     }
 
-    float maxX = std::numeric_limits<float>::lowest();
-    float maxY = std::numeric_limits<float>::lowest();
+    float max_x = std::numeric_limits<float>::lowest();
+    float max_y = std::numeric_limits<float>::lowest();
 
     for (const auto& vertex : m_vertices) {
-        if (vertex.position.x > maxX) maxX = vertex.position.x;
-        if (vertex.position.y > maxY) maxY = vertex.position.y;
+        if (vertex.position.x > max_x) max_x = vertex.position.x;
+        if (vertex.position.y > max_y) max_y = vertex.position.y;
     }
 
-    return Vector2f(maxX, maxY);
+    return Vector2f(max_x, max_y);
 }
 
 Transform VertexArray::getTransform() const {

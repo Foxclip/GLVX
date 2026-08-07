@@ -70,7 +70,7 @@ private:
     std::unique_ptr<UniformBuffer> m_uniform_buffer_uptr = nullptr;
     int m_msaa_samples = 0;
 
-    static constexpr size_t MaxEventQueueSize = 512;
+    static constexpr size_t max_event_queue_size = 512;
     std::queue<Event> m_event_queue;
 
     unsigned int getRenderTargetFbo() const override;
@@ -82,12 +82,12 @@ private:
 
     void processWindowSize(int width, int height);
     void pushEvent(const Event& event);
-    static void framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height);
-    static void mouseMoveCallbackGLFW(GLFWwindow* window, double xpos, double ypos);
+    static void framebufferSizeCallback(GLFWwindow* glfw_window, int width, int height);
+    static void mouseMoveCallbackGLFW(GLFWwindow* window, double x_pos, double y_pos);
     static void mouseButtonCallbackGLFW(GLFWwindow* window, int button, int action, int mods);
     static void scrollCallbackGLFW(GLFWwindow* window, double x, double y);
-    static void keyCallbackGLFW(GLFWwindow* window, int key, int scancode, int action, int mods);
-    static void charCallbackGLFW(GLFWwindow* window, unsigned int codepoint);
+    static void keyCallbackGLFW(GLFWwindow* window, int key, int scan_code, int action, int mods);
+    static void charCallbackGLFW(GLFWwindow* window, unsigned int code_point);
     static void focusCallbackGLFW(GLFWwindow* window, int focused);
     static void windowPosCallbackGLFW(GLFWwindow* window, int x, int y);
     static void closeCallbackGLFW(GLFWwindow* window);

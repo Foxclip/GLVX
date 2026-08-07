@@ -11,11 +11,11 @@
 
 namespace glvx {
 
-Circle::Circle(float radius, size_t numSegments) : Shape(PrimitiveType::TriangleFan, numSegments + 2) {
+Circle::Circle(float radius, size_t num_segments) : Shape(PrimitiveType::TriangleFan, num_segments + 2) {
     assert(radius >= 0);
-    assert(numSegments >= 3);
+    assert(num_segments >= 3);
     m_radius = radius;
-    m_num_segments = numSegments;
+    m_num_segments = num_segments;
     createVertices();
 }
 
@@ -48,12 +48,12 @@ void Circle::createVertices() {
         }
         float x_shifted = x + m_radius;
         float y_shifted = y + m_radius;
-        float texX = (x / m_radius + 1.0f) / 2.0f;
-        float texY = (y / m_radius + 1.0f) / 2.0f;
+        float tex_x = (x / m_radius + 1.0f) / 2.0f;
+        float tex_y = (y / m_radius + 1.0f) / 2.0f;
         getVertex(i + 1) = Vertex {
             Vector2f(x_shifted, y_shifted), // position
             Color::White, // color
-            Vector2f(texX, texY) // texCoords
+            Vector2f(tex_x, tex_y) // tex_coords
         };
     }
 }

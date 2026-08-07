@@ -8,7 +8,7 @@ namespace glvx {
 struct Vertex {
     Vector2f position;
     Color color;
-    Vector2f texCoords;
+    Vector2f tex_coords;
 };
 
 enum class PrimitiveType {

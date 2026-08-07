@@ -14,9 +14,9 @@ void check_opengl_errors();
 bool has_active_gl_context();
 
 namespace common {
-    extern Shader* defaultShader;
-    extern Shader* subpixelShader;
-    extern UniformBuffer* uniformBuffer;
+    extern Shader* default_shader;
+    extern Shader* subpixel_shader;
+    extern UniformBuffer* uniform_buffer;
 }
 
 template<typename FuncType>

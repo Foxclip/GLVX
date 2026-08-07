@@ -46,39 +46,39 @@ void Drawable::renderBase(
     const Matrix4& projection,
     const RenderStates& states
 ) const {
-    const VertexBuffer& vertexBuffer = getVertexBuffer();
-    if (vertexBuffer.getVertexCount() == 0) return;
-    Shader* renderShader = states.shader ? states.shader : shader ? shader : common::defaultShader;
-    assert(renderShader);
-    const AbstractTexture* renderTexture = states.texture ? states.texture : texture;
-    Matrix4 combinedModel = (states.transform * model).toMatrix4();
-    bool textureIsPremultiplied = renderTexture != nullptr && renderTexture->isRenderTexture();
-    renderShader->use();
+    const VertexBuffer& vertex_buffer = getVertexBuffer();
+    if (vertex_buffer.getVertexCount() == 0) return;
+    Shader* render_shader = states.shader ? states.shader : shader ? shader : common::default_shader;
+    assert(render_shader);
+    const AbstractTexture* render_texture = states.texture ? states.texture : texture;
+    Matrix4 combined_model = (states.transform * model).toMatrix4();
+    bool texture_is_premultiplied = render_texture != nullptr && render_texture->isRenderTexture();
+    render_shader->use();
 
-    if (renderShader->isUsingUBO()) {
-        common::uniformBuffer->updateObjectUBO(
-            combinedModel, color, renderTexture != nullptr, !textureIsPremultiplied, view, projection
+    if (render_shader->isUsingUBO()) {
+        common::uniform_buffer->updateObjectUBO(
+            combined_model, color, render_texture != nullptr, !texture_is_premultiplied, view, projection
         );
-        common::uniformBuffer->bindObjectUBO();
-        renderShader->setInt("tex", 0);
-        if (renderTexture) {
-            renderTexture->bind();
+        common::uniform_buffer->bindObjectUBO();
+        render_shader->setInt("tex", 0);
+        if (render_texture) {
+            render_texture->bind();
         }
     } else {
-        renderShader->setVec4("color", Vector4(color.r, color.g, color.b, color.a));
-        renderShader->setMat4("model", combinedModel);
-        renderShader->setMat4("view", view);
-        renderShader->setMat4("projection", projection);
-        renderShader->setInt("tex", 0);
-        if (renderTexture) {
-            renderShader->setBool("hasTexture", true);
-            renderTexture->bind();
+        render_shader->setVec4("color", Vector4(color.r, color.g, color.b, color.a));
+        render_shader->setMat4("model", combined_model);
+        render_shader->setMat4("view", view);
+        render_shader->setMat4("projection", projection);
+        render_shader->setInt("tex", 0);
+        if (render_texture) {
+            render_shader->setBool("hasTexture", true);
+            render_texture->bind();
         } else {
-            renderShader->setBool("hasTexture", false);
+            render_shader->setBool("hasTexture", false);
         }
     }
 
-    vertexBuffer.render();
+    vertex_buffer.render();
 }
 
 void Drawable::render(

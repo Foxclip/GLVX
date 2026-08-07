@@ -31,7 +31,7 @@ public:
     void bind() const;
     void unbind() const;
     virtual Image readPixels() const;
-    virtual void resize(int newWidth, int newHeight, bool blitOldContents = true);
+    virtual void resize(int new_width, int new_height, bool blit_old_contents = true);
     virtual bool isRenderTexture() const;
     ~AbstractTexture();
 
@@ -46,7 +46,7 @@ protected:
         InterpolationType interp = InterpolationType::Nearest,
         WrappingType wrap = WrappingType::ClampToEdge
     );
-    void resizeTexture(int newWidth, int newHeight, bool blitOldContents, InterpolationType interp, WrappingType wrap);
+    void resizeTexture(int new_width, int new_height, bool blit_old_contents, InterpolationType interp, WrappingType wrap);
     Image readPixelsRaw() const;
 
 };

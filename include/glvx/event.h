@@ -38,7 +38,7 @@ struct Event {
     struct KeyEvent {
         Key code = Key::Unknown;
         Modifier modifier = Modifier::None;
-        bool altGr = false;
+        bool alt_gr = false;
     };
 
     struct TextEvent {
