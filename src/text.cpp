@@ -13,7 +13,7 @@
 
 namespace glvx {
 
-Text::Text(Font* font, const std::string& string) : Rectangle(0.0f, 0.0f) {
+Text::Text(Font* font, const std::string& string) : Shape(PrimitiveType::Triangles, 0) {
     setFont(font);
     setString(string);
 }
@@ -24,10 +24,11 @@ Font* Text::getFont() const {
 
 void Text::setFont(Font* font) {
     m_font = font;
-    m_vertex_buffer = VertexBuffer();
     if (font) {
         setTexture(const_cast<Texture*>(&font->getAtlas()));
-        setShader(font->isSubpixel() ? common::subpixelShader : common::defaultShader);
+        if (font->isSubpixel()) {
+            setShader(common::subpixelShader);
+        }
     } else {
         setTexture(nullptr);
         setShader(nullptr);
@@ -42,6 +43,18 @@ float Text::getMaxWidth() const {
     return m_max_width;
 }
 
+float Text::getWidth() const {
+    return m_width;
+}
+
+float Text::getHeight() const {
+    return m_height;
+}
+
+Vector2f Text::getSize() const {
+    return Vector2f(m_width, m_height);
+}
+
 void Text::setMaxWidth(float max_width) {
     m_max_width = max_width;
     setString(m_string);
@@ -51,17 +64,18 @@ void Text::setString(const std::string& string) {
     m_string = string;
 
     if (string.empty()) {
-        m_vertex_buffer = VertexBuffer();
+        m_vertices.clear();
+        m_vertex_buffer.create(0);
+        m_width = 0.0f;
+        m_height = 0.0f;
         return;
     }
 
-    m_text_bounds = calculateVisualBounds();
-    Vector2f text_size = m_text_bounds.size;
-    setSize(text_size);
+    Vector2f text_size = calculateVisualBounds().size;
 
     std::vector<std::string> lines = breakLines();
 
-    std::vector<Vertex> vertices;
+    m_vertices.clear();
     float line_height = static_cast<float>(m_font->getLineHeight());
 
     for (size_t line_idx = 0; line_idx < lines.size(); line_idx++) {
@@ -90,12 +104,12 @@ void Text::setString(const std::string& string) {
             float uvBotL = ch.uv_bottom_right.y;
             float uvBotR = ch.uv_top_left.y;
 
-            vertices.push_back(Vertex(Vector2f(char_x, char_y), Color::White, Vector2f(uvTopL, uvBotR)));
-            vertices.push_back(Vertex(Vector2f(char_x, char_y - char_h), Color::White, Vector2f(uvTopL, uvBotL)));
-            vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y), Color::White, Vector2f(uvTopR, uvBotR)));
-            vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y), Color::White, Vector2f(uvTopR, uvBotR)));
-            vertices.push_back(Vertex(Vector2f(char_x, char_y - char_h), Color::White, Vector2f(uvTopL, uvBotL)));
-            vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y - char_h), Color::White, Vector2f(uvTopR, uvBotL)));
+            m_vertices.push_back(Vertex(Vector2f(char_x, char_y), Color::White, Vector2f(uvTopL, uvBotR)));
+            m_vertices.push_back(Vertex(Vector2f(char_x, char_y - char_h), Color::White, Vector2f(uvTopL, uvBotL)));
+            m_vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y), Color::White, Vector2f(uvTopR, uvBotR)));
+            m_vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y), Color::White, Vector2f(uvTopR, uvBotR)));
+            m_vertices.push_back(Vertex(Vector2f(char_x, char_y - char_h), Color::White, Vector2f(uvTopL, uvBotL)));
+            m_vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y - char_h), Color::White, Vector2f(uvTopR, uvBotL)));
 
             current_x += static_cast<float>(ch.advance);
             if (i + 1 < line.size()) {
@@ -104,11 +118,13 @@ void Text::setString(const std::string& string) {
         }
     }
 
-    m_vertex_buffer.update(vertices);
+    m_width = text_size.x;
+    m_height = text_size.y;
+    m_vertex_buffer.update(m_vertices);
 }
 
-const VertexBuffer& Text::getVertexBuffer() const {
-    return m_vertex_buffer;
+void Text::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
+    renderBase(m_shader, m_texture, m_color, getTransform(), view, projection, states);
 }
 
 std::vector<std::string> Text::breakLines() const {

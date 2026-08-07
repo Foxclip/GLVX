@@ -34,7 +34,7 @@ public:
     const VertexBuffer& getVertexBuffer() const override;
     Transform getTransform() const override;
 
-private:
+protected:
     std::vector<Vertex> m_vertices;
     mutable VertexBuffer m_vertex_buffer;
 };

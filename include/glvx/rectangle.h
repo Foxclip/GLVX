@@ -18,7 +18,7 @@ public:
     void setSize(float width, float height);
     void setSize(const Vector2f& size);
 
-private:
+protected:
     float m_width = 0.0f;
     float m_height = 0.0f;
 
