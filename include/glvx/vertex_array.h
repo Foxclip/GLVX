@@ -36,6 +36,8 @@ public:
 
 private:
     std::vector<Vertex> m_vertices;
+
+protected:
     mutable VertexBuffer m_vertex_buffer;
 };
 

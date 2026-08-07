@@ -107,8 +107,8 @@ void Text::setString(const std::string& string) {
     m_vertex_buffer.update(vertices);
 }
 
-const VertexBuffer& Text::getVertexBuffer() const {
-    return m_vertex_buffer;
+void Text::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
+    renderBase(m_shader, m_texture, m_color, getTransform(), view, projection, states);
 }
 
 std::vector<std::string> Text::breakLines() const {

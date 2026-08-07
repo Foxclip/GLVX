@@ -20,12 +20,15 @@ public:
     void setString(const std::string& string);
     float getMaxWidth() const;
     void setMaxWidth(float max_width);
-    const VertexBuffer& getVertexBuffer() const override;
+    void render(
+        const Matrix4& view,
+        const Matrix4& projection,
+        const RenderStates& states = RenderStates()
+    ) const override;
 private:
     Font* m_font = nullptr;
     std::string m_string;
     float m_max_width = 0.0f;
-    VertexBuffer m_vertex_buffer;
     FloatRect m_text_bounds;
 
     std::vector<std::string> breakLines() const;
