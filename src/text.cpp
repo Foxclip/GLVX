@@ -26,7 +26,9 @@ void Text::setFont(Font* font) {
     m_font = font;
     if (font) {
         setTexture(const_cast<Texture*>(&font->getAtlas()));
-        setShader(font->isSubpixel() ? common::subpixelShader : common::defaultShader);
+        if (font->isSubpixel()) {
+            setShader(common::subpixelShader);
+        }
     } else {
         setTexture(nullptr);
         setShader(nullptr);
