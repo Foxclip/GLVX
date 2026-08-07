@@ -33,6 +33,7 @@ VertexBufferTestsModule::VertexBufferTestsModule(
     auto vertex_buffer_render_test = addTest("vertex_buffer_render", [&](test::Test& test) { vertexBufferRenderTest(test); });
     auto vertex_buffer_update_test = addTest("vertex_buffer_update", { vertex_buffer_render_test }, [&](test::Test& test) { vertexBufferUpdateTest(test); });
     auto vertex_buffer_partial_update_test = addTest("vertex_buffer_partial_update", { vertex_buffer_update_test }, [&](test::Test& test) { vertexBufferPartialUpdateTest(test); });
+    auto vertex_buffer_lazy_init_test = addTest("vertex_buffer_lazy_init", { vertex_buffer_render_test }, [&](test::Test& test) { vertexBufferLazyInitTest(test); });
 }
 
 void VertexBufferTestsModule::vertexBufferRenderTest(test::Test& test) {
@@ -235,4 +236,50 @@ void VertexBufferTestsModule::vertexBufferPartialUpdateTest(test::Test& test) {
 
     // Position outside should still be black
     T_COMPARE(updated_image.getPixel(outside), Color::Black, &Color::toString);
+}
+
+void VertexBufferTestsModule::vertexBufferLazyInitTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("vertex buffer lazy init");
+
+    // Test 1: create() does not initialize OpenGL resources
+    VertexBuffer vertexBuffer(PrimitiveType::Triangles);
+    T_CHECK(vertexBuffer.create(3));
+    T_CHECK(vertexBuffer.getVAO() == 0u);
+    T_COMPARE(vertexBuffer.getVertexCount(), static_cast<std::size_t>(3));
+
+    // Test 2: update() triggers lazy initialization
+    std::vector<Vertex> vertices = {
+        Vertex(Vector2f(0, 0), Color::Red, Vector2f(0, 0)),
+        Vertex(Vector2f(10, 0), Color::Red, Vector2f(0, 0)),
+        Vertex(Vector2f(5, 10), Color::Red, Vector2f(0, 0))
+    };
+    T_CHECK(vertexBuffer.update(vertices));
+    T_CHECK(vertexBuffer.getVAO() != 0u);
+
+    // Test 3: render() on uninit buffer is a no-op
+    VertexBuffer emptyBuffer(PrimitiveType::Triangles);
+    emptyBuffer.render();
+
+    // Test 4: create() after init recreates the buffer (VAO stays same, VBO is recreated)
+    unsigned int vao_before = vertexBuffer.getVAO();
+    T_CHECK(vertexBuffer.create(5));
+    unsigned int vao_after = vertexBuffer.getVAO();
+    T_CHECK(vao_after != 0u);
+    T_COMPARE(vao_after, vao_before);
+    T_COMPARE(vertexBuffer.getVertexCount(), static_cast<std::size_t>(5));
+
+    // Test 5: render works after lazy init via update
+    T_CHECK(vertexBuffer.update(vertices));
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+    VertexBufferDrawable drawable(vertexBuffer);
+    window.draw(drawable);
+    window.display();
+
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(10, 10), Color::Black, &Color::toString);
 }

@@ -15,6 +15,7 @@ public:
     void vertexBufferRenderTest(test::Test& test);
     void vertexBufferUpdateTest(test::Test& test);
     void vertexBufferPartialUpdateTest(test::Test& test);
+    void vertexBufferLazyInitTest(test::Test& test);
 
 private:
 

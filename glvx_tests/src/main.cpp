@@ -50,8 +50,6 @@ int main() {
         return 1;
     }
 
-    // TODO: use prefixes like `p_` for function parameters and `m_` for member variables
-    // TODO: add VertexBuffer tests that test lazy initialization of VAO
     // TODO: RenderStates: add BlendMode
     // TODO: FloatRect: add intersects()
     // TODO: Drawable: add texture rect
