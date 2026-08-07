@@ -9,16 +9,10 @@ using namespace glvx;
 // Helper class to make VertexBuffer drawable for testing
 class VertexBufferDrawable : public Drawable {
 public:
-    explicit VertexBufferDrawable(VertexBuffer& vb) : m_vertex_buffer(vb) {
-        m_shader = common::defaultShader;
-    }
+    explicit VertexBufferDrawable(VertexBuffer& vb) : m_vertex_buffer(vb) { }
 
     const VertexBuffer& getVertexBuffer() const override {
         return m_vertex_buffer;
-    }
-
-    Transform getTransform() const override {
-        return Transform();
     }
 
 private:
