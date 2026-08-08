@@ -93,8 +93,8 @@ Image AbstractTexture::readPixels() const {
     return readPixelsRaw();
 }
 
-void AbstractTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
-    resizeTexture(newWidth, newHeight, blitOldContents, m_interpolation, m_wrapping);
+void AbstractTexture::resize(int new_width, int new_height, bool blit_old_contents) {
+    resizeTexture(new_width, new_height, blit_old_contents, m_interpolation, m_wrapping);
 }
 
 bool AbstractTexture::isRenderTexture() const {
@@ -172,53 +172,53 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
     END_TRY
 }
 
-void AbstractTexture::resizeTexture(int newWidth, int newHeight, bool blitOldContents, InterpolationType interp, WrappingType wrap) {
+void AbstractTexture::resizeTexture(int new_width, int new_height, bool blit_old_contents, InterpolationType interp, WrappingType wrap) {
     assert(m_id != 0);
     assert(glfwGetCurrentContext() != nullptr);
     assert(GL_CALL(glIsTexture(m_id)));
-    assert(newWidth > 0);
-    assert(newHeight > 0);
-    if (newWidth == m_width && newHeight == m_height) {
+    assert(new_width > 0);
+    assert(new_height > 0);
+    if (new_width == m_width && new_height == m_height) {
         return;
     }
 
     GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 4));
-    GLuint newTextureID;
-    GL_CALL(glGenTextures(1, &newTextureID));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, newTextureID));
-    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
+    GLuint new_texture_id;
+    GL_CALL(glGenTextures(1, &new_texture_id));
+    GL_CALL(glBindTexture(GL_TEXTURE_2D, new_texture_id));
+    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, new_width, new_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
     GLenum filter = filterFromInterpolation(interp);
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter));
-    GLenum wrapMode = wrapFromWrapping(wrap);
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
+    GLenum wrap_mode = wrapFromWrapping(wrap);
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_mode));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_mode));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
-    if (blitOldContents) {
-        GLuint srcFBO, dstFBO;
-        GL_CALL(glGenFramebuffers(1, &srcFBO));
-        GL_CALL(glGenFramebuffers(1, &dstFBO));
+    if (blit_old_contents) {
+        GLuint src_fbo, dst_fbo;
+        GL_CALL(glGenFramebuffers(1, &src_fbo));
+        GL_CALL(glGenFramebuffers(1, &dst_fbo));
 
-        GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFBO));
+        GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, src_fbo));
         GL_CALL(glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_id, 0));
         assert(GL_CALL(glCheckFramebufferStatus(GL_READ_FRAMEBUFFER)) == GL_FRAMEBUFFER_COMPLETE);
 
-        GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFBO));
-        GL_CALL(glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, newTextureID, 0));
+        GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dst_fbo));
+        GL_CALL(glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, new_texture_id, 0));
 
-        GLenum blitFilter = filterFromInterpolation(interp);
-        GL_CALL(glBlitFramebuffer(0, 0, m_width, m_height, 0, 0, newWidth, newHeight, GL_COLOR_BUFFER_BIT, blitFilter));
+        GLenum blit_filter = filterFromInterpolation(interp);
+        GL_CALL(glBlitFramebuffer(0, 0, m_width, m_height, 0, 0, new_width, new_height, GL_COLOR_BUFFER_BIT, blit_filter));
 
         GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-        GL_CALL(glDeleteFramebuffers(1, &srcFBO));
-        GL_CALL(glDeleteFramebuffers(1, &dstFBO));
+        GL_CALL(glDeleteFramebuffers(1, &src_fbo));
+        GL_CALL(glDeleteFramebuffers(1, &dst_fbo));
     }
 
     GL_CALL(glDeleteTextures(1, &m_id));
-    m_id = newTextureID;
-    m_width = newWidth;
-    m_height = newHeight;
+    m_id = new_texture_id;
+    m_width = new_width;
+    m_height = new_height;
 }
 
 Image AbstractTexture::readPixelsRaw() const {

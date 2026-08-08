@@ -9,32 +9,32 @@
 
 namespace glvx {
 
-Shader::Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath, bool useUBO) : m_use_ubo(useUBO) {
+Shader::Shader(const std::filesystem::path& vertex_path, const std::filesystem::path& fragment_path, bool use_ubo) : m_use_ubo(use_ubo) {
     START_TRY
-    unsigned int vertexShader = compileShader(ShaderType::VERTEX, vertexPath);
-    unsigned int fragmentShader = compileShader(ShaderType::FRAGMENT, fragmentPath);
-    linkProgram(vertexShader, fragmentShader);
+    unsigned int vertex_shader = compileShader(ShaderType::VERTEX, vertex_path);
+    unsigned int fragment_shader = compileShader(ShaderType::FRAGMENT, fragment_path);
+    linkProgram(vertex_shader, fragment_shader);
     END_TRY
 }
 
-Shader::Shader(const char* vertexSource, const char* fragmentSource, bool useUBO) : m_use_ubo(useUBO) {
+Shader::Shader(const char* vertex_source, const char* fragment_source, bool use_ubo) : m_use_ubo(use_ubo) {
     START_TRY
-    unsigned int vertexShader = compileShader(ShaderType::VERTEX, vertexSource);
-    unsigned int fragmentShader = compileShader(ShaderType::FRAGMENT, fragmentSource);
-    linkProgram(vertexShader, fragmentShader);
+    unsigned int vertex_shader = compileShader(ShaderType::VERTEX, vertex_source);
+    unsigned int fragment_shader = compileShader(ShaderType::FRAGMENT, fragment_source);
+    linkProgram(vertex_shader, fragment_shader);
     END_TRY
 }
 
 Shader::Shader(
-    const char* vertexSource,
-    const char* fragmentTemplate,
-    const std::vector<ShaderPart>& fragmentParts, bool useUBO)
-: m_use_ubo(useUBO) {
+    const char* vertex_source,
+    const char* fragment_template,
+    const std::vector<ShaderPart>& fragment_parts, bool use_ubo)
+: m_use_ubo(use_ubo) {
     START_TRY
-    std::string combinedFrag = combineFragmentShader(fragmentTemplate, fragmentParts);
-    unsigned int vertexShader = compileShader(ShaderType::VERTEX, vertexSource);
-    unsigned int fragmentShader = compileShader(ShaderType::FRAGMENT, combinedFrag.c_str());
-    linkProgram(vertexShader, fragmentShader);
+    std::string combined_frag = combineFragmentShader(fragment_template, fragment_parts);
+    unsigned int vertex_shader = compileShader(ShaderType::VERTEX, vertex_source);
+    unsigned int fragment_shader = compileShader(ShaderType::FRAGMENT, combined_frag.c_str());
+    linkProgram(vertex_shader, fragment_shader);
     END_TRY
 }
 
@@ -98,24 +98,24 @@ bool Shader::uniformExists(const std::string& name) const {
     return GL_CALL(glGetUniformLocation(m_id, name.c_str())) != -1;
 }
 
-void Shader::linkProgram(unsigned int vertexShader, unsigned int fragmentShader) {
+void Shader::linkProgram(unsigned int vertex_shader, unsigned int fragment_shader) {
     START_TRY
     m_id = GL_CALL(glCreateProgram());
-    GL_CALL(glAttachShader(m_id, vertexShader));
-    GL_CALL(glAttachShader(m_id, fragmentShader));
+    GL_CALL(glAttachShader(m_id, vertex_shader));
+    GL_CALL(glAttachShader(m_id, fragment_shader));
     GL_CALL(glLinkProgram(m_id));
     int success;
     GL_CALL(glGetProgramiv(m_id, GL_LINK_STATUS, &success));
     if (!success) {
         int length;
         GL_CALL(glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &length));
-        std::vector<char> infoLog(length);
-        GL_CALL(glGetProgramInfoLog(m_id, length, NULL, infoLog.data()));
-        throw std::format("Linking failed\n{}", std::string(infoLog.data()));
+        std::vector<char> info_log(length);
+        GL_CALL(glGetProgramInfoLog(m_id, length, NULL, info_log.data()));
+        throw std::format("Linking failed\n{}", std::string(info_log.data()));
     }
 
-    GL_CALL(glDeleteShader(vertexShader));
-    GL_CALL(glDeleteShader(fragmentShader));
+    GL_CALL(glDeleteShader(vertex_shader));
+    GL_CALL(glDeleteShader(fragment_shader));
     END_TRY
 }
 
@@ -133,10 +133,10 @@ int Shader::compileShader(ShaderType type, const char* source) {
     if (!success) {
         int length;
         GL_CALL(glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length));
-        std::vector<char> infoLog(length);
-        GL_CALL(glGetShaderInfoLog(shader, length, NULL, infoLog.data()));
-        std::string typeStr = type == ShaderType::VERTEX ? "Vertex" : "Fragment";
-        throw std::runtime_error(std::format("{} shader compilation failed\n{}", typeStr, std::string(infoLog.data())));
+        std::vector<char> info_log(length);
+        GL_CALL(glGetShaderInfoLog(shader, length, NULL, info_log.data()));
+        std::string type_str = type == ShaderType::VERTEX ? "Vertex" : "Fragment";
+        throw std::runtime_error(std::format("{} shader compilation failed\n{}", type_str, std::string(info_log.data())));
     }
     return shader;
     END_TRY
@@ -150,7 +150,7 @@ Shader::~Shader() {
 }
 
 std::string Shader::combineFragmentShader(
-    const char* templateSource,
+    const char* template_source,
     const std::vector<ShaderPart>& parts
 ) {
     auto trim = [](const std::string& str) -> std::string {
@@ -188,7 +188,7 @@ std::string Shader::combineFragmentShader(
         }
     }
 
-    std::istringstream stream(templateSource);
+    std::istringstream stream(template_source);
     std::string line;
     bool found_include = false, found_apply = false;
     std::string result;

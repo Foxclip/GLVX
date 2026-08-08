@@ -40,24 +40,24 @@ void VertexBufferTestsModule::vertexBufferRenderTest(test::Test& test) {
     window.clear(Color::Black);
 
     // Create a VertexBuffer with initial vertices (red triangle)
-    VertexBuffer vertexBuffer(PrimitiveType::Triangles);
-    const std::size_t initialVertexCount = 3;
-    T_ASSERT(vertexBuffer.create(initialVertexCount));
+    VertexBuffer vertex_buffer(PrimitiveType::Triangles);
+    const std::size_t initial_vertex_count = 3;
+    T_ASSERT(vertex_buffer.create(initial_vertex_count));
 
     const Vector2f triangle_base_left = Vector2f(0, 0);
     const Vector2f triangle_base_right = Vector2f(10, 0);
     const Vector2f triangle_top = Vector2f(5, 10);
 
-    std::vector<Vertex> initialVertices = {
+    std::vector<Vertex> initial_vertices = {
         Vertex(triangle_base_left, Color::Red, Vector2f(0, 0)),
         Vertex(triangle_base_right, Color::Red, Vector2f(0, 0)),
         Vertex(triangle_top, Color::Red, Vector2f(0, 0))
     };
 
-    T_ASSERT(vertexBuffer.update(initialVertices));
+    T_ASSERT(vertex_buffer.update(initial_vertices));
 
     // Create drawable wrapper and render
-    VertexBufferDrawable drawable(vertexBuffer);
+    VertexBufferDrawable drawable(vertex_buffer);
     window.draw(drawable);
     window.display();
 
@@ -82,24 +82,24 @@ void VertexBufferTestsModule::vertexBufferUpdateTest(test::Test& test) {
     window.clear(Color::Black);
 
     // Create a VertexBuffer with initial vertices (red triangle)
-    VertexBuffer vertexBuffer(PrimitiveType::Triangles);
-    const std::size_t initialVertexCount = 3;
-    T_ASSERT(vertexBuffer.create(initialVertexCount));
+    VertexBuffer vertex_buffer(PrimitiveType::Triangles);
+    const std::size_t initial_vertex_count = 3;
+    T_ASSERT(vertex_buffer.create(initial_vertex_count));
 
     const Vector2f triangle_base_left = Vector2f(0, 0);
     const Vector2f triangle_base_right = Vector2f(10, 0);
     const Vector2f triangle_top = Vector2f(5, 10);
 
-    std::vector<Vertex> initialVertices = {
+    std::vector<Vertex> initial_vertices = {
         Vertex(triangle_base_left, Color::Red, Vector2f(0, 0)),
         Vertex(triangle_base_right, Color::Red, Vector2f(0, 0)),
         Vertex(triangle_top, Color::Red, Vector2f(0, 0))
     };
 
-    T_ASSERT(vertexBuffer.update(initialVertices));
+    T_ASSERT(vertex_buffer.update(initial_vertices));
 
     // Create drawable wrapper and render
-    VertexBufferDrawable drawable(vertexBuffer);
+    VertexBufferDrawable drawable(vertex_buffer);
     window.draw(drawable);
     window.display();
 
@@ -118,13 +118,13 @@ void VertexBufferTestsModule::vertexBufferUpdateTest(test::Test& test) {
     const Vector2f new_triangle_base_right = Vector2f(30, 0);
     const Vector2f new_triangle_top = Vector2f(25, 10);
 
-    std::vector<Vertex> newVertices = {
+    std::vector<Vertex> new_vertices = {
         Vertex(new_triangle_base_left, Color::Blue, Vector2f(0, 0)),
         Vertex(new_triangle_base_right, Color::Blue, Vector2f(0, 0)),
         Vertex(new_triangle_top, Color::Blue, Vector2f(0, 0))
     };
 
-    T_ASSERT(vertexBuffer.update(newVertices));
+    T_ASSERT(vertex_buffer.update(new_vertices));
 
     // Render updated buffer
     window.clear(Color::Black);
@@ -159,9 +159,9 @@ void VertexBufferTestsModule::vertexBufferPartialUpdateTest(test::Test& test) {
     window.clear(Color::Black);
 
     // Create a VertexBuffer with initial vertices (2 triangles: first 3 vertices red, last 3 vertices blue)
-    VertexBuffer vertexBuffer(PrimitiveType::Triangles);
-    const std::size_t initialVertexCount = 6;
-    T_ASSERT(vertexBuffer.create(initialVertexCount));
+    VertexBuffer vertex_buffer(PrimitiveType::Triangles);
+    const std::size_t initial_vertex_count = 6;
+    T_ASSERT(vertex_buffer.create(initial_vertex_count));
 
     const Vector2f first_triangle_base_left = Vector2f(0, 0);
     const Vector2f first_triangle_base_right = Vector2f(10, 0);
@@ -170,7 +170,7 @@ void VertexBufferTestsModule::vertexBufferPartialUpdateTest(test::Test& test) {
     const Vector2f second_triangle_base_right = Vector2f(30, 0);
     const Vector2f second_triangle_top = Vector2f(25, 10);
 
-    std::vector<Vertex> initialVertices = {
+    std::vector<Vertex> initial_vertices = {
         // First triangle (red)
         Vertex(first_triangle_base_left, Color::Red, Vector2f(0, 0)),
         Vertex(first_triangle_base_right, Color::Red, Vector2f(0, 0)),
@@ -181,10 +181,10 @@ void VertexBufferTestsModule::vertexBufferPartialUpdateTest(test::Test& test) {
         Vertex(second_triangle_top, Color::Blue, Vector2f(0, 0))
     };
 
-    T_ASSERT(vertexBuffer.update(initialVertices));
+    T_ASSERT(vertex_buffer.update(initial_vertices));
 
     // Create drawable wrapper and render
-    VertexBufferDrawable drawable(vertexBuffer);
+    VertexBufferDrawable drawable(vertex_buffer);
     window.draw(drawable);
     window.display();
 
@@ -205,14 +205,14 @@ void VertexBufferTestsModule::vertexBufferPartialUpdateTest(test::Test& test) {
     T_COMPARE(initial_image.getPixel(outside), Color::Black, &Color::toString);
 
     // Partial update: replace the second triangle (last 3 vertices) with green
-    std::vector<Vertex> updateVertices = {
+    std::vector<Vertex> update_vertices = {
         Vertex(second_triangle_base_left, Color::Green, Vector2f(0, 0)),
         Vertex(second_triangle_base_right, Color::Green, Vector2f(0, 0)),
         Vertex(second_triangle_top, Color::Green, Vector2f(0, 0))
     };
 
     // Update only the last 3 vertices (offset 3), vertexCount 3
-    T_ASSERT(vertexBuffer.update(updateVertices, 3, 3));
+    T_ASSERT(vertex_buffer.update(update_vertices, 3, 3));
 
     // Render updated buffer
     window.clear(Color::Black);
@@ -237,10 +237,10 @@ void VertexBufferTestsModule::vertexBufferLazyInitTest(test::Test& test) {
     window.setTitle("vertex buffer lazy init");
 
     // Test 1: create() does not initialize OpenGL resources
-    VertexBuffer vertexBuffer(PrimitiveType::Triangles);
-    T_CHECK(vertexBuffer.create(3));
-    T_CHECK(vertexBuffer.getVAO() == 0u);
-    T_COMPARE(vertexBuffer.getVertexCount(), static_cast<std::size_t>(3));
+    VertexBuffer vertex_buffer(PrimitiveType::Triangles);
+    T_CHECK(vertex_buffer.create(3));
+    T_CHECK(vertex_buffer.getVAO() == 0u);
+    T_COMPARE(vertex_buffer.getVertexCount(), static_cast<std::size_t>(3));
 
     // Test 2: update() triggers lazy initialization
     std::vector<Vertex> vertices = {
@@ -248,28 +248,28 @@ void VertexBufferTestsModule::vertexBufferLazyInitTest(test::Test& test) {
         Vertex(Vector2f(10, 0), Color::Red, Vector2f(0, 0)),
         Vertex(Vector2f(5, 10), Color::Red, Vector2f(0, 0))
     };
-    T_CHECK(vertexBuffer.update(vertices));
-    T_CHECK(vertexBuffer.getVAO() != 0u);
+    T_CHECK(vertex_buffer.update(vertices));
+    T_CHECK(vertex_buffer.getVAO() != 0u);
 
     // Test 3: render() on uninit buffer is a no-op
-    VertexBuffer emptyBuffer(PrimitiveType::Triangles);
-    emptyBuffer.render();
+    VertexBuffer empty_buffer(PrimitiveType::Triangles);
+    empty_buffer.render();
 
     // Test 4: create() after init recreates the buffer (VAO stays same, VBO is recreated)
-    unsigned int vao_before = vertexBuffer.getVAO();
-    T_CHECK(vertexBuffer.create(5));
-    unsigned int vao_after = vertexBuffer.getVAO();
+    unsigned int vao_before = vertex_buffer.getVAO();
+    T_CHECK(vertex_buffer.create(5));
+    unsigned int vao_after = vertex_buffer.getVAO();
     T_CHECK(vao_after != 0u);
     T_COMPARE(vao_after, vao_before);
-    T_COMPARE(vertexBuffer.getVertexCount(), static_cast<std::size_t>(5));
+    T_COMPARE(vertex_buffer.getVertexCount(), static_cast<std::size_t>(5));
 
     // Test 5: render works after lazy init via update
-    T_CHECK(vertexBuffer.update(vertices));
+    T_CHECK(vertex_buffer.update(vertices));
     View view;
     view.setPosition(window.getCenter());
     window.setView(view);
     window.clear(Color::Black);
-    VertexBufferDrawable drawable(vertexBuffer);
+    VertexBufferDrawable drawable(vertex_buffer);
     window.draw(drawable);
     window.display();
 

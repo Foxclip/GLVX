@@ -30,12 +30,12 @@ VertexBuffer::~VertexBuffer() {
     }
 }
 
-bool VertexBuffer::create(std::size_t vertexCount) {
-    m_vertex_count = vertexCount;
+bool VertexBuffer::create(std::size_t vertex_count) {
+    m_vertex_count = vertex_count;
     if (m_vao == 0) {
         return true;
     }
-    recreateBuffer(vertexCount);
+    recreateBuffer(vertex_count);
     return true;
 }
 
@@ -53,21 +53,21 @@ void VertexBuffer::ensureInitialized(std::size_t size) {
     recreateBuffer(size);
 }
 
-bool VertexBuffer::update(const std::vector<Vertex>& newVertices) {
-    ensureInitialized(newVertices.size());
-    if (newVertices.size() != m_vertex_count) {
-        m_vertex_count = newVertices.size();
+bool VertexBuffer::update(const std::vector<Vertex>& new_vertices) {
+    ensureInitialized(new_vertices.size());
+    if (new_vertices.size() != m_vertex_count) {
+        m_vertex_count = new_vertices.size();
         recreateBuffer(m_vertex_count);
     }
-    updateBuffer(newVertices.data(), 0, newVertices.size() * sizeof(Vertex));
+    updateBuffer(new_vertices.data(), 0, new_vertices.size() * sizeof(Vertex));
     return true;
 }
 
-bool VertexBuffer::update(const std::vector<Vertex>& newVertices, std::size_t vertexCount, unsigned int offset) {
-    if (offset + vertexCount > m_vertex_count) {
+bool VertexBuffer::update(const std::vector<Vertex>& new_vertices, std::size_t vertex_count, unsigned int offset) {
+    if (offset + vertex_count > m_vertex_count) {
         return false;
     }
-    updateBuffer(newVertices.data(), offset * sizeof(Vertex), vertexCount * sizeof(Vertex));
+    updateBuffer(new_vertices.data(), offset * sizeof(Vertex), vertex_count * sizeof(Vertex));
     return true;
 }
 
@@ -88,19 +88,19 @@ void VertexBuffer::recreateBuffer(std::size_t size) {
     GL_CALL(glGenBuffers(1, &m_vbo));
     GL_CALL(glBindVertexArray(m_vao));
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_vbo));
-    GLenum usageGLenum;
+    GLenum usage_GLenum;
     switch (m_usage) {
-        case Usage::StaticDraw: usageGLenum = GL_STATIC_DRAW; break;
-        case Usage::DynamicDraw: usageGLenum = GL_DYNAMIC_DRAW; break;
-        case Usage::StreamDraw: usageGLenum = GL_STREAM_DRAW; break;
+        case Usage::StaticDraw: usage_GLenum = GL_STATIC_DRAW; break;
+        case Usage::DynamicDraw: usage_GLenum = GL_DYNAMIC_DRAW; break;
+        case Usage::StreamDraw: usage_GLenum = GL_STREAM_DRAW; break;
         default: throw std::invalid_argument("Invalid usage hint");
     }
-    GL_CALL(glBufferData(GL_ARRAY_BUFFER, size * sizeof(Vertex), nullptr, usageGLenum));
+    GL_CALL(glBufferData(GL_ARRAY_BUFFER, size * sizeof(Vertex), nullptr, usage_GLenum));
     GL_CALL(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(0)));
     GL_CALL(glEnableVertexAttribArray(0));
     GL_CALL(glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, color))));
     GL_CALL(glEnableVertexAttribArray(1));
-    GL_CALL(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, texCoords))));
+    GL_CALL(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, tex_coords))));
     GL_CALL(glEnableVertexAttribArray(2));
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
     GL_CALL(glBindVertexArray(0));

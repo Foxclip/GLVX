@@ -4,7 +4,7 @@
 
 using namespace glvx;
 
-extern Window aaWindow;
+extern Window aa_window;
 const int AA_WINDOW_SAMPLES = 4;
 
 class AntialiasingTestsModule : public test::TestModule {

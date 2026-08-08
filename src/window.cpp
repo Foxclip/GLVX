@@ -64,12 +64,12 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
 
     m_uniform_buffer_uptr = std::make_unique<UniformBuffer>();
     m_uniform_buffer_uptr->createObjectUBO();
-    common::uniformBuffer = m_uniform_buffer_uptr.get();
+    common::uniform_buffer = m_uniform_buffer_uptr.get();
 
     m_default_shader_uptr = std::make_unique<Shader>(shaders::simple_vert, shaders::simple_frag, true);
-    common::defaultShader = m_default_shader_uptr.get();
+    common::default_shader = m_default_shader_uptr.get();
     m_subpixel_shader_uptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag, true);
-    common::subpixelShader = m_subpixel_shader_uptr.get();
+    common::subpixel_shader = m_subpixel_shader_uptr.get();
     ++m_active_window_count;
     END_TRY
 }
@@ -169,7 +169,7 @@ GLFWwindow* Window::getWindowHandle() const {
 }
 
 void Window::pushEvent(const Event& event) {
-    if (m_event_queue.size() > MaxEventQueueSize) {
+    if (m_event_queue.size() > max_event_queue_size) {
         m_event_queue.pop();
     }
     m_event_queue.push(event);
@@ -217,8 +217,8 @@ void Window::processWindowSize(int width, int height) {
     GL_CALL(glViewport(0, 0, m_current_width, m_current_height));
 }
 
-void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int height) {
-    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+void Window::framebufferSizeCallback(GLFWwindow* glfw_window, int width, int height) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfw_window))) {
         win->processWindowSize(width, height);
 
         Event event;
@@ -229,50 +229,50 @@ void Window::framebufferSizeCallback(GLFWwindow* glfwWindow, int width, int heig
     }
 }
 
-void Window::mouseMoveCallbackGLFW(GLFWwindow* glfwWindow, double xpos, double ypos) {
-    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+void Window::mouseMoveCallbackGLFW(GLFWwindow* window, double x_pos, double y_pos) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
         Event event;
         event.type = EventType::MouseMoved;
-        event.mouseMove.x = static_cast<int>(xpos);
-        event.mouseMove.y = static_cast<int>(ypos);
+        event.mouseMove.x = static_cast<int>(x_pos);
+        event.mouseMove.y = static_cast<int>(y_pos);
         win->pushEvent(event);
     }
 }
 
-void Window::mouseButtonCallbackGLFW(GLFWwindow* glfwWindow, int button, int action, int mods) {
-    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        double xpos, ypos;
-        glfwGetCursorPos(glfwWindow, &xpos, &ypos);
+void Window::mouseButtonCallbackGLFW(GLFWwindow* window, int button, int action, int mods) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
+        double x_pos, y_pos;
+        glfwGetCursorPos(window, &x_pos, &y_pos);
 
         Mouse::Button mb = static_cast<Mouse::Button>(button);
         bool pressed = (action == GLFW_PRESS);
-        Mouse::setButtonState(glfwWindow, mb, pressed);
+        Mouse::setButtonState(window, mb, pressed);
 
         Event event;
         event.type = pressed ? EventType::MouseButtonPressed : EventType::MouseButtonReleased;
         event.mouseButton.button = mb;
-        event.mouseButton.x = static_cast<int>(xpos);
-        event.mouseButton.y = static_cast<int>(ypos);
+        event.mouseButton.x = static_cast<int>(x_pos);
+        event.mouseButton.y = static_cast<int>(y_pos);
         win->pushEvent(event);
     }
 }
 
-void Window::scrollCallbackGLFW(GLFWwindow* glfwWindow, double xoffset, double yoffset) {
-    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
-        double xpos, ypos;
-        glfwGetCursorPos(glfwWindow, &xpos, &ypos);
+void Window::scrollCallbackGLFW(GLFWwindow* window, double x_offset, double y_offset) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
+        double x_pos, y_pos;
+        glfwGetCursorPos(window, &x_pos, &y_pos);
 
         Event event;
         event.type = EventType::MouseWheelScrolled;
-        event.mouseWheel.delta = static_cast<float>(yoffset);
-        event.mouseWheel.x = static_cast<int>(xpos);
-        event.mouseWheel.y = static_cast<int>(ypos);
+        event.mouseWheel.delta = static_cast<float>(y_offset);
+        event.mouseWheel.x = static_cast<int>(x_pos);
+        event.mouseWheel.y = static_cast<int>(y_pos);
         win->pushEvent(event);
     }
 }
 
-void Window::keyCallbackGLFW(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods) {
-    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+void Window::keyCallbackGLFW(GLFWwindow* window, int key, int scan_code, int action, int mods) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
         Key k = static_cast<Key>(key);
         Modifier modifier = glfwToModifier(mods);
 
@@ -285,30 +285,30 @@ void Window::keyCallbackGLFW(GLFWwindow* glfwWindow, int key, int scancode, int 
         event.type = pressed ? EventType::KeyPressed : EventType::KeyReleased;
         event.key.code = k;
         event.key.modifier = modifier;
-        event.key.altGr = (mods == (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
+        event.key.alt_gr = (mods == (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
         win->pushEvent(event);
     }
 }
 
-void Window::charCallbackGLFW(GLFWwindow* glfwWindow, unsigned int codepoint) {
-    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+void Window::charCallbackGLFW(GLFWwindow* window, unsigned int code_point) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
         Event event;
         event.type = EventType::TextEntered;
-        event.text.unicode = static_cast<char32_t>(codepoint);
+        event.text.unicode = static_cast<char32_t>(code_point);
         win->pushEvent(event);
     }
 }
 
-void Window::focusCallbackGLFW(GLFWwindow* glfwWindow, int focused) {
-    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+void Window::focusCallbackGLFW(GLFWwindow* window, int focused) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
         Event event;
         event.type = focused ? EventType::FocusGained : EventType::FocusLost;
         win->pushEvent(event);
     }
 }
 
-void Window::windowPosCallbackGLFW(GLFWwindow* glfwWindow, int x, int y) {
-    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+void Window::windowPosCallbackGLFW(GLFWwindow* window, int x, int y) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
         Event event;
         event.type = EventType::Moved;
         event.pos.x = x;
@@ -317,8 +317,8 @@ void Window::windowPosCallbackGLFW(GLFWwindow* glfwWindow, int x, int y) {
     }
 }
 
-void Window::closeCallbackGLFW(GLFWwindow* glfwWindow) {
-    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(glfwWindow))) {
+void Window::closeCallbackGLFW(GLFWwindow* window) {
+    if (Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
         Event event;
         event.type = EventType::Closed;
         win->pushEvent(event);

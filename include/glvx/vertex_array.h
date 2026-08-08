@@ -13,7 +13,7 @@ class AbstractTexture;
 class VertexArray : public Drawable {
 public:
     VertexArray();
-    VertexArray(PrimitiveType type, std::size_t vertexCount = 0);
+    VertexArray(PrimitiveType type, std::size_t vertex_count = 0);
     std::size_t getVertexCount() const;
     PrimitiveType getPrimitiveType() const;
     Vector2f getBoundsMin() const;
@@ -23,7 +23,7 @@ public:
     Vertex& getVertex(std::size_t index);
     const Vertex& getVertex(std::size_t index) const;
     void clear();
-    void resize(unsigned int newSize);
+    void resize(unsigned int new_size);
     void append(const Vertex& vertex);
     void setPrimitiveType(PrimitiveType type);
     void render(

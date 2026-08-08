@@ -2,11 +2,11 @@
 
 namespace glvx {
 
-bool Keyboard::m_key_states[Keyboard::NumKeys] = {};
+bool Keyboard::m_key_states[Keyboard::num_keys] = {};
 
 bool Keyboard::isKeyPressed(Key key) {
     int idx = static_cast<int>(key);
-    if (idx < 0 || idx >= NumKeys) {
+    if (idx < 0 || idx >= Keyboard::num_keys) {
         return false;
     }
     return m_key_states[idx];
@@ -24,13 +24,13 @@ bool Keyboard::isModifierActive(Modifier modifier) {
 
 void Keyboard::setKeyState(Key key, bool pressed) {
     int idx = static_cast<int>(key);
-    if (idx >= 0 && idx < NumKeys) {
+    if (idx >= 0 && idx < Keyboard::num_keys) {
         m_key_states[idx] = pressed;
     }
 }
 
 void Keyboard::reset() {
-    for (int i = 0; i < NumKeys; ++i) {
+    for (int i = 0; i < Keyboard::num_keys; ++i) {
         m_key_states[i] = false;
     }
 }

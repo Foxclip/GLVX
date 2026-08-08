@@ -32,8 +32,8 @@ Vector2i RenderTarget::worldToScreen(float x, float y) const {
     return Vector2i(static_cast<int>(result.x), static_cast<int>(result.y));
 }
 
-Vector2i RenderTarget::worldToScreen(const Vector2f& worldPos) const {
-    return worldToScreen(worldPos.x, worldPos.y);
+Vector2i RenderTarget::worldToScreen(const Vector2f& world_pos) const {
+    return worldToScreen(world_pos.x, world_pos.y);
 }
 
 Vector2f RenderTarget::screenToWorld(int x, int y) const {
@@ -49,8 +49,8 @@ Vector2f RenderTarget::screenToWorld(int x, int y) const {
     return from_glmVec2(result);
 }
 
-Vector2f RenderTarget::screenToWorld(const Vector2i& screenPos) const {
-    return screenToWorld(screenPos.x, screenPos.y);
+Vector2f RenderTarget::screenToWorld(const Vector2i& screen_pos) const {
+    return screenToWorld(screen_pos.x, screen_pos.y);
 }
 
 }

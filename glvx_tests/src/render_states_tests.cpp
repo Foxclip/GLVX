@@ -152,7 +152,7 @@ void RenderStatesTestsModule::renderStatesShaderTest(test::Test& test) {
         }
     )";
 
-    Shader customShader(custom_vert, custom_frag);
+    Shader custom_shader(custom_vert, custom_frag);
 
     // Render a rectangle with default shader
     const Vector2f rect_size = Vector2f(10.0f, 10.0f);
@@ -169,7 +169,7 @@ void RenderStatesTestsModule::renderStatesShaderTest(test::Test& test) {
 
     // Render a rectangle with custom shader using RenderStates
     RenderStates states;
-    states.shader = &customShader;
+    states.shader = &custom_shader;
     window.clear(Color::Black);
     window.draw(rect, states);
     window.display();

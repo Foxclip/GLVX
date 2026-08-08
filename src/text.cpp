@@ -27,7 +27,7 @@ void Text::setFont(Font* font) {
     if (font) {
         setTexture(const_cast<Texture*>(&font->getAtlas()));
         if (font->isSubpixel()) {
-            setShader(common::subpixelShader);
+            setShader(common::subpixel_shader);
         }
     } else {
         setTexture(nullptr);
@@ -99,17 +99,17 @@ void Text::setString(const std::string& string) {
             float char_w = static_cast<float>(ch.width);
             float char_h = static_cast<float>(ch.glyph_height);
 
-            float uvTopL = ch.uv_top_left.x;
-            float uvTopR = ch.uv_bottom_right.x;
-            float uvBotL = ch.uv_bottom_right.y;
-            float uvBotR = ch.uv_top_left.y;
+            float uv_top_l = ch.uv_top_left.x;
+            float uv_top_r = ch.uv_bottom_right.x;
+            float uv_bot_l = ch.uv_bottom_right.y;
+            float uv_bot_r = ch.uv_top_left.y;
 
-            m_vertices.push_back(Vertex(Vector2f(char_x, char_y), Color::White, Vector2f(uvTopL, uvBotR)));
-            m_vertices.push_back(Vertex(Vector2f(char_x, char_y - char_h), Color::White, Vector2f(uvTopL, uvBotL)));
-            m_vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y), Color::White, Vector2f(uvTopR, uvBotR)));
-            m_vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y), Color::White, Vector2f(uvTopR, uvBotR)));
-            m_vertices.push_back(Vertex(Vector2f(char_x, char_y - char_h), Color::White, Vector2f(uvTopL, uvBotL)));
-            m_vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y - char_h), Color::White, Vector2f(uvTopR, uvBotL)));
+            m_vertices.push_back(Vertex(Vector2f(char_x, char_y), Color::White, Vector2f(uv_top_l, uv_bot_r)));
+            m_vertices.push_back(Vertex(Vector2f(char_x, char_y - char_h), Color::White, Vector2f(uv_top_l, uv_bot_l)));
+            m_vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y), Color::White, Vector2f(uv_top_r, uv_bot_r)));
+            m_vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y), Color::White, Vector2f(uv_top_r, uv_bot_r)));
+            m_vertices.push_back(Vertex(Vector2f(char_x, char_y - char_h), Color::White, Vector2f(uv_top_l, uv_bot_l)));
+            m_vertices.push_back(Vertex(Vector2f(char_x + char_w, char_y - char_h), Color::White, Vector2f(uv_top_r, uv_bot_l)));
 
             current_x += static_cast<float>(ch.advance);
             if (i + 1 < line.size()) {

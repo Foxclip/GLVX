@@ -20,10 +20,10 @@ public:
     VertexBuffer(Usage usage);
     VertexBuffer(PrimitiveType type, Usage usage);
     ~VertexBuffer();
-    bool create(std::size_t vertexCount);
+    bool create(std::size_t vertex_count);
     std::size_t getVertexCount() const;
-    bool update(const std::vector<Vertex>& newVertices);
-    bool update(const std::vector<Vertex>& newVertices, std::size_t vertexCount, unsigned int offset);
+    bool update(const std::vector<Vertex>& new_vertices);
+    bool update(const std::vector<Vertex>& new_vertices, std::size_t vertex_count, unsigned int offset);
     PrimitiveType getPrimitiveType() const;
     void setPrimitiveType(PrimitiveType type);
     void setUsage(Usage usage);

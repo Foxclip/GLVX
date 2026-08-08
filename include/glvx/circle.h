@@ -6,7 +6,7 @@ namespace glvx {
 
 class Circle : public Shape {
 public:
-    Circle(float radius = 0, size_t numSegments = 30);
+    Circle(float radius = 0, size_t num_segments = 30);
     ~Circle();
 
     void setRadius(float radius);

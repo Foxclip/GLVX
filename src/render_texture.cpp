@@ -87,14 +87,14 @@ void RenderTexture::display() {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
-void RenderTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
+void RenderTexture::resize(int new_width, int new_height, bool blit_old_contents) {
     if (m_fbo == 0) {
         GL_CALL(glGenFramebuffers(1, &m_fbo));
     }
 
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
     GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
-    resizeTexture(newWidth, newHeight, blitOldContents, m_interpolation, m_wrapping);
+    resizeTexture(new_width, new_height, blit_old_contents, m_interpolation, m_wrapping);
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
     GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_id, 0));
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
@@ -105,7 +105,7 @@ void RenderTexture::resize(int newWidth, int newHeight, bool blitOldContents) {
         GL_CALL(glGenTextures(1, &m_msaa_texture));
         GL_CALL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_msaa_texture));
         GL_CALL(glTexImage2DMultisample(
-            GL_TEXTURE_2D_MULTISAMPLE, m_msaa_samples, GL_RGBA, newWidth, newHeight, GL_TRUE
+            GL_TEXTURE_2D_MULTISAMPLE, m_msaa_samples, GL_RGBA, new_width, new_height, GL_TRUE
         ));
         GL_CALL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
 

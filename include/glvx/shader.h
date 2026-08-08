@@ -20,13 +20,13 @@ struct ShaderPart {
 
 class Shader {
 public:
-    Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath, bool useUBO = false);
-    Shader(const char* vertexSource, const char* fragmentSource, bool useUBO = false);
+    Shader(const std::filesystem::path& vertex_path, const std::filesystem::path& fragment_path, bool use_ubo = false);
+    Shader(const char* vertex_source, const char* fragment_source, bool use_ubo = false);
     Shader(
-        const char* vertexSource,
-        const char* fragmentTemplate,
-        const std::vector<ShaderPart>& fragmentParts,
-        bool useUBO = false
+        const char* vertex_source,
+        const char* fragment_template,
+        const std::vector<ShaderPart>& fragment_parts,
+        bool use_ubo = false
     );
     ~Shader();
     unsigned int getId() const;
@@ -46,9 +46,9 @@ private:
 
     int compileShader(ShaderType type, const std::filesystem::path& path);
     int compileShader(ShaderType type, const char* source);
-    void linkProgram(unsigned int vertexShader, unsigned int fragmentShader);
+    void linkProgram(unsigned int vertex_shader, unsigned int fragment_shader);
     std::string combineFragmentShader(
-        const char* templateSource,
+        const char* template_source,
         const std::vector<ShaderPart>& parts
     );
 

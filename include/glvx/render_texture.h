@@ -14,7 +14,7 @@ public:
     ~RenderTexture();
     unsigned int getFBO() const;
     void create(int width, int height, int msaa_samples = 0);
-    void resize(int newWidth, int newHeight, bool blitOldContents = true) override;
+    void resize(int new_width, int new_height, bool blit_old_contents = true) override;
     bool isRenderTexture() const override;
     int getSamples() const;
     void display();

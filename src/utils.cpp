@@ -21,9 +21,9 @@ std::string file_to_str(const std::filesystem::path& path) {
 }
 
 void str_to_file(const std::string& str, const std::filesystem::path& path) {
-    std::ofstream ofstream(path);
-    if (ofstream.is_open()) {
-        ofstream << str;
+    std::ofstream out_stream(path);
+    if (out_stream.is_open()) {
+        out_stream << str;
     } else {
         std::string p(path.string());
         p.resize(FILENAME_MAX);

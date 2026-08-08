@@ -24,13 +24,13 @@ Matrix4 View::getViewMatrix(float width, float height, bool filp_y) const {
 }
 
 Matrix4 View::getInvViewMatrix(float width, float height, bool filp_y) const {
-    Matrix4 invView;
+    Matrix4 inv_view;
     float flip = filp_y ? -1.0f : 1.0f;
-    invView = Matrix4::translate(invView, Vector3(getPosition().x, getPosition().y, 0.0f));
-    invView = Matrix4::scale(invView, Vector3(1.0f / getZoom(), flip / getZoom(), 1.0f));
-    invView = Matrix4::rotate(invView, getRotation().asRadians(), Vector3(0.0f, 0.0f, 1.0f));
-    invView = Matrix4::translate(invView, Vector3(-width / 2, -height / 2, 0.0f));
-    return invView;
+    inv_view = Matrix4::translate(inv_view, Vector3(getPosition().x, getPosition().y, 0.0f));
+    inv_view = Matrix4::scale(inv_view, Vector3(1.0f / getZoom(), flip / getZoom(), 1.0f));
+    inv_view = Matrix4::rotate(inv_view, getRotation().asRadians(), Vector3(0.0f, 0.0f, 1.0f));
+    inv_view = Matrix4::translate(inv_view, Vector3(-width / 2, -height / 2, 0.0f));
+    return inv_view;
 }
 
 Matrix4 View::getProjectionMatrix(float width, float height) const {

@@ -29,9 +29,9 @@ void check_opengl_errors() {
 }
 
 namespace common {
-    Shader* defaultShader = nullptr;
-    Shader* subpixelShader = nullptr;
-    UniformBuffer* uniformBuffer = nullptr;
+    Shader* default_shader = nullptr;
+    Shader* subpixel_shader = nullptr;
+    UniformBuffer* uniform_buffer = nullptr;
 }
 
 }

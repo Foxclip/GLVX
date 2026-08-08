@@ -33,16 +33,16 @@ Color Image::getPixel(const Vector2i& pos) const {
 }
 
 void Image::flipY() {
-    size_t rowSize = m_width * 4;
+    size_t row_size = m_width * 4;
     for (int y = 0; y < m_height / 2; ++y) {
-        int flipY = m_height - 1 - y;
+        int flip_y = m_height - 1 - y;
         for (int x = 0; x < m_width; ++x) {
-            size_t idxTop = y * rowSize + x * 4;
-            size_t idxBottom = flipY * rowSize + x * 4;
+            size_t idx_top = y * row_size + x * 4;
+            size_t idx_bottom = flip_y * row_size + x * 4;
             std::swap_ranges(
-                m_data.begin() + idxTop,
-                m_data.begin() + idxTop + 4,
-                m_data.begin() + idxBottom
+                m_data.begin() + idx_top,
+                m_data.begin() + idx_top + 4,
+                m_data.begin() + idx_bottom
             );
         }
     }
