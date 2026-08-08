@@ -31,6 +31,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE)
 target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/abstract_texture.cpp
     ${SRC_DIR}/angle.cpp
+    ${SRC_DIR}/blend_mode.cpp
     ${SRC_DIR}/circle.cpp
     ${SRC_DIR}/color.cpp
     ${SRC_DIR}/cursor.cpp

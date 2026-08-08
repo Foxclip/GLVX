@@ -1,5 +1,6 @@
 #pragma once
 
+#include "glvx/blend_mode.h"
 #include "glvx/transform.h"
 
 namespace glvx {
@@ -15,6 +16,7 @@ public:
     AbstractTexture* texture;
     Shader* shader;
     bool texture_is_premultiplied;
+    BlendMode blend_mode;
 };
 
 } // namespace glvx
