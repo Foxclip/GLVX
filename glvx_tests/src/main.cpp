@@ -50,7 +50,6 @@ int main() {
         return 1;
     }
 
-    // TODO: rename all variables to snake_case
     // TODO: RenderStates: add BlendMode
     // TODO: FloatRect: add intersects()
     // TODO: Drawable: add texture rect

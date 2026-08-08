@@ -2,11 +2,11 @@
 
 Window window;
 
-bool checkPixelColor(test::Test& test, const Image& image, int startX, int startY, int endX, int endY, const Color& expectedColor) {
-    for (int x = startX; x < endX; ++x) {
-        for (int y = startY; y < endY; ++y) {
+bool checkPixelColor(test::Test& test, const Image& image, int start_x, int start_y, int end_x, int end_y, const Color& expected_color) {
+    for (int x = start_x; x < end_x; ++x) {
+        for (int y = start_y; y < end_y; ++y) {
             T_CONTAINER(std::format("x: {}, y: {}", x, y));
-            if (!T_COMPARE(image.getPixel(x, y), expectedColor, &Color::toString)) {
+            if (!T_COMPARE(image.getPixel(x, y), expected_color, &Color::toString)) {
                 return false;
             }
         }
@@ -14,8 +14,8 @@ bool checkPixelColor(test::Test& test, const Image& image, int startX, int start
     return true;
 }
 
-bool checkPixelColor(test::Test& test, const Image& image, const Vector2i& start, const Vector2i& end, const Color& expectedColor) {
-    return checkPixelColor(test, image, start.x, start.y, end.x, end.y, expectedColor);
+bool checkPixelColor(test::Test& test, const Image& image, const Vector2i& start, const Vector2i& end, const Color& expected_color) {
+    return checkPixelColor(test, image, start.x, start.y, end.x, end.y, expected_color);
 }
 
 bool compareImages(test::Test& test, const Image& image1, const Image& image2) {

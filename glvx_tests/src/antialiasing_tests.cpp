@@ -3,7 +3,7 @@
 #include "glvx/view.h"
 #include "glvx/render_texture.h"
 
-Window aaWindow;
+Window aa_window;
 
 AntialiasingTestsModule::AntialiasingTestsModule(
     const std::string& name,
@@ -17,28 +17,28 @@ AntialiasingTestsModule::AntialiasingTestsModule(
 }
 
 void AntialiasingTestsModule::beforeRunModule() {
-    aaWindow.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "aa window", AA_WINDOW_SAMPLES);
+    aa_window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "aa window", AA_WINDOW_SAMPLES);
 }
 
 void AntialiasingTestsModule::afterRunModule() {
-    aaWindow.close();
+    aa_window.close();
 }
 
 void AntialiasingTestsModule::windowAASolidRectTest(test::Test& test) {
-    aaWindow.setSize(WINDOW_SIZE);
-    aaWindow.setTitle("window aa solid rect");
+    aa_window.setSize(WINDOW_SIZE);
+    aa_window.setTitle("window aa solid rect");
     View view;
-    view.setPosition(aaWindow.getCenter());
-    aaWindow.setView(view);
-    aaWindow.clear(Color::Black);
+    view.setPosition(aa_window.getCenter());
+    aa_window.setView(view);
+    aa_window.clear(Color::Black);
 
     const Vector2f rect_size(10.0f, 10.0f);
     Rectangle rect(rect_size);
     rect.setColor(Color::Red);
-    aaWindow.draw(rect);
-    aaWindow.display();
+    aa_window.draw(rect);
+    aa_window.display();
 
-    Image image = aaWindow.readPixels();
+    Image image = aa_window.readPixels();
     const Vector2i rect_size_int(static_cast<Vector2i>(rect_size));
     T_WRAP_CONTAINER(checkPixelColor(
         test, image, Vector2i(0, 0), rect_size_int, Color::Red
@@ -55,22 +55,22 @@ void AntialiasingTestsModule::windowAASolidRectTest(test::Test& test) {
 }
 
 void AntialiasingTestsModule::windowAASubpixelRectTest(test::Test& test) {
-    aaWindow.setSize(WINDOW_SIZE);
-    aaWindow.setTitle("window aa subpixel rect");
+    aa_window.setSize(WINDOW_SIZE);
+    aa_window.setTitle("window aa subpixel rect");
     View view;
-    view.setPosition(aaWindow.getCenter());
-    aaWindow.setView(view);
-    aaWindow.clear(Color::Black);
+    view.setPosition(aa_window.getCenter());
+    aa_window.setView(view);
+    aa_window.clear(Color::Black);
 
     const Vector2f rect_size(10.0f, 10.0f);
     const Vector2i rect_size_int(static_cast<Vector2i>(rect_size));
     Rectangle rect(rect_size);
     rect.setPosition(0.5f, 0.5f); // move rect so that its border is in the middle of a pixel
     rect.setColor(Color::Red);
-    aaWindow.draw(rect);
-    aaWindow.display();
+    aa_window.draw(rect);
+    aa_window.display();
 
-    Image image = aaWindow.readPixels();
+    Image image = aa_window.readPixels();
     // top left border
     int red_top_left = image.getPixel(0, 0).r;
     T_CHECK(

@@ -191,55 +191,55 @@ void TextureTestsModule::textureInterpolationTest(test::Test& test) {
         0, 0, 0, 255,
         255, 255, 255, 255
     };
-    Texture texNearest(nearest_data, 2, 1, 4, InterpolationType::Nearest);
-    T_COMPARE(texNearest.getInterpolation(), InterpolationType::Nearest, interpToString);
-    texNearest.resize(4, 1);
-    Image imgNearest = texNearest.readPixels();
-    T_COMPARE(imgNearest.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(imgNearest.getPixel(1, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(imgNearest.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
-    T_COMPARE(imgNearest.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+    Texture tex_nearest(nearest_data, 2, 1, 4, InterpolationType::Nearest);
+    T_COMPARE(tex_nearest.getInterpolation(), InterpolationType::Nearest, interpToString);
+    tex_nearest.resize(4, 1);
+    Image img_nearest = tex_nearest.readPixels();
+    T_COMPARE(img_nearest.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(img_nearest.getPixel(1, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(img_nearest.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(img_nearest.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
 
     // Test Linear interpolation: same resize should produce blended pixels
-    Texture texLinear(nearest_data, 2, 1, 4, InterpolationType::Linear);
-    T_COMPARE(texLinear.getInterpolation(), InterpolationType::Linear, interpToString);
-    texLinear.resize(4, 1);
-    Image imgLinear = texLinear.readPixels();
-    T_COMPARE(imgLinear.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(imgLinear.getPixel(1, 0), Color(64, 64, 64, 255), &Color::toString);
-    T_COMPARE(imgLinear.getPixel(2, 0), Color(191, 191, 191, 255), &Color::toString);
-    T_COMPARE(imgLinear.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+    Texture tex_linear(nearest_data, 2, 1, 4, InterpolationType::Linear);
+    T_COMPARE(tex_linear.getInterpolation(), InterpolationType::Linear, interpToString);
+    tex_linear.resize(4, 1);
+    Image img_linear = tex_linear.readPixels();
+    T_COMPARE(img_linear.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(img_linear.getPixel(1, 0), Color(64, 64, 64, 255), &Color::toString);
+    T_COMPARE(img_linear.getPixel(2, 0), Color(191, 191, 191, 255), &Color::toString);
+    T_COMPARE(img_linear.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
 
     // Test runtime setInterpolation
     unsigned char switch_data[8] = {
         0, 0, 0, 255,
         255, 255, 255, 255
     };
-    Texture texSwitch(switch_data, 2, 1, 4, InterpolationType::Nearest);
-    T_COMPARE(texSwitch.getInterpolation(), InterpolationType::Nearest, interpToString);
-    texSwitch.setInterpolation(InterpolationType::Linear);
-    T_COMPARE(texSwitch.getInterpolation(), InterpolationType::Linear, interpToString);
-    texSwitch.resize(4, 1);
-    Image imgSwitch = texSwitch.readPixels();
-    T_COMPARE(imgSwitch.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(imgSwitch.getPixel(1, 0), Color(64, 64, 64, 255), &Color::toString);
-    T_COMPARE(imgSwitch.getPixel(2, 0), Color(191, 191, 191, 255), &Color::toString);
-    T_COMPARE(imgSwitch.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+    Texture tex_switch(switch_data, 2, 1, 4, InterpolationType::Nearest);
+    T_COMPARE(tex_switch.getInterpolation(), InterpolationType::Nearest, interpToString);
+    tex_switch.setInterpolation(InterpolationType::Linear);
+    T_COMPARE(tex_switch.getInterpolation(), InterpolationType::Linear, interpToString);
+    tex_switch.resize(4, 1);
+    Image img_switch = tex_switch.readPixels();
+    T_COMPARE(img_switch.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(img_switch.getPixel(1, 0), Color(64, 64, 64, 255), &Color::toString);
+    T_COMPARE(img_switch.getPixel(2, 0), Color(191, 191, 191, 255), &Color::toString);
+    T_COMPARE(img_switch.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
 
     // Switch back to Nearest and verify
     unsigned char switch_back_data[8] = {
         0, 0, 0, 255,
         255, 255, 255, 255
     };
-    Texture texSwitchBack(switch_back_data, 2, 1, 4, InterpolationType::Linear);
-    texSwitchBack.setInterpolation(InterpolationType::Nearest);
-    T_COMPARE(texSwitchBack.getInterpolation(), InterpolationType::Nearest, interpToString);
-    texSwitchBack.resize(4, 1);
-    Image imgSwitchBack = texSwitchBack.readPixels();
-    T_COMPARE(imgSwitchBack.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(imgSwitchBack.getPixel(1, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(imgSwitchBack.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
-    T_COMPARE(imgSwitchBack.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+    Texture tex_switch_back(switch_back_data, 2, 1, 4, InterpolationType::Linear);
+    tex_switch_back.setInterpolation(InterpolationType::Nearest);
+    T_COMPARE(tex_switch_back.getInterpolation(), InterpolationType::Nearest, interpToString);
+    tex_switch_back.resize(4, 1);
+    Image img_switch_back = tex_switch_back.readPixels();
+    T_COMPARE(img_switch_back.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(img_switch_back.getPixel(1, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(img_switch_back.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(img_switch_back.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
 }
 
 void TextureTestsModule::textureRenderingInterpolationTest(test::Test& test) {
@@ -319,11 +319,11 @@ void TextureTestsModule::textureWrappingTest(test::Test& test) {
     window.clear(Color::Black);
     window.draw(va);
     window.display();
-    Image imageClampToEdge = window.readPixels();
-    T_COMPARE(imageClampToEdge.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(imageClampToEdge.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
-    T_COMPARE(imageClampToEdge.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
-    T_COMPARE(imageClampToEdge.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+    Image image_clamp_to_edge = window.readPixels();
+    T_COMPARE(image_clamp_to_edge.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_clamp_to_edge.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(image_clamp_to_edge.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(image_clamp_to_edge.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
 
     // Repeat: UV beyond [0,1] repeats the pattern
     texture.setWrapping(WrappingType::Repeat);
@@ -331,11 +331,11 @@ void TextureTestsModule::textureWrappingTest(test::Test& test) {
     window.clear(Color::Black);
     window.draw(va);
     window.display();
-    Image imageRepeat = window.readPixels();
-    T_COMPARE(imageRepeat.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(imageRepeat.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
-    T_COMPARE(imageRepeat.getPixel(2, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(imageRepeat.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
+    Image image_repeat = window.readPixels();
+    T_COMPARE(image_repeat.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_repeat.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(image_repeat.getPixel(2, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_repeat.getPixel(3, 0), Color(255, 255, 255, 255), &Color::toString);
 
     // MirroredRepeat: UV beyond [0,1] mirrors the pattern
     texture.setWrapping(WrappingType::MirroredRepeat);
@@ -343,11 +343,11 @@ void TextureTestsModule::textureWrappingTest(test::Test& test) {
     window.clear(Color::Black);
     window.draw(va);
     window.display();
-    Image imageMirroredRepeat = window.readPixels();
-    T_COMPARE(imageMirroredRepeat.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(imageMirroredRepeat.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
-    T_COMPARE(imageMirroredRepeat.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
-    T_COMPARE(imageMirroredRepeat.getPixel(3, 0), Color(0, 0, 0, 255), &Color::toString);
+    Image image_mirrored_repeat = window.readPixels();
+    T_COMPARE(image_mirrored_repeat.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_mirrored_repeat.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(image_mirrored_repeat.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(image_mirrored_repeat.getPixel(3, 0), Color(0, 0, 0, 255), &Color::toString);
 
     // ClampToBorder: UV beyond [0,1] uses border color (black)
     texture.setWrapping(WrappingType::ClampToBorder);
@@ -355,9 +355,9 @@ void TextureTestsModule::textureWrappingTest(test::Test& test) {
     window.clear(Color::Black);
     window.draw(va);
     window.display();
-    Image imageClampToBorder = window.readPixels();
-    T_COMPARE(imageClampToBorder.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(imageClampToBorder.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
-    T_COMPARE(imageClampToBorder.getPixel(2, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(imageClampToBorder.getPixel(3, 0), Color(0, 0, 0, 255), &Color::toString);
+    Image image_clamp_to_border = window.readPixels();
+    T_COMPARE(image_clamp_to_border.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_clamp_to_border.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
+    T_COMPARE(image_clamp_to_border.getPixel(2, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image_clamp_to_border.getPixel(3, 0), Color(0, 0, 0, 255), &Color::toString);
 }

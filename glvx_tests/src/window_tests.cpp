@@ -27,7 +27,7 @@ void WindowTestsModule::windowResizeTest(test::Test& test) {
     rect.setColor(Color::Red);
     window.draw(rect);
     window.display();
-    Image initialImage = window.readPixels();
+    Image initial_image = window.readPixels();
 
     // Resize window
     window.setSize(RESIZED_WINDOW_SIZE);
@@ -37,7 +37,7 @@ void WindowTestsModule::windowResizeTest(test::Test& test) {
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
-    Image resizedImage = window.readPixels();
+    Image resized_image = window.readPixels();
 
     // Resize back to original size
     window.setSize(WINDOW_SIZE);
@@ -47,10 +47,10 @@ void WindowTestsModule::windowResizeTest(test::Test& test) {
     window.clear(Color::Black);
     window.draw(rect);
     window.display();
-    Image finalImage = window.readPixels();
+    Image final_image = window.readPixels();
 
     // Compare initial and final images pixel by pixel
-    T_WRAP_CONTAINER(compareImages(test, finalImage, initialImage));
+    T_WRAP_CONTAINER(compareImages(test, final_image, initial_image));
 }
 
 void WindowTestsModule::windowRecreateTest(test::Test& test) {

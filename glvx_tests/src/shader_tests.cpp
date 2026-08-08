@@ -64,13 +64,13 @@ void ShaderTestsModule::shaderCombinedTest(test::Test& test) {
         {"blue", blue_part_source}
     };
 
-    Shader combinedShader(vertex_shader, fragment_template, parts);
+    Shader combined_shader(vertex_shader, fragment_template, parts);
 
     const Vector2f rect_size = Vector2f(10.0f, 10.0f);
     const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
     Rectangle rect(rect_size);
     rect.setColor(Color::Red);
-    rect.setShader(&combinedShader);
+    rect.setShader(&combined_shader);
 
     window.clear(Color::Black);
     window.draw(rect);
@@ -105,13 +105,13 @@ void ShaderTestsModule::shaderCombinedTwoPartsTest(test::Test& test) {
         {"blue", blue_part_source}
     };
 
-    Shader combinedShader(vertex_shader, fragment_template, parts);
+    Shader combined_shader(vertex_shader, fragment_template, parts);
 
     const Vector2f rect_size = Vector2f(10.0f, 10.0f);
     const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
     Rectangle rect(rect_size);
     rect.setColor(Color::Red);
-    rect.setShader(&combinedShader);
+    rect.setShader(&combined_shader);
 
     window.clear(Color::Black);
     window.draw(rect);

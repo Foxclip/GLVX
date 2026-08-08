@@ -291,16 +291,16 @@ void CoordinateTransformTestsModule::coordinateRoundTripTest(test::Test& test) {
     window.setView(view);
 
     // Test round-trip: screenToWorld(worldToScreen(x)) should return x
-    const Vector2f originalWorld(25.0f, 75.0f);
-    Vector2i screen = window.worldToScreen(originalWorld);
-    Vector2f roundTripped = window.screenToWorld(screen);
-    T_VEC2_APPROX_COMPARE(roundTripped, Vector2f(25.5f, 75.5f));
+    const Vector2f original_world(25.0f, 75.0f);
+    Vector2i screen = window.worldToScreen(original_world);
+    Vector2f round_tripped = window.screenToWorld(screen);
+    T_VEC2_APPROX_COMPARE(round_tripped, Vector2f(25.5f, 75.5f));
 
     // Test round-trip: worldToScreen(screenToWorld(x)) should return x
-    const Vector2i originalScreen(30, 70);
-    Vector2f toWorld = window.screenToWorld(originalScreen);
-    Vector2i backToScreen = window.worldToScreen(toWorld);
-    T_VEC2_COMPARE(backToScreen, originalScreen);
+    const Vector2i original_screen(30, 70);
+    Vector2f to_world = window.screenToWorld(original_screen);
+    Vector2i back_to_screen = window.worldToScreen(to_world);
+    T_VEC2_COMPARE(back_to_screen, original_screen);
 
     // Test with different view position
     view.setPosition(Vector2f(25.0f, 25.0f));
@@ -308,6 +308,6 @@ void CoordinateTransformTestsModule::coordinateRoundTripTest(test::Test& test) {
 
     const Vector2f world2(50.0f, 50.0f);
     screen = window.worldToScreen(world2);
-    roundTripped = window.screenToWorld(screen);
-    T_VEC2_APPROX_COMPARE(roundTripped, Vector2f(50.5f, 50.5f));
+    round_tripped = window.screenToWorld(screen);
+    T_VEC2_APPROX_COMPARE(round_tripped, Vector2f(50.5f, 50.5f));
 }
