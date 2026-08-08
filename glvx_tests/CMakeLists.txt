@@ -17,6 +17,7 @@ target_sources(glvx_tests PRIVATE
     ${SRC_DIR}/vertex_buffer_tests.cpp
     ${SRC_DIR}/vertex_array_tests.cpp
     ${SRC_DIR}/render_states_tests.cpp
+    ${SRC_DIR}/blend_mode_tests.cpp
     ${SRC_DIR}/coordinate_transform_tests.cpp
     ${SRC_DIR}/text_tests.cpp
     ${SRC_DIR}/render_texture_tests.cpp
