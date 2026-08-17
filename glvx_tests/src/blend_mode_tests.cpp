@@ -30,16 +30,30 @@ void BlendModeTestsModule::blendModeDefaultTest(test::Test& test) {
 
     const Vector2f rect_size = Vector2f(10.0f, 10.0f);
     const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
+    const Color rect_color = Color(64, 64, 64, 64);
     Rectangle rect(rect_size);
-    rect.setColor(BLEND_SRC_COLOR);
+    rect.setColor(rect_color);
 
     RenderStates states;
-    window.clear(BLEND_BG_COLOR);
+    const Color bg_color = Color(32, 32, 32, 32);
+    window.clear(bg_color);
     window.draw(rect, states);
     window.display();
 
     Image image = window.readPixels();
-    T_WRAP_CONTAINER(checkPixelColor(test, image, Vector2i(), rect_size_int, Color(150, 125, 114, 255)));
+    float colorSrc = 32.0f / 255.0f;
+    float srcAlpha = 32.0f / 255.0f;
+    float colorDst = 64.0f / 255.0f;
+    float colorSrcFactor = 1.0f;
+    float colorDstFactor = 1.0f - srcAlpha;
+    float expected = colorSrc * colorSrcFactor + colorDst * colorDstFactor;
+    int expected_int = static_cast<int>(expected * 255.0f);
+    Color blended_rect_color = Color(expected_int, expected_int, expected_int, expected_int);
+    Vector2i rect_bottom_right = rect_size_int - Vector2i(1, 1);
+    Vector2i rect_bottom_right_outside = rect_size_int;
+    T_COMPARE(image.getPixel(0, 0), blended_rect_color, &Color::toString);
+    T_COMPARE(image.getPixel(rect_bottom_right), blended_rect_color, &Color::toString);
+    T_COMPARE(image.getPixel(rect_bottom_right_outside), bg_color, &Color::toString);
 }
 
 void BlendModeTestsModule::blendModeAlphaTest(test::Test& test) {
