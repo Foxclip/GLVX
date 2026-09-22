@@ -126,7 +126,17 @@ void BlendModeTestsModule::blendModeMultiplyTest(test::Test& test) {
     window.display();
 
     Image image = window.readPixels();
-    T_WRAP_CONTAINER(checkPixelColor(test, image, Vector2i(), rect_size_int, Color(89, 104, 89, 255)));
+    float aSrc = BLEND_SRC_COLOR.a / 255.0f;
+    float aDst = BLEND_BG_COLOR.a / 255.0f;
+    int stored_r = static_cast<int>(BLEND_BG_COLOR.r * BLEND_SRC_COLOR.r * aSrc * aDst / 255.0f);
+    int stored_g = static_cast<int>(BLEND_BG_COLOR.g * BLEND_SRC_COLOR.g * aSrc * aDst / 255.0f);
+    int stored_b = static_cast<int>(BLEND_BG_COLOR.b * BLEND_SRC_COLOR.b * aSrc * aDst / 255.0f);
+    int stored_a = static_cast<int>(aSrc * aDst * 255.0f);
+    int expected_r = static_cast<int>(std::round(stored_r * 255.0f / stored_a));
+    int expected_g = static_cast<int>(std::round(stored_g * 255.0f / stored_a));
+    int expected_b = static_cast<int>(std::round(stored_b * 255.0f / stored_a));
+    Color blended_rect_color = Color(expected_r, expected_g, expected_b, stored_a);
+    T_WRAP_CONTAINER(checkPixelColor(test, image, Vector2i(), rect_size_int, blended_rect_color));
 }
 
 void BlendModeTestsModule::blendModeNoneTest(test::Test& test) {

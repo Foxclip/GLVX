@@ -57,10 +57,10 @@ inline const BlendMode BlendAdd{
 };
 inline const BlendMode BlendMultiply{
     BlendMode::Factor::DstColor,
-    BlendMode::Factor::OneMinusSrcAlpha,
+    BlendMode::Factor::Zero,
     BlendMode::Equation::Add,
-    BlendMode::Factor::One,
-    BlendMode::Factor::OneMinusSrcAlpha,
+    BlendMode::Factor::DstColor,
+    BlendMode::Factor::Zero,
     BlendMode::Equation::Add
 };
 inline const BlendMode BlendNone{
