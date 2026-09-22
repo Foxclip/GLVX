@@ -3,8 +3,14 @@
 #include "glvx/vector.h"
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 
 namespace glvx {
+
+static unsigned char unpremultiply_channel(unsigned char channel, unsigned char alpha) {
+    float value = std::round(static_cast<float>(channel) * 255.0f / alpha);
+    return static_cast<unsigned char>(std::min(value, 255.0f));
+}
 
 Image::Image(int width, int height, std::vector<unsigned char> data)
     : m_width(width), m_height(height), m_data(std::move(data)) {}
@@ -44,6 +50,25 @@ void Image::flipY() {
                 m_data.begin() + idx_top + 4,
                 m_data.begin() + idx_bottom
             );
+        }
+    }
+}
+
+void Image::unpremultiply() {
+    size_t row_size = m_width * 4;
+    for (int y = 0; y < m_height; ++y) {
+        for (int x = 0; x < m_width; ++x) {
+            size_t idx = y * row_size + x * 4;
+            unsigned char a = m_data[idx + 3];
+            if (a == 0) {
+                m_data[idx] = 0;
+                m_data[idx + 1] = 0;
+                m_data[idx + 2] = 0;
+            } else if (a < 255) {
+                m_data[idx] = unpremultiply_channel(m_data[idx], a);
+                m_data[idx + 1] = unpremultiply_channel(m_data[idx + 1], a);
+                m_data[idx + 2] = unpremultiply_channel(m_data[idx + 2], a);
+            }
         }
     }
 }

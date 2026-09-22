@@ -33,12 +33,17 @@ struct BlendMode {
 bool operator==(const BlendMode& a, const BlendMode& b);
 bool operator!=(const BlendMode& a, const BlendMode& b);
 
+// Blend factors operate in premultiplied-alpha color space: drawables are
+// rendered with their color premultiplied by alpha, so "Over" compositing
+// uses (One, OneMinusSrcAlpha).
 inline const BlendMode BlendDefault;
+// Standard "Over" alpha compositing. Identical to BlendDefault; provided as a
+// self-documenting alias.
 inline const BlendMode BlendAlpha{
-    BlendMode::Factor::SrcAlpha,
+    BlendMode::Factor::One,
     BlendMode::Factor::OneMinusSrcAlpha,
     BlendMode::Equation::Add,
-    BlendMode::Factor::SrcAlpha,
+    BlendMode::Factor::One,
     BlendMode::Factor::OneMinusSrcAlpha,
     BlendMode::Equation::Add
 };

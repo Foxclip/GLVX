@@ -3,6 +3,7 @@
 #include "glvx/blend_mode.h"
 #include "glvx/rectangle.h"
 #include "glvx/render_states.h"
+#include <cmath>
 
 inline const Color BLEND_SRC_COLOR(200, 100, 100, 128);
 inline const Color BLEND_BG_COLOR(100, 150, 128);
@@ -41,14 +42,19 @@ void BlendModeTestsModule::blendModeDefaultTest(test::Test& test) {
     window.display();
 
     Image image = window.readPixels();
-    float colorSrc = 32.0f / 255.0f;
-    float srcAlpha = 32.0f / 255.0f;
-    float colorDst = 64.0f / 255.0f;
-    float colorSrcFactor = 1.0f;
-    float colorDstFactor = 1.0f - srcAlpha;
-    float expected = colorSrc * colorSrcFactor + colorDst * colorDstFactor;
-    int expected_int = static_cast<int>(expected * 255.0f);
-    Color blended_rect_color = Color(expected_int, expected_int, expected_int, expected_int);
+    // The pipeline stores premultiplied color and composites with "Over"
+    // ((One, OneMinusSrcAlpha)); readPixels converts back to straight alpha.
+    // The expected result is therefore the straight "Over" composite of the
+    // rectangle color over the clear color.
+    float aSrc = rect_color.a / 255.0f;
+    float aDst = bg_color.a / 255.0f;
+    float cSrc = 64.0f;
+    float cDst = 32.0f;
+    float aOut = aSrc + aDst * (1.0f - aSrc);
+    float cOut = (cSrc * aSrc + cDst * aDst * (1.0f - aSrc)) / aOut;
+    int expected_color = static_cast<int>(std::round(cOut));
+    int expected_alpha = static_cast<int>(std::round(aOut * 255.0f));
+    Color blended_rect_color = Color(expected_color, expected_color, expected_color, expected_alpha);
     Vector2i rect_bottom_right = rect_size_int - Vector2i(1, 1);
     Vector2i rect_bottom_right_outside = rect_size_int;
     T_COMPARE(image.getPixel(0, 0), blended_rect_color, &Color::toString);
@@ -75,7 +81,8 @@ void BlendModeTestsModule::blendModeAlphaTest(test::Test& test) {
     window.display();
 
     Image image = window.readPixels();
-    T_WRAP_CONTAINER(checkPixelColor(test, image, Vector2i(), rect_size_int, Color(100, 100, 89, 191)));
+    // "Over" composite of (200, 100, 100, 128) on (100, 150, 128, 255)
+    T_WRAP_CONTAINER(checkPixelColor(test, image, Vector2i(), rect_size_int, Color(150, 125, 114, 255)));
 }
 
 void BlendModeTestsModule::blendModeAddTest(test::Test& test) {
@@ -141,7 +148,9 @@ void BlendModeTestsModule::blendModeNoneTest(test::Test& test) {
     window.display();
 
     Image image = window.readPixels();
-    T_WRAP_CONTAINER(checkPixelColor(test, image, Vector2i(), rect_size_int, Color(100, 50, 50, 128)));
+    // No blending: the stored (premultiplied) source color (100, 50, 50, 128)
+    // is read back unpremultiplied.
+    T_WRAP_CONTAINER(checkPixelColor(test, image, Vector2i(), rect_size_int, Color(199, 100, 100, 128)));
 }
 
 void BlendModeTestsModule::blendModeOperatorEqualTest(test::Test& test) {
@@ -156,7 +165,8 @@ void BlendModeTestsModule::blendModeOperatorEqualTest(test::Test& test) {
     T_CHECK(bm1 != bm3);
 
     T_CHECK(BlendDefault == BlendMode());
-    T_CHECK(!(BlendAlpha == BlendDefault));
+    // BlendAlpha is the premultiplied "Over" composite, identical to BlendDefault
+    T_CHECK(BlendAlpha == BlendDefault);
 }
 
 void BlendModeTestsModule::blendModeCustomTest(test::Test& test) {

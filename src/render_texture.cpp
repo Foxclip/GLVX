@@ -118,6 +118,14 @@ void RenderTexture::resize(int new_width, int new_height, bool blit_old_contents
     }
 }
 
+Image RenderTexture::readPixels() const {
+    // Render texture contents are stored premultiplied (like any render
+    // target); convert back to straight alpha for the caller.
+    Image image = AbstractTexture::readPixels();
+    image.unpremultiply();
+    return image;
+}
+
 bool RenderTexture::isRenderTexture() const {
     return true;
 }

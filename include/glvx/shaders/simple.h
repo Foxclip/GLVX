@@ -53,6 +53,9 @@ void main() {
         FragColor = VertexColor * colorNormalized;
     }
     if (object.premultiplyOutput) {
+        // Render targets store premultiplied color, so the output is
+        // premultiplied by alpha to match. Custom shaders that output
+        // straight alpha should premultiply their output the same way.
         FragColor = vec4(FragColor.rgb * FragColor.a, FragColor.a);
     }
 }

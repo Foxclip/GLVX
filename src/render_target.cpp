@@ -38,7 +38,15 @@ void RenderTarget::setView(const View& view) {
 
 void RenderTarget::clear(const Color& color) const {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, getRenderTargetFbo()));
-    GL_CALL(glClearColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f));
+    // Render targets store premultiplied color, so scale the (straight) clear
+    // color by its alpha before clearing to match what the pipeline writes.
+    float alpha = static_cast<float>(color.a) / 255.0f;
+    GL_CALL(glClearColor(
+        color.r * alpha / 255.0f,
+        color.g * alpha / 255.0f,
+        color.b * alpha / 255.0f,
+        alpha
+    ));
     GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
 }
 

@@ -16,6 +16,9 @@ public:
     Color getPixel(int x, int y) const;
     Color getPixel(const Vector2i& pos) const;
     void flipY();
+    // Converts a premultiplied-alpha image (as stored in render targets) back
+    // to straight alpha, in place.
+    void unpremultiply();
 
 private:
     int m_width;

@@ -141,6 +141,9 @@ Image Window::readPixels() const {
 
     Image image(m_current_width, m_current_height, std::move(pixels));
     image.flipY();
+    // The framebuffer stores premultiplied color; convert back to straight
+    // alpha so readback matches the colors that were set/cleared.
+    image.unpremultiply();
     return image;
 }
 
