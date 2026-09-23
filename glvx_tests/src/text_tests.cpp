@@ -39,8 +39,8 @@ void TextTestsModule::dimensionsTest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    Font font("fonts/LiberationSans-Regular.ttf", 15);
-    Text text(&font, "A");
+    Font font("fonts/LiberationSans-Regular.ttf");
+    Text text(&font, "A", 15);
     T_COMPARE(text.getWidth(), 10.0f);
     T_COMPARE(text.getHeight(), 11.0f);
 
@@ -77,8 +77,8 @@ void TextTestsModule::renderCharacterATest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    Font font("fonts/LiberationSans-Regular.ttf", 15);
-    Text text(&font, "A");
+    Font font("fonts/LiberationSans-Regular.ttf");
+    Text text(&font, "A", 15);
     window.draw(text);
     window.display();
 
@@ -117,8 +117,8 @@ void TextTestsModule::renderCharacterDotTest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    Font font("fonts/LiberationSans-Regular.ttf", 15);
-    Text text(&font, ".");
+    Font font("fonts/LiberationSans-Regular.ttf");
+    Text text(&font, ".", 15);
     window.draw(text);
     window.display();
 
@@ -157,8 +157,8 @@ void TextTestsModule::renderStringAATest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    Font font("fonts/LiberationSans-Regular.ttf", 15);
-    Text text(&font, "AA");
+    Font font("fonts/LiberationSans-Regular.ttf");
+    Text text(&font, "AA", 15);
     window.draw(text);
     window.display();
 
@@ -197,9 +197,9 @@ void TextTestsModule::transparencyTest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    Font font("fonts/LiberationSans-Regular.ttf", 15);
-    Text textA(&font, "A");
-    Text textV(&font, "V");
+    Font font("fonts/LiberationSans-Regular.ttf");
+    Text textA(&font, "A", 15);
+    Text textV(&font, "V", 15);
     window.draw(textA);
     window.draw(textV);
     window.display();
@@ -235,13 +235,13 @@ void TextTestsModule::kerningTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("kerning");
 
-    Font font("fonts/LiberationSans-Regular.ttf", 15);
+    Font font("fonts/LiberationSans-Regular.ttf");
 
-    Text textA(&font, "A");
+    Text textA(&font, "A", 15);
     T_COMPARE(textA.getWidth(), 10.0f);
-    Text textV(&font, "V");
+    Text textV(&font, "V", 15);
     T_COMPARE(textV.getWidth(), 10.0f);
-    Text text(&font, "AV");
+    Text text(&font, "AV", 15);
     T_COMPARE(text.getWidth(), 19.0f);
 
     View view;
@@ -249,7 +249,7 @@ void TextTestsModule::kerningTest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    Text textAV(&font, "AV");
+    Text textAV(&font, "AV", 15);
     window.draw(textAV);
     window.display();
 
@@ -288,8 +288,8 @@ void TextTestsModule::descenderTest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    Font font("fonts/LiberationSans-Regular.ttf", 15);
-    Text text(&font, "Aq");
+    Font font("fonts/LiberationSans-Regular.ttf");
+    Text text(&font, "Aq", 15);
     window.draw(text);
     window.display();
 
@@ -329,8 +329,8 @@ void TextTestsModule::subpixelTest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    Font font("fonts/LiberationSans-Regular.ttf", 15, true);
-    Text text(&font, ".");
+    Font font("fonts/LiberationSans-Regular.ttf", true);
+    Text text(&font, ".", 15);
     window.draw(text);
     window.display();
 
@@ -363,8 +363,8 @@ void TextTestsModule::multilineDimensionsTest(test::Test& test) {
     window.setSize(WINDOW_SIZE);
     window.setTitle("multiline dimensions");
 
-    Font font("fonts/LiberationSans-Regular.ttf", 15);
-    Text text(&font, "A\nB");
+    Font font("fonts/LiberationSans-Regular.ttf");
+    Text text(&font, "A\nB", 15);
     T_COMPARE(text.getWidth(), 10.0f);
     T_COMPARE(text.getHeight(), 28.0f);
 
@@ -385,8 +385,8 @@ void TextTestsModule::multilineTest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    Font font("fonts/LiberationSans-Regular.ttf", 15);
-    Text text(&font, "A\nB");
+    Font font("fonts/LiberationSans-Regular.ttf");
+    Text text(&font, "A\nB", 15);
     window.draw(text);
     window.display();
 

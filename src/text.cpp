@@ -13,7 +13,8 @@
 
 namespace glvx {
 
-Text::Text(Font* font, const std::string& string) : Shape(PrimitiveType::Triangles, 0) {
+Text::Text(Font* font, const std::string& string, unsigned int character_size) : Shape(PrimitiveType::Triangles, 0) {
+    m_character_size = character_size;
     setFont(font);
     setString(string);
 }
@@ -25,13 +26,26 @@ Font* Text::getFont() const {
 void Text::setFont(Font* font) {
     m_font = font;
     if (font) {
-        setTexture(const_cast<Texture*>(&font->getAtlas()));
+        setTexture(const_cast<Texture*>(&font->getAtlas(m_character_size)));
         if (font->isSubpixel()) {
             setShader(common::subpixel_shader);
         }
     } else {
         setTexture(nullptr);
         setShader(nullptr);
+    }
+    setString(m_string);
+}
+
+unsigned int Text::getCharacterSize() const {
+    return m_character_size;
+}
+
+void Text::setCharacterSize(unsigned int character_size) {
+    m_character_size = character_size;
+    if (m_font) {
+        setTexture(const_cast<Texture*>(&m_font->getAtlas(m_character_size)));
+        setString(m_string);
     }
 }
 
@@ -76,7 +90,7 @@ void Text::setString(const std::string& string) {
     std::vector<std::string> lines = breakLines();
 
     m_vertices.clear();
-    float line_height = static_cast<float>(m_font->getLineHeight());
+    float line_height = static_cast<float>(m_font->getLineHeight(m_character_size));
 
     for (size_t line_idx = 0; line_idx < lines.size(); line_idx++) {
         const std::string& line = lines[line_idx];
@@ -84,18 +98,18 @@ void Text::setString(const std::string& string) {
         float current_y = static_cast<float>(line_idx) * line_height;
 
         for (size_t i = 0; i < line.size(); i++) {
-            const Character& ch = m_font->getCharacter(line[i]);
+            const Character& ch = m_font->getCharacter(m_character_size, line[i]);
             if (ch.width <= 0) {
                 current_x += static_cast<float>(ch.advance);
                 if (i + 1 < line.size()) {
-                current_x += static_cast<float>(m_font->getKerning(line[i], line[i + 1]));
+                    current_x += static_cast<float>(m_font->getKerning(m_character_size, line[i], line[i + 1]));
                 }
                 continue;
             }
 
             float char_x = current_x + static_cast<float>(ch.x);
             float part_below_baseline = static_cast<float>(ch.glyph_height - ch.top);
-            float char_y = static_cast<float>(m_font->getCharacterSize() + part_below_baseline) + current_y;
+            float char_y = static_cast<float>(static_cast<int>(m_character_size) + part_below_baseline) + current_y;
             float char_w = static_cast<float>(ch.width);
             float char_h = static_cast<float>(ch.glyph_height);
 
@@ -113,7 +127,7 @@ void Text::setString(const std::string& string) {
 
             current_x += static_cast<float>(ch.advance);
             if (i + 1 < line.size()) {
-                current_x += static_cast<float>(m_font->getKerning(line[i], line[i + 1]));
+                current_x += static_cast<float>(m_font->getKerning(m_character_size, line[i], line[i + 1]));
             }
         }
     }
@@ -197,10 +211,10 @@ float Text::measureWidth(const std::string& text) const {
     float width = 0.0f;
 
     for (size_t i = 0; i < text.size(); i++) {
-        const Character& ch = m_font->getCharacter(text[i]);
+        const Character& ch = m_font->getCharacter(m_character_size, text[i]);
         width += static_cast<float>(ch.advance);
         if (i + 1 < text.size()) {
-            width += static_cast<float>(m_font->getKerning(text[i], text[i + 1]));
+            width += static_cast<float>(m_font->getKerning(m_character_size, text[i], text[i + 1]));
         }
     }
 
@@ -215,7 +229,7 @@ FloatRect Text::calculateVisualBounds() const {
     }
 
     FloatRect result;
-    float line_height = static_cast<float>(m_font->getLineHeight());
+    float line_height = static_cast<float>(m_font->getLineHeight(m_character_size));
     bool first = true;
 
     for (size_t line_idx = 0; line_idx < lines.size(); line_idx++) {
@@ -225,14 +239,13 @@ FloatRect Text::calculateVisualBounds() const {
 
         for (size_t i = 0; i < line.size(); i++) {
             char c = line[i];
-            const Character& ch = m_font->getCharacter(c);
+            const Character& ch = m_font->getCharacter(m_character_size, c);
             float effective_char_width = (ch.width > 0) ? static_cast<float>(ch.width) : static_cast<float>(ch.advance);
 
             FloatRect char_rect;
-            int font_size = m_font->getCharacterSize();
             char_rect.position.x = current_x + static_cast<float>(ch.x);
             float part_below_baseline = static_cast<float>(ch.glyph_height - ch.top);
-            char_rect.position.y = static_cast<float>(font_size - ch.top + part_below_baseline) + line_y_offset;
+            char_rect.position.y = static_cast<float>(static_cast<int>(m_character_size) - ch.top + part_below_baseline) + line_y_offset;
             char_rect.size.x = effective_char_width;
             char_rect.size.y = static_cast<float>(ch.glyph_height);
 
@@ -245,7 +258,7 @@ FloatRect Text::calculateVisualBounds() const {
 
             current_x += static_cast<float>(ch.advance);
             if (i + 1 < line.size()) {
-                current_x += static_cast<float>(m_font->getKerning(line[i], line[i + 1]));
+                current_x += static_cast<float>(m_font->getKerning(m_character_size, line[i], line[i + 1]));
             }
         }
     }

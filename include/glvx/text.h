@@ -11,11 +11,13 @@ namespace glvx {
 class Text : public Shape {
 public:
     Text() = default;
-    Text(Font* font, const std::string& string);
+    Text(Font* font, const std::string& string, unsigned int character_size = FONT_DEFAULT_SIZE);
     Font* getFont() const;
     void setFont(Font* font);
     const std::string& getString() const;
     void setString(const std::string& string);
+    unsigned int getCharacterSize() const;
+    void setCharacterSize(unsigned int character_size);
     float getMaxWidth() const;
     void setMaxWidth(float max_width);
     float getWidth() const;
@@ -32,6 +34,7 @@ protected:
 private:
     Font* m_font = nullptr;
     std::string m_string;
+    unsigned int m_character_size = FONT_DEFAULT_SIZE;
     float m_max_width = 0.0f;
     float m_width = 0.0f;
     float m_height = 0.0f;

@@ -26,33 +26,32 @@ class Font {
 public:
     Font() = default;
     ~Font();
-    Font(const std::filesystem::path& filename, unsigned int character_size = FONT_DEFAULT_SIZE, bool use_subpixel = false);
-    void openFromFile(
-        const std::filesystem::path& filename,
-        unsigned int character_size = FONT_DEFAULT_SIZE,
-        bool use_subpixel = false
-    );
-    int getCharacterSize() const;
-    int getBaselineY() const;
-    int getLineHeight() const;
+    Font(const std::filesystem::path& filename, bool use_subpixel = false);
+    void openFromFile(const std::filesystem::path& filename, bool use_subpixel = false);
     bool isSubpixel() const;
-    Character& getCharacter(unsigned char c);
-    const Texture& getAtlas() const;
-    int getKerning(unsigned char left, unsigned char right) const;
+    Character& getCharacter(unsigned int character_size, unsigned char c);
+    const Texture& getAtlas(unsigned int character_size);
+    int getKerning(unsigned int character_size, unsigned char left, unsigned char right);
+    int getLineHeight(unsigned int character_size);
+    int getBaselineY(unsigned int character_size);
 
 private:
+    struct SizePage {
+        Texture m_atlas;
+        std::map<unsigned char, Character> m_characters;
+        std::map<std::pair<unsigned char, unsigned char>, int> m_kerning;
+        int m_line_height = 0;
+        int m_ascender = 0;
+    };
     friend class TextTestsModule;
     static bool m_is_library_initialized;
     static FT_Library m_library;
-    Texture m_atlas;
     FT_Face m_face = nullptr;
-    std::map<unsigned char, Character> m_characters;
-    std::map<std::pair<unsigned char, unsigned char>, int> m_kerning;
-    unsigned int m_character_size = FONT_DEFAULT_SIZE;
+    std::map<unsigned int, SizePage> m_sizes;
     bool m_use_subpixel = false;
 
-    void loadFont(const std::filesystem::path& filename, unsigned int size, bool use_subpixel);
-
+    SizePage& loadPage(unsigned int character_size);
+    void rasterizePage(unsigned int character_size, SizePage& page);
 };
 
 }
