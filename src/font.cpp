@@ -90,39 +90,44 @@ Font::SizePage& Font::loadPage(unsigned int character_size) {
 }
 
 Font::SizePage& Font::loadMetadata(unsigned int character_size) {
-    SizePage& page = m_sizes.try_emplace(character_size).first->second;
-    if (page.m_metadata_loaded) {
-        return page;
+    auto it = m_sizes.find(character_size);
+    if (it != m_sizes.end()) {
+        return it->second;
     }
 
-    FREETYPE_CALL(FT_Set_Pixel_Sizes(m_face, 0, character_size), []() { return "Failed to set font size"; });
+    SizePage& page = m_sizes.try_emplace(character_size).first->second;
+    try {
+        FREETYPE_CALL(FT_Set_Pixel_Sizes(m_face, 0, character_size), []() { return "Failed to set font size"; });
 
-    // Load kerning data
-    if (FT_HAS_KERNING(m_face)) {
-        FT_Vector kern_vec;
-        for (unsigned char left = 32; left < 126; left++) {
-            for (unsigned char right = 33; right < 127; right++) {
-                FT_UInt left_glyph = FT_Get_Char_Index(m_face, left);
-                FT_UInt right_glyph = FT_Get_Char_Index(m_face, right);
-                if (left_glyph && right_glyph) {
-                    FREETYPE_CALL(
-                        FT_Get_Kerning(m_face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &kern_vec),
-                        [&]() {
-                            return "Failed to get kerning for characters: " + std::to_string(left) + ", " + std::to_string(right);
+        // Load kerning data
+        if (FT_HAS_KERNING(m_face)) {
+            FT_Vector kern_vec;
+            for (unsigned char left = 32; left < 126; left++) {
+                for (unsigned char right = 33; right < 127; right++) {
+                    FT_UInt left_glyph = FT_Get_Char_Index(m_face, left);
+                    FT_UInt right_glyph = FT_Get_Char_Index(m_face, right);
+                    if (left_glyph && right_glyph) {
+                        FREETYPE_CALL(
+                            FT_Get_Kerning(m_face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &kern_vec),
+                            [&]() {
+                                return "Failed to get kerning for characters: " + std::to_string(left) + ", " + std::to_string(right);
+                            }
+                        );
+                        int kerning_value = kern_vec.x / 64;
+                        if (kerning_value != 0) {
+                            page.m_kerning[{left, right}] = kerning_value;
                         }
-                    );
-                    int kerning_value = kern_vec.x / 64;
-                    if (kerning_value != 0) {
-                        page.m_kerning[{left, right}] = kerning_value;
                     }
                 }
             }
         }
-    }
 
-    page.m_line_height = m_face->size->metrics.height / 64;
-    page.m_ascender = m_face->ascender / 64;
-    page.m_metadata_loaded = true;
+        page.m_line_height = m_face->size->metrics.height / 64;
+        page.m_ascender = m_face->ascender / 64;
+    } catch (...) {
+        m_sizes.erase(character_size);
+        throw;
+    }
     return page;
 }
 
