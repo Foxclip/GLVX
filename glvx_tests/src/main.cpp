@@ -54,9 +54,6 @@ int main() {
         return 1;
     }
 
-    // TODO: Text: make use_subpixel part of the Text and not Font
-    // TODO: Font: check if getBaselineY is correct
-    // TODO: Font: load all ascii characters
     // TODO: Text: add findCharacterPos and getCharAt methods
     // TODO: Polygon: add Polygon class
     // TODO: Tests: disable real input events in input tests

@@ -1,6 +1,7 @@
 #include "glvx/font.h"
 #include "glvx/glvx_common.h"
 #include "glvx/utils.h"
+#include <cassert>
 #include <vector>
 #include <cmath>
 #include <glad/glad.h>
@@ -102,8 +103,8 @@ Font::SizePage& Font::loadMetadata(unsigned int character_size) {
         // Load kerning data
         if (FT_HAS_KERNING(m_face)) {
             FT_Vector kern_vec;
-            for (unsigned char left = 32; left < 126; left++) {
-                for (unsigned char right = 33; right < 127; right++) {
+            for (unsigned char left = 0; left < 128; left++) {
+                for (unsigned char right = 0; right < 128; right++) {
                     FT_UInt left_glyph = FT_Get_Char_Index(m_face, left);
                     FT_UInt right_glyph = FT_Get_Char_Index(m_face, right);
                     if (left_glyph && right_glyph) {
@@ -140,15 +141,19 @@ void Font::rasterizePage(SizePage& page) {
         int m_height = 0;
         int m_pitch = 0;
     };
-    std::vector<RasterizedGlyph> bitmaps(95);
+    std::vector<RasterizedGlyph> bitmaps(128);
 
     // Pass 1: rasterize each glyph once, measure it and cache its bitmap
     int total_area = 0;
-    for (unsigned char c = 32; c < 127; c++) {
+    for (unsigned char c = 0; c < 128; c++) {
         FREETYPE_CALL(
             FT_Load_Char(m_face, c, load_flag),
             [&]() {
-                return "Failed to load character: " + std::to_string(c) + " (" + std::string(1, c) + ")";
+                std::string message = "Failed to load character: " + std::to_string(c);
+                if (c >= 32 && c < 127) {
+                    message += " (" + std::string(1, c) + ")";
+                }
+                return message;
             }
         );
         unsigned int width = m_face->glyph->bitmap.width;
@@ -163,7 +168,7 @@ void Font::rasterizePage(SizePage& page) {
 
         if (width > 0 && height > 0 && m_face->glyph->bitmap.buffer) {
             total_area += static_cast<int>(m_use_subpixel ? width / 3 : width) * static_cast<int>(height);
-            RasterizedGlyph& bmp = bitmaps[c - 32];
+            RasterizedGlyph& bmp = bitmaps[c];
             bmp.m_width = static_cast<int>(width);
             bmp.m_height = static_cast<int>(height);
             bmp.m_pitch = m_face->glyph->bitmap.pitch;
@@ -186,6 +191,36 @@ void Font::rasterizePage(SizePage& page) {
     int atlas_width = pow2;
     int atlas_height = pow2;
 
+    auto required_height = [&](int width) {
+        int x = 0;
+        int y = 0;
+        int sim_row_height = 0;
+        int max_bottom = 0;
+        for (unsigned int c = 0; c < bitmaps.size(); c++) {
+            int w = bitmaps[c].m_width;
+            int h = bitmaps[c].m_height;
+            int pixel_width = m_use_subpixel ? (w + 2) / 3 : w;
+            if (x + pixel_width > width) {
+                x = 0;
+                y += sim_row_height + 1;
+                sim_row_height = 0;
+            }
+            if (h > sim_row_height) {
+                sim_row_height = h;
+            }
+            int bottom = y + h;
+            if (bottom > max_bottom) {
+                max_bottom = bottom;
+            }
+            x += pixel_width + 1;
+        }
+        return max_bottom;
+    };
+    while (required_height(atlas_width) > atlas_height) {
+        atlas_width *= 2;
+        atlas_height *= 2;
+    }
+
     std::vector<unsigned char> atlas_data(m_use_subpixel ? atlas_width * atlas_height * 3 : atlas_width * atlas_height, 0);
 
     // Pass 2: place the cached bitmaps into the atlas and compute UVs
@@ -195,17 +230,18 @@ void Font::rasterizePage(SizePage& page) {
     float inv_w = 1.0f / static_cast<float>(atlas_width);
     float inv_h = 1.0f / static_cast<float>(atlas_height);
 
-    for (unsigned char c = 32; c < 127; c++) {
-        const RasterizedGlyph& bmp = bitmaps[c - 32];
+    for (unsigned char c = 0; c < 128; c++) {
+        const RasterizedGlyph& bmp = bitmaps[c];
         int width = bmp.m_width;
         int height = bmp.m_height;
-        int atlas_pixel_width = m_use_subpixel ? width / 3 : width;
+        int atlas_pixel_width = m_use_subpixel ? (width + 2) / 3 : width;
 
         if (current_x + atlas_pixel_width > atlas_width) {
             current_x = 0;
             current_y += row_height + 1;
             row_height = 0;
         }
+        assert(current_y + height <= atlas_height);
 
         if (width > 0 && height > 0) {
             if (m_use_subpixel) {
