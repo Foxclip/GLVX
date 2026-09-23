@@ -20,6 +20,8 @@ TextTestsModule::TextTestsModule(
     auto subpixel_test = addTest("subpixel", { render_string_AA_test }, [&](test::Test& test) { subpixelTest(test); });
     auto multiline_dimensions_test = addTest("multiline dimensions", { dimensions_test }, [&](test::Test& test) { multilineDimensionsTest(test); });
     auto multiline_test = addTest("multiline", { multiline_dimensions_test, render_string_AA_test }, [&](test::Test& test) { multilineTest(test); });
+    auto find_character_pos_test = addTest("find character pos", { dimensions_test }, [&](test::Test& test) { findCharacterPosTest(test); });
+    auto get_char_at_test = addTest("get char at", { find_character_pos_test }, [&](test::Test& test) { getCharAtTest(test); });
 }
 
 void TextTestsModule::fontTest(test::Test& test) {
@@ -432,6 +434,59 @@ void TextTestsModule::multilineTest(test::Test& test) {
                 \n\
 ";
     T_COMPARE_RAW(actual_ascii, expected_ascii);
+}
+
+void TextTestsModule::findCharacterPosTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("find character pos");
+
+    Font font("fonts/LiberationSans-Regular.ttf");
+    Text text(&font, "", 15);
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(0), Vector2f(0.0f, 0.0f));
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(10), Vector2f(0.0f, 0.0f));
+
+    text.setString("AA");
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(0), Vector2f(0.0f, 15.0f));
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(1), Vector2f(10.0f, 15.0f));
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(2), Vector2f(20.0f, 15.0f));
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(100), Vector2f(20.0f, 15.0f));
+
+    text.setString("A\nB");
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(0), Vector2f(0.0f, 15.0f));
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(1), Vector2f(10.0f, 15.0f));
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(2), Vector2f(0.0f, 32.0f));
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(3), Vector2f(10.0f, 32.0f));
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(100), Vector2f(10.0f, 32.0f));
+
+    text.setString("A\n");
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(0), Vector2f(0.0f, 15.0f));
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(1), Vector2f(10.0f, 15.0f));
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(2), Vector2f(0.0f, 32.0f));
+}
+
+void TextTestsModule::getCharAtTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("get char at");
+
+    Font font("fonts/LiberationSans-Regular.ttf");
+    Text text(&font, "", 15);
+    T_COMPARE(text.getCharAt(Vector2f(0.0f, 0.0f)), 0);
+    T_COMPARE(text.getCharAt(Vector2f(100.0f, 100.0f)), 0);
+
+    text.setString("AA");
+    T_COMPARE(text.getCharAt(Vector2f(0.0f, 15.0f)), 0);
+    T_COMPARE(text.getCharAt(Vector2f(4.0f, 15.0f)), 0);
+    T_COMPARE(text.getCharAt(Vector2f(10.0f, 15.0f)), 1);
+    T_COMPARE(text.getCharAt(Vector2f(15.0f, 15.0f)), 1);
+    T_COMPARE(text.getCharAt(Vector2f(20.0f, 15.0f)), 2);
+    T_COMPARE(text.getCharAt(Vector2f(30.0f, 15.0f)), 2);
+
+    text.setString("A\nB");
+    T_COMPARE(text.getCharAt(Vector2f(0.0f, 15.0f)), 0);
+    T_COMPARE(text.getCharAt(Vector2f(10.0f, 15.0f)), 1);
+    T_COMPARE(text.getCharAt(Vector2f(5.0f, 23.5f)), 2);
+    T_COMPARE(text.getCharAt(Vector2f(0.0f, 32.0f)), 2);
+    T_COMPARE(text.getCharAt(Vector2f(10.0f, 32.0f)), 3);
 }
 
 std::string TextTestsModule::imageToAscii(const Image& image, int max_width, int max_height) const {

@@ -141,10 +141,10 @@ void Text::render(const Matrix4& view, const Matrix4& projection, const RenderSt
     renderBase(m_shader, m_texture, m_color, getTransform(), view, projection, states);
 }
 
-std::vector<std::string> Text::breakLines() const {
+std::vector<std::pair<size_t, std::string>> Text::breakLinesWithOffsets() const {
     assert(m_font);
 
-    std::vector<std::string> result;
+    std::vector<std::pair<size_t, std::string>> result;
 
     size_t start = 0;
     while (start < m_string.size()) {
@@ -153,52 +153,63 @@ std::vector<std::string> Text::breakLines() const {
 
         std::string paragraph = m_string.substr(start, paragraph_end - start);
 
-        if (m_max_width <= 0.0f) {
-            result.push_back(paragraph);
+        if (m_max_width <= 0.0f || paragraph.empty()) {
+            result.push_back({start, paragraph});
         } else {
-            if (paragraph.empty()) {
-                result.push_back("");
-            } else {
-                std::vector<std::string> words;
-                size_t word_start = 0;
-                while (word_start < paragraph.size()) {
-                    size_t space_pos = paragraph.find(' ', word_start);
-                    if (space_pos == std::string::npos) {
-                        words.push_back(paragraph.substr(word_start));
-                        break;
-                    } else {
-                        words.push_back(paragraph.substr(word_start, space_pos - word_start));
-                        word_start = space_pos + 1;
-                    }
+            std::vector<std::string> words;
+            std::vector<size_t> word_offsets;
+            size_t word_start = 0;
+            while (word_start < paragraph.size()) {
+                size_t space_pos = paragraph.find(' ', word_start);
+                if (space_pos == std::string::npos) {
+                    words.push_back(paragraph.substr(word_start));
+                    word_offsets.push_back(word_start);
+                    break;
+                } else {
+                    words.push_back(paragraph.substr(word_start, space_pos - word_start));
+                    word_offsets.push_back(word_start);
+                    word_start = space_pos + 1;
+                }
+            }
+
+            std::string current_line;
+            size_t line_offset = 0;
+            for (size_t w = 0; w < words.size(); w++) {
+                std::string candidate;
+                if (current_line.empty()) {
+                    candidate = words[w];
+                } else {
+                    candidate = current_line + " " + words[w];
                 }
 
-                std::string current_line;
-                for (size_t w = 0; w < words.size(); w++) {
-                    std::string candidate;
-                    if (current_line.empty()) {
-                        candidate = words[w];
-                    } else {
-                        candidate = current_line + " " + words[w];
+                if (measureWidth(candidate) <= m_max_width) {
+                    current_line = candidate;
+                } else {
+                    if (!current_line.empty()) {
+                        result.push_back({start + line_offset, current_line});
                     }
-
-                    if (measureWidth(candidate) <= m_max_width) {
-                        current_line = candidate;
-                    } else {
-                        if (!current_line.empty()) {
-                            result.push_back(current_line);
-                        }
-                        current_line = words[w];
-                    }
+                    current_line = words[w];
+                    line_offset = word_offsets[w];
                 }
-                if (!current_line.empty()) {
-                    result.push_back(current_line);
-                }
+            }
+            if (!current_line.empty()) {
+                result.push_back({start + line_offset, current_line});
             }
         }
 
         start = (end == std::string::npos) ? m_string.size() : end + 1;
     }
 
+    return result;
+}
+
+std::vector<std::string> Text::breakLines() const {
+    std::vector<std::pair<size_t, std::string>> lines = breakLinesWithOffsets();
+    std::vector<std::string> result;
+    result.reserve(lines.size());
+    for (const auto& line : lines) {
+        result.push_back(line.second);
+    }
     return result;
 }
 
@@ -264,6 +275,114 @@ FloatRect Text::calculateVisualBounds() const {
     }
 
     return result;
+}
+
+Vector2f Text::findCharacterPos(std::size_t index) const {
+    assert(m_font);
+
+    if (m_string.empty()) {
+        return Vector2f(0.0f, 0.0f);
+    }
+
+    if (index > m_string.size()) {
+        index = m_string.size();
+    }
+
+    std::vector<std::pair<size_t, std::string>> lines = breakLinesWithOffsets();
+    float line_height = static_cast<float>(m_font->getLineHeight(m_character_size));
+    float character_size = static_cast<float>(m_character_size);
+
+    for (size_t line_idx = 0; line_idx < lines.size(); line_idx++) {
+        const size_t line_offset = lines[line_idx].first;
+        const std::string& line = lines[line_idx].second;
+        float pen_x = 0.0f;
+        float baseline_y = static_cast<float>(line_idx) * line_height + character_size;
+
+        for (size_t i = 0; i < line.size(); i++) {
+            if (line_offset + i == index) {
+                return Vector2f(pen_x, baseline_y);
+            }
+            const Character& ch = m_font->getCharacter(m_character_size, line[i]);
+            pen_x += static_cast<float>(ch.advance);
+            if (i + 1 < line.size()) {
+                pen_x += static_cast<float>(m_font->getKerning(m_character_size, line[i], line[i + 1]));
+            }
+        }
+
+        size_t next_index = line_offset + line.size();
+        if (next_index < m_string.size() && m_string[next_index] == '\n') {
+            if (next_index == index) {
+                return Vector2f(pen_x, baseline_y);
+            }
+        } else if (next_index == m_string.size() && index == m_string.size()) {
+            return Vector2f(pen_x, baseline_y);
+        }
+    }
+
+    if (m_string.back() == '\n') {
+        return Vector2f(0.0f, static_cast<float>(lines.size()) * line_height + character_size);
+    }
+
+    return Vector2f(0.0f, 0.0f);
+}
+
+std::size_t Text::getCharAt(const Vector2f& position) const {
+    assert(m_font);
+
+    if (m_string.empty()) {
+        return 0;
+    }
+
+    std::vector<std::pair<size_t, std::string>> lines = breakLinesWithOffsets();
+    float line_height = static_cast<float>(m_font->getLineHeight(m_character_size));
+    float character_size = static_cast<float>(m_character_size);
+
+    size_t max_line = (m_string.back() == '\n') ? lines.size() : lines.size() - 1;
+    size_t line_idx = 0;
+    if (line_height > 0.0f) {
+        float rel = (position.y - character_size) / line_height;
+        if (rel > 0.0f) {
+            line_idx = static_cast<size_t>(std::lroundf(rel));
+        }
+        if (line_idx > max_line) {
+            line_idx = max_line;
+        }
+    }
+
+    if (line_idx == lines.size()) {
+        return m_string.size();
+    }
+
+    const size_t line_offset = lines[line_idx].first;
+    const std::string& line = lines[line_idx].second;
+
+    float pen_x = 0.0f;
+    float best_distance = std::fabs(position.x);
+    size_t best_index = line_offset;
+
+    for (size_t i = 0; i < line.size(); i++) {
+        float distance = std::fabs(pen_x - position.x);
+        if (distance < best_distance) {
+            best_distance = distance;
+            best_index = line_offset + i;
+        }
+        const Character& ch = m_font->getCharacter(m_character_size, line[i]);
+        pen_x += static_cast<float>(ch.advance);
+        if (i + 1 < line.size()) {
+            pen_x += static_cast<float>(m_font->getKerning(m_character_size, line[i], line[i + 1]));
+        }
+    }
+
+    size_t next_index = line_offset + line.size();
+    bool end_is_candidate = (next_index == m_string.size()) || m_string[next_index] == '\n';
+    if (end_is_candidate) {
+        float distance = std::fabs(pen_x - position.x);
+        if (distance < best_distance) {
+            best_index = next_index;
+        }
+    }
+
+    return best_index;
 }
 
 }

@@ -54,7 +54,6 @@ int main() {
         return 1;
     }
 
-    // TODO: Text: add findCharacterPos and getCharAt methods
     // TODO: Polygon: add Polygon class
     // TODO: Tests: disable real input events in input tests
     // TODO: Cursor: extend Cursor with a bitmap constructor so the 8 directional resize glyphs can be reproduced

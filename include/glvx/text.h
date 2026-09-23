@@ -5,6 +5,7 @@
 #include "glvx/vector.h"
 #include "glvx/float_rect.h"
 #include <string>
+#include <utility>
 
 namespace glvx {
 
@@ -23,6 +24,8 @@ public:
     float getWidth() const;
     float getHeight() const;
     Vector2f getSize() const;
+    Vector2f findCharacterPos(std::size_t index) const;
+    std::size_t getCharAt(const Vector2f& position) const;
 
 protected:
     void render(
@@ -40,6 +43,7 @@ private:
     float m_height = 0.0f;
 
     std::vector<std::string> breakLines() const;
+    std::vector<std::pair<size_t, std::string>> breakLinesWithOffsets() const;
     float measureWidth(const std::string& text) const;
     FloatRect calculateVisualBounds() const;
 
