@@ -8,6 +8,11 @@
 
 namespace glvx {
 
+const unsigned int FONT_ASCII_CHARACTER_COUNT = 128;
+const unsigned char FONT_FIRST_PRINTABLE_CHARACTER = 32;
+const unsigned char FONT_LAST_PRINTABLE_CHARACTER = 126;
+const int FREETYPE_FIXED_POINT_SCALE = 64;
+
 bool Font::m_is_library_initialized = false;
 FT_Library Font::m_library = nullptr;
 
@@ -103,8 +108,8 @@ Font::SizePage& Font::loadMetadata(unsigned int character_size) {
         // Load kerning data
         if (FT_HAS_KERNING(m_face)) {
             FT_Vector kern_vec;
-            for (unsigned char left = 0; left < 128; left++) {
-                for (unsigned char right = 0; right < 128; right++) {
+            for (unsigned char left = 0; left < FONT_ASCII_CHARACTER_COUNT; left++) {
+                for (unsigned char right = 0; right < FONT_ASCII_CHARACTER_COUNT; right++) {
                     FT_UInt left_glyph = FT_Get_Char_Index(m_face, left);
                     FT_UInt right_glyph = FT_Get_Char_Index(m_face, right);
                     if (left_glyph && right_glyph) {
@@ -114,7 +119,7 @@ Font::SizePage& Font::loadMetadata(unsigned int character_size) {
                                 return "Failed to get kerning for characters: " + std::to_string(left) + ", " + std::to_string(right);
                             }
                         );
-                        int kerning_value = kern_vec.x / 64;
+                        int kerning_value = kern_vec.x / FREETYPE_FIXED_POINT_SCALE;
                         if (kerning_value != 0) {
                             page.m_kerning[{left, right}] = kerning_value;
                         }
@@ -123,8 +128,8 @@ Font::SizePage& Font::loadMetadata(unsigned int character_size) {
             }
         }
 
-        page.m_line_height = m_face->size->metrics.height / 64;
-        page.m_ascender = m_face->ascender / 64;
+        page.m_line_height = m_face->size->metrics.height / FREETYPE_FIXED_POINT_SCALE;
+        page.m_ascender = m_face->ascender / FREETYPE_FIXED_POINT_SCALE;
     } catch (...) {
         m_sizes.erase(character_size);
         throw;
@@ -141,16 +146,16 @@ void Font::rasterizePage(SizePage& page) {
         int m_height = 0;
         int m_pitch = 0;
     };
-    std::vector<RasterizedGlyph> bitmaps(128);
+    std::vector<RasterizedGlyph> bitmaps(FONT_ASCII_CHARACTER_COUNT);
 
     // Pass 1: rasterize each glyph once, measure it and cache its bitmap
     int total_area = 0;
-    for (unsigned char c = 0; c < 128; c++) {
+    for (unsigned char c = 0; c < FONT_ASCII_CHARACTER_COUNT; c++) {
         FREETYPE_CALL(
             FT_Load_Char(m_face, c, load_flag),
             [&]() {
                 std::string message = "Failed to load character: " + std::to_string(c);
-                if (c >= 32 && c < 127) {
+                if (c >= FONT_FIRST_PRINTABLE_CHARACTER && c <= FONT_LAST_PRINTABLE_CHARACTER) {
                     message += " (" + std::string(1, c) + ")";
                 }
                 return message;
@@ -162,7 +167,7 @@ void Font::rasterizePage(SizePage& page) {
         Character& ch = page.m_characters[c];
         ch.x = m_face->glyph->bitmap_left;
         ch.top = m_face->glyph->bitmap_top;
-        ch.advance = advance / 64;
+        ch.advance = advance / FREETYPE_FIXED_POINT_SCALE;
         ch.width = static_cast<int>(m_use_subpixel ? width / 3 : width);
         ch.glyph_height = static_cast<int>(height);
 
@@ -230,7 +235,7 @@ void Font::rasterizePage(SizePage& page) {
     float inv_w = 1.0f / static_cast<float>(atlas_width);
     float inv_h = 1.0f / static_cast<float>(atlas_height);
 
-    for (unsigned char c = 0; c < 128; c++) {
+    for (unsigned char c = 0; c < FONT_ASCII_CHARACTER_COUNT; c++) {
         const RasterizedGlyph& bmp = bitmaps[c];
         int width = bmp.m_width;
         int height = bmp.m_height;
