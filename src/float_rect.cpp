@@ -32,4 +32,24 @@ void FloatRect::extend(const FloatRect& other) {
     }
 }
 
+bool FloatRect::intersects(const FloatRect& other) const {
+    FloatRect intersection;
+    intersects(other, intersection);
+    return intersection.size.x > 0.0f && intersection.size.y > 0.0f;
+}
+
+void FloatRect::intersects(const FloatRect& other, FloatRect& intersection) const {
+    float left = std::max(position.x, other.position.x);
+    float top = std::max(position.y, other.position.y);
+    float right = std::min(position.x + size.x, other.position.x + other.size.x);
+    float bottom = std::min(position.y + size.y, other.position.y + other.size.y);
+    if (right > left && bottom > top) {
+        intersection.position = Vector2f(left, top);
+        intersection.size = Vector2f(right - left, bottom - top);
+    }
+    else {
+        intersection = FloatRect();
+    }
+}
+
 }

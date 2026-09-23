@@ -9,6 +9,7 @@ target_sources(glvx_tests PRIVATE
     ${SRC_DIR}/main.cpp
     ${SRC_DIR}/glvx_tests_common.cpp
     ${SRC_DIR}/basic_tests.cpp
+    ${SRC_DIR}/float_rect_tests.cpp
     ${SRC_DIR}/shape_tests.cpp
     ${SRC_DIR}/transform_tests.cpp
     ${SRC_DIR}/texture_tests.cpp

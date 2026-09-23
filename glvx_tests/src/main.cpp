@@ -1,6 +1,7 @@
 #include <iostream>
 #include "glvx_tests/glvx_tests_common.h"
 #include "glvx_tests/basic_tests.h"
+#include "glvx_tests/float_rect_tests.h"
 #include "glvx_tests/shape_tests.h"
 #include "glvx_tests/transform_tests.h"
 #include "glvx_tests/texture_tests.h"
@@ -25,6 +26,7 @@ int main() {
         test::TestModule root("glvx tests", nullptr);
         window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "glvx tests");
         auto basic_tests_module = root.addModule<BasicTestsModule>("Basic");
+        auto float_rect_tests_module = root.addModule<FloatRectTestsModule>("FloatRect");
         auto shape_tests_module = root.addModule<ShapeTestsModule>("Shape", { basic_tests_module });
         auto transform_tests_module = root.addModule<TransformTestsModule>("Transform", { shape_tests_module });
         auto texture_tests_module = root.addModule<TextureTestsModule>("Texture", { shape_tests_module });
@@ -52,7 +54,6 @@ int main() {
         return 1;
     }
 
-    // TODO: FloatRect: add intersects()
     // TODO: Drawable: add texture rect
 
     return 0;

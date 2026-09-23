@@ -13,6 +13,8 @@ public:
     FloatRect(float x, float y, float width, float height);
     FloatRect(const Vector2f& position, const Vector2f& size);
     void extend(const FloatRect& other);
+    bool intersects(const FloatRect& other) const;
+    void intersects(const FloatRect& other, FloatRect& intersection) const;
 };
 
 }
