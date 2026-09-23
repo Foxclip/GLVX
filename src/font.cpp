@@ -58,7 +58,7 @@ const Texture& Font::getAtlas(unsigned int character_size) {
 }
 
 int Font::getKerning(unsigned int character_size, unsigned char left, unsigned char right) {
-    SizePage& page = loadPage(character_size);
+    SizePage& page = loadMetadata(character_size);
     auto it = page.m_kerning.find({left, right});
     if (it != page.m_kerning.end()) {
         return it->second;
@@ -67,25 +67,34 @@ int Font::getKerning(unsigned int character_size, unsigned char left, unsigned c
 }
 
 int Font::getLineHeight(unsigned int character_size) {
-    return loadPage(character_size).m_line_height;
+    return loadMetadata(character_size).m_line_height;
 }
 
 int Font::getBaselineY(unsigned int character_size) {
-    return loadPage(character_size).m_ascender;
+    return loadMetadata(character_size).m_ascender;
 }
 
 Font::SizePage& Font::loadPage(unsigned int character_size) {
-    auto it = m_sizes.find(character_size);
-    if (it != m_sizes.end()) {
-        return it->second;
+    SizePage& page = loadMetadata(character_size);
+    if (page.m_rasterized) {
+        return page;
     }
 
-    SizePage& page = m_sizes.try_emplace(character_size).first->second;
-    rasterizePage(character_size, page);
+    try {
+        rasterizePage(page);
+    } catch (...) {
+        m_sizes.erase(character_size);
+        throw;
+    }
     return page;
 }
 
-void Font::rasterizePage(unsigned int character_size, SizePage& page) {
+Font::SizePage& Font::loadMetadata(unsigned int character_size) {
+    SizePage& page = m_sizes.try_emplace(character_size).first->second;
+    if (page.m_metadata_loaded) {
+        return page;
+    }
+
     FREETYPE_CALL(FT_Set_Pixel_Sizes(m_face, 0, character_size), []() { return "Failed to set font size"; });
 
     // Load kerning data
@@ -111,9 +120,24 @@ void Font::rasterizePage(unsigned int character_size, SizePage& page) {
         }
     }
 
+    page.m_line_height = m_face->size->metrics.height / 64;
+    page.m_ascender = m_face->ascender / 64;
+    page.m_metadata_loaded = true;
+    return page;
+}
+
+void Font::rasterizePage(SizePage& page) {
     unsigned int load_flag = m_use_subpixel ? (FT_LOAD_TARGET_LCD | FT_LOAD_RENDER) : FT_LOAD_RENDER;
 
-    // Pass 1: measure glyphs and compute total area
+    struct RasterizedGlyph {
+        std::vector<unsigned char> m_data;
+        int m_width = 0;
+        int m_height = 0;
+        int m_pitch = 0;
+    };
+    std::vector<RasterizedGlyph> bitmaps(95);
+
+    // Pass 1: rasterize each glyph once, measure it and cache its bitmap
     int total_area = 0;
     for (unsigned char c = 32; c < 127; c++) {
         FREETYPE_CALL(
@@ -134,11 +158,16 @@ void Font::rasterizePage(unsigned int character_size, SizePage& page) {
 
         if (width > 0 && height > 0 && m_face->glyph->bitmap.buffer) {
             total_area += static_cast<int>(m_use_subpixel ? width / 3 : width) * static_cast<int>(height);
+            RasterizedGlyph& bmp = bitmaps[c - 32];
+            bmp.m_width = static_cast<int>(width);
+            bmp.m_height = static_cast<int>(height);
+            bmp.m_pitch = m_face->glyph->bitmap.pitch;
+            bmp.m_data.assign(
+                m_face->glyph->bitmap.buffer,
+                m_face->glyph->bitmap.buffer + static_cast<size_t>(bmp.m_pitch) * height
+            );
         }
     }
-
-    page.m_line_height = m_face->size->metrics.height / 64;
-    page.m_ascender = m_face->ascender / 64;
 
     // Compute atlas dimensions
     int side = static_cast<int>(std::ceil(std::sqrt(static_cast<float>(total_area))));
@@ -154,7 +183,7 @@ void Font::rasterizePage(unsigned int character_size, SizePage& page) {
 
     std::vector<unsigned char> atlas_data(m_use_subpixel ? atlas_width * atlas_height * 3 : atlas_width * atlas_height, 0);
 
-    // Pass 2: render glyphs directly into atlas and compute UVs
+    // Pass 2: place the cached bitmaps into the atlas and compute UVs
     int current_x = 0;
     int current_y = 0;
     int row_height = 0;
@@ -162,14 +191,9 @@ void Font::rasterizePage(unsigned int character_size, SizePage& page) {
     float inv_h = 1.0f / static_cast<float>(atlas_height);
 
     for (unsigned char c = 32; c < 127; c++) {
-        FREETYPE_CALL(
-            FT_Load_Char(m_face, c, load_flag),
-            [&]() {
-                return "Failed to load character: " + std::to_string(c) + " (" + std::string(1, c) + ")";
-            }
-        );
-        int width = static_cast<int>(m_face->glyph->bitmap.width);
-        int height = static_cast<int>(m_face->glyph->bitmap.rows);
+        const RasterizedGlyph& bmp = bitmaps[c - 32];
+        int width = bmp.m_width;
+        int height = bmp.m_height;
         int atlas_pixel_width = m_use_subpixel ? width / 3 : width;
 
         if (current_x + atlas_pixel_width > atlas_width) {
@@ -178,16 +202,16 @@ void Font::rasterizePage(unsigned int character_size, SizePage& page) {
             row_height = 0;
         }
 
-        if (width > 0 && height > 0 && m_face->glyph->bitmap.buffer) {
+        if (width > 0 && height > 0) {
             if (m_use_subpixel) {
                 blit_bitmap_subpixel(
-                    m_face->glyph->bitmap.buffer, m_face->glyph->bitmap.pitch,
+                    bmp.m_data.data(), bmp.m_pitch,
                     atlas_data.data(), atlas_width * 3,
                     current_x, current_y, width, height
                 );
             } else {
                 blit_bitmap(
-                    m_face->glyph->bitmap.buffer, m_face->glyph->bitmap.pitch,
+                    bmp.m_data.data(), bmp.m_pitch,
                     atlas_data.data(), atlas_width,
                     current_x, current_y, width, height
                 );
@@ -213,6 +237,7 @@ void Font::rasterizePage(unsigned int character_size, SizePage& page) {
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
     }
+    page.m_rasterized = true;
 }
 
 }

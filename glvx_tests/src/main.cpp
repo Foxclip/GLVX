@@ -54,10 +54,9 @@ int main() {
         return 1;
     }
 
-    // TODO: Text: dynamic character size
-    // TODO: Font: don't load page in methods like getLineHeight
     // TODO: Text: make use_subpixel part of the Text and not Font
     // TODO: Font: check if getBaselineY is correct
+    // TODO: Font: load all ascii characters
     // TODO: Text: add findCharacterPos and getCharAt methods
     // TODO: Polygon: add Polygon class
     // TODO: Cursor: extend Cursor with a bitmap constructor so the 8 directional resize glyphs can be reproduced

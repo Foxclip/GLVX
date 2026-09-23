@@ -42,6 +42,8 @@ private:
         std::map<std::pair<unsigned char, unsigned char>, int> m_kerning;
         int m_line_height = 0;
         int m_ascender = 0;
+        bool m_metadata_loaded = false;
+        bool m_rasterized = false;
     };
     friend class TextTestsModule;
     static bool m_is_library_initialized;
@@ -51,7 +53,8 @@ private:
     bool m_use_subpixel = false;
 
     SizePage& loadPage(unsigned int character_size);
-    void rasterizePage(unsigned int character_size, SizePage& page);
+    SizePage& loadMetadata(unsigned int character_size);
+    void rasterizePage(SizePage& page);
 };
 
 }
