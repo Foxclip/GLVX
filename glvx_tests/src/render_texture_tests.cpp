@@ -231,7 +231,9 @@ void RenderTextureTestsModule::transparentRectangleTest(test::Test& test) {
     const Vector2i rect_size_int = static_cast<Vector2i>(rect_size);
     const Vector2i rect_start = Vector2i(0, 0);
     const Vector2i rect_end = rect_start + rect_size_int;
-    T_WRAP_CONTAINER(checkPixelColor(test, image_rt, rect_start, rect_end, Color(128, 0, 0, 128)));
+    // The render texture stores the premultiplied color (128, 0, 0, 128);
+    // readPixels converts it back to straight alpha.
+    T_WRAP_CONTAINER(checkPixelColor(test, image_rt, rect_start, rect_end, Color(255, 0, 0, 128)));
     T_WRAP_CONTAINER(checkPixelColor(
         test, image_rt,
         Vector2i(rect_size_int.x, 0), Vector2i(WINDOW_SIZE.x, rect_size_int.y),

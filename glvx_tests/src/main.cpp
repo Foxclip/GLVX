@@ -9,6 +9,7 @@
 #include "glvx_tests/vertex_buffer_tests.h"
 #include "glvx_tests/vertex_array_tests.h"
 #include "glvx_tests/render_states_tests.h"
+#include "glvx_tests/blend_mode_tests.h"
 #include "glvx_tests/coordinate_transform_tests.h"
 #include "glvx_tests/text_tests.h"
 #include "glvx_tests/render_texture_tests.h"
@@ -32,6 +33,7 @@ int main() {
         auto vertex_buffer_tests_module = root.addModule<VertexBufferTestsModule>("VertexBuffer", { basic_tests_module });
         auto vertex_array_tests_module = root.addModule<VertexArrayTestsModule>("VertexArray", { vertex_buffer_tests_module });
         auto render_states_tests_module = root.addModule<RenderStatesTestsModule>("RenderStates", { shape_tests_module, texture_tests_module });
+        auto blend_mode_tests_module = root.addModule<BlendModeTestsModule>("BlendMode", { shape_tests_module });
         auto coordinate_transform_tests_module = root.addModule<CoordinateTransformTestsModule>("CoordinateTransform", { view_tests_module });
         auto text_tests_module = root.addModule<TextTestsModule>("Text", { shape_tests_module });
         auto render_texture_tests_module = root.addModule<RenderTextureTestsModule>("RenderTexture", { basic_tests_module });
@@ -50,7 +52,6 @@ int main() {
         return 1;
     }
 
-    // TODO: RenderStates: add BlendMode
     // TODO: FloatRect: add intersects()
     // TODO: Drawable: add texture rect
 

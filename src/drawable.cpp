@@ -52,12 +52,13 @@ void Drawable::renderBase(
     assert(render_shader);
     const AbstractTexture* render_texture = states.texture ? states.texture : texture;
     Matrix4 combined_model = (states.transform * model).toMatrix4();
-    bool texture_is_premultiplied = render_texture != nullptr && render_texture->isRenderTexture();
+    bool has_render_texture = render_texture != nullptr && render_texture->isRenderTexture();
+    bool premultiply_output = states.premultiply_output || !has_render_texture;
     render_shader->use();
 
     if (render_shader->isUsingUBO()) {
         common::uniform_buffer->updateObjectUBO(
-            combined_model, color, render_texture != nullptr, !texture_is_premultiplied, view, projection
+            combined_model, color, render_texture != nullptr, premultiply_output, view, projection
         );
         common::uniform_buffer->bindObjectUBO();
         render_shader->setInt("tex", 0);

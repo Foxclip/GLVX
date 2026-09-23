@@ -18,6 +18,7 @@ public:
     bool isRenderTexture() const override;
     int getSamples() const;
     void display();
+    Image readPixels() const override;
 
 private:
     unsigned int m_fbo = 0;

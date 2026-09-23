@@ -4,7 +4,10 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${vcpkgRoot}/x64-windows/include"
+                "${vcpkgRoot}/x64-windows/include",
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/glvx_tests/include",
+                "${workspaceFolder}/glad/include"
             ],
             "defines": [
                 "_DEBUG",
