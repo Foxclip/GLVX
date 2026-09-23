@@ -22,6 +22,8 @@ public:
     void subpixelTest(test::Test& test);
     void multilineDimensionsTest(test::Test& test);
     void multilineTest(test::Test& test);
+    void findCharacterPosTest(test::Test& test);
+    void getCharAtTest(test::Test& test);
 
 private:
 
