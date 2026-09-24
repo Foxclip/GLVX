@@ -32,7 +32,6 @@ public:
 
 private:
     bool m_is_initialized = false;
-    size_t m_gpu_buffer_size = 0;
     size_t m_vertex_count = 0;
     PrimitiveType m_type = PrimitiveType::Triangles;
     Usage m_usage = Usage::StaticDraw;

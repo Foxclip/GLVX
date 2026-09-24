@@ -105,7 +105,6 @@ void VertexBuffer::recreateBuffer(std::size_t size) {
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
     GL_CALL(glBindVertexArray(0));
     m_is_initialized = true;
-    m_gpu_buffer_size = size;
 }
 
 PrimitiveType VertexBuffer::getPrimitiveType() const {
