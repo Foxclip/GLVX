@@ -3,42 +3,44 @@
 
 namespace glvx {
 
-ConvexShape::ConvexShape(std::size_t point_count) : Shape(PrimitiveType::TriangleFan, point_count), m_points(point_count) {
+ConvexShape::ConvexShape(std::size_t point_count) : Shape(PrimitiveType::TriangleFan, point_count) {
     updateVertices();
 }
 
-ConvexShape::~ConvexShape() { }
+ConvexShape::~ConvexShape() {
+}
 
 void ConvexShape::setPointCount(std::size_t point_count) {
-    m_points.resize(point_count);
     resize(static_cast<unsigned int>(point_count));
     updateVertices();
 }
 
 std::size_t ConvexShape::getPointCount() const {
-    return m_points.size();
+    return getVertexCount();
 }
 
 void ConvexShape::setPoint(std::size_t index, const Vector2f& point) {
-    assert(index < m_points.size());
-    m_points[index] = point;
+    assert(index < getVertexCount());
+    getVertex(index).position = point;
     updateVertices();
 }
 
 const Vector2f& ConvexShape::getPoint(std::size_t index) const {
-    assert(index < m_points.size());
-    return m_points[index];
+    assert(index < getVertexCount());
+    return getVertex(index).position;
 }
 
 void ConvexShape::updateVertices() {
-    if (m_points.empty()) {
+    const std::size_t count = getVertexCount();
+    if (count == 0) {
         return;
     }
 
-    Vector2f bounds_min = m_points[0];
-    Vector2f bounds_max = m_points[0];
+    Vector2f bounds_min = getVertex(0).position;
+    Vector2f bounds_max = getVertex(0).position;
 
-    for (const auto& point : m_points) {
+    for (std::size_t i = 0; i < count; i++) {
+        const Vector2f& point = getVertex(i).position;
         if (point.x < bounds_min.x) {
             bounds_min.x = point.x;
         }
@@ -61,13 +63,12 @@ void ConvexShape::updateVertices() {
         span.y = 1.0f;
     }
 
-    for (std::size_t i = 0; i < m_points.size(); i++) {
+    for (std::size_t i = 0; i < count; i++) {
         Vertex& vertex = getVertex(i);
-        vertex.position = m_points[i];
         vertex.color = Color::White;
         vertex.tex_coords = Vector2f(
-            (m_points[i].x - bounds_min.x) / span.x,
-            (m_points[i].y - bounds_min.y) / span.y
+            (vertex.position.x - bounds_min.x) / span.x,
+            (vertex.position.y - bounds_min.y) / span.y
         );
     }
 }

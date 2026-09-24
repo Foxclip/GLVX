@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstddef>
-#include <vector>
 #include "glvx/vector.h"
 #include "glvx/shape.h"
 
@@ -19,8 +18,6 @@ public:
 
 private:
     void updateVertices();
-
-    std::vector<Vector2f> m_points;
 };
 
 }
