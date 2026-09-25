@@ -265,7 +265,7 @@ void Window::mouseButtonCallbackGLFW(GLFWwindow* window, int button, int action,
 
         Mouse::Button mb = static_cast<Mouse::Button>(button);
         bool pressed = (action == GLFW_PRESS);
-        Mouse::setButtonState(window, mb, pressed);
+        Mouse::setButtonState(mb, pressed);
 
         Event event;
         event.type = pressed ? EventType::MouseButtonPressed : EventType::MouseButtonReleased;

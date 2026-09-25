@@ -1,5 +1,6 @@
 #include "glvx_tests/input_tests.h"
 #include "glvx/keyboard.h"
+#include "glvx/mouse.h"
 
 InputTestsModule::InputTestsModule(
     const std::string& name,
@@ -10,6 +11,7 @@ InputTestsModule::InputTestsModule(
     addTest("mouse_button_pressed", [&](test::Test& test) { mouseButtonPressedTest(test); });
     addTest("mouse_button_released", [&](test::Test& test) { mouseButtonReleasedTest(test); });
     addTest("mouse_wheel_scrolled", [&](test::Test& test) { mouseWheelScrolledTest(test); });
+    addTest("mouse_state", [&](test::Test& test) { mouseStateTest(test); });
     addTest("key_pressed", [&](test::Test& test) { keyPressedTest(test); });
     addTest("key_released", [&](test::Test& test) { keyReleasedTest(test); });
     addTest("key_pressed_with_modifier", [&](test::Test& test) { keyPressedWithModifierTest(test); });
@@ -76,6 +78,20 @@ void InputTestsModule::mouseWheelScrolledTest(test::Test& test) {
     T_CHECK(event.type == EventType::MouseWheelScrolled);
     T_COMPARE(event.mouseWheel.delta, 3.0f);
     T_CHECK(!window.pollEvent(event));
+}
+
+void InputTestsModule::mouseStateTest(test::Test& test) {
+    Window::mouseButtonCallbackGLFW(
+        window.getWindowHandle(), static_cast<int>(Mouse::Button::Left), GLFW_PRESS, 0
+    );
+    T_CHECK(Mouse::isButtonPressed(Mouse::Button::Left));
+
+    Window::mouseButtonCallbackGLFW(
+        window.getWindowHandle(), static_cast<int>(Mouse::Button::Left), GLFW_RELEASE, 0
+    );
+    T_CHECK(!Mouse::isButtonPressed(Mouse::Button::Left));
+
+    Mouse::reset();
 }
 
 void InputTestsModule::keyPressedTest(test::Test& test) {

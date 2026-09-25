@@ -1,8 +1,6 @@
 #pragma once
 
 #include <glvx/vector.h>
-#include <GLFW/glfw3.h>
-#include <unordered_map>
 
 namespace glvx {
 
@@ -19,21 +17,18 @@ public:
         Count = 5
     };
 
-    static bool isButtonPressed(const Window& window, Button button);
+    static bool isButtonPressed(Button button);
     static Vector2i getPosition(const Window& window);
     static void setPosition(const Window& window, const Vector2i& position);
+    static void reset();
 
 private:
     friend class Window;
 
-    struct MouseState {
-        bool button_states[static_cast<size_t>(Button::Count)] = {};
-    };
+    static void setButtonState(Button button, bool pressed);
 
-    static std::unordered_map<GLFWwindow*, MouseState> m_window_states;
-
-    static void setButtonState(GLFWwindow* handle, Button button, bool pressed);
-    static void reset();
+    static constexpr int num_buttons = static_cast<int>(Button::Count);
+    static bool m_button_states[num_buttons];
 };
 
 }

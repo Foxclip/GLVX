@@ -16,6 +16,7 @@ public:
     void mouseButtonPressedTest(test::Test& test);
     void mouseButtonReleasedTest(test::Test& test);
     void mouseWheelScrolledTest(test::Test& test);
+    void mouseStateTest(test::Test& test);
 
     void keyPressedTest(test::Test& test);
     void keyReleasedTest(test::Test& test);
