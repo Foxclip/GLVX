@@ -34,6 +34,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}/blend_mode.cpp
     ${SRC_DIR}/circle.cpp
     ${SRC_DIR}/color.cpp
+    ${SRC_DIR}/convex_shape.cpp
     ${SRC_DIR}/cursor.cpp
     ${SRC_DIR}/drawable.cpp
     ${SRC_DIR}/glvx_common.cpp

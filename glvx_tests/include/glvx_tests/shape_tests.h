@@ -17,6 +17,10 @@ public:
     void circleSetRadiusTest(test::Test& test);
     void transparentRectangleTest(test::Test& test);
     void multipleTransparentRectanglesTest(test::Test& test);
+    void convexShapeTest(test::Test& test);
+    void convexShapeSetPointTest(test::Test& test);
+    void convexShapeSetPointCountTest(test::Test& test);
+    void convexShapeEmptyTest(test::Test& test);
 
 private:
 

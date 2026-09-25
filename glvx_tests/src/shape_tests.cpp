@@ -1,5 +1,6 @@
 #include "glvx_tests/shape_tests.h"
 #include "glvx/circle.h"
+#include "glvx/convex_shape.h"
 #include "glvx/rectangle.h"
 
 using namespace glvx;
@@ -15,6 +16,10 @@ ShapeTestsModule::ShapeTestsModule(
     auto circle_set_radius_test = addTest("circle_set_radius", { circle_test }, [&](test::Test& test) { circleSetRadiusTest(test); });
     auto transparent_rectangle_test = addTest("transparent_rectangle", { rectangle_test }, [&](test::Test& test) { transparentRectangleTest(test); });
     auto multiple_transparent_rectangles_test = addTest("multiple_transparent_rectangles", { rectangle_test }, [&](test::Test& test) { multipleTransparentRectanglesTest(test); });
+    auto convex_shape_test = addTest("convex_shape", { circle_test }, [&](test::Test& test) { convexShapeTest(test); });
+    auto convex_shape_set_point_test = addTest("convex_shape_set_point", { convex_shape_test }, [&](test::Test& test) { convexShapeSetPointTest(test); });
+    auto convex_shape_set_point_count_test = addTest("convex_shape_set_point_count", { convex_shape_test }, [&](test::Test& test) { convexShapeSetPointCountTest(test); });
+    auto convex_shape_empty_test = addTest("convex_shape_empty", { convex_shape_test }, [&](test::Test& test) { convexShapeEmptyTest(test); });
 }
 
 void ShapeTestsModule::rectangleTest(test::Test& test) {
@@ -256,4 +261,108 @@ void ShapeTestsModule::multipleTransparentRectanglesTest(test::Test& test) {
     T_COMPARE(image.getPixel(5, 5), Color(32, 64, 128, 255), &Color::toString);
     T_COMPARE(image.getPixel(corner_check), Color(32, 64, 128, 255), &Color::toString);
     T_COMPARE(image.getPixel(static_cast<Vector2i>(rect_size)), Color::Black, &Color::toString);
+}
+
+void ShapeTestsModule::convexShapeTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("convex shape");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    ConvexShape shape;
+    shape.setPoint(0, Vector2f(0, 10));
+    shape.setPoint(1, Vector2f(10, 0));
+    shape.setPoint(2, Vector2f(10, 10));
+    shape.setColor(Color::Red);
+    window.draw(shape);
+    window.display();
+
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(9, 9), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(6, 7), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(2, 2), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
+}
+
+void ShapeTestsModule::convexShapeSetPointTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("convex shape set point");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    ConvexShape shape;
+    shape.setPoint(0, Vector2f(0, 10));
+    shape.setPoint(1, Vector2f(10, 0));
+    shape.setPoint(2, Vector2f(10, 10));
+    shape.setColor(Color::Red);
+    window.draw(shape);
+    window.display();
+
+    shape.setPoint(0, Vector2f(0, 0));
+    window.clear(Color::Black);
+    window.draw(shape);
+    window.display();
+
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(9, 1), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(2, 9), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(0, 10), Color::Black, &Color::toString);
+}
+
+void ShapeTestsModule::convexShapeSetPointCountTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("convex shape set point count");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    ConvexShape shape;
+    shape.setPoint(0, Vector2f(0, 10));
+    shape.setPoint(1, Vector2f(10, 0));
+    shape.setPoint(2, Vector2f(10, 10));
+
+    shape.setPointCount(5);
+    T_CHECK(shape.getPointCount() == 5);
+    T_CHECK(shape.getPoint(3) == Vector2f(0, 0));
+
+    shape.setPoint(0, Vector2f(5, 0));
+    shape.setPoint(1, Vector2f(10, 4));
+    shape.setPoint(2, Vector2f(8, 10));
+    shape.setPoint(3, Vector2f(2, 10));
+    shape.setPoint(4, Vector2f(0, 4));
+    T_CHECK(shape.getPoint(0) == Vector2f(5, 0));
+
+    shape.setColor(Color::Red);
+    window.draw(shape);
+    window.display();
+
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(5, 5), Color::Red, &Color::toString);
+    T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
+}
+
+void ShapeTestsModule::convexShapeEmptyTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("convex shape empty");
+    View view;
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(Color::Black);
+
+    ConvexShape shape(0);
+    T_CHECK(shape.getPointCount() == 0);
+    shape.setColor(Color::Red);
+    window.draw(shape);
+    window.display();
+
+    Image image = window.readPixels();
+    T_COMPARE(image.getPixel(0, 0), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(5, 5), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(9, 9), Color::Black, &Color::toString);
+    T_COMPARE(image.getPixel(15, 15), Color::Black, &Color::toString);
 }
