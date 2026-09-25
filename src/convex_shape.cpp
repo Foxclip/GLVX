@@ -3,7 +3,7 @@
 
 namespace glvx {
 
-ConvexShape::ConvexShape(std::size_t point_count) : Shape(PrimitiveType::TriangleFan, point_count), m_points(point_count) {
+ConvexShape::ConvexShape(std::size_t point_count) : Shape(PrimitiveType::TriangleFan, 0), m_points(point_count) {
     updateVertices();
 }
 
@@ -11,7 +11,6 @@ ConvexShape::~ConvexShape() { }
 
 void ConvexShape::setPointCount(std::size_t point_count) {
     m_points.resize(point_count);
-    resize(static_cast<unsigned int>(point_count));
     updateVertices();
 }
 
@@ -31,9 +30,14 @@ const Vector2f& ConvexShape::getPoint(std::size_t index) const {
 }
 
 void ConvexShape::updateVertices() {
-    if (m_points.empty()) {
+    const std::size_t point_count = m_points.size();
+    if (point_count < 3) {
+        resize(0);
         return;
     }
+
+    // + 2 for the center vertex and the repeated first point
+    resize(static_cast<unsigned int>(point_count) + 2u);
 
     Vector2f bounds_min = m_points[0];
     Vector2f bounds_max = m_points[0];
@@ -61,8 +65,18 @@ void ConvexShape::updateVertices() {
         span.y = 1.0f;
     }
 
-    for (std::size_t i = 0; i < m_points.size(); i++) {
-        Vertex& vertex = getVertex(i);
+    // The first vertex is the center of the shape
+    const Vector2f center = (bounds_min + bounds_max) / 2.0f;
+    Vertex& center_vertex = getVertex(0);
+    center_vertex.position = center;
+    center_vertex.color = Color::White;
+    center_vertex.tex_coords = Vector2f(
+        (center.x - bounds_min.x) / span.x,
+        (center.y - bounds_min.y) / span.y
+    );
+
+    for (std::size_t i = 0; i < point_count; i++) {
+        Vertex& vertex = getVertex(i + 1);
         vertex.position = m_points[i];
         vertex.color = Color::White;
         vertex.tex_coords = Vector2f(
@@ -70,6 +84,9 @@ void ConvexShape::updateVertices() {
             (m_points[i].y - bounds_min.y) / span.y
         );
     }
+
+    // Repeat the first point to close the fan
+    getVertex(point_count + 1) = getVertex(1);
 }
 
 }
