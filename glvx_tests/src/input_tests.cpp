@@ -17,6 +17,38 @@ InputTestsModule::InputTestsModule(
     addTest("keyboard_state", [&](test::Test& test) { keyboardStateTest(test); });
 }
 
+void InputTestsModule::beforeRunModule() {
+    disableRealEvents(window.getWindowHandle());
+}
+
+void InputTestsModule::afterRunModule() {
+    enableRealEvents(window.getWindowHandle());
+}
+
+void InputTestsModule::disableRealEvents(GLFWwindow* handle) {
+    glfwSetFramebufferSizeCallback(handle, nullptr);
+    glfwSetCursorPosCallback(handle, nullptr);
+    glfwSetMouseButtonCallback(handle, nullptr);
+    glfwSetScrollCallback(handle, nullptr);
+    glfwSetKeyCallback(handle, nullptr);
+    glfwSetCharCallback(handle, nullptr);
+    glfwSetWindowFocusCallback(handle, nullptr);
+    glfwSetWindowPosCallback(handle, nullptr);
+    glfwSetWindowCloseCallback(handle, nullptr);
+}
+
+void InputTestsModule::enableRealEvents(GLFWwindow* handle) {
+    glfwSetFramebufferSizeCallback(handle, Window::framebufferSizeCallback);
+    glfwSetCursorPosCallback(handle, Window::mouseMoveCallbackGLFW);
+    glfwSetMouseButtonCallback(handle, Window::mouseButtonCallbackGLFW);
+    glfwSetScrollCallback(handle, Window::scrollCallbackGLFW);
+    glfwSetKeyCallback(handle, Window::keyCallbackGLFW);
+    glfwSetCharCallback(handle, Window::charCallbackGLFW);
+    glfwSetWindowFocusCallback(handle, Window::focusCallbackGLFW);
+    glfwSetWindowPosCallback(handle, Window::windowPosCallbackGLFW);
+    glfwSetWindowCloseCallback(handle, Window::closeCallbackGLFW);
+}
+
 void InputTestsModule::mouseMoveTest(test::Test& test) {
     window.clearEventQueue();
 
