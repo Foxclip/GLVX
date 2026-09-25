@@ -1,5 +1,4 @@
 #include "glvx_tests/application_tests.h"
-#include "glvx_tests/input_tests.h"
 #include "glvx_tests/test_application.h"
 #include <GLFW/glfw3.h>
 
@@ -17,7 +16,7 @@ ApplicationTestsModule::ApplicationTestsModule(
 
 void ApplicationTestsModule::initTest(test::Test& test) {
     app.init();
-    InputTestsModule::disableRealEvents(app.getWindow().getWindowHandle());
+    app.getWindow().disableInputEvents();
 }
 
 void ApplicationTestsModule::clearTest(test::Test& test) {

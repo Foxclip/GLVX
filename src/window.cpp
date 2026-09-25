@@ -52,15 +52,7 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
 
     glfwSetWindowUserPointer(m_window, this);
 
-    glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
-    glfwSetCursorPosCallback(m_window, mouseMoveCallbackGLFW);
-    glfwSetMouseButtonCallback(m_window, mouseButtonCallbackGLFW);
-    glfwSetScrollCallback(m_window, scrollCallbackGLFW);
-    glfwSetKeyCallback(m_window, keyCallbackGLFW);
-    glfwSetCharCallback(m_window, charCallbackGLFW);
-    glfwSetWindowFocusCallback(m_window, focusCallbackGLFW);
-    glfwSetWindowPosCallback(m_window, windowPosCallbackGLFW);
-    glfwSetWindowCloseCallback(m_window, closeCallbackGLFW);
+    enableInputEvents();
 
     m_uniform_buffer_uptr = std::make_unique<UniformBuffer>();
     m_uniform_buffer_uptr->createObjectUBO();
@@ -200,6 +192,30 @@ bool Window::waitEvent(Event& event) {
 void Window::clearEventQueue() {
     std::queue<Event> empty;
     std::swap(m_event_queue, empty);
+}
+
+void Window::enableInputEvents() {
+    glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
+    glfwSetCursorPosCallback(m_window, mouseMoveCallbackGLFW);
+    glfwSetMouseButtonCallback(m_window, mouseButtonCallbackGLFW);
+    glfwSetScrollCallback(m_window, scrollCallbackGLFW);
+    glfwSetKeyCallback(m_window, keyCallbackGLFW);
+    glfwSetCharCallback(m_window, charCallbackGLFW);
+    glfwSetWindowFocusCallback(m_window, focusCallbackGLFW);
+    glfwSetWindowPosCallback(m_window, windowPosCallbackGLFW);
+    glfwSetWindowCloseCallback(m_window, closeCallbackGLFW);
+}
+
+void Window::disableInputEvents() {
+    glfwSetFramebufferSizeCallback(m_window, nullptr);
+    glfwSetCursorPosCallback(m_window, nullptr);
+    glfwSetMouseButtonCallback(m_window, nullptr);
+    glfwSetScrollCallback(m_window, nullptr);
+    glfwSetKeyCallback(m_window, nullptr);
+    glfwSetCharCallback(m_window, nullptr);
+    glfwSetWindowFocusCallback(m_window, nullptr);
+    glfwSetWindowPosCallback(m_window, nullptr);
+    glfwSetWindowCloseCallback(m_window, nullptr);
 }
 
 unsigned int Window::getRenderTargetFbo() const {

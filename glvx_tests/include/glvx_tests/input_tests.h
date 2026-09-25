@@ -23,10 +23,7 @@ public:
     void textEnteredTest(test::Test& test);
     void keyboardStateTest(test::Test& test);
 
-    static void disableRealEvents(GLFWwindow* handle);
-
 private:
     void beforeRunModule() override;
     void afterRunModule() override;
-    static void enableRealEvents(GLFWwindow* handle);
 };
