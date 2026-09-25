@@ -26,6 +26,7 @@ target_sources(glvx_tests PRIVATE
     ${SRC_DIR}/antialiasing_tests.cpp
     ${SRC_DIR}/input_tests.cpp
     ${SRC_DIR}/application_tests.cpp
+    ${SRC_DIR}/cursor_tests.cpp
     ${SRC_DIR}/test_application.cpp
 )
 target_include_directories(glvx_tests PRIVATE ${INCLUDE_DIR})

@@ -18,6 +18,7 @@
 #include "glvx_tests/antialiasing_tests.h"
 #include "glvx_tests/input_tests.h"
 #include "glvx_tests/application_tests.h"
+#include "glvx_tests/cursor_tests.h"
 
 int main() {
 
@@ -43,6 +44,7 @@ int main() {
         auto antialiasing_tests_module = root.addModule<AntialiasingTestsModule>("Antialiasing", { shape_tests_module });
         auto input_tests_module = root.addModule<InputTestsModule>("Input", { basic_tests_module });
         auto application_tests_module = root.addModule<ApplicationTestsModule>("Application", { input_tests_module });
+        auto cursor_tests_module = root.addModule<CursorTestsModule>("Cursor", { basic_tests_module });
         root.run();
         root.printSummary();
 
@@ -53,8 +55,6 @@ int main() {
         std::cerr << "ERROR: " << e.what() << std::endl;
         return 1;
     }
-
-    // TODO: Cursor: extend Cursor with a bitmap constructor so the 8 directional resize glyphs can be reproduced
 
     return 0;
 }
