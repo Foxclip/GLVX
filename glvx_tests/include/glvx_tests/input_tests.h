@@ -22,4 +22,8 @@ public:
     void keyPressedWithModifierTest(test::Test& test);
     void textEnteredTest(test::Test& test);
     void keyboardStateTest(test::Test& test);
+
+private:
+    void beforeRunModule() override;
+    void afterRunModule() override;
 };

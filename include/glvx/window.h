@@ -82,6 +82,8 @@ private:
 
     void processWindowSize(int width, int height);
     void pushEvent(const Event& event);
+    void enableInputEvents();
+    void disableInputEvents();
     static void framebufferSizeCallback(GLFWwindow* glfw_window, int width, int height);
     static void mouseMoveCallbackGLFW(GLFWwindow* window, double x_pos, double y_pos);
     static void mouseButtonCallbackGLFW(GLFWwindow* window, int button, int action, int mods);

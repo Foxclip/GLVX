@@ -16,6 +16,7 @@ ApplicationTestsModule::ApplicationTestsModule(
 
 void ApplicationTestsModule::initTest(test::Test& test) {
     app.init();
+    app.getWindow().disableInputEvents();
 }
 
 void ApplicationTestsModule::clearTest(test::Test& test) {

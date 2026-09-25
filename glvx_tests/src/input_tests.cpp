@@ -17,6 +17,14 @@ InputTestsModule::InputTestsModule(
     addTest("keyboard_state", [&](test::Test& test) { keyboardStateTest(test); });
 }
 
+void InputTestsModule::beforeRunModule() {
+    window.disableInputEvents();
+}
+
+void InputTestsModule::afterRunModule() {
+    window.enableInputEvents();
+}
+
 void InputTestsModule::mouseMoveTest(test::Test& test) {
     window.clearEventQueue();
 
