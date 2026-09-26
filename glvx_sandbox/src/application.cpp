@@ -2,6 +2,14 @@
 #include <cmath>
 #include <numbers>
 
+static int transparentAlpha(int index) {
+    int alpha = static_cast<int>(256 / pow(2, index));
+    if (index == 0) {
+        alpha = 255;
+    }
+    return alpha;
+}
+
 void Application::init() {
     m_window.create(800, 600, "GLVX sandbox");
     m_font_normal.openFromFile("fonts/LiberationSans-Regular.ttf");
@@ -35,10 +43,7 @@ void Application::setupShapes() {
     m_hexagon.setPosition(50.0f, 50.0f);
 
     for (int i = 0; i < NUM_TRANSPARENT_RECTANGLES; i++) {
-        int alpha = static_cast<int>(256 / pow(2, i));
-        if (i == 0) {
-            alpha = 255;
-        }
+        int alpha = transparentAlpha(i);
         m_transparent_rectangles[i].setColor(glvx::Color(255, 0, 0, alpha));
         m_transparent_rectangles[i].setSize(glvx::Vector2f(20.0f, 20.0f));
         m_transparent_rectangles[i].setPosition(
@@ -47,12 +52,19 @@ void Application::setupShapes() {
         );
     }
 
-    m_rgb_rectangle_red.setColor(glvx::Color(255, 0, 0, 128));
-    m_rgb_rectangle_green.setColor(glvx::Color(0, 255, 0, 128));
-    m_rgb_rectangle_blue.setColor(glvx::Color(0, 0, 255, 128));
-    m_rgb_rectangle_red.setPosition(10.0f, 100.0f);
-    m_rgb_rectangle_green.setPosition(20.0f, 100.0f);
-    m_rgb_rectangle_blue.setPosition(15.0f, 110.0f);
+    for (int i = 0; i < NUM_TRANSPARENT_RECTANGLES; i++) {
+        int alpha = transparentAlpha(i);
+        float x = 10.0f + i * 40.0f;
+        m_rgb_group_rectangles[i][0].setColor(glvx::Color(255, 0, 0, alpha));
+        m_rgb_group_rectangles[i][1].setColor(glvx::Color(0, 255, 0, alpha));
+        m_rgb_group_rectangles[i][2].setColor(glvx::Color(0, 0, 255, alpha));
+        for (int c = 0; c < 3; c++) {
+            m_rgb_group_rectangles[i][c].setSize(glvx::Vector2f(20.0f, 20.0f));
+        }
+        m_rgb_group_rectangles[i][0].setPosition(x, 100.0f);
+        m_rgb_group_rectangles[i][1].setPosition(x + 10.0f, 100.0f);
+        m_rgb_group_rectangles[i][2].setPosition(x + 5.0f, 110.0f);
+    }
 
     m_text_normal.setFont(&m_font_normal);
     m_text_normal.setCharacterSize(10);
@@ -95,9 +107,11 @@ void Application::render() {
     for (int i = 0; i < NUM_TRANSPARENT_RECTANGLES; i++) {
         m_window.draw(m_transparent_rectangles[i]);
     }
-    m_window.draw(m_rgb_rectangle_red);
-    m_window.draw(m_rgb_rectangle_green);
-    m_window.draw(m_rgb_rectangle_blue);
+    for (int i = 0; i < NUM_TRANSPARENT_RECTANGLES; i++) {
+        m_window.draw(m_rgb_group_rectangles[i][0]);
+        m_window.draw(m_rgb_group_rectangles[i][1]);
+        m_window.draw(m_rgb_group_rectangles[i][2]);
+    }
 
     m_window.draw(m_circle);
     m_window.draw(m_hexagon);
