@@ -5,6 +5,7 @@
 #include "glvx/rectangle.h"
 #include "glvx/circle.h"
 #include "glvx/convex_shape.h"
+#include "glvx/mouse.h"
 #include "glvx/view.h"
 #include "glvx/color.h"
 #include "glvx/text.h"
@@ -26,6 +27,7 @@ private:
     glvx::Circle m_circle{10.0f};
     glvx::ConvexShape m_hexagon{6};
     glvx::ConvexShape m_arrow{3};
+    glvx::ConvexShape m_mouse_arrow{3};
     glvx::Rectangle m_transparent_rectangles[NUM_TRANSPARENT_RECTANGLES];
     glvx::Rectangle m_rgb_group_rectangles[NUM_TRANSPARENT_RECTANGLES][3];
     glvx::Font m_font_normal;
@@ -37,5 +39,6 @@ private:
     void setupShapes();
     void handleEvents();
     void updateArrow();
+    void updateMouseArrow();
     void render();
 };

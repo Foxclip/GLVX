@@ -81,7 +81,14 @@ void Application::setupShapes() {
     m_arrow.setPoint(2, glvx::Vector2f(-8.0f, 7.0f));
     m_arrow.setColor(glvx::Color::White);
     m_arrow.setOrigin(0.0f, 0.0f);
-    m_arrow.setPosition(20.0f, 200.0f);
+    m_arrow.setPosition(10.0f, 190.0f);
+
+    m_mouse_arrow.setPoint(0, glvx::Vector2f(12.0f, 0.0f));
+    m_mouse_arrow.setPoint(1, glvx::Vector2f(-8.0f, -7.0f));
+    m_mouse_arrow.setPoint(2, glvx::Vector2f(-8.0f, 7.0f));
+    m_mouse_arrow.setColor(glvx::Color::Yellow);
+    m_mouse_arrow.setOrigin(0.0f, 0.0f);
+    m_mouse_arrow.setPosition(40.0f, 190.0f);
 }
 
 void Application::run() {
@@ -111,6 +118,14 @@ void Application::updateArrow() {
     m_arrow.setRotation(glvx::Angle::fromRadians(rotation * 2.0f * static_cast<float>(std::numbers::pi)));
 }
 
+void Application::updateMouseArrow() {
+    const glvx::Vector2f mouse_world = m_window.screenToWorld(glvx::Mouse::getPosition(m_window));
+    const glvx::Vector2f arrow_pos = m_mouse_arrow.getPosition();
+    const float dx = mouse_world.x - arrow_pos.x;
+    const float dy = mouse_world.y - arrow_pos.y;
+    m_mouse_arrow.setRotation(glvx::Angle::fromRadians(-std::atan2(dy, dx)));
+}
+
 void Application::render() {
     m_view.setPosition(m_window.getCenter());
     m_window.setView(m_view);
@@ -137,6 +152,9 @@ void Application::render() {
 
     updateArrow();
     m_window.draw(m_arrow);
+
+    updateMouseArrow();
+    m_window.draw(m_mouse_arrow);
 
     m_window.display();
 }
