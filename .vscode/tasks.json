@@ -8,7 +8,8 @@
       "args": [
         "-S", ".",
         "-B", "build",
-        "-DGLVX_BUILD_TESTS=ON"
+        "-DGLVX_BUILD_TESTS=ON",
+        "-DGLVX_BUILD_SANDBOX=ON"
       ],
       "group": {
         "kind": "none",
@@ -37,6 +38,16 @@
         "isDefault": false
       },
       "problemMatcher": ["$msCompile"]
+    },
+    {
+      "label": "Run Sandbox",
+      "type": "shell",
+      "command": "build\\glvx_sandbox\\Debug\\glvx_sandbox.exe",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": []
     }
   ]
 }
