@@ -24,6 +24,18 @@
       "environment": [],
       "console": "externalTerminal",
       "preLaunchTask": "CMake Build Release"
+    },
+    {
+      "name": "Sandbox",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/glvx_sandbox/Debug/glvx_sandbox.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "console": "externalTerminal",
+      "preLaunchTask": "CMake Build Debug"
     }
   ]
 }
