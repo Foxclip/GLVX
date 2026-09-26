@@ -1,6 +1,14 @@
 #include "application.h"
 #include <cmath>
 #include <numbers>
+#include <string>
+#include <utility>
+#include <vector>
+
+#ifdef _WIN32
+#define NOMINMAX
+#include <windows.h>
+#endif
 
 static int transparentAlpha(int index) {
     int alpha = static_cast<int>(256 / pow(2, index));
@@ -10,12 +18,163 @@ static int transparentAlpha(int index) {
     return alpha;
 }
 
+bool Application::loadCursorIcon(
+    glvx::Cursor::Type type,
+    std::vector<unsigned char>& out_pixels,
+    int& out_width,
+    int& out_height
+) {
+    out_pixels.clear();
+    out_width = 0;
+    out_height = 0;
+
+#ifdef _WIN32
+    // Loads the same Win32 system cursor resource the library uses for that
+    // type (see src/cursor.cpp and glfw's win32_window.c), then copies its
+    // color bitmap to RGBA, top-down.
+    // In the Windows SDK the IDC_* macros expand to MAKEINTRESOURCE (LPSTR),
+    // so cast back to the numeric id, as src/cursor.cpp does.
+    DWORD resource_id = 0;
+    switch (type) {
+        case glvx::Cursor::Type::Arrow:                    resource_id = (DWORD)(uintptr_t)IDC_ARROW; break;
+        case glvx::Cursor::Type::ArrowWait:                resource_id = (DWORD)(uintptr_t)IDC_APPSTARTING; break;
+        case glvx::Cursor::Type::Wait:                     resource_id = (DWORD)(uintptr_t)IDC_WAIT; break;
+        case glvx::Cursor::Type::Text:                     resource_id = (DWORD)(uintptr_t)IDC_IBEAM; break;
+        case glvx::Cursor::Type::Hand:                     resource_id = (DWORD)(uintptr_t)IDC_HAND; break;
+        case glvx::Cursor::Type::SizeHorizontal:           resource_id = (DWORD)(uintptr_t)IDC_SIZEWE; break;
+        case glvx::Cursor::Type::SizeVertical:             resource_id = (DWORD)(uintptr_t)IDC_SIZENS; break;
+        case glvx::Cursor::Type::SizeTopLeftBottomRight:   resource_id = (DWORD)(uintptr_t)IDC_SIZENWSE; break;
+        case glvx::Cursor::Type::SizeBottomLeftTopRight:   resource_id = (DWORD)(uintptr_t)IDC_SIZENESW; break;
+        case glvx::Cursor::Type::SizeLeft:                 resource_id = (DWORD)(uintptr_t)IDC_SIZEWE; break;
+        case glvx::Cursor::Type::SizeRight:                resource_id = (DWORD)(uintptr_t)IDC_SIZEWE; break;
+        case glvx::Cursor::Type::SizeTop:                  resource_id = (DWORD)(uintptr_t)IDC_SIZENS; break;
+        case glvx::Cursor::Type::SizeBottom:               resource_id = (DWORD)(uintptr_t)IDC_SIZENS; break;
+        case glvx::Cursor::Type::SizeTopLeft:              resource_id = (DWORD)(uintptr_t)IDC_SIZENWSE; break;
+        case glvx::Cursor::Type::SizeBottomRight:          resource_id = (DWORD)(uintptr_t)IDC_SIZENWSE; break;
+        case glvx::Cursor::Type::SizeBottomLeft:           resource_id = (DWORD)(uintptr_t)IDC_SIZENESW; break;
+        case glvx::Cursor::Type::SizeTopRight:             resource_id = (DWORD)(uintptr_t)IDC_SIZENESW; break;
+        case glvx::Cursor::Type::SizeAll:                  resource_id = (DWORD)(uintptr_t)IDC_SIZEALL; break;
+        case glvx::Cursor::Type::Cross:                    resource_id = (DWORD)(uintptr_t)IDC_CROSS; break;
+        case glvx::Cursor::Type::Help:                     resource_id = (DWORD)(uintptr_t)IDC_HELP; break;
+        case glvx::Cursor::Type::NotAllowed:               resource_id = (DWORD)(uintptr_t)IDC_NO; break;
+    }
+
+    HCURSOR h_cursor = (HCURSOR)LoadImageW(
+        NULL, MAKEINTRESOURCEW(resource_id), IMAGE_CURSOR,
+        0, 0, LR_DEFAULTSIZE | LR_SHARED
+    );
+    if (!h_cursor) {
+        return false;
+    }
+
+    ICONINFO icon_info = {};
+    if (!GetIconInfo(h_cursor, &icon_info)) {
+        return false;
+    }
+
+    if (icon_info.hbmColor == NULL) {
+        // monochrome cursors have no color bitmap
+        DeleteObject(icon_info.hbmMask);
+        return false;
+    }
+
+    BITMAP bitmap = {};
+    if (!GetObjectW(icon_info.hbmColor, sizeof(BITMAP), &bitmap)) {
+        DeleteObject(icon_info.hbmColor);
+        DeleteObject(icon_info.hbmMask);
+        return false;
+    }
+
+    const int width = bitmap.bmWidth;
+    const int height = bitmap.bmHeight;
+    std::vector<unsigned char> pixels(
+        static_cast<std::size_t>(width) * static_cast<std::size_t>(height) * 4
+    );
+
+    HDC dc = GetDC(NULL);
+    BITMAPINFO bitmap_info = {};
+    bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bitmap_info.bmiHeader.biWidth = width;
+    bitmap_info.bmiHeader.biHeight = -height; // top-down
+    bitmap_info.bmiHeader.biPlanes = 1;
+    bitmap_info.bmiHeader.biBitCount = 32;
+    bitmap_info.bmiHeader.biCompression = BI_RGB;
+    int retrieved = GetDIBits(
+        dc, icon_info.hbmColor, 0, height,
+        pixels.data(), &bitmap_info, DIB_RGB_COLORS
+    );
+    ReleaseDC(NULL, dc);
+
+    DeleteObject(icon_info.hbmColor);
+    DeleteObject(icon_info.hbmMask);
+
+    if (retrieved <= 0) {
+        return false;
+    }
+
+    // GetDIBits yields B,G,R,A memory bytes; we want R,G,B,A
+    for (int i = 0; i < width * height; i++) {
+        std::swap(
+            pixels[static_cast<std::size_t>(i) * 4],
+            pixels[static_cast<std::size_t>(i) * 4 + 2]
+        );
+    }
+
+    out_pixels = std::move(pixels);
+    out_width = width;
+    out_height = height;
+    return true;
+#else
+    (void)type;
+    return false;
+#endif
+}
+
+std::string Application::cursorDisplayName(glvx::Cursor::Type type) {
+    const char* raw_name = "Unknown";
+    switch (type) {
+        case glvx::Cursor::Type::Arrow:                    raw_name = "Arrow"; break;
+        case glvx::Cursor::Type::ArrowWait:                raw_name = "ArrowWait"; break;
+        case glvx::Cursor::Type::Wait:                     raw_name = "Wait"; break;
+        case glvx::Cursor::Type::Text:                     raw_name = "Text"; break;
+        case glvx::Cursor::Type::Hand:                     raw_name = "Hand"; break;
+        case glvx::Cursor::Type::SizeHorizontal:           raw_name = "SizeHorizontal"; break;
+        case glvx::Cursor::Type::SizeVertical:             raw_name = "SizeVertical"; break;
+        case glvx::Cursor::Type::SizeTopLeftBottomRight:   raw_name = "SizeTopLeftBottomRight"; break;
+        case glvx::Cursor::Type::SizeBottomLeftTopRight:   raw_name = "SizeBottomLeftTopRight"; break;
+        case glvx::Cursor::Type::SizeLeft:                 raw_name = "SizeLeft"; break;
+        case glvx::Cursor::Type::SizeRight:                raw_name = "SizeRight"; break;
+        case glvx::Cursor::Type::SizeTop:                  raw_name = "SizeTop"; break;
+        case glvx::Cursor::Type::SizeBottom:               raw_name = "SizeBottom"; break;
+        case glvx::Cursor::Type::SizeTopLeft:              raw_name = "SizeTopLeft"; break;
+        case glvx::Cursor::Type::SizeBottomRight:          raw_name = "SizeBottomRight"; break;
+        case glvx::Cursor::Type::SizeBottomLeft:           raw_name = "SizeBottomLeft"; break;
+        case glvx::Cursor::Type::SizeTopRight:             raw_name = "SizeTopRight"; break;
+        case glvx::Cursor::Type::SizeAll:                  raw_name = "SizeAll"; break;
+        case glvx::Cursor::Type::Cross:                    raw_name = "Cross"; break;
+        case glvx::Cursor::Type::Help:                     raw_name = "Help"; break;
+        case glvx::Cursor::Type::NotAllowed:               raw_name = "NotAllowed"; break;
+    }
+
+    // Insert a space before each capital except the first so the Text
+    // line-breaking (which splits on spaces) can wrap the long names.
+    std::string name;
+    for (std::size_t i = 0; raw_name[i] != '\0'; i++) {
+        if (i > 0 && raw_name[i] >= 'A' && raw_name[i] <= 'Z') {
+            name += ' ';
+        }
+        name += raw_name[i];
+    }
+    return name;
+}
+
 void Application::init() {
     m_window.create(800, 600, "GLVX sandbox");
     m_font_normal.openFromFile("fonts/LiberationSans-Regular.ttf");
     m_font_subpixel.openFromFile("fonts/LiberationSans-Regular.ttf", true);
     m_start_time = std::chrono::steady_clock::now();
     setupShapes();
+    setupCursorRow();
 }
 
 void Application::setupShapes() {
@@ -95,6 +254,49 @@ void Application::setupShapes() {
     m_button_label.setFont(&m_font_normal);
     m_button_label.setCharacterSize(14);
     setButtonLabel();
+}
+
+void Application::setupCursorRow() {
+    for (int i = 0; i < NUM_CURSOR_TYPES; i++) {
+        const glvx::Cursor::Type type = static_cast<glvx::Cursor::Type>(i);
+        m_cursor_types[i].loadFromSystem(type);
+
+        std::vector<unsigned char> pixels;
+        int icon_width = 0;
+        int icon_height = 0;
+        if (loadCursorIcon(type, pixels, icon_width, icon_height)) {
+            m_cursor_icons[i].create(icon_width, icon_height, pixels.data(), 4);
+        }
+
+        const float tile_x = CURSOR_ROW_X + i * (CURSOR_TILE_W + CURSOR_TILE_GAP);
+        m_cursor_tiles[i].setSize(CURSOR_TILE_W, CURSOR_TILE_H);
+        m_cursor_tiles[i].setPosition(tile_x, CURSOR_ROW_Y);
+        m_cursor_tiles[i].setColor(glvx::Color(40, 40, 40));
+
+        m_cursor_icon_rects[i].setSize(CURSOR_ICON_BOX, CURSOR_ICON_BOX);
+        m_cursor_icon_rects[i].setPosition(
+            tile_x + (CURSOR_TILE_W - CURSOR_ICON_BOX) / 2.0f,
+            CURSOR_ROW_Y + 4.0f
+        );
+        if (m_cursor_icons[i].getID() != 0) {
+            m_cursor_icon_rects[i].setTexture(&m_cursor_icons[i]);
+        }
+        m_cursor_icon_rects[i].setColor(glvx::Color::White);
+
+        m_cursor_labels[i].setFont(&m_font_normal);
+        m_cursor_labels[i].setCharacterSize(7);
+        m_cursor_labels[i].setString(cursorDisplayName(type));
+        m_cursor_labels[i].setMaxWidth(CURSOR_TILE_W - 2.0f);
+        m_cursor_labels[i].setColor(glvx::Color::White);
+        m_cursor_labels[i].setOrigin(m_cursor_labels[i].getWidth() / 2.0f, 0.0f);
+        m_cursor_labels[i].setPosition(
+            tile_x + CURSOR_TILE_W / 2.0f,
+            CURSOR_ROW_Y + 30.0f
+        );
+    }
+
+    m_arrow_cursor.loadFromSystem(glvx::Cursor::Type::Arrow);
+    m_window.setMouseCursor(m_arrow_cursor);
 }
 
 void Application::run() {
@@ -189,6 +391,38 @@ void Application::updateButton() {
     }
 }
 
+void Application::updateCursorRow() {
+    const glvx::Vector2f mouse_world = m_window.screenToWorld(glvx::Mouse::getPosition(m_window));
+    int hovered = -1;
+    for (int i = 0; i < NUM_CURSOR_TYPES; i++) {
+        const glvx::Vector2f position = m_cursor_tiles[i].getPosition();
+        const glvx::Vector2f size = m_cursor_tiles[i].getSize();
+        if (mouse_world.x >= position.x &&
+            mouse_world.x <= position.x + size.x &&
+            mouse_world.y >= position.y &&
+            mouse_world.y <= position.y + size.y) {
+            hovered = i;
+            break;
+        }
+    }
+
+    if (hovered != m_current_cursor_index) {
+        if (hovered == -1) {
+            m_window.setMouseCursor(m_arrow_cursor);
+        } else {
+            m_window.setMouseCursor(m_cursor_types[hovered]);
+        }
+        m_current_cursor_index = hovered;
+        for (int i = 0; i < NUM_CURSOR_TYPES; i++) {
+            if (i == hovered) {
+                m_cursor_tiles[i].setColor(glvx::Color(80, 90, 120));
+            } else {
+                m_cursor_tiles[i].setColor(glvx::Color(40, 40, 40));
+            }
+        }
+    }
+}
+
 void Application::render() {
     m_view.setPosition(m_window.getCenter());
     m_window.setView(m_view);
@@ -222,6 +456,15 @@ void Application::render() {
     updateButton();
     m_window.draw(m_button_background);
     m_window.draw(m_button_label);
+
+    updateCursorRow();
+    for (int i = 0; i < NUM_CURSOR_TYPES; i++) {
+        m_window.draw(m_cursor_tiles[i]);
+        if (m_cursor_icons[i].getID() != 0) {
+            m_window.draw(m_cursor_icon_rects[i]);
+        }
+        m_window.draw(m_cursor_labels[i]);
+    }
 
     m_window.display();
 }
