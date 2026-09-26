@@ -1,4 +1,5 @@
 #include <cmath>
+#include <numbers>
 #include "glvx/window.h"
 #include "glvx/rectangle.h"
 #include "glvx/circle.h"
@@ -32,8 +33,11 @@ int main() {
     circle.setPosition(10.0f, 70.0f);
 
     const float hexagon_radius = 10.0f;
+    float pi_f = static_cast<float>(std::numbers::pi);
+    float point_count_f = static_cast<float>(hexagon.getPointCount());
     for (std::size_t i = 0; i < hexagon.getPointCount(); ++i) {
-        const float angle = 2.0f * 3.14159265358979f * static_cast<float>(i) / static_cast<float>(hexagon.getPointCount());
+        float i_f = static_cast<float>(i);
+        const float angle = 2.0f * pi_f * i_f / point_count_f;
         hexagon.setPoint(i, glvx::Vector2f(
             hexagon_radius * std::cos(angle),
             hexagon_radius * std::sin(angle)
