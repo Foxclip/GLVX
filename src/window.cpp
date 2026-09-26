@@ -120,7 +120,24 @@ void Window::setTitle(const std::string& title) const {
     glfwSetWindowTitle(m_window, title.c_str());
 }
 
+void Window::clear(const Color& color) const {
+    if (!isOpen()) {
+        return;
+    }
+    RenderTarget::clear(color);
+}
+
+void Window::draw(const Drawable& drawable, const RenderStates& states) const {
+    if (!isOpen()) {
+        return;
+    }
+    RenderTarget::draw(drawable, states);
+}
+
 void Window::display() const {
+    if (!isOpen()) {
+        return;
+    }
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     glfwSwapBuffers(m_window);
 }

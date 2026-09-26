@@ -40,6 +40,8 @@ public:
     Vector2i getSize() const;
     Vector2f getCenter() const;
     void setView(const View& view) override;
+    void clear(const Color& color) const override;
+    void draw(const Drawable& drawable, const RenderStates& states = RenderStates()) const override;
     void setSize(int width, int height);
     void setSize(const Vector2i& size);
     void setTitle(const std::string& title) const;
