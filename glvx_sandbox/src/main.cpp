@@ -7,6 +7,7 @@ glvx::Window window;
 glvx::Rectangle rectangle_red(20.0f, 20.0f);
 glvx::Rectangle rectangle_green(20.0f, 20.0f);
 glvx::Rectangle rectangle_blue(20.0f, 20.0f);
+glvx::Rectangle rectangle_red_transparent(20.0f, 20.0f);
 glvx::View view;
 
 void render() {
@@ -17,6 +18,8 @@ void render() {
     window.draw(rectangle_red);
     window.draw(rectangle_green);
     window.draw(rectangle_blue);
+
+    window.draw(rectangle_red_transparent);
 
     window.display();
 }
@@ -30,6 +33,9 @@ int main() {
     rectangle_red.setPosition(10.0f, 10.0f);
     rectangle_green.setPosition(40.0f, 10.0f);
     rectangle_blue.setPosition(70.0f, 10.0f);
+
+    rectangle_red_transparent.setColor(glvx::Color(255, 0, 0, 128));
+    rectangle_red_transparent.setPosition(10.0f, 40.0f);
 
     while (window.isOpen()) {
         glvx::Event event;
