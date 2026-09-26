@@ -283,7 +283,7 @@ void Application::setupCursorRow() {
         }
         m_cursor_icon_rects[i].setColor(glvx::Color::White);
 
-        m_cursor_labels[i].setFont(&m_font_normal);
+        m_cursor_labels[i].setFont(&m_font_subpixel);
         m_cursor_labels[i].setCharacterSize(7);
         m_cursor_labels[i].setString(cursorDisplayName(type));
         m_cursor_labels[i].setMaxWidth(CURSOR_TILE_W - 2.0f);
