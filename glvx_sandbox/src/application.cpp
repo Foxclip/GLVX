@@ -45,6 +45,13 @@ void Application::setupShapes() {
     m_text_subpixel.setCharacterSize(10);
     m_text_subpixel.setString("The quick brown fox jumps over the lazy dog.");
     m_text_subpixel.setPosition(10.0f, 130.0f);
+
+    m_rgb_rectangle_red.setColor(glvx::Color(255, 0, 0, 128));
+    m_rgb_rectangle_green.setColor(glvx::Color(0, 255, 0, 128));
+    m_rgb_rectangle_blue.setColor(glvx::Color(0, 0, 255, 128));
+    m_rgb_rectangle_red.setPosition(10.0f, 160.0f);
+    m_rgb_rectangle_green.setPosition(20.0f, 160.0f);
+    m_rgb_rectangle_blue.setPosition(15.0f, 170.0f);
 }
 
 void Application::run() {
@@ -82,6 +89,10 @@ void Application::render() {
 
     m_window.draw(m_text_normal);
     m_window.draw(m_text_subpixel);
+
+    m_window.draw(m_rgb_rectangle_red);
+    m_window.draw(m_rgb_rectangle_green);
+    m_window.draw(m_rgb_rectangle_blue);
 
     m_window.display();
 }
