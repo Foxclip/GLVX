@@ -17,11 +17,8 @@ void Application::setupShapes() {
     m_rectangle_green.setPosition(40.0f, 10.0f);
     m_rectangle_blue.setPosition(70.0f, 10.0f);
 
-    m_rectangle_red_transparent.setColor(glvx::Color(255, 0, 0, 128));
-    m_rectangle_red_transparent.setPosition(10.0f, 40.0f);
-
     m_circle.setColor(glvx::Color::Yellow);
-    m_circle.setPosition(10.0f, 70.0f);
+    m_circle.setPosition(10.0f, 40.0f);
 
     const float hexagon_radius = 10.0f;
     float pi_f = static_cast<float>(std::numbers::pi);
@@ -35,7 +32,17 @@ void Application::setupShapes() {
         ));
     }
     m_hexagon.setColor(glvx::Color(0, 255, 255));
-    m_hexagon.setPosition(50.0f, 80.0f);
+    m_hexagon.setPosition(50.0f, 50.0f);
+
+    m_rectangle_red_transparent.setColor(glvx::Color(255, 0, 0, 128));
+    m_rectangle_red_transparent.setPosition(10.0f, 70.0f);
+
+    m_rgb_rectangle_red.setColor(glvx::Color(255, 0, 0, 128));
+    m_rgb_rectangle_green.setColor(glvx::Color(0, 255, 0, 128));
+    m_rgb_rectangle_blue.setColor(glvx::Color(0, 0, 255, 128));
+    m_rgb_rectangle_red.setPosition(40.0f, 70.0f);
+    m_rgb_rectangle_green.setPosition(50.0f, 70.0f);
+    m_rgb_rectangle_blue.setPosition(45.0f, 80.0f);
 
     m_text_normal.setFont(&m_font_normal);
     m_text_normal.setCharacterSize(10);
@@ -45,13 +52,6 @@ void Application::setupShapes() {
     m_text_subpixel.setCharacterSize(10);
     m_text_subpixel.setString("The quick brown fox jumps over the lazy dog.");
     m_text_subpixel.setPosition(10.0f, 130.0f);
-
-    m_rgb_rectangle_red.setColor(glvx::Color(255, 0, 0, 128));
-    m_rgb_rectangle_green.setColor(glvx::Color(0, 255, 0, 128));
-    m_rgb_rectangle_blue.setColor(glvx::Color(0, 0, 255, 128));
-    m_rgb_rectangle_red.setPosition(10.0f, 160.0f);
-    m_rgb_rectangle_green.setPosition(20.0f, 160.0f);
-    m_rgb_rectangle_blue.setPosition(15.0f, 170.0f);
 }
 
 void Application::run() {
