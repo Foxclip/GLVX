@@ -14,6 +14,7 @@ void Application::init() {
     m_window.create(800, 600, "GLVX sandbox");
     m_font_normal.openFromFile("fonts/LiberationSans-Regular.ttf");
     m_font_subpixel.openFromFile("fonts/LiberationSans-Regular.ttf", true);
+    m_start_time = std::chrono::steady_clock::now();
     setupShapes();
 }
 
@@ -74,6 +75,13 @@ void Application::setupShapes() {
     m_text_subpixel.setCharacterSize(10);
     m_text_subpixel.setString("The quick brown fox jumps over the lazy dog.");
     m_text_subpixel.setPosition(10.0f, 160.0f);
+
+    m_arrow.setPoint(0, glvx::Vector2f(12.0f, 0.0f));
+    m_arrow.setPoint(1, glvx::Vector2f(-8.0f, -7.0f));
+    m_arrow.setPoint(2, glvx::Vector2f(-8.0f, 7.0f));
+    m_arrow.setColor(glvx::Color::White);
+    m_arrow.setOrigin(0.0f, 0.0f);
+    m_arrow.setPosition(20.0f, 200.0f);
 }
 
 void Application::run() {
@@ -93,6 +101,14 @@ void Application::handleEvents() {
             m_view.setPosition(m_window.getCenter());
         }
     }
+}
+
+void Application::updateArrow() {
+    const auto now = std::chrono::steady_clock::now();
+    const float elapsed_seconds =
+        std::chrono::duration_cast<std::chrono::duration<float>>(now - m_start_time).count();
+    const float rotation = std::fmod(elapsed_seconds, ARROW_PERIOD_SECONDS) / ARROW_PERIOD_SECONDS;
+    m_arrow.setRotation(glvx::Angle::fromRadians(rotation * 2.0f * static_cast<float>(std::numbers::pi)));
 }
 
 void Application::render() {
@@ -118,6 +134,9 @@ void Application::render() {
 
     m_window.draw(m_text_normal);
     m_window.draw(m_text_subpixel);
+
+    updateArrow();
+    m_window.draw(m_arrow);
 
     m_window.display();
 }
