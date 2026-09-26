@@ -1,6 +1,8 @@
+#include <cmath>
 #include "glvx/window.h"
 #include "glvx/rectangle.h"
 #include "glvx/circle.h"
+#include "glvx/convex_shape.h"
 #include "glvx/view.h"
 #include "glvx/color.h"
 
@@ -11,6 +13,7 @@ int main() {
     glvx::Rectangle rectangle_blue(20.0f, 20.0f);
     glvx::Rectangle rectangle_red_transparent(20.0f, 20.0f);
     glvx::Circle circle(10.0f);
+    glvx::ConvexShape hexagon(6);
     glvx::View view;
 
     window.create(800, 600, "GLVX sandbox");
@@ -28,6 +31,17 @@ int main() {
     circle.setColor(glvx::Color::Yellow);
     circle.setPosition(10.0f, 70.0f);
 
+    const float hexagon_radius = 10.0f;
+    for (std::size_t i = 0; i < hexagon.getPointCount(); ++i) {
+        const float angle = 2.0f * 3.14159265358979f * static_cast<float>(i) / static_cast<float>(hexagon.getPointCount());
+        hexagon.setPoint(i, glvx::Vector2f(
+            hexagon_radius * std::cos(angle),
+            hexagon_radius * std::sin(angle)
+        ));
+    }
+    hexagon.setColor(glvx::Color(0, 255, 255));
+    hexagon.setPosition(50.0f, 80.0f);
+
     auto render = [&]() {
         view.setPosition(window.getCenter());
         window.setView(view);
@@ -40,6 +54,7 @@ int main() {
         window.draw(rectangle_red_transparent);
 
         window.draw(circle);
+        window.draw(hexagon);
 
         window.display();
     };
