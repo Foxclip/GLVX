@@ -89,6 +89,12 @@ void Application::setupShapes() {
     m_mouse_arrow.setColor(glvx::Color::Yellow);
     m_mouse_arrow.setOrigin(0.0f, 0.0f);
     m_mouse_arrow.setPosition(40.0f, 190.0f);
+
+    m_button_background.setColor(glvx::Color(70, 130, 180));
+    m_button_background.setPosition(10.0f, 220.0f);
+    m_button_label.setFont(&m_font_normal);
+    m_button_label.setCharacterSize(14);
+    setButtonLabel();
 }
 
 void Application::run() {
@@ -107,6 +113,16 @@ void Application::handleEvents() {
         if (event.type == glvx::EventType::Resized) {
             m_view.setPosition(m_window.getCenter());
         }
+        if (event.type == glvx::EventType::MouseButtonPressed) {
+            if (event.mouseButton.button == glvx::Mouse::Button::Left) {
+                const glvx::Vector2f click_world =
+                    m_window.screenToWorld(event.mouseButton.x, event.mouseButton.y);
+                if (isMouseOverButton(click_world)) {
+                    m_button_press_count++;
+                    setButtonLabel();
+                }
+            }
+        }
     }
 }
 
@@ -124,6 +140,53 @@ void Application::updateMouseArrow() {
     const float dx = mouse_world.x - arrow_pos.x;
     const float dy = mouse_world.y - arrow_pos.y;
     m_mouse_arrow.setRotation(glvx::Angle::fromRadians(-std::atan2(dy, dx)));
+}
+
+bool Application::isMouseOverButton(const glvx::Vector2f& point_world) const {
+    const glvx::Vector2f position = m_button_background.getPosition();
+    const glvx::Vector2f size = m_button_background.getSize();
+    return point_world.x >= position.x &&
+           point_world.x <= position.x + size.x &&
+           point_world.y >= position.y &&
+           point_world.y <= position.y + size.y;
+}
+
+void Application::setButtonLabel() {
+    m_button_label.setString("Clicks: " + std::to_string(m_button_press_count));
+    const glvx::Vector2f position = m_button_background.getPosition();
+    m_button_label.setOrigin(
+        m_button_label.getWidth() / 2.0f,
+        m_button_label.getHeight() / 2.0f + 4.0f
+    );
+    m_button_label.setPosition(
+        position.x + m_button_background.getWidth() / 2.0f,
+        position.y + m_button_background.getHeight() / 2.0f
+    );
+}
+
+void Application::updateButton() {
+    const glvx::Vector2f mouse_world = m_window.screenToWorld(glvx::Mouse::getPosition(m_window));
+    const bool hovered = isMouseOverButton(mouse_world);
+    const bool pressed = hovered && glvx::Mouse::isButtonPressed(glvx::Mouse::Button::Left);
+
+    glvx::Color background_color;
+    if (pressed) {
+        background_color = glvx::Color(30, 60, 110);
+    }
+    else if (hovered) {
+        background_color = glvx::Color(100, 165, 220);
+    }
+    else {
+        background_color = glvx::Color(70, 130, 180);
+    }
+    m_button_background.setColor(background_color);
+
+    if (pressed) {
+        m_button_label.setColor(glvx::Color(220, 220, 220));
+    }
+    else {
+        m_button_label.setColor(glvx::Color::White);
+    }
 }
 
 void Application::render() {
@@ -155,6 +218,10 @@ void Application::render() {
 
     updateMouseArrow();
     m_window.draw(m_mouse_arrow);
+
+    updateButton();
+    m_window.draw(m_button_background);
+    m_window.draw(m_button_label);
 
     m_window.display();
 }

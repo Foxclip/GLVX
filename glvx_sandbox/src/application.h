@@ -34,11 +34,17 @@ private:
     glvx::Font m_font_subpixel;
     glvx::Text m_text_normal;
     glvx::Text m_text_subpixel;
+    glvx::Rectangle m_button_background{120.0f, 30.0f};
+    glvx::Text m_button_label;
+    int m_button_press_count = 0;
     std::chrono::steady_clock::time_point m_start_time;
 
     void setupShapes();
     void handleEvents();
     void updateArrow();
     void updateMouseArrow();
+    void updateButton();
+    bool isMouseOverButton(const glvx::Vector2f& point_world) const;
+    void setButtonLabel();
     void render();
 };
