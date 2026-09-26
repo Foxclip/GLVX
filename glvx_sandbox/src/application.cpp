@@ -4,6 +4,8 @@
 
 void Application::init() {
     m_window.create(800, 600, "GLVX sandbox");
+    m_font_normal.openFromFile("fonts/LiberationSans-Regular.ttf");
+    m_font_subpixel.openFromFile("fonts/LiberationSans-Regular.ttf", true);
     setupShapes();
 }
 
@@ -34,6 +36,15 @@ void Application::setupShapes() {
     }
     m_hexagon.setColor(glvx::Color(0, 255, 255));
     m_hexagon.setPosition(50.0f, 80.0f);
+
+    m_text_normal.setFont(&m_font_normal);
+    m_text_normal.setCharacterSize(10);
+    m_text_normal.setString("The quick brown fox jumps over the lazy dog.");
+    m_text_normal.setPosition(10.0f, 110.0f);
+    m_text_subpixel.setFont(&m_font_subpixel);
+    m_text_subpixel.setCharacterSize(10);
+    m_text_subpixel.setString("The quick brown fox jumps over the lazy dog.");
+    m_text_subpixel.setPosition(10.0f, 130.0f);
 }
 
 void Application::run() {
@@ -68,6 +79,9 @@ void Application::render() {
 
     m_window.draw(m_circle);
     m_window.draw(m_hexagon);
+
+    m_window.draw(m_text_normal);
+    m_window.draw(m_text_subpixel);
 
     m_window.display();
 }

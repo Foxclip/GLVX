@@ -6,6 +6,7 @@
 #include "glvx/convex_shape.h"
 #include "glvx/view.h"
 #include "glvx/color.h"
+#include "glvx/text.h"
 
 class Application {
 public:
@@ -25,4 +26,8 @@ private:
     glvx::Rectangle m_rectangle_red_transparent{20.0f, 20.0f};
     glvx::Circle m_circle{10.0f};
     glvx::ConvexShape m_hexagon{6};
+    glvx::Font m_font_normal;
+    glvx::Font m_font_subpixel;
+    glvx::Text m_text_normal;
+    glvx::Text m_text_subpixel;
 };
