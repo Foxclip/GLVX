@@ -34,24 +34,34 @@ void Application::setupShapes() {
     m_hexagon.setColor(glvx::Color(0, 255, 255));
     m_hexagon.setPosition(50.0f, 50.0f);
 
-    m_rectangle_red_transparent.setColor(glvx::Color(255, 0, 0, 128));
-    m_rectangle_red_transparent.setPosition(10.0f, 70.0f);
+    for (int i = 0; i < NUM_TRANSPARENT_RECTANGLES; i++) {
+        int alpha = static_cast<int>(256 / pow(2, i));
+        if (i == 0) {
+            alpha = 255;
+        }
+        m_transparent_rectangles[i].setColor(glvx::Color(255, 0, 0, alpha));
+        m_transparent_rectangles[i].setSize(glvx::Vector2f(20.0f, 20.0f));
+        m_transparent_rectangles[i].setPosition(
+            10.0f + i * 30.0f,
+            70.0f
+        );
+    }
 
     m_rgb_rectangle_red.setColor(glvx::Color(255, 0, 0, 128));
     m_rgb_rectangle_green.setColor(glvx::Color(0, 255, 0, 128));
     m_rgb_rectangle_blue.setColor(glvx::Color(0, 0, 255, 128));
-    m_rgb_rectangle_red.setPosition(40.0f, 70.0f);
-    m_rgb_rectangle_green.setPosition(50.0f, 70.0f);
-    m_rgb_rectangle_blue.setPosition(45.0f, 80.0f);
+    m_rgb_rectangle_red.setPosition(10.0f, 100.0f);
+    m_rgb_rectangle_green.setPosition(20.0f, 100.0f);
+    m_rgb_rectangle_blue.setPosition(15.0f, 110.0f);
 
     m_text_normal.setFont(&m_font_normal);
     m_text_normal.setCharacterSize(10);
     m_text_normal.setString("The quick brown fox jumps over the lazy dog.");
-    m_text_normal.setPosition(10.0f, 110.0f);
+    m_text_normal.setPosition(10.0f, 140.0f);
     m_text_subpixel.setFont(&m_font_subpixel);
     m_text_subpixel.setCharacterSize(10);
     m_text_subpixel.setString("The quick brown fox jumps over the lazy dog.");
-    m_text_subpixel.setPosition(10.0f, 130.0f);
+    m_text_subpixel.setPosition(10.0f, 160.0f);
 }
 
 void Application::run() {
@@ -82,17 +92,18 @@ void Application::render() {
     m_window.draw(m_rectangle_green);
     m_window.draw(m_rectangle_blue);
 
-    m_window.draw(m_rectangle_red_transparent);
+    for (int i = 0; i < NUM_TRANSPARENT_RECTANGLES; i++) {
+        m_window.draw(m_transparent_rectangles[i]);
+    }
+    m_window.draw(m_rgb_rectangle_red);
+    m_window.draw(m_rgb_rectangle_green);
+    m_window.draw(m_rgb_rectangle_blue);
 
     m_window.draw(m_circle);
     m_window.draw(m_hexagon);
 
     m_window.draw(m_text_normal);
     m_window.draw(m_text_subpixel);
-
-    m_window.draw(m_rgb_rectangle_red);
-    m_window.draw(m_rgb_rectangle_green);
-    m_window.draw(m_rgb_rectangle_blue);
 
     m_window.display();
 }

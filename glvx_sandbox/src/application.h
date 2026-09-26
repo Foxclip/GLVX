@@ -14,9 +14,7 @@ public:
     void run();
 
 private:
-    void setupShapes();
-    void handleEvents();
-    void render();
+    static const int NUM_TRANSPARENT_RECTANGLES = 10;
 
     glvx::Window m_window;
     glvx::View m_view;
@@ -25,7 +23,7 @@ private:
     glvx::Rectangle m_rectangle_blue{20.0f, 20.0f};
     glvx::Circle m_circle{10.0f};
     glvx::ConvexShape m_hexagon{6};
-    glvx::Rectangle m_rectangle_red_transparent{20.0f, 20.0f};
+    glvx::Rectangle m_transparent_rectangles[NUM_TRANSPARENT_RECTANGLES];
     glvx::Rectangle m_rgb_rectangle_red{20.0f, 20.0f};
     glvx::Rectangle m_rgb_rectangle_green{20.0f, 20.0f};
     glvx::Rectangle m_rgb_rectangle_blue{20.0f, 20.0f};
@@ -33,4 +31,8 @@ private:
     glvx::Font m_font_subpixel;
     glvx::Text m_text_normal;
     glvx::Text m_text_subpixel;
+
+    void setupShapes();
+    void handleEvents();
+    void render();
 };
