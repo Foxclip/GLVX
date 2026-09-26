@@ -3,15 +3,33 @@
 #include "glvx/view.h"
 #include "glvx/color.h"
 
+glvx::Window window;
+glvx::Rectangle rectangle_red(20.0f, 20.0f);
+glvx::Rectangle rectangle_green(20.0f, 20.0f);
+glvx::Rectangle rectangle_blue(20.0f, 20.0f);
+glvx::View view;
+
+void render() {
+    view.setPosition(window.getCenter());
+    window.setView(view);
+    window.clear(glvx::Color::Black);
+
+    window.draw(rectangle_red);
+    window.draw(rectangle_green);
+    window.draw(rectangle_blue);
+
+    window.display();
+}
+
 int main() {
-    glvx::Window window;
     window.create(800, 600, "GLVX sandbox");
 
-    glvx::View view;
-    view.setPosition(window.getCenter());
-
-    glvx::Rectangle rectangle(100.0f, 100.0f);
-    rectangle.setColor(glvx::Color::Red);
+    rectangle_red.setColor(glvx::Color::Red);
+    rectangle_green.setColor(glvx::Color::Green);
+    rectangle_blue.setColor(glvx::Color::Blue);
+    rectangle_red.setPosition(10.0f, 10.0f);
+    rectangle_green.setPosition(40.0f, 10.0f);
+    rectangle_blue.setPosition(70.0f, 10.0f);
 
     while (window.isOpen()) {
         glvx::Event event;
@@ -23,10 +41,8 @@ int main() {
                 view.setPosition(window.getCenter());
             }
         }
-        window.setView(view);
-        window.clear(glvx::Color::Black);
-        window.draw(rectangle);
-        window.display();
+
+        render();
     }
 
     return 0;
