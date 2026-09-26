@@ -47,6 +47,9 @@ void VertexBuffer::ensureInitialized(std::size_t size) {
     if (size == 0) {
         return;
     }
+    if (!has_active_gl_context()) {
+        return;
+    }
     if (m_vao == 0) {
         GL_CALL(glGenVertexArrays(1, &m_vao));
     }
@@ -81,6 +84,9 @@ void VertexBuffer::updateBuffer(const void* data, unsigned int offset, std::size
 }
 
 void VertexBuffer::recreateBuffer(std::size_t size) {
+    if (!has_active_gl_context()) {
+        return;
+    }
     if (m_vbo != 0) {
         GL_CALL(glDeleteBuffers(1, &m_vbo));
         m_vbo = 0;
