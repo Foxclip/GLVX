@@ -690,15 +690,14 @@ void Application::updateMinimap() {
     // when minimized), so the minimap trails the scene by one frame and shows
     // itself in the corner, converging to a recursive fixed point.
     const glvx::Image frame = m_window.readPixels();
-    // create() destroys the previous texture and resets the interpolation, so
-    // both must be re-applied on every update.
-    m_minimap_texture.create(
+    // Same size as the existing texture, so update() replaces the texels in
+    // place without recreating the GL texture.
+    m_minimap_texture.update(
+        frame.getData().data(),
         frame.getWidth(),
         frame.getHeight(),
-        const_cast<unsigned char*>(frame.getData().data()),
         4
     );
-    m_minimap_texture.setInterpolation(glvx::InterpolationType::Linear);
 }
 
 void Application::run() {
@@ -715,11 +714,12 @@ void Application::run() {
 
 bool Application::captureScreenshot(const std::string& file_path) {
     handleEvents();
-    // The minimap shows the previous frame, so render a few frames to let it
+    // The minimap shows the previous frame and is only re-captured every
+    // MINIMAP_CAPTURE_INTERVAL frames, so render several frames to let it
     // warm up before the capture is taken.
-    render();
-    render();
-    render();
+    for (int i = 0; i < MINIMAP_CAPTURE_INTERVAL * 3; i++) {
+        render();
+    }
     glvx::Image image = m_window.readPixels();
     if (!writePng(file_path, image)) {
         std::cerr << "Failed to save screenshot to " << file_path << std::endl;
@@ -917,8 +917,13 @@ void Application::updateCursorRow() {
 
 void Application::render() {
     // Capture the previous frame before clearing, so the minimap texture is
-    // ready when the overlay is drawn at the end of this frame.
-    updateMinimap();
+    // ready when the overlay is drawn at the end of this frame. The capture
+    // is throttled (see MINIMAP_CAPTURE_INTERVAL) because glReadPixels is
+    // expensive; in between, the overlay reuses the cached texture.
+    if (m_minimap_frame_counter % MINIMAP_CAPTURE_INTERVAL == 0) {
+        updateMinimap();
+    }
+    ++m_minimap_frame_counter;
 
     m_window.setView(m_view);
     m_window.clear(glvx::Color::Black);
