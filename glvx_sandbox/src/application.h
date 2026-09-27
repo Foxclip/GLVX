@@ -16,7 +16,7 @@
 
 class Application {
 public:
-    void init();
+    void init(bool minimized = false);
     void run();
 
 private:

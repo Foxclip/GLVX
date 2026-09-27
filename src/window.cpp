@@ -1,3 +1,8 @@
+#ifdef _WIN32
+#define NOMINMAX
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <windows.h>
+#endif
 #include "glvx/window.h"
 #include "glvx/shader.h"
 #include "glvx/shaders/simple.h"
@@ -8,6 +13,9 @@
 #include "glvx/mouse.h"
 #include <stdexcept>
 #include <filesystem>
+#ifdef _WIN32
+#include <GLFW/glfw3native.h>
+#endif
 
 namespace glvx {
 
@@ -18,7 +26,7 @@ Window::~Window() {
     close();
 }
 
-void Window::create(int width, int height, const char* title, int msaa_samples) {
+void Window::create(int width, int height, const char* title, int msaa_samples, bool minimized) {
     START_TRY
     close();
 
@@ -38,6 +46,12 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
     if (!m_window) {
         throw std::runtime_error("Failed to create GLFW window");
     }
+
+#ifdef _WIN32
+    if (minimized) {
+        ShowWindow(glfwGetWin32Window(m_window), SW_MINIMIZE);
+    }
+#endif
 
     glfwMakeContextCurrent(m_window);
 

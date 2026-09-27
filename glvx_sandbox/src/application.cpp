@@ -217,8 +217,8 @@ std::string Application::cursorDisplayName(glvx::Cursor::Type type) {
     return name;
 }
 
-void Application::init() {
-    m_window.create(800, 600, "GLVX sandbox");
+void Application::init(bool minimized) {
+    m_window.create(800, 600, "GLVX sandbox", 0, minimized);
     m_view.setPosition(m_window.getCenter());
     m_font_normal.openFromFile("fonts/LiberationSans-Regular.ttf");
     m_font_subpixel.openFromFile("fonts/LiberationSans-Regular.ttf", true);

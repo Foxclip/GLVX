@@ -30,7 +30,8 @@ public:
         int width = DEFAULT_WINDOW_WIDTH,
         int height = DEFAULT_WINDOW_HEIGHT,
         const char* title = "GLVX window",
-        int msaa_samples = 0
+        int msaa_samples = 0,
+        bool minimized = false
     );
     void close();
     bool isOpen() const;
