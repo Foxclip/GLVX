@@ -63,7 +63,9 @@ void Window::create(int width, int height, const char* title, int msaa_samples, 
 
     m_current_width = width;
     m_current_height = height;
-    m_msaa_samples = glfwGetWindowAttrib(m_window, GLFW_SAMPLES);
+    // GLFW does not expose the default framebuffer sample count through
+    // glfwGetWindowAttrib, so remember the requested count instead.
+    m_msaa_samples = msaa_samples;
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         glfwDestroyWindow(m_window);

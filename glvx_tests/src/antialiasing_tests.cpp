@@ -71,29 +71,22 @@ void AntialiasingTestsModule::windowAASubpixelRectTest(test::Test& test) {
     aa_window.display();
 
     Image image = aa_window.readPixels();
-    // A minimized window renders to an offscreen renderbuffer whose MSAA
-    // sample layout is implementation-defined, so the border coverage
-    // cannot be asserted in that case.
-    if (!minimized) {
-        // top left border
-        int red_top_left = image.getPixel(0, 0).r;
-        T_CHECK(
-            red_top_left > 0 && red_top_left < 255,
-            "Top left red is not strictly between 0 and 255: " + std::to_string(red_top_left)
-        );
-    }
+    // top left border
+    int red_top_left = image.getPixel(0, 0).r;
+    T_CHECK(
+        red_top_left > 0 && red_top_left < 255,
+        "Top left red is not strictly between 0 and 255: " + std::to_string(red_top_left)
+    );
     // top left inside
     T_COMPARE(image.getPixel(1, 1), Color::Red, &Color::toString);
     // bottom right inside
     T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
     // bottom right border
-    if (!minimized) {
-        int red_bottom_right = image.getPixel(rect_size_int).r;
-        T_CHECK(
-            red_bottom_right > 0 && red_bottom_right < 255,
-            "Bottom right red is not strictly between 0 and 255: " + std::to_string(red_bottom_right)
-        );
-    }
+    int red_bottom_right = image.getPixel(rect_size_int).r;
+    T_CHECK(
+        red_bottom_right > 0 && red_bottom_right < 255,
+        "Bottom right red is not strictly between 0 and 255: " + std::to_string(red_bottom_right)
+    );
     // bottom right outside
     T_COMPARE(image.getPixel(rect_size_int + Vector2i(1, 1)), Color::Black, &Color::toString);
 }
