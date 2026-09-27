@@ -260,7 +260,7 @@ void Application::setupShapes() {
         m_transparent_rectangles[i].setSize(glvx::Vector2f(20.0f, 20.0f));
         m_transparent_rectangles[i].setPosition(
             10.0f + i * 30.0f,
-            210.0f
+            156.0f
         );
     }
 
@@ -273,36 +273,36 @@ void Application::setupShapes() {
         for (int c = 0; c < 3; c++) {
             m_rgb_group_rectangles[i][c].setSize(glvx::Vector2f(20.0f, 20.0f));
         }
-        m_rgb_group_rectangles[i][0].setPosition(x, 240.0f);
-        m_rgb_group_rectangles[i][1].setPosition(x + 10.0f, 240.0f);
-        m_rgb_group_rectangles[i][2].setPosition(x + 5.0f, 250.0f);
+        m_rgb_group_rectangles[i][0].setPosition(x, 186.0f);
+        m_rgb_group_rectangles[i][1].setPosition(x + 10.0f, 186.0f);
+        m_rgb_group_rectangles[i][2].setPosition(x + 5.0f, 196.0f);
     }
 
     m_text_normal.setFont(&m_font_normal);
     m_text_normal.setCharacterSize(10);
     m_text_normal.setString("The quick brown fox jumps over the lazy dog.");
-    m_text_normal.setPosition(10.0f, 280.0f);
+    m_text_normal.setPosition(10.0f, 226.0f);
     m_text_subpixel.setFont(&m_font_subpixel);
     m_text_subpixel.setCharacterSize(10);
     m_text_subpixel.setString("The quick brown fox jumps over the lazy dog.");
-    m_text_subpixel.setPosition(10.0f, 300.0f);
+    m_text_subpixel.setPosition(10.0f, 246.0f);
 
     m_arrow.setPoint(0, glvx::Vector2f(12.0f, 0.0f));
     m_arrow.setPoint(1, glvx::Vector2f(-8.0f, -7.0f));
     m_arrow.setPoint(2, glvx::Vector2f(-8.0f, 7.0f));
     m_arrow.setColor(glvx::Color::White);
     m_arrow.setOrigin(0.0f, 0.0f);
-    m_arrow.setPosition(10.0f, 330.0f);
+    m_arrow.setPosition(10.0f, 276.0f);
 
     m_mouse_arrow.setPoint(0, glvx::Vector2f(12.0f, 0.0f));
     m_mouse_arrow.setPoint(1, glvx::Vector2f(-8.0f, -7.0f));
     m_mouse_arrow.setPoint(2, glvx::Vector2f(-8.0f, 7.0f));
     m_mouse_arrow.setColor(glvx::Color::Yellow);
     m_mouse_arrow.setOrigin(0.0f, 0.0f);
-    m_mouse_arrow.setPosition(40.0f, 330.0f);
+    m_mouse_arrow.setPosition(40.0f, 276.0f);
 
     m_button_background.setColor(glvx::Color(70, 130, 180));
-    m_button_background.setPosition(10.0f, 360.0f);
+    m_button_background.setPosition(10.0f, 306.0f);
     m_button_label.setFont(&m_font_normal);
     m_button_label.setCharacterSize(14);
     setButtonLabel();
@@ -355,7 +355,7 @@ void Application::setupTextureShowcase() {
     std::vector<unsigned char> pattern_pixels;
     generatePatternPixels(pattern_pixels, 16, 16);
 
-    // Interpolation row: the same small gradient drawn with Nearest vs Linear.
+    // Interpolation cells: the same small gradient drawn with Nearest vs Linear.
     const glvx::InterpolationType interps[NUM_TEXTURE_INTERP] = {
         glvx::InterpolationType::Nearest,
         glvx::InterpolationType::Linear
@@ -368,8 +368,8 @@ void Application::setupTextureShowcase() {
         m_tex_interp[i].create(8, 8, gradient_pixels.data(), 4);
         m_tex_interp[i].setInterpolation(interps[i]);
 
-        float cell_x = TEX_ROW_X + i * (TEX_INTERP_CELL + TEX_CELL_GAP);
-        m_tex_interp_rects[i].setSize(TEX_INTERP_CELL, TEX_INTERP_CELL);
+        float cell_x = TEX_ROW_X + i * (TEX_CELL + TEX_CELL_GAP);
+        m_tex_interp_rects[i].setSize(TEX_CELL, TEX_CELL);
         m_tex_interp_rects[i].setPosition(cell_x, TEX_ROW_Y);
         m_tex_interp_rects[i].setTexture(&m_tex_interp[i]);
 
@@ -378,12 +378,12 @@ void Application::setupTextureShowcase() {
         m_tex_interp_labels[i].setString(interp_names[i]);
         m_tex_interp_labels[i].setOrigin(m_tex_interp_labels[i].getWidth() / 2.0f, 0.0f);
         m_tex_interp_labels[i].setPosition(
-            cell_x + TEX_INTERP_CELL / 2.0f,
-            TEX_ROW_Y + TEX_INTERP_CELL + TEX_LABEL_GAP
+            cell_x + TEX_CELL / 2.0f,
+            TEX_ROW_Y + TEX_CELL + TEX_LABEL_GAP
         );
     }
 
-    // Wrapping row: the same small pattern with each wrapping mode, sampled
+    // Wrapping cells: the same small pattern with each wrapping mode, sampled
     // over UV [0,2] x [0,2] so the out-of-range behavior is visible.
     const glvx::WrappingType wraps[NUM_TEXTURE_WRAP] = {
         glvx::WrappingType::ClampToEdge,
@@ -402,9 +402,9 @@ void Application::setupTextureShowcase() {
         m_tex_wrap[i].setInterpolation(glvx::InterpolationType::Nearest);
         m_tex_wrap[i].setWrapping(wraps[i]);
 
-        float cell_x = TEX_ROW_X + i * (TEX_WRAP_CELL + TEX_CELL_GAP);
-        m_tex_wrap_rects[i].setSize(TEX_WRAP_CELL, TEX_WRAP_CELL);
-        m_tex_wrap_rects[i].setPosition(cell_x, TEX_WRAP_ROW_Y);
+        float cell_x = TEX_ROW_X + (NUM_TEXTURE_INTERP + i) * (TEX_CELL + TEX_CELL_GAP);
+        m_tex_wrap_rects[i].setSize(TEX_CELL, TEX_CELL);
+        m_tex_wrap_rects[i].setPosition(cell_x, TEX_ROW_Y);
         m_tex_wrap_rects[i].setTexture(&m_tex_wrap[i]);
         setQuadUv(m_tex_wrap_rects[i], 0.0f, 0.0f, 2.0f, 2.0f);
 
@@ -413,8 +413,8 @@ void Application::setupTextureShowcase() {
         m_tex_wrap_labels[i].setString(wrap_names[i]);
         m_tex_wrap_labels[i].setOrigin(m_tex_wrap_labels[i].getWidth() / 2.0f, 0.0f);
         m_tex_wrap_labels[i].setPosition(
-            cell_x + TEX_WRAP_CELL / 2.0f,
-            TEX_WRAP_ROW_Y + TEX_WRAP_CELL + TEX_LABEL_GAP
+            cell_x + TEX_CELL / 2.0f,
+            TEX_ROW_Y + TEX_CELL + TEX_LABEL_GAP
         );
     }
 }
