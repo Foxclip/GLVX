@@ -36,7 +36,6 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-// TODO: RenderTexture (minimap)
 // TODO: keyboard input
 // TODO: Text: highlight character under cursor
 // TODO: cursor visibility: drag a shape with cursor

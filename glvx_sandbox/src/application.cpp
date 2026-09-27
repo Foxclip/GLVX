@@ -336,6 +336,7 @@ void Application::init(bool minimized) {
     setupAntialiasingShowcase();
     setupShaderShowcase();
     setupCursorRow();
+    setupMinimap();
 }
 
 void Application::setupShapes() {
@@ -647,6 +648,59 @@ void Application::setupCursorRow() {
     m_window.setMouseCursor(m_arrow_cursor);
 }
 
+void Application::setupMinimap() {
+    const int window_width = m_window.getWidth();
+    const int window_height = m_window.getHeight();
+
+    // Placeholder contents; updateMinimap() replaces them with a fresh
+    // readPixels() capture of the window every frame.
+    m_minimap_texture.create(window_width, window_height, nullptr, 4);
+    m_minimap_texture.setInterpolation(glvx::InterpolationType::Linear);
+
+    const float minimap_width = static_cast<float>(window_width) * MINIMAP_SCALE;
+    const float minimap_height = static_cast<float>(window_height) * MINIMAP_SCALE;
+    const float minimap_x = static_cast<float>(window_width) - minimap_width - MINIMAP_MARGIN;
+    const float minimap_y = static_cast<float>(MINIMAP_MARGIN);
+
+    m_minimap_border.setColor(glvx::Color(60, 60, 60));
+    m_minimap_border.setSize(
+        minimap_width + MINIMAP_BORDER * 2.0f,
+        minimap_height + MINIMAP_BORDER * 2.0f
+    );
+    m_minimap_border.setPosition(
+        minimap_x - MINIMAP_BORDER,
+        minimap_y - MINIMAP_BORDER
+    );
+
+    m_minimap_rect.setSize(minimap_width, minimap_height);
+    m_minimap_rect.setPosition(minimap_x, minimap_y);
+    m_minimap_rect.setTexture(&m_minimap_texture);
+
+    m_minimap_label.setFont(&m_font_normal);
+    m_minimap_label.setCharacterSize(10);
+    m_minimap_label.setString("Minimap");
+    m_minimap_label.setPosition(
+        minimap_x,
+        minimap_y + minimap_height + MINIMAP_BORDER + 4.0f
+    );
+}
+
+void Application::updateMinimap() {
+    // readPixels() returns the last presented frame (or the offscreen texture
+    // when minimized), so the minimap trails the scene by one frame and shows
+    // itself in the corner, converging to a recursive fixed point.
+    const glvx::Image frame = m_window.readPixels();
+    // create() destroys the previous texture and resets the interpolation, so
+    // both must be re-applied on every update.
+    m_minimap_texture.create(
+        frame.getWidth(),
+        frame.getHeight(),
+        const_cast<unsigned char*>(frame.getData().data()),
+        4
+    );
+    m_minimap_texture.setInterpolation(glvx::InterpolationType::Linear);
+}
+
 void Application::run() {
     while (m_window.isOpen()) {
         handleEvents();
@@ -661,6 +715,10 @@ void Application::run() {
 
 bool Application::captureScreenshot(const std::string& file_path) {
     handleEvents();
+    // The minimap shows the previous frame, so render a few frames to let it
+    // warm up before the capture is taken.
+    render();
+    render();
     render();
     glvx::Image image = m_window.readPixels();
     if (!writePng(file_path, image)) {
@@ -858,6 +916,10 @@ void Application::updateCursorRow() {
 }
 
 void Application::render() {
+    // Capture the previous frame before clearing, so the minimap texture is
+    // ready when the overlay is drawn at the end of this frame.
+    updateMinimap();
+
     m_window.setView(m_view);
     m_window.clear(glvx::Color::Black);
 
@@ -926,6 +988,17 @@ void Application::render() {
         m_window.draw(m_shader_cell_rects[i]);
         m_window.draw(m_shader_cell_labels[i]);
     }
+
+    // Draw the minimap last in screen space (unit scale, view centered on the
+    // window center so world coordinates equal screen pixels), so it stays
+    // pinned to the window corner no matter how the main view is panned or
+    // zoomed.
+    glvx::View screen_view;
+    screen_view.setPosition(m_window.getCenter());
+    m_window.setView(screen_view);
+    m_window.draw(m_minimap_border);
+    m_window.draw(m_minimap_rect);
+    m_window.draw(m_minimap_label);
 
     m_window.display();
 }
