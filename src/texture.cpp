@@ -82,9 +82,10 @@ void Texture::update(const unsigned char* data, int width, int height, int chann
 }
 
 Image Texture::readPixels() const {
-    Image img = readPixelsRaw();
-    img.flipY();
-    return img;
+    // Unlike Window::readPixels (glReadPixels, which is bottom-up),
+    // glGetTexImage already returns the texels in data order (row 0 first),
+    // which is also the order the texture is drawn, so no flipping is needed.
+    return readPixelsRaw();
 }
 
 }
