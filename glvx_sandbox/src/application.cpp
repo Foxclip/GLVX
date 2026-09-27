@@ -1,5 +1,9 @@
+#ifdef _WIN32
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #include "application.h"
 #include <cmath>
+#include <iostream>
 #include <numbers>
 #include <string>
 #include <utility>
@@ -9,6 +13,9 @@
 #define NOMINMAX
 #include <windows.h>
 #endif
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 static int transparentAlpha(int index) {
     int alpha = static_cast<int>(256 / pow(2, index));
@@ -54,6 +61,20 @@ static void generatePatternPixels(std::vector<unsigned char>& pixels, int width,
             pixels[idx + 3] = c[3];
         }
     }
+}
+
+// Writes the image as an RGBA PNG file. readPixels() data is already
+// top-down straight-alpha RGBA, which is exactly the layout stb expects.
+static bool writePng(const std::string& file_path, const glvx::Image& image) {
+    const int stride = image.getWidth() * 4;
+    return stbi_write_png(
+        file_path.c_str(),
+        image.getWidth(),
+        image.getHeight(),
+        4,
+        image.getData().data(),
+        stride
+    ) != 0;
 }
 
 // Remap a rectangle's fixed [0,1] texture coordinates to [u0..u1] x [v0..v1]
@@ -507,6 +528,17 @@ void Application::run() {
         handleEvents();
         render();
     }
+}
+
+bool Application::captureScreenshot(const std::string& file_path) {
+    handleEvents();
+    render();
+    glvx::Image image = m_window.readPixels();
+    if (!writePng(file_path, image)) {
+        std::cerr << "Failed to save screenshot to " << file_path << std::endl;
+        return false;
+    }
+    return true;
 }
 
 void Application::handleEvents() {

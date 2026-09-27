@@ -1,24 +1,44 @@
 #include "application.h"
 #include <cstring>
+#include <iostream>
+#include <string>
 
 int main(int argc, char* argv[]) {
     bool minimized = false;
+    std::string screenshot_path;
     for (int i = 1; i < argc; i++) {
         if (std::strcmp(argv[i], "--minimized") == 0) {
+            minimized = true;
+        }
+        if (std::strcmp(argv[i], "--screenshot") == 0) {
+            if (i + 1 >= argc) {
+                std::cerr << "ERROR: --screenshot requires a file path argument" << std::endl;
+                return 1;
+            }
+            i++;
+            screenshot_path = argv[i];
+            // --screenshot implies --minimized
             minimized = true;
         }
     }
 
     Application application;
     application.init(minimized);
-    application.run();
 
-    // TODO: RenderTexture (minimap)
-    // TODO: keyboard input
-    // TODO: custom shaders
-    // TODO: Text: highlight character under cursor
-    // TODO: cursor visibility: drag a shape with cursor
-    // TODO: window focus indicators
+    if (screenshot_path.empty()) {
+        application.run();
+        return 0;
+    }
 
+    if (!application.captureScreenshot(screenshot_path)) {
+        return 1;
+    }
     return 0;
 }
+
+// TODO: RenderTexture (minimap)
+// TODO: keyboard input
+// TODO: custom shaders
+// TODO: Text: highlight character under cursor
+// TODO: cursor visibility: drag a shape with cursor
+// TODO: window focus indicators
