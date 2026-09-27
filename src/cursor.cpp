@@ -1,9 +1,9 @@
-#include "glvx/cursor.h"
-
 #ifdef _WIN32
 #define NOMINMAX
 #include <windows.h>
 #endif
+
+#include "glvx/cursor.h" // must be after windows include
 
 #include <cstdint>
 #include <utility>
