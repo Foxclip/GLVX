@@ -28,6 +28,7 @@ private:
     inline static const float CURSOR_ROW_X = 10.0f;
     inline static const float CURSOR_ROW_Y = 260.0f;
     inline static const float CURSOR_ICON_BOX = 24.0f;
+    inline static const float VIEW_ZOOM_FACTOR = 1.2f;
     inline static const float MIN_ZOOM = 0.1f;
     inline static const float MAX_ZOOM = 20.0f;
 

@@ -359,8 +359,8 @@ void Application::handlePanning(const glvx::Event& event) {
 void Application::handleZoom(const glvx::Event& event) {
     const float zoom = m_view.getZoom();
     float new_zoom = (event.mouseWheel.delta > 0.0f)
-        ? zoom * glvx::VIEW_ZOOM_FACTOR
-        : zoom / glvx::VIEW_ZOOM_FACTOR;
+        ? zoom * VIEW_ZOOM_FACTOR
+        : zoom / VIEW_ZOOM_FACTOR;
     if (new_zoom < MIN_ZOOM) {
         new_zoom = MIN_ZOOM;
     }
