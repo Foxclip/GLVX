@@ -17,7 +17,7 @@ AntialiasingTestsModule::AntialiasingTestsModule(
 }
 
 void AntialiasingTestsModule::beforeRunModule() {
-    aa_window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "aa window", AA_WINDOW_SAMPLES);
+    aa_window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "aa window", AA_WINDOW_SAMPLES, minimized);
 }
 
 void AntialiasingTestsModule::afterRunModule() {
@@ -71,22 +71,29 @@ void AntialiasingTestsModule::windowAASubpixelRectTest(test::Test& test) {
     aa_window.display();
 
     Image image = aa_window.readPixels();
-    // top left border
-    int red_top_left = image.getPixel(0, 0).r;
-    T_CHECK(
-        red_top_left > 0 && red_top_left < 255,
-        "Top left red is not strictly between 0 and 255: " + std::to_string(red_top_left)
-    );
+    // A minimized window renders to an offscreen renderbuffer whose MSAA
+    // sample layout is implementation-defined, so the border coverage
+    // cannot be asserted in that case.
+    if (!minimized) {
+        // top left border
+        int red_top_left = image.getPixel(0, 0).r;
+        T_CHECK(
+            red_top_left > 0 && red_top_left < 255,
+            "Top left red is not strictly between 0 and 255: " + std::to_string(red_top_left)
+        );
+    }
     // top left inside
     T_COMPARE(image.getPixel(1, 1), Color::Red, &Color::toString);
     // bottom right inside
     T_COMPARE(image.getPixel(rect_size_int - Vector2i(1, 1)), Color::Red, &Color::toString);
     // bottom right border
-    int red_bottom_right = image.getPixel(rect_size_int).r;
-    T_CHECK(
-        red_bottom_right > 0 && red_bottom_right < 255,
-        "Bottom right red is not strictly between 0 and 255: " + std::to_string(red_bottom_right)
-    );
+    if (!minimized) {
+        int red_bottom_right = image.getPixel(rect_size_int).r;
+        T_CHECK(
+            red_bottom_right > 0 && red_bottom_right < 255,
+            "Bottom right red is not strictly between 0 and 255: " + std::to_string(red_bottom_right)
+        );
+    }
     // bottom right outside
     T_COMPARE(image.getPixel(rect_size_int + Vector2i(1, 1)), Color::Black, &Color::toString);
 }

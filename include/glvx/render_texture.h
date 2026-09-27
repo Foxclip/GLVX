@@ -19,6 +19,7 @@ public:
     int getSamples() const;
     void display();
     Image readPixels() const override;
+    unsigned int getRenderTargetFbo() const override;
 
 private:
     unsigned int m_fbo = 0;
@@ -26,7 +27,6 @@ private:
     unsigned int m_msaa_texture = 0;
     int m_msaa_samples = 0;
 
-    unsigned int getRenderTargetFbo() const override;
     int getRenderTargetWidth() const override;
     int getRenderTargetHeight() const override;
 };

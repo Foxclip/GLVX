@@ -1,3 +1,4 @@
+#include <cstring>
 #include <iostream>
 #include "glvx_tests/glvx_tests_common.h"
 #include "glvx_tests/basic_tests.h"
@@ -20,12 +21,18 @@
 #include "glvx_tests/application_tests.h"
 #include "glvx_tests/cursor_tests.h"
 
-int main() {
+int main(int argc, char* argv[]) {
+
+    for (int i = 1; i < argc; i++) {
+        if (std::strcmp(argv[i], "--minimized") == 0) {
+            minimized = true;
+        }
+    }
 
     try {
 
         test::TestModule root("glvx tests", nullptr);
-        window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "glvx tests");
+        window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "glvx tests", 0, minimized);
         auto basic_tests_module = root.addModule<BasicTestsModule>("Basic");
         auto float_rect_tests_module = root.addModule<FloatRectTestsModule>("FloatRect");
         auto shape_tests_module = root.addModule<ShapeTestsModule>("Shape", { basic_tests_module });
