@@ -27,16 +27,25 @@ private:
     inline static const float CURSOR_TILE_H = 62.0f;
     inline static const float CURSOR_TILE_GAP = 2.0f;
     inline static const float CURSOR_ROW_X = 10.0f;
-    inline static const float CURSOR_ROW_Y = 260.0f;
+    inline static const float CURSOR_ROW_Y = 400.0f;
     inline static const float CURSOR_ICON_BOX = 24.0f;
     static const int NUM_BLEND_MODES = 5;
     inline static const float BLEND_CELL_W = 150.0f;
     inline static const float BLEND_ROW_X = 10.0f;
-    inline static const float BLEND_ROW_Y = 345.0f;
+    inline static const float BLEND_ROW_Y = 485.0f;
     inline static const float BLEND_BG_W = 110.0f;
     inline static const float BLEND_BG_H = 70.0f;
     inline static const float BLEND_SRC_W = 60.0f;
     inline static const float BLEND_SRC_H = 40.0f;
+    static const int NUM_TEXTURE_INTERP = 2;
+    static const int NUM_TEXTURE_WRAP = 4;
+    inline static const float TEX_ROW_X = 10.0f;
+    inline static const float TEX_ROW_Y = 70.0f;
+    inline static const float TEX_WRAP_ROW_Y = 150.0f;
+    inline static const float TEX_INTERP_CELL = 56.0f;
+    inline static const float TEX_WRAP_CELL = 44.0f;
+    inline static const float TEX_CELL_GAP = 16.0f;
+    inline static const float TEX_LABEL_GAP = 4.0f;
     inline static const float VIEW_ZOOM_FACTOR = 1.2f;
     inline static const float MIN_ZOOM = 0.1f;
     inline static const float MAX_ZOOM = 20.0f;
@@ -54,6 +63,12 @@ private:
     glvx::Rectangle m_blend_backgrounds[NUM_BLEND_MODES];
     glvx::Rectangle m_blend_sources[NUM_BLEND_MODES];
     glvx::Text m_blend_labels[NUM_BLEND_MODES];
+    glvx::Texture m_tex_interp[NUM_TEXTURE_INTERP];
+    glvx::Rectangle m_tex_interp_rects[NUM_TEXTURE_INTERP];
+    glvx::Text m_tex_interp_labels[NUM_TEXTURE_INTERP];
+    glvx::Texture m_tex_wrap[NUM_TEXTURE_WRAP];
+    glvx::Rectangle m_tex_wrap_rects[NUM_TEXTURE_WRAP];
+    glvx::Text m_tex_wrap_labels[NUM_TEXTURE_WRAP];
     glvx::Font m_font_normal;
     glvx::Font m_font_subpixel;
     glvx::Text m_text_normal;
@@ -77,6 +92,7 @@ private:
 
     void setupShapes();
     void setupBlendShowcase();
+    void setupTextureShowcase();
     void setupCursorRow();
     void handleEvents();
     void handlePanning(const glvx::Event& event);

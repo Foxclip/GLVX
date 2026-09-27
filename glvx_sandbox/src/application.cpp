@@ -18,6 +18,55 @@ static int transparentAlpha(int index) {
     return alpha;
 }
 
+// Horizontal red->blue gradient. Row 0 of the data renders at the top of the
+// shape, so the pattern reads in the natural order.
+static void generateGradientPixels(std::vector<unsigned char>& pixels, int width, int height) {
+    pixels.assign(static_cast<std::size_t>(width) * static_cast<std::size_t>(height) * 4, 0);
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            float t = static_cast<float>(x) / static_cast<float>(width - 1);
+            std::size_t idx = (static_cast<std::size_t>(y) * static_cast<std::size_t>(width) + static_cast<std::size_t>(x)) * 4;
+            pixels[idx + 0] = static_cast<unsigned char>(255.0f * (1.0f - t));
+            pixels[idx + 1] = 0;
+            pixels[idx + 2] = static_cast<unsigned char>(255.0f * t);
+            pixels[idx + 3] = 255;
+        }
+    }
+}
+
+// Right-pointing triangle (apex at the right-center, base on the left edge) on a
+// dark background. Vertically symmetric, so the mirror is only visible
+// horizontally.
+static void generatePatternPixels(std::vector<unsigned char>& pixels, int width, int height) {
+    pixels.assign(static_cast<std::size_t>(width) * static_cast<std::size_t>(height) * 4, 0);
+    const float center_y = static_cast<float>(height - 1) / 2.0f;
+    const unsigned char dark[4] = {48, 48, 48, 255};
+    const unsigned char light[4] = {255, 255, 255, 255};
+    for (int y = 0; y < height; y++) {
+        float d = std::abs(static_cast<float>(y) - center_y) / center_y;
+        float x_max = static_cast<float>(width - 1) * (1.0f - d);
+        for (int x = 0; x < width; x++) {
+            const unsigned char* c = (static_cast<float>(x) <= x_max) ? light : dark;
+            std::size_t idx = (static_cast<std::size_t>(y) * static_cast<std::size_t>(width) + static_cast<std::size_t>(x)) * 4;
+            pixels[idx + 0] = c[0];
+            pixels[idx + 1] = c[1];
+            pixels[idx + 2] = c[2];
+            pixels[idx + 3] = c[3];
+        }
+    }
+}
+
+// Remap a rectangle's fixed [0,1] texture coordinates to [u0..u1] x [v0..v1]
+// so that wrapping modes can be exercised with out-of-range UVs.
+static void setQuadUv(glvx::Rectangle& rect, float u0, float v0, float u1, float v1) {
+    rect.getVertex(0).tex_coords = glvx::Vector2f(u0, v1);
+    rect.getVertex(1).tex_coords = glvx::Vector2f(u0, v0);
+    rect.getVertex(2).tex_coords = glvx::Vector2f(u1, v1);
+    rect.getVertex(3).tex_coords = glvx::Vector2f(u1, v1);
+    rect.getVertex(4).tex_coords = glvx::Vector2f(u0, v0);
+    rect.getVertex(5).tex_coords = glvx::Vector2f(u1, v0);
+}
+
 bool Application::loadCursorIcon(
     glvx::Cursor::Type type,
     std::vector<unsigned char>& out_pixels,
@@ -175,6 +224,7 @@ void Application::init() {
     m_font_subpixel.openFromFile("fonts/LiberationSans-Regular.ttf", true);
     m_start_time = std::chrono::steady_clock::now();
     setupShapes();
+    setupTextureShowcase();
     setupBlendShowcase();
     setupCursorRow();
 }
@@ -210,7 +260,7 @@ void Application::setupShapes() {
         m_transparent_rectangles[i].setSize(glvx::Vector2f(20.0f, 20.0f));
         m_transparent_rectangles[i].setPosition(
             10.0f + i * 30.0f,
-            70.0f
+            210.0f
         );
     }
 
@@ -223,36 +273,36 @@ void Application::setupShapes() {
         for (int c = 0; c < 3; c++) {
             m_rgb_group_rectangles[i][c].setSize(glvx::Vector2f(20.0f, 20.0f));
         }
-        m_rgb_group_rectangles[i][0].setPosition(x, 100.0f);
-        m_rgb_group_rectangles[i][1].setPosition(x + 10.0f, 100.0f);
-        m_rgb_group_rectangles[i][2].setPosition(x + 5.0f, 110.0f);
+        m_rgb_group_rectangles[i][0].setPosition(x, 240.0f);
+        m_rgb_group_rectangles[i][1].setPosition(x + 10.0f, 240.0f);
+        m_rgb_group_rectangles[i][2].setPosition(x + 5.0f, 250.0f);
     }
 
     m_text_normal.setFont(&m_font_normal);
     m_text_normal.setCharacterSize(10);
     m_text_normal.setString("The quick brown fox jumps over the lazy dog.");
-    m_text_normal.setPosition(10.0f, 140.0f);
+    m_text_normal.setPosition(10.0f, 280.0f);
     m_text_subpixel.setFont(&m_font_subpixel);
     m_text_subpixel.setCharacterSize(10);
     m_text_subpixel.setString("The quick brown fox jumps over the lazy dog.");
-    m_text_subpixel.setPosition(10.0f, 160.0f);
+    m_text_subpixel.setPosition(10.0f, 300.0f);
 
     m_arrow.setPoint(0, glvx::Vector2f(12.0f, 0.0f));
     m_arrow.setPoint(1, glvx::Vector2f(-8.0f, -7.0f));
     m_arrow.setPoint(2, glvx::Vector2f(-8.0f, 7.0f));
     m_arrow.setColor(glvx::Color::White);
     m_arrow.setOrigin(0.0f, 0.0f);
-    m_arrow.setPosition(10.0f, 190.0f);
+    m_arrow.setPosition(10.0f, 330.0f);
 
     m_mouse_arrow.setPoint(0, glvx::Vector2f(12.0f, 0.0f));
     m_mouse_arrow.setPoint(1, glvx::Vector2f(-8.0f, -7.0f));
     m_mouse_arrow.setPoint(2, glvx::Vector2f(-8.0f, 7.0f));
     m_mouse_arrow.setColor(glvx::Color::Yellow);
     m_mouse_arrow.setOrigin(0.0f, 0.0f);
-    m_mouse_arrow.setPosition(40.0f, 190.0f);
+    m_mouse_arrow.setPosition(40.0f, 330.0f);
 
     m_button_background.setColor(glvx::Color(70, 130, 180));
-    m_button_background.setPosition(10.0f, 220.0f);
+    m_button_background.setPosition(10.0f, 360.0f);
     m_button_label.setFont(&m_font_normal);
     m_button_label.setCharacterSize(14);
     setButtonLabel();
@@ -295,6 +345,76 @@ void Application::setupBlendShowcase() {
         m_blend_labels[i].setPosition(
             cell_x + BLEND_CELL_W / 2.0f,
             BLEND_ROW_Y + BLEND_BG_H + 8.0f
+        );
+    }
+}
+
+void Application::setupTextureShowcase() {
+    std::vector<unsigned char> gradient_pixels;
+    generateGradientPixels(gradient_pixels, 8, 8);
+    std::vector<unsigned char> pattern_pixels;
+    generatePatternPixels(pattern_pixels, 16, 16);
+
+    // Interpolation row: the same small gradient drawn with Nearest vs Linear.
+    const glvx::InterpolationType interps[NUM_TEXTURE_INTERP] = {
+        glvx::InterpolationType::Nearest,
+        glvx::InterpolationType::Linear
+    };
+    const char* interp_names[NUM_TEXTURE_INTERP] = {
+        "Nearest",
+        "Linear"
+    };
+    for (int i = 0; i < NUM_TEXTURE_INTERP; i++) {
+        m_tex_interp[i].create(8, 8, gradient_pixels.data(), 4);
+        m_tex_interp[i].setInterpolation(interps[i]);
+
+        float cell_x = TEX_ROW_X + i * (TEX_INTERP_CELL + TEX_CELL_GAP);
+        m_tex_interp_rects[i].setSize(TEX_INTERP_CELL, TEX_INTERP_CELL);
+        m_tex_interp_rects[i].setPosition(cell_x, TEX_ROW_Y);
+        m_tex_interp_rects[i].setTexture(&m_tex_interp[i]);
+
+        m_tex_interp_labels[i].setFont(&m_font_normal);
+        m_tex_interp_labels[i].setCharacterSize(10);
+        m_tex_interp_labels[i].setString(interp_names[i]);
+        m_tex_interp_labels[i].setOrigin(m_tex_interp_labels[i].getWidth() / 2.0f, 0.0f);
+        m_tex_interp_labels[i].setPosition(
+            cell_x + TEX_INTERP_CELL / 2.0f,
+            TEX_ROW_Y + TEX_INTERP_CELL + TEX_LABEL_GAP
+        );
+    }
+
+    // Wrapping row: the same small pattern with each wrapping mode, sampled
+    // over UV [0,2] x [0,2] so the out-of-range behavior is visible.
+    const glvx::WrappingType wraps[NUM_TEXTURE_WRAP] = {
+        glvx::WrappingType::ClampToEdge,
+        glvx::WrappingType::Repeat,
+        glvx::WrappingType::MirroredRepeat,
+        glvx::WrappingType::ClampToBorder
+    };
+    const char* wrap_names[NUM_TEXTURE_WRAP] = {
+        "Clamp",
+        "Repeat",
+        "Mirror",
+        "Border"
+    };
+    for (int i = 0; i < NUM_TEXTURE_WRAP; i++) {
+        m_tex_wrap[i].create(16, 16, pattern_pixels.data(), 4);
+        m_tex_wrap[i].setInterpolation(glvx::InterpolationType::Nearest);
+        m_tex_wrap[i].setWrapping(wraps[i]);
+
+        float cell_x = TEX_ROW_X + i * (TEX_WRAP_CELL + TEX_CELL_GAP);
+        m_tex_wrap_rects[i].setSize(TEX_WRAP_CELL, TEX_WRAP_CELL);
+        m_tex_wrap_rects[i].setPosition(cell_x, TEX_WRAP_ROW_Y);
+        m_tex_wrap_rects[i].setTexture(&m_tex_wrap[i]);
+        setQuadUv(m_tex_wrap_rects[i], 0.0f, 0.0f, 2.0f, 2.0f);
+
+        m_tex_wrap_labels[i].setFont(&m_font_normal);
+        m_tex_wrap_labels[i].setCharacterSize(10);
+        m_tex_wrap_labels[i].setString(wrap_names[i]);
+        m_tex_wrap_labels[i].setOrigin(m_tex_wrap_labels[i].getWidth() / 2.0f, 0.0f);
+        m_tex_wrap_labels[i].setPosition(
+            cell_x + TEX_WRAP_CELL / 2.0f,
+            TEX_WRAP_ROW_Y + TEX_WRAP_CELL + TEX_LABEL_GAP
         );
     }
 }
@@ -546,6 +666,15 @@ void Application::render() {
 
     m_window.draw(m_text_normal);
     m_window.draw(m_text_subpixel);
+
+    for (int i = 0; i < NUM_TEXTURE_INTERP; i++) {
+        m_window.draw(m_tex_interp_rects[i]);
+        m_window.draw(m_tex_interp_labels[i]);
+    }
+    for (int i = 0; i < NUM_TEXTURE_WRAP; i++) {
+        m_window.draw(m_tex_wrap_rects[i]);
+        m_window.draw(m_tex_wrap_labels[i]);
+    }
 
     updateArrow();
     m_window.draw(m_arrow);
