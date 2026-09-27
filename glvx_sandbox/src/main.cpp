@@ -13,9 +13,7 @@ int main(int argc, char* argv[]) {
     application.init(minimized);
     application.run();
 
-    // TODO: textures, interpolation and wrapping
     // TODO: RenderTexture (minimap)
-    // TODO: render a shape with msaa
     // TODO: keyboard input
     // TODO: custom shaders
     // TODO: Text: highlight character under cursor

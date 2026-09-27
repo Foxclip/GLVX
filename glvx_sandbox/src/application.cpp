@@ -226,6 +226,7 @@ void Application::init(bool minimized) {
     setupShapes();
     setupTextureShowcase();
     setupBlendShowcase();
+    setupAntialiasingShowcase();
     setupCursorRow();
 }
 
@@ -415,6 +416,45 @@ void Application::setupTextureShowcase() {
         m_tex_wrap_labels[i].setPosition(
             cell_x + TEX_CELL / 2.0f,
             TEX_ROW_Y + TEX_CELL + TEX_LABEL_GAP
+        );
+    }
+}
+
+void Application::setupAntialiasingShowcase() {
+    const int sample_counts[NUM_AA_CELLS] = {0, AA_SAMPLES};
+    const char* names[NUM_AA_CELLS] = {"MSAA off", "MSAA 4x"};
+
+    // A rotated square: its slanted edges show the difference between
+    // rendering with and without multisampling.
+    glvx::Rectangle diamond(AA_CELL_H - 12.0f, AA_CELL_H - 12.0f);
+    const float diamond_half_size = (AA_CELL_H - 12.0f) / 2.0f;
+    diamond.setColor(glvx::Color::Red);
+    diamond.setOrigin(diamond_half_size, diamond_half_size);
+    diamond.setRotation(glvx::Angle::fromDegrees(30.0f));
+
+    for (int i = 0; i < NUM_AA_CELLS; i++) {
+        m_aa_render_textures[i].create(AA_CELL_W, AA_CELL_H, sample_counts[i]);
+
+        glvx::View view;
+        view.setPosition(static_cast<float>(AA_CELL_W) / 2.0f, static_cast<float>(AA_CELL_H) / 2.0f);
+        m_aa_render_textures[i].setView(view);
+        m_aa_render_textures[i].clear(glvx::Color::Black);
+        m_aa_render_textures[i].draw(diamond);
+        // Resolve the multisample buffer into the texture (no-op without MSAA).
+        m_aa_render_textures[i].display();
+
+        float cell_x = AA_ROW_X + i * (AA_CELL_W + AA_CELL_GAP);
+        m_aa_cell_rects[i].setSize(AA_CELL_W, AA_CELL_H);
+        m_aa_cell_rects[i].setPosition(cell_x, AA_ROW_Y);
+        m_aa_cell_rects[i].setTexture(&m_aa_render_textures[i]);
+
+        m_aa_cell_labels[i].setFont(&m_font_normal);
+        m_aa_cell_labels[i].setCharacterSize(10);
+        m_aa_cell_labels[i].setString(names[i]);
+        m_aa_cell_labels[i].setOrigin(m_aa_cell_labels[i].getWidth() / 2.0f, 0.0f);
+        m_aa_cell_labels[i].setPosition(
+            cell_x + AA_CELL_W / 2.0f,
+            AA_ROW_Y + AA_CELL_H + AA_LABEL_GAP
         );
     }
 }
@@ -701,6 +741,11 @@ void Application::render() {
         states.blend_mode = m_blend_modes[i];
         m_window.draw(m_blend_sources[i], states);
         m_window.draw(m_blend_labels[i]);
+    }
+
+    for (int i = 0; i < NUM_AA_CELLS; i++) {
+        m_window.draw(m_aa_cell_rects[i]);
+        m_window.draw(m_aa_cell_labels[i]);
     }
 
     m_window.display();

@@ -12,6 +12,7 @@
 #include "glvx/color.h"
 #include "glvx/text.h"
 #include "glvx/texture.h"
+#include "glvx/render_texture.h"
 #include "glvx/blend_mode.h"
 
 class Application {
@@ -44,6 +45,14 @@ private:
     inline static const float TEX_CELL = 56.0f;
     inline static const float TEX_CELL_GAP = 16.0f;
     inline static const float TEX_LABEL_GAP = 4.0f;
+    static const int NUM_AA_CELLS = 2;
+    static const int AA_SAMPLES = 4;
+    static const int AA_CELL_W = 120;
+    static const int AA_CELL_H = 56;
+    inline static const float AA_CELL_GAP = 16.0f;
+    inline static const float AA_ROW_X = 10.0f;
+    inline static const float AA_ROW_Y = 525.0f;
+    inline static const float AA_LABEL_GAP = 4.0f;
     inline static const float VIEW_ZOOM_FACTOR = 1.2f;
     inline static const float MIN_ZOOM = 0.1f;
     inline static const float MAX_ZOOM = 20.0f;
@@ -67,6 +76,9 @@ private:
     glvx::Texture m_tex_wrap[NUM_TEXTURE_WRAP];
     glvx::Rectangle m_tex_wrap_rects[NUM_TEXTURE_WRAP];
     glvx::Text m_tex_wrap_labels[NUM_TEXTURE_WRAP];
+    glvx::RenderTexture m_aa_render_textures[NUM_AA_CELLS];
+    glvx::Rectangle m_aa_cell_rects[NUM_AA_CELLS];
+    glvx::Text m_aa_cell_labels[NUM_AA_CELLS];
     glvx::Font m_font_normal;
     glvx::Font m_font_subpixel;
     glvx::Text m_text_normal;
@@ -91,6 +103,7 @@ private:
     void setupShapes();
     void setupBlendShowcase();
     void setupTextureShowcase();
+    void setupAntialiasingShowcase();
     void setupCursorRow();
     void handleEvents();
     void handlePanning(const glvx::Event& event);
