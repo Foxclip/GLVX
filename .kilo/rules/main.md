@@ -10,3 +10,4 @@
 
 - When running sandbox executable, launch it minimized with `--minimized` flag
 - When running sandbox executable, launch it in foreground unless absolutely necessary by the nature of the task, or explicitly requested by the user
+- If you want to take a screenshot, use `--screenshot` flag
