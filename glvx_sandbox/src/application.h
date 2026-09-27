@@ -28,6 +28,8 @@ private:
     inline static const float CURSOR_ROW_X = 10.0f;
     inline static const float CURSOR_ROW_Y = 260.0f;
     inline static const float CURSOR_ICON_BOX = 24.0f;
+    inline static const float MIN_ZOOM = 0.1f;
+    inline static const float MAX_ZOOM = 20.0f;
 
     glvx::Window m_window;
     glvx::View m_view;
@@ -56,10 +58,14 @@ private:
     glvx::Rectangle m_cursor_icon_rects[NUM_CURSOR_TYPES];
     glvx::Text m_cursor_labels[NUM_CURSOR_TYPES];
     int m_current_cursor_index = -1;
+    bool m_panning = false;
+    glvx::Vector2i m_last_pan_pos{0, 0};
 
     void setupShapes();
     void setupCursorRow();
     void handleEvents();
+    void handlePanning(const glvx::Event& event);
+    void handleZoom(const glvx::Event& event);
     void updateArrow();
     void updateMouseArrow();
     void updateButton();

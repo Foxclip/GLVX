@@ -170,6 +170,7 @@ std::string Application::cursorDisplayName(glvx::Cursor::Type type) {
 
 void Application::init() {
     m_window.create(800, 600, "GLVX sandbox");
+    m_view.setPosition(m_window.getCenter());
     m_font_normal.openFromFile("fonts/LiberationSans-Regular.ttf");
     m_font_subpixel.openFromFile("fonts/LiberationSans-Regular.ttf", true);
     m_start_time = std::chrono::steady_clock::now();
@@ -312,9 +313,6 @@ void Application::handleEvents() {
         if (event.type == glvx::EventType::Closed) {
             m_window.close();
         }
-        if (event.type == glvx::EventType::Resized) {
-            m_view.setPosition(m_window.getCenter());
-        }
         if (event.type == glvx::EventType::MouseButtonPressed) {
             if (event.mouseButton.button == glvx::Mouse::Button::Left) {
                 const glvx::Vector2f click_world =
@@ -324,8 +322,69 @@ void Application::handleEvents() {
                     setButtonLabel();
                 }
             }
+            if (event.mouseButton.button == glvx::Mouse::Button::Right) {
+                m_panning = true;
+                m_last_pan_pos = glvx::Vector2i(event.mouseButton.x, event.mouseButton.y);
+            }
+        }
+        if (event.type == glvx::EventType::MouseButtonReleased) {
+            if (event.mouseButton.button == glvx::Mouse::Button::Right) {
+                m_panning = false;
+            }
+        }
+        if (event.type == glvx::EventType::MouseMoved) {
+            handlePanning(event);
+        }
+        if (event.type == glvx::EventType::MouseWheelScrolled) {
+            handleZoom(event);
         }
     }
+}
+
+void Application::handlePanning(const glvx::Event& event) {
+    if (!m_panning) {
+        return;
+    }
+    const float zoom = m_view.getZoom();
+    const float dx = static_cast<float>(event.mouseMove.x - m_last_pan_pos.x);
+    const float dy = static_cast<float>(event.mouseMove.y - m_last_pan_pos.y);
+    // The view position is the world point at screen center, so moving the
+    // view opposite to the mouse drag keeps the grabbed world point under
+    // the cursor. The view matrix flips y (world +y is drawn downward), so
+    // screen and world deltas share the same sign in both axes.
+    m_view.move(-dx / zoom, -dy / zoom);
+    m_last_pan_pos = glvx::Vector2i(event.mouseMove.x, event.mouseMove.y);
+}
+
+void Application::handleZoom(const glvx::Event& event) {
+    const float zoom = m_view.getZoom();
+    float new_zoom = (event.mouseWheel.delta > 0.0f)
+        ? zoom * glvx::VIEW_ZOOM_FACTOR
+        : zoom / glvx::VIEW_ZOOM_FACTOR;
+    if (new_zoom < MIN_ZOOM) {
+        new_zoom = MIN_ZOOM;
+    }
+    if (new_zoom > MAX_ZOOM) {
+        new_zoom = MAX_ZOOM;
+    }
+
+    // World point under the cursor, from the view transform directly so the
+    // result stays correct even within the same event batch as a pan.
+    const glvx::Vector2f center = m_view.getPosition();
+    const float width = static_cast<float>(m_window.getWidth());
+    const float height = static_cast<float>(m_window.getHeight());
+    const float cursor_vx = static_cast<float>(event.mouseWheel.x) - width / 2.0f;
+    const float cursor_vy = static_cast<float>(event.mouseWheel.y) - height / 2.0f;
+    const glvx::Vector2f world_at_cursor(
+        center.x + cursor_vx / zoom,
+        center.y + cursor_vy / zoom
+    );
+    const float factor = 1.0f - zoom / new_zoom;
+    m_view.setPosition(
+        center.x + (world_at_cursor.x - center.x) * factor,
+        center.y + (world_at_cursor.y - center.y) * factor
+    );
+    m_view.setZoom(new_zoom);
 }
 
 void Application::updateArrow() {
@@ -424,7 +483,6 @@ void Application::updateCursorRow() {
 }
 
 void Application::render() {
-    m_view.setPosition(m_window.getCenter());
     m_window.setView(m_view);
     m_window.clear(glvx::Color::Black);
 
