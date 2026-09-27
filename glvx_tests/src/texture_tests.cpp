@@ -15,6 +15,7 @@ TextureTestsModule::TextureTestsModule(
     auto texture_interpolation_test = addTest("texture_interpolation", { texture_full_alpha_test }, [&](test::Test& test) { textureInterpolationTest(test); });
     auto texture_rendering_interpolation_test = addTest("texture_rendering_interpolation", { texture_full_alpha_test }, [&](test::Test& test) { textureRenderingInterpolationTest(test); });
     auto texture_wrapping_test = addTest("texture_wrapping", { texture_full_alpha_test }, [&](test::Test& test) { textureWrappingTest(test); });
+    auto texture_update_test = addTest("texture_update", [&](test::Test& test) { textureUpdateTest(test); });
 }
 
 static std::string interpToString(InterpolationType t) {
@@ -360,4 +361,47 @@ void TextureTestsModule::textureWrappingTest(test::Test& test) {
     T_COMPARE(image_clamp_to_border.getPixel(1, 0), Color(255, 255, 255, 255), &Color::toString);
     T_COMPARE(image_clamp_to_border.getPixel(2, 0), Color(0, 0, 0, 255), &Color::toString);
     T_COMPARE(image_clamp_to_border.getPixel(3, 0), Color(0, 0, 0, 255), &Color::toString);
+}
+
+void TextureTestsModule::textureUpdateTest(test::Test& test) {
+    window.setSize(WINDOW_SIZE);
+    window.setTitle("texture update");
+
+    unsigned char initial_data[16] = {
+        1, 2, 3, 255,
+        5, 6, 7, 255,
+        9, 10, 11, 255,
+        13, 14, 15, 255
+    };
+    Texture tex(initial_data, 2, 2);
+    T_COMPARE(tex.getWidth(), 2);
+    T_COMPARE(tex.getHeight(), 2);
+
+    // Same size: the texels are replaced in place
+    unsigned char updated_data[16] = {
+        20, 21, 22, 255,
+        30, 31, 32, 255,
+        40, 41, 42, 255,
+        50, 51, 52, 255
+    };
+    tex.update(updated_data, 2, 2);
+    T_COMPARE(tex.getWidth(), 2);
+    T_COMPARE(tex.getHeight(), 2);
+    Image image_updated = tex.readPixels();
+    T_COMPARE(image_updated.getPixel(0, 0), Color(20, 21, 22, 255), &Color::toString);
+    T_COMPARE(image_updated.getPixel(1, 0), Color(30, 31, 32, 255), &Color::toString);
+    T_COMPARE(image_updated.getPixel(0, 1), Color(40, 41, 42, 255), &Color::toString);
+    T_COMPARE(image_updated.getPixel(1, 1), Color(50, 51, 52, 255), &Color::toString);
+
+    // Size change: the texture is (re)created with the new size
+    unsigned char resized_data[8] = {
+        100, 101, 102, 255,
+        200, 201, 202, 255
+    };
+    tex.update(resized_data, 2, 1);
+    T_COMPARE(tex.getWidth(), 2);
+    T_COMPARE(tex.getHeight(), 1);
+    Image image_resized = tex.readPixels();
+    T_COMPARE(image_resized.getPixel(0, 0), Color(100, 101, 102, 255), &Color::toString);
+    T_COMPARE(image_resized.getPixel(1, 0), Color(200, 201, 202, 255), &Color::toString);
 }
