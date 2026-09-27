@@ -175,6 +175,7 @@ void Application::init() {
     m_font_subpixel.openFromFile("fonts/LiberationSans-Regular.ttf", true);
     m_start_time = std::chrono::steady_clock::now();
     setupShapes();
+    setupBlendShowcase();
     setupCursorRow();
 }
 
@@ -255,6 +256,47 @@ void Application::setupShapes() {
     m_button_label.setFont(&m_font_normal);
     m_button_label.setCharacterSize(14);
     setButtonLabel();
+}
+
+void Application::setupBlendShowcase() {
+    const glvx::BlendMode modes[NUM_BLEND_MODES] = {
+        glvx::BlendDefault,
+        glvx::BlendAlpha,
+        glvx::BlendAdd,
+        glvx::BlendMultiply,
+        glvx::BlendNone
+    };
+    const char* names[NUM_BLEND_MODES] = {
+        "Default",
+        "Alpha",
+        "Add",
+        "Multiply",
+        "None"
+    };
+    for (int i = 0; i < NUM_BLEND_MODES; i++) {
+        m_blend_modes[i] = modes[i];
+        float cell_x = BLEND_ROW_X + i * BLEND_CELL_W;
+        m_blend_backgrounds[i].setColor(glvx::Color(100, 150, 128));
+        m_blend_backgrounds[i].setSize(glvx::Vector2f(BLEND_BG_W, BLEND_BG_H));
+        m_blend_backgrounds[i].setPosition(
+            cell_x + (BLEND_CELL_W - BLEND_BG_W) / 2.0f,
+            BLEND_ROW_Y
+        );
+        m_blend_sources[i].setColor(glvx::Color(200, 100, 100, 128));
+        m_blend_sources[i].setSize(glvx::Vector2f(BLEND_SRC_W, BLEND_SRC_H));
+        m_blend_sources[i].setPosition(
+            cell_x + (BLEND_CELL_W - BLEND_SRC_W) / 2.0f,
+            BLEND_ROW_Y + 15.0f
+        );
+        m_blend_labels[i].setFont(&m_font_normal);
+        m_blend_labels[i].setCharacterSize(10);
+        m_blend_labels[i].setString(names[i]);
+        m_blend_labels[i].setOrigin(m_blend_labels[i].getWidth() / 2.0f, 0.0f);
+        m_blend_labels[i].setPosition(
+            cell_x + BLEND_CELL_W / 2.0f,
+            BLEND_ROW_Y + BLEND_BG_H + 8.0f
+        );
+    }
 }
 
 void Application::setupCursorRow() {
@@ -522,6 +564,14 @@ void Application::render() {
             m_window.draw(m_cursor_icon_rects[i]);
         }
         m_window.draw(m_cursor_labels[i]);
+    }
+
+    for (int i = 0; i < NUM_BLEND_MODES; i++) {
+        m_window.draw(m_blend_backgrounds[i]);
+        glvx::RenderStates states;
+        states.blend_mode = m_blend_modes[i];
+        m_window.draw(m_blend_sources[i], states);
+        m_window.draw(m_blend_labels[i]);
     }
 
     m_window.display();

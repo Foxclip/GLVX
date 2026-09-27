@@ -5,7 +5,6 @@ int main() {
     application.init();
     application.run();
 
-    // TODO: blend modes
     // TODO: textures, interpolation and wrapping
     // TODO: RenderTexture (minimap)
     // TODO: render a shape with msaa

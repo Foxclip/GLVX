@@ -12,6 +12,7 @@
 #include "glvx/color.h"
 #include "glvx/text.h"
 #include "glvx/texture.h"
+#include "glvx/blend_mode.h"
 
 class Application {
 public:
@@ -28,6 +29,14 @@ private:
     inline static const float CURSOR_ROW_X = 10.0f;
     inline static const float CURSOR_ROW_Y = 260.0f;
     inline static const float CURSOR_ICON_BOX = 24.0f;
+    static const int NUM_BLEND_MODES = 5;
+    inline static const float BLEND_CELL_W = 150.0f;
+    inline static const float BLEND_ROW_X = 10.0f;
+    inline static const float BLEND_ROW_Y = 345.0f;
+    inline static const float BLEND_BG_W = 110.0f;
+    inline static const float BLEND_BG_H = 70.0f;
+    inline static const float BLEND_SRC_W = 60.0f;
+    inline static const float BLEND_SRC_H = 40.0f;
     inline static const float VIEW_ZOOM_FACTOR = 1.2f;
     inline static const float MIN_ZOOM = 0.1f;
     inline static const float MAX_ZOOM = 20.0f;
@@ -41,6 +50,10 @@ private:
     glvx::ConvexShape m_hexagon{6};
     glvx::Rectangle m_transparent_rectangles[NUM_TRANSPARENT_RECTANGLES];
     glvx::Rectangle m_rgb_group_rectangles[NUM_TRANSPARENT_RECTANGLES][3];
+    glvx::BlendMode m_blend_modes[NUM_BLEND_MODES];
+    glvx::Rectangle m_blend_backgrounds[NUM_BLEND_MODES];
+    glvx::Rectangle m_blend_sources[NUM_BLEND_MODES];
+    glvx::Text m_blend_labels[NUM_BLEND_MODES];
     glvx::Font m_font_normal;
     glvx::Font m_font_subpixel;
     glvx::Text m_text_normal;
@@ -63,6 +76,7 @@ private:
     glvx::Vector2i m_last_pan_pos{0, 0};
 
     void setupShapes();
+    void setupBlendShowcase();
     void setupCursorRow();
     void handleEvents();
     void handlePanning(const glvx::Event& event);
