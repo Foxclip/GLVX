@@ -5,7 +5,7 @@ TestApplication app;
 TestApplication::TestApplication() : m_window(), m_rectangle(100, 100) { }
 
 void TestApplication::init() {
-    m_window.create(TEST_APP_WINDOW_WIDTH, TEST_APP_WINDOW_HEIGHT, "glvx test application");
+    m_window.create(TEST_APP_WINDOW_WIDTH, TEST_APP_WINDOW_HEIGHT, "glvx test application", 0, minimized);
     m_view.setPosition(m_window.getCenter());
     m_rectangle.setColor(glvx::Color(255, 0, 0));
     m_rectangle.setSize(static_cast<Vector2f>(TEST_APP_RECT_SIZE));

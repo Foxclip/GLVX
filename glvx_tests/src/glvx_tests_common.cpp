@@ -2,6 +2,8 @@
 
 Window window;
 
+bool minimized = false;
+
 bool checkPixelColor(test::Test& test, const Image& image, int start_x, int start_y, int end_x, int end_y, const Color& expected_color) {
     for (int x = start_x; x < end_x; ++x) {
         for (int y = start_y; y < end_y; ++y) {

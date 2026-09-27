@@ -10,6 +10,10 @@ using namespace glvx;
 // so we create it once and reuse it in all tests
 extern Window window;
 
+// set by the --minimized command-line parameter;
+// when true, all test windows are created minimized
+extern bool minimized;
+
 const Vector2i WINDOW_SIZE = Vector2i(100, 100);
 const Vector2i RESIZED_WINDOW_SIZE = Vector2i(200, 200);
 
