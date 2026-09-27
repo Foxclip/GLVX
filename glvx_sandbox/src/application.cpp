@@ -650,6 +650,11 @@ void Application::setupCursorRow() {
 void Application::run() {
     while (m_window.isOpen()) {
         handleEvents();
+        // handleEvents may close the window (Closed event), which destroys the
+        // GL context. Rendering must not happen after that.
+        if (!m_window.isOpen()) {
+            break;
+        }
         render();
     }
 }
