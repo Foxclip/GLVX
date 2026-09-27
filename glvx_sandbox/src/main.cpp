@@ -38,7 +38,6 @@ int main(int argc, char* argv[]) {
 
 // TODO: RenderTexture (minimap)
 // TODO: keyboard input
-// TODO: custom shaders
 // TODO: Text: highlight character under cursor
 // TODO: cursor visibility: drag a shape with cursor
 // TODO: window focus indicators

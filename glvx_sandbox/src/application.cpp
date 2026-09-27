@@ -77,6 +77,92 @@ static bool writePng(const std::string& file_path, const glvx::Image& image) {
     ) != 0;
 }
 
+// Vertex shader shared by the custom fragment shaders below. It must declare
+// the same object UBO as the built-in shaders so the window can supply the
+// view/projection/model matrices, color and flags (see src/drawable.cpp).
+static const char* shader_showcase_vert = R"(
+#version 420 core
+layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec4 aColor;
+layout (location = 2) in vec2 aTexCoords;
+
+out vec2 TexCoords;
+out vec4 VertexColor;
+
+layout (binding = 1) uniform Object {
+    mat4 vp;
+    mat4 model;
+    vec4 color;
+    bool hasTexture;
+    bool premultiplyOutput;
+} object;
+
+void main() {
+    gl_Position = object.vp * object.model * vec4(aPos, 0.0, 1.0);
+    TexCoords = aTexCoords;
+    VertexColor = aColor;
+}
+)";
+
+// Static: a rainbow gradient computed per fragment from the texture
+// coordinates, something the built-in shader cannot do.
+static const char* shader_static_frag = R"(
+#version 420 core
+
+in vec2 TexCoords;
+in vec4 VertexColor;
+
+out vec4 FragColor;
+
+layout (binding = 1) uniform Object {
+    mat4 vp;
+    mat4 model;
+    vec4 color;
+    bool hasTexture;
+    bool premultiplyOutput;
+} object;
+
+void main() {
+    vec3 colorNormalized = object.color.rgb / 255.0;
+    vec3 rainbow = 0.5 + 0.5 * cos(6.2831853 * (TexCoords.x + vec3(0.0, 0.33, 0.67)));
+    FragColor = vec4(rainbow * colorNormalized, object.color.a / 255.0);
+    if (object.premultiplyOutput) {
+        FragColor = vec4(FragColor.rgb * FragColor.a, FragColor.a);
+    }
+}
+)";
+
+// Animated: a sine wave scrolling across the cell, driven by the time uniform
+// the sandbox updates every frame.
+static const char* shader_animated_frag = R"(
+#version 420 core
+
+in vec2 TexCoords;
+in vec4 VertexColor;
+
+out vec4 FragColor;
+
+layout (binding = 1) uniform Object {
+    mat4 vp;
+    mat4 model;
+    vec4 color;
+    bool hasTexture;
+    bool premultiplyOutput;
+} object;
+
+uniform float time;
+
+void main() {
+    vec3 colorNormalized = object.color.rgb / 255.0;
+    float wave = 0.5 + 0.5 * sin(6.2831853 * (TexCoords.x * 2.0 - time));
+    vec3 color = mix(vec3(0.1, 0.2, 0.5), vec3(1.0, 0.4, 0.2), wave) * colorNormalized;
+    FragColor = vec4(color, object.color.a / 255.0);
+    if (object.premultiplyOutput) {
+        FragColor = vec4(FragColor.rgb * FragColor.a, FragColor.a);
+    }
+}
+)";
+
 // Remap a rectangle's fixed [0,1] texture coordinates to [u0..u1] x [v0..v1]
 // so that wrapping modes can be exercised with out-of-range UVs.
 static void setQuadUv(glvx::Rectangle& rect, float u0, float v0, float u1, float v1) {
@@ -248,6 +334,7 @@ void Application::init(bool minimized) {
     setupTextureShowcase();
     setupBlendShowcase();
     setupAntialiasingShowcase();
+    setupShaderShowcase();
     setupCursorRow();
 }
 
@@ -480,6 +567,43 @@ void Application::setupAntialiasingShowcase() {
     }
 }
 
+void Application::setupShaderShowcase() {
+    // Constructed here (not as a member initializer) because compiling the
+    // shaders requires the GL context created by Window::create.
+    m_shader_static = std::make_unique<glvx::Shader>(shader_showcase_vert, shader_static_frag, true);
+    m_shader_animated = std::make_unique<glvx::Shader>(shader_showcase_vert, shader_animated_frag, true);
+
+    glvx::Shader* shaders[NUM_SHADER_CELLS] = {
+        m_shader_static.get(),
+        m_shader_animated.get()
+    };
+    const char* names[NUM_SHADER_CELLS] = {
+        "Static",
+        "Animated"
+    };
+    for (int i = 0; i < NUM_SHADER_CELLS; i++) {
+        float cell_x = AA_ROW_X + (NUM_AA_CELLS + i) * (AA_CELL_W + AA_CELL_GAP);
+        m_shader_cell_rects[i].setSize(AA_CELL_W, AA_CELL_H);
+        m_shader_cell_rects[i].setPosition(cell_x, AA_ROW_Y);
+        m_shader_cell_rects[i].setShader(shaders[i]);
+
+        m_shader_cell_labels[i].setFont(&m_font_normal);
+        m_shader_cell_labels[i].setCharacterSize(10);
+        m_shader_cell_labels[i].setString(names[i]);
+        const float label_width = m_shader_cell_labels[i].getWidth();
+        // Center the label on the cell, snapped to whole pixels. Centering an
+        // odd-width label would put it at a half-pixel x offset, which makes
+        // the 1px-wide 'd' stem straddle a pixel boundary and its ascender
+        // vanish under the atlas's linear filtering.
+        const float label_left_x = std::round(cell_x + AA_CELL_W / 2.0f - label_width / 2.0f);
+        m_shader_cell_labels[i].setOrigin(label_width / 2.0f, 0.0f);
+        m_shader_cell_labels[i].setPosition(
+            label_left_x + label_width / 2.0f,
+            AA_ROW_Y + AA_CELL_H + AA_LABEL_GAP
+        );
+    }
+}
+
 void Application::setupCursorRow() {
     for (int i = 0; i < NUM_CURSOR_TYPES; i++) {
         const glvx::Cursor::Type type = static_cast<glvx::Cursor::Type>(i);
@@ -627,6 +751,18 @@ void Application::updateArrow() {
         std::chrono::duration_cast<std::chrono::duration<float>>(now - m_start_time).count();
     const float rotation = std::fmod(elapsed_seconds, ARROW_PERIOD_SECONDS) / ARROW_PERIOD_SECONDS;
     m_arrow.setRotation(glvx::Angle::fromRadians(rotation * 2.0f * static_cast<float>(std::numbers::pi)));
+}
+
+void Application::updateShaderShowcase() {
+    const auto now = std::chrono::steady_clock::now();
+    const float elapsed_seconds =
+        std::chrono::duration_cast<std::chrono::duration<float>>(now - m_start_time).count();
+    // glUniform* commands operate on the program currently in use, so the
+    // animated shader must be bound before its uniform is updated (as
+    // Drawable::renderBase does for its own uniforms).
+    m_shader_animated->use();
+    // One full wave period per SHADER_WAVE_PERIOD_SECONDS.
+    m_shader_animated->setFloat("time", std::fmod(elapsed_seconds, SHADER_WAVE_PERIOD_SECONDS) / SHADER_WAVE_PERIOD_SECONDS);
 }
 
 void Application::updateMouseArrow() {
@@ -778,6 +914,12 @@ void Application::render() {
     for (int i = 0; i < NUM_AA_CELLS; i++) {
         m_window.draw(m_aa_cell_rects[i]);
         m_window.draw(m_aa_cell_labels[i]);
+    }
+
+    updateShaderShowcase();
+    for (int i = 0; i < NUM_SHADER_CELLS; i++) {
+        m_window.draw(m_shader_cell_rects[i]);
+        m_window.draw(m_shader_cell_labels[i]);
     }
 
     m_window.display();

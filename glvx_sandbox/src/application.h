@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <memory>
 #include <string>
 #include <vector>
 #include "glvx/window.h"
@@ -54,6 +55,8 @@ private:
     inline static const float AA_ROW_X = 10.0f;
     inline static const float AA_ROW_Y = 525.0f;
     inline static const float AA_LABEL_GAP = 4.0f;
+    static const int NUM_SHADER_CELLS = 2;
+    inline static const float SHADER_WAVE_PERIOD_SECONDS = 2.0f;
     inline static const float VIEW_ZOOM_FACTOR = 1.2f;
     inline static const float MIN_ZOOM = 0.1f;
     inline static const float MAX_ZOOM = 20.0f;
@@ -80,6 +83,10 @@ private:
     glvx::RenderTexture m_aa_render_textures[NUM_AA_CELLS];
     glvx::Rectangle m_aa_cell_rects[NUM_AA_CELLS];
     glvx::Text m_aa_cell_labels[NUM_AA_CELLS];
+    std::unique_ptr<glvx::Shader> m_shader_static;
+    std::unique_ptr<glvx::Shader> m_shader_animated;
+    glvx::Rectangle m_shader_cell_rects[NUM_SHADER_CELLS];
+    glvx::Text m_shader_cell_labels[NUM_SHADER_CELLS];
     glvx::Font m_font_normal;
     glvx::Font m_font_subpixel;
     glvx::Text m_text_normal;
@@ -105,11 +112,13 @@ private:
     void setupBlendShowcase();
     void setupTextureShowcase();
     void setupAntialiasingShowcase();
+    void setupShaderShowcase();
     void setupCursorRow();
     void handleEvents();
     void handlePanning(const glvx::Event& event);
     void handleZoom(const glvx::Event& event);
     void updateArrow();
+    void updateShaderShowcase();
     void updateMouseArrow();
     void updateButton();
     void updateCursorRow();
