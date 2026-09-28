@@ -60,10 +60,6 @@ private:
     static const int MINIMAP_MARGIN = 10;
     static const int MINIMAP_BORDER = 2;
     inline static const float MINIMAP_SCALE = 0.25f;
-    // glReadPixels stalls the GPU pipeline for a full-window CPU readback, so
-    // the minimap is only re-captured every N frames (~15 Hz at 60 fps); the
-    // overlay itself is drawn from the cached texture every frame.
-    static const int MINIMAP_CAPTURE_INTERVAL = 4;
     inline static const float VIEW_ZOOM_FACTOR = 1.2f;
     inline static const float MIN_ZOOM = 0.1f;
     inline static const float MAX_ZOOM = 20.0f;
@@ -94,11 +90,10 @@ private:
     std::unique_ptr<glvx::Shader> m_shader_animated;
     glvx::Rectangle m_shader_cell_rects[NUM_SHADER_CELLS];
     glvx::Text m_shader_cell_labels[NUM_SHADER_CELLS];
-    glvx::Texture m_minimap_texture;
+    glvx::RenderTexture m_minimap_texture;
     glvx::Rectangle m_minimap_border;
     glvx::Rectangle m_minimap_rect;
     glvx::Text m_minimap_label;
-    int m_minimap_frame_counter = 0;
     glvx::Font m_font_normal;
     glvx::Font m_font_subpixel;
     glvx::Text m_text_normal;

@@ -652,13 +652,12 @@ void Application::setupMinimap() {
     const int window_width = m_window.getWidth();
     const int window_height = m_window.getHeight();
 
-    // Placeholder contents; updateMinimap() replaces them with a fresh
-    // readPixels() capture of the window every frame.
-    m_minimap_texture.create(window_width, window_height, nullptr, 4);
-    m_minimap_texture.setInterpolation(glvx::InterpolationType::Linear);
+    // The minimap texture is a render target that updateMinimap() blits the
+    // window contents into on the GPU side every frame (no CPU readback).
+    const int minimap_width = static_cast<int>(std::round(static_cast<float>(window_width) * MINIMAP_SCALE));
+    const int minimap_height = static_cast<int>(std::round(static_cast<float>(window_height) * MINIMAP_SCALE));
+    m_minimap_texture.create(minimap_width, minimap_height);
 
-    const float minimap_width = static_cast<float>(window_width) * MINIMAP_SCALE;
-    const float minimap_height = static_cast<float>(window_height) * MINIMAP_SCALE;
     const float minimap_x = static_cast<float>(window_width) - minimap_width - MINIMAP_MARGIN;
     const float minimap_y = static_cast<float>(MINIMAP_MARGIN);
 
@@ -672,7 +671,7 @@ void Application::setupMinimap() {
         minimap_y - MINIMAP_BORDER
     );
 
-    m_minimap_rect.setSize(minimap_width, minimap_height);
+    m_minimap_rect.setSize(static_cast<float>(minimap_width), static_cast<float>(minimap_height));
     m_minimap_rect.setPosition(minimap_x, minimap_y);
     m_minimap_rect.setTexture(&m_minimap_texture);
 
@@ -686,18 +685,10 @@ void Application::setupMinimap() {
 }
 
 void Application::updateMinimap() {
-    // readPixels() returns the last presented frame (or the offscreen texture
-    // when minimized), so the minimap trails the scene by one frame and shows
-    // itself in the corner, converging to a recursive fixed point.
-    const glvx::Image frame = m_window.readPixels();
-    // Same size as the existing texture, so update() replaces the texels in
-    // place without recreating the GL texture.
-    m_minimap_texture.update(
-        frame.getData().data(),
-        frame.getWidth(),
-        frame.getHeight(),
-        4
-    );
+    // GPU-side blit of the window's current contents into the minimap: no CPU
+    // readback and no pipeline stall, so it is cheap enough to run every
+    // frame without hitching.
+    m_minimap_texture.copyFrom(m_window);
 }
 
 void Application::run() {
@@ -714,12 +705,7 @@ void Application::run() {
 
 bool Application::captureScreenshot(const std::string& file_path) {
     handleEvents();
-    // The minimap shows the previous frame and is only re-captured every
-    // MINIMAP_CAPTURE_INTERVAL frames, so render several frames to let it
-    // warm up before the capture is taken.
-    for (int i = 0; i < MINIMAP_CAPTURE_INTERVAL * 3; i++) {
-        render();
-    }
+    render();
     glvx::Image image = m_window.readPixels();
     if (!writePng(file_path, image)) {
         std::cerr << "Failed to save screenshot to " << file_path << std::endl;
@@ -916,15 +902,6 @@ void Application::updateCursorRow() {
 }
 
 void Application::render() {
-    // Capture the previous frame before clearing, so the minimap texture is
-    // ready when the overlay is drawn at the end of this frame. The capture
-    // is throttled (see MINIMAP_CAPTURE_INTERVAL) because glReadPixels is
-    // expensive; in between, the overlay reuses the cached texture.
-    if (m_minimap_frame_counter % MINIMAP_CAPTURE_INTERVAL == 0) {
-        updateMinimap();
-    }
-    ++m_minimap_frame_counter;
-
     m_window.setView(m_view);
     m_window.clear(glvx::Color::Black);
 
@@ -1004,6 +981,8 @@ void Application::render() {
     m_window.draw(m_minimap_border);
     m_window.draw(m_minimap_rect);
     m_window.draw(m_minimap_label);
+
+    updateMinimap();
 
     m_window.display();
 }
