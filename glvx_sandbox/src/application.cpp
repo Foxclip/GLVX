@@ -175,6 +175,42 @@ static void setQuadUv(glvx::Rectangle& rect, float u0, float v0, float u1, float
     rect.getVertex(5).tex_coords = glvx::Vector2f(u1, v0);
 }
 
+#ifdef _WIN32
+// Reads a GDI bitmap into a top-down 32bpp buffer (B,G,R,A per pixel).
+// 1bpp bitmaps (cursor masks) come back with each bit replicated into all
+// four bytes, as GetDIBits documents for DIB_RGB_COLORS.
+static bool readBitmapTopDown32(
+    HBITMAP bitmap,
+    int& out_width,
+    int& out_height,
+    std::vector<unsigned char>& out_pixels
+) {
+    BITMAP info = {};
+    if (!GetObjectW(bitmap, sizeof(BITMAP), &info)) {
+        return false;
+    }
+    out_width = info.bmWidth;
+    out_height = info.bmHeight;
+    out_pixels.assign(
+        static_cast<std::size_t>(info.bmWidth) * static_cast<std::size_t>(info.bmHeight) * 4, 0
+    );
+    HDC dc = GetDC(NULL);
+    BITMAPINFO bitmap_info = {};
+    bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bitmap_info.bmiHeader.biWidth = info.bmWidth;
+    bitmap_info.bmiHeader.biHeight = -info.bmHeight; // top-down
+    bitmap_info.bmiHeader.biPlanes = 1;
+    bitmap_info.bmiHeader.biBitCount = 32;
+    bitmap_info.bmiHeader.biCompression = BI_RGB;
+    bool ok = GetDIBits(
+        dc, bitmap, 0, info.bmHeight,
+        out_pixels.data(), &bitmap_info, DIB_RGB_COLORS
+    ) > 0;
+    ReleaseDC(NULL, dc);
+    return ok;
+}
+#endif
+
 bool Application::loadCursorIcon(
     glvx::Cursor::Type type,
     std::vector<unsigned char>& out_pixels,
@@ -187,8 +223,7 @@ bool Application::loadCursorIcon(
 
 #ifdef _WIN32
     // Loads the same Win32 system cursor resource the library uses for that
-    // type (see src/cursor.cpp and glfw's win32_window.c), then copies its
-    // color bitmap to RGBA, top-down.
+    // type (see src/cursor.cpp), then copies its bitmap to RGBA, top-down.
     // In the Windows SDK the IDC_* macros expand to MAKEINTRESOURCE (LPSTR),
     // so cast back to the numeric id, as src/cursor.cpp does.
     DWORD resource_id = 0;
@@ -198,17 +233,17 @@ bool Application::loadCursorIcon(
         case glvx::Cursor::Type::Wait:                     resource_id = (DWORD)(uintptr_t)IDC_WAIT; break;
         case glvx::Cursor::Type::Text:                     resource_id = (DWORD)(uintptr_t)IDC_IBEAM; break;
         case glvx::Cursor::Type::Hand:                     resource_id = (DWORD)(uintptr_t)IDC_HAND; break;
-        case glvx::Cursor::Type::SizeHorizontal:           resource_id = (DWORD)(uintptr_t)IDC_SIZEWE; break;
-        case glvx::Cursor::Type::SizeVertical:             resource_id = (DWORD)(uintptr_t)IDC_SIZENS; break;
-        case glvx::Cursor::Type::SizeTopLeftBottomRight:   resource_id = (DWORD)(uintptr_t)IDC_SIZENWSE; break;
-        case glvx::Cursor::Type::SizeBottomLeftTopRight:   resource_id = (DWORD)(uintptr_t)IDC_SIZENESW; break;
-        case glvx::Cursor::Type::SizeLeft:                 resource_id = (DWORD)(uintptr_t)IDC_SIZEWE; break;
+        case glvx::Cursor::Type::SizeHorizontal:
+        case glvx::Cursor::Type::SizeLeft:
         case glvx::Cursor::Type::SizeRight:                resource_id = (DWORD)(uintptr_t)IDC_SIZEWE; break;
-        case glvx::Cursor::Type::SizeTop:                  resource_id = (DWORD)(uintptr_t)IDC_SIZENS; break;
+        case glvx::Cursor::Type::SizeVertical:
+        case glvx::Cursor::Type::SizeTop:
         case glvx::Cursor::Type::SizeBottom:               resource_id = (DWORD)(uintptr_t)IDC_SIZENS; break;
-        case glvx::Cursor::Type::SizeTopLeft:              resource_id = (DWORD)(uintptr_t)IDC_SIZENWSE; break;
+        case glvx::Cursor::Type::SizeTopLeftBottomRight:
+        case glvx::Cursor::Type::SizeTopLeft:
         case glvx::Cursor::Type::SizeBottomRight:          resource_id = (DWORD)(uintptr_t)IDC_SIZENWSE; break;
-        case glvx::Cursor::Type::SizeBottomLeft:           resource_id = (DWORD)(uintptr_t)IDC_SIZENESW; break;
+        case glvx::Cursor::Type::SizeBottomLeftTopRight:
+        case glvx::Cursor::Type::SizeBottomLeft:
         case glvx::Cursor::Type::SizeTopRight:             resource_id = (DWORD)(uintptr_t)IDC_SIZENESW; break;
         case glvx::Cursor::Type::SizeAll:                  resource_id = (DWORD)(uintptr_t)IDC_SIZEALL; break;
         case glvx::Cursor::Type::Cross:                    resource_id = (DWORD)(uintptr_t)IDC_CROSS; break;
@@ -216,10 +251,7 @@ bool Application::loadCursorIcon(
         case glvx::Cursor::Type::NotAllowed:               resource_id = (DWORD)(uintptr_t)IDC_NO; break;
     }
 
-    HCURSOR h_cursor = (HCURSOR)LoadImageW(
-        NULL, MAKEINTRESOURCEW(resource_id), IMAGE_CURSOR,
-        0, 0, LR_DEFAULTSIZE | LR_SHARED
-    );
+    HCURSOR h_cursor = (HCURSOR)LoadCursorW(NULL, (PCWSTR)(uintptr_t)resource_id);
     if (!h_cursor) {
         return false;
     }
@@ -229,57 +261,58 @@ bool Application::loadCursorIcon(
         return false;
     }
 
-    if (icon_info.hbmColor == NULL) {
-        // monochrome cursors have no color bitmap
-        DeleteObject(icon_info.hbmMask);
-        return false;
-    }
+    // Monochrome cursors (IDC_IBEAM, IDC_CROSS) have no color bitmap, only a
+    // 1bpp mask whose height is twice the cursor height: the top half holds
+    // each pixel's color (1 = black, 0 = white), the bottom half which
+    // pixels are drawn at all.
+    const bool monochrome = icon_info.hbmColor == NULL;
+    const HBITMAP source_bitmap = monochrome ? icon_info.hbmMask : icon_info.hbmColor;
 
-    BITMAP bitmap = {};
-    if (!GetObjectW(icon_info.hbmColor, sizeof(BITMAP), &bitmap)) {
-        DeleteObject(icon_info.hbmColor);
-        DeleteObject(icon_info.hbmMask);
-        return false;
-    }
-
-    const int width = bitmap.bmWidth;
-    const int height = bitmap.bmHeight;
-    std::vector<unsigned char> pixels(
-        static_cast<std::size_t>(width) * static_cast<std::size_t>(height) * 4
-    );
-
-    HDC dc = GetDC(NULL);
-    BITMAPINFO bitmap_info = {};
-    bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bitmap_info.bmiHeader.biWidth = width;
-    bitmap_info.bmiHeader.biHeight = -height; // top-down
-    bitmap_info.bmiHeader.biPlanes = 1;
-    bitmap_info.bmiHeader.biBitCount = 32;
-    bitmap_info.bmiHeader.biCompression = BI_RGB;
-    int retrieved = GetDIBits(
-        dc, icon_info.hbmColor, 0, height,
-        pixels.data(), &bitmap_info, DIB_RGB_COLORS
-    );
-    ReleaseDC(NULL, dc);
-
+    int width = 0;
+    int height = 0;
+    std::vector<unsigned char> bits;
+    const bool ok = readBitmapTopDown32(source_bitmap, width, height, bits);
     DeleteObject(icon_info.hbmColor);
     DeleteObject(icon_info.hbmMask);
-
-    if (retrieved <= 0) {
+    if (!ok) {
         return false;
     }
 
-    // GetDIBits yields B,G,R,A memory bytes; we want R,G,B,A
-    for (int i = 0; i < width * height; i++) {
-        std::swap(
-            pixels[static_cast<std::size_t>(i) * 4],
-            pixels[static_cast<std::size_t>(i) * 4 + 2]
+    if (monochrome) {
+        const int icon_height = height / 2;
+        out_pixels.assign(
+            static_cast<std::size_t>(width) * static_cast<std::size_t>(icon_height) * 4, 0
         );
+        for (int y = 0; y < icon_height; y++) {
+            for (int x = 0; x < width; x++) {
+                const std::size_t idx =
+                    (static_cast<std::size_t>(y) * static_cast<std::size_t>(width) + x) * 4;
+                const std::size_t visible_idx =
+                    idx + static_cast<std::size_t>(icon_height) * static_cast<std::size_t>(width) * 4;
+                if (bits[visible_idx] == 0) {
+                    continue; // transparent
+                }
+                const unsigned char color = bits[idx] != 0 ? 0 : 255;
+                out_pixels[idx + 0] = color;
+                out_pixels[idx + 1] = color;
+                out_pixels[idx + 2] = color;
+                out_pixels[idx + 3] = 255;
+            }
+        }
+        out_height = icon_height;
     }
-
-    out_pixels = std::move(pixels);
+    else {
+        // The DIB bytes are B,G,R,A; we want R,G,B,A.
+        for (int i = 0; i < width * height; i++) {
+            std::swap(
+                bits[static_cast<std::size_t>(i) * 4],
+                bits[static_cast<std::size_t>(i) * 4 + 2]
+            );
+        }
+        out_pixels = std::move(bits);
+        out_height = height;
+    }
     out_width = width;
-    out_height = height;
     return true;
 #else
     (void)type;
@@ -623,15 +656,22 @@ void Application::setupCursorRow() {
         m_cursor_tiles[i].setPosition(tile_x, CURSOR_ROW_Y);
         m_cursor_tiles[i].setColor(glvx::Color(40, 40, 40));
 
-        m_cursor_icon_rects[i].setSize(CURSOR_ICON_BOX, CURSOR_ICON_BOX);
-        m_cursor_icon_rects[i].setPosition(
-            tile_x + (CURSOR_TILE_W - CURSOR_ICON_BOX) / 2.0f,
-            CURSOR_ROW_Y + 4.0f
-        );
+        // Render the icon at the texture's native size so thin features (the
+        // I-beam's 1px stem) are not lost to sub-pixel minification. System
+        // cursors load at the default 32x32, which fits the 34px-wide tile.
+        m_cursor_icon_rects[i].setColor(glvx::Color::White);
+        float icon_display_h = CURSOR_ICON_BOX;
         if (m_cursor_icons[i].getID() != 0) {
+            const float icon_w = static_cast<float>(m_cursor_icons[i].getWidth());
+            const float icon_h = static_cast<float>(m_cursor_icons[i].getHeight());
+            icon_display_h = icon_h;
+            m_cursor_icon_rects[i].setSize(icon_w, icon_h);
+            m_cursor_icon_rects[i].setPosition(
+                tile_x + (CURSOR_TILE_W - icon_w) / 2.0f,
+                CURSOR_ROW_Y + 2.0f
+            );
             m_cursor_icon_rects[i].setTexture(&m_cursor_icons[i]);
         }
-        m_cursor_icon_rects[i].setColor(glvx::Color::White);
 
         m_cursor_labels[i].setFont(&m_font_subpixel);
         m_cursor_labels[i].setCharacterSize(7);
@@ -641,7 +681,7 @@ void Application::setupCursorRow() {
         m_cursor_labels[i].setOrigin(m_cursor_labels[i].getWidth() / 2.0f, 0.0f);
         m_cursor_labels[i].setPosition(
             tile_x + CURSOR_TILE_W / 2.0f,
-            CURSOR_ROW_Y + 30.0f
+            CURSOR_ROW_Y + 2.0f + icon_display_h + 4.0f
         );
     }
 
