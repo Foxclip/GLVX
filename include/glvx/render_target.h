@@ -22,15 +22,14 @@ public:
     Vector2i worldToScreen(const Vector2f& worldPos) const;
     Vector2f screenToWorld(int x, int y) const;
     Vector2f screenToWorld(const Vector2i& screenPos) const;
+    virtual unsigned int getRenderTargetFbo() const = 0;
+    virtual int getRenderTargetWidth() const = 0;
+    virtual int getRenderTargetHeight() const = 0;
 
 protected:
     Matrix4 m_view;
     Matrix4 m_inv_view;
     Matrix4 m_projection;
-
-    virtual unsigned int getRenderTargetFbo() const = 0;
-    virtual int getRenderTargetWidth() const = 0;
-    virtual int getRenderTargetHeight() const = 0;
 };
 
 }

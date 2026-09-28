@@ -18,6 +18,10 @@ public:
     bool isRenderTexture() const override;
     int getSamples() const;
     void display();
+    // Copies the source's current contents into this render texture, scaled
+    // to fit. Done with a GPU-side blit (no CPU readback), so it is cheap
+    // enough to run every frame.
+    void copyFrom(const RenderTarget& source);
     Image readPixels() const override;
     unsigned int getRenderTargetFbo() const override;
 

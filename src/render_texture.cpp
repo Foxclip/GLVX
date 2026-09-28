@@ -87,6 +87,39 @@ void RenderTexture::display() {
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
+void RenderTexture::copyFrom(const RenderTarget& source) {
+    const int source_width = source.getRenderTargetWidth();
+    const int source_height = source.getRenderTargetHeight();
+    if (source_width == 0 || source_height == 0) {
+        return;
+    }
+    const unsigned int source_fbo = source.getRenderTargetFbo();
+    // Only the default framebuffer has a read buffer, so glReadBuffer is only
+    // needed (and only allowed) when the source is a window. A minimized
+    // window's default framebuffer has no back buffer, and glReadBuffer of a
+    // missing buffer generates GL_INVALID_OPERATION.
+    GLint previous_read_buffer = 0;
+    if (source_fbo == 0) {
+        GL_CALL(glGetIntegerv(GL_READ_BUFFER, &previous_read_buffer));
+        // Read from the back buffer, i.e. the one currently being drawn to,
+        // since Window::readPixels leaves the read buffer set to GL_FRONT.
+        GL_CALL(glReadBuffer(GL_BACK));
+    }
+    GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, source_fbo));
+    GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, getRenderTargetFbo()));
+    GL_CALL(glBlitFramebuffer(
+        0, 0, source_width, source_height,
+        0, 0, m_width, m_height,
+        GL_COLOR_BUFFER_BIT,
+        GL_LINEAR
+    ));
+    GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, 0));
+    GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
+    if (source_fbo == 0) {
+        GL_CALL(glReadBuffer(previous_read_buffer));
+    }
+}
+
 void RenderTexture::resize(int new_width, int new_height, bool blit_old_contents) {
     if (m_fbo == 0) {
         GL_CALL(glGenFramebuffers(1, &m_fbo));
