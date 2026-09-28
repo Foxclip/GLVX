@@ -996,5 +996,11 @@ void Application::render() {
 
     updateMinimap();
 
+    // The minimap was drawn with the temporary screen_view, which overwrote
+    // the view matrices the window keeps for screenToWorld/worldToScreen.
+    // Restore the main view so input handling between frames maps clicks
+    // into the world space the main view is actually rendering.
+    m_window.setView(m_view);
+
     m_window.display();
 }
