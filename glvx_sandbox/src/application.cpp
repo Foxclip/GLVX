@@ -358,8 +358,133 @@ std::string Application::cursorDisplayName(glvx::Cursor::Type type) {
     return name;
 }
 
+std::string Application::keyDisplayName(glvx::Key key) {
+    // A-Z and 0-9 are contiguous in the enum, so name them by range instead of
+    // listing 36 cases.
+    if (key >= glvx::Key::A && key <= glvx::Key::Z) {
+        return std::string(1, static_cast<char>('A' + (static_cast<int>(key) - static_cast<int>(glvx::Key::A))));
+    }
+    if (key >= glvx::Key::Num0 && key <= glvx::Key::Num9) {
+        return "Num" + std::to_string(static_cast<int>(key) - static_cast<int>(glvx::Key::Num0));
+    }
+
+    const char* raw_name = "Unknown";
+    switch (key) {
+        case glvx::Key::Escape:             raw_name = "Escape"; break;
+        case glvx::Key::LControl:           raw_name = "LControl"; break;
+        case glvx::Key::LShift:             raw_name = "LShift"; break;
+        case glvx::Key::LAlt:               raw_name = "LAlt"; break;
+        case glvx::Key::LSystem:            raw_name = "LSystem"; break;
+        case glvx::Key::RControl:           raw_name = "RControl"; break;
+        case glvx::Key::RShift:             raw_name = "RShift"; break;
+        case glvx::Key::RAlt:               raw_name = "RAlt"; break;
+        case glvx::Key::RSystem:            raw_name = "RSystem"; break;
+        case glvx::Key::Menu:               raw_name = "Menu"; break;
+        case glvx::Key::LBracket:           raw_name = "LBracket"; break;
+        case glvx::Key::RBracket:           raw_name = "RBracket"; break;
+        case glvx::Key::Semicolon:          raw_name = "Semicolon"; break;
+        case glvx::Key::Comma:              raw_name = "Comma"; break;
+        case glvx::Key::Period:             raw_name = "Period"; break;
+        case glvx::Key::Apostrophe:         raw_name = "Apostrophe"; break;
+        case glvx::Key::Slash:              raw_name = "Slash"; break;
+        case glvx::Key::Backslash:          raw_name = "Backslash"; break;
+        case glvx::Key::Minus:              raw_name = "Minus"; break;
+        case glvx::Key::Plus:               raw_name = "Plus"; break;
+        case glvx::Key::Enter:              raw_name = "Enter"; break;
+        case glvx::Key::Space:              raw_name = "Space"; break;
+        case glvx::Key::Tab:                raw_name = "Tab"; break;
+        case glvx::Key::Backspace:          raw_name = "Backspace"; break;
+        case glvx::Key::Insert:             raw_name = "Insert"; break;
+        case glvx::Key::Delete:             raw_name = "Delete"; break;
+        case glvx::Key::End:                raw_name = "End"; break;
+        case glvx::Key::Home:               raw_name = "Home"; break;
+        case glvx::Key::PageUp:             raw_name = "PageUp"; break;
+        case glvx::Key::PageDown:           raw_name = "PageDown"; break;
+        case glvx::Key::Up:                 raw_name = "Up"; break;
+        case glvx::Key::Left:               raw_name = "Left"; break;
+        case glvx::Key::Down:               raw_name = "Down"; break;
+        case glvx::Key::Right:              raw_name = "Right"; break;
+        case glvx::Key::Pause:              raw_name = "Pause"; break;
+        case glvx::Key::F1:                 raw_name = "F1"; break;
+        case glvx::Key::F2:                 raw_name = "F2"; break;
+        case glvx::Key::F3:                 raw_name = "F3"; break;
+        case glvx::Key::F4:                 raw_name = "F4"; break;
+        case glvx::Key::F5:                 raw_name = "F5"; break;
+        case glvx::Key::F6:                 raw_name = "F6"; break;
+        case glvx::Key::F7:                 raw_name = "F7"; break;
+        case glvx::Key::F8:                 raw_name = "F8"; break;
+        case glvx::Key::F9:                 raw_name = "F9"; break;
+        case glvx::Key::F10:                raw_name = "F10"; break;
+        case glvx::Key::F11:                raw_name = "F11"; break;
+        case glvx::Key::F12:                raw_name = "F12"; break;
+        case glvx::Key::CapsLock:           raw_name = "CapsLock"; break;
+        case glvx::Key::ScrollLock:         raw_name = "ScrollLock"; break;
+        case glvx::Key::NumLock:            raw_name = "NumLock"; break;
+        case glvx::Key::PrintScreen:        raw_name = "PrintScreen"; break;
+        case glvx::Key::Grave:              raw_name = "Grave"; break;
+        case glvx::Key::NumMultiply:        raw_name = "NumMultiply"; break;
+        case glvx::Key::NumAdd:             raw_name = "NumAdd"; break;
+        case glvx::Key::NumSubtract:        raw_name = "NumSubtract"; break;
+        case glvx::Key::NumDecimal:         raw_name = "NumDecimal"; break;
+        case glvx::Key::NumDivide:          raw_name = "NumDivide"; break;
+        case glvx::Key::Numpad0:            raw_name = "Numpad0"; break;
+        case glvx::Key::Numpad1:            raw_name = "Numpad1"; break;
+        case glvx::Key::Numpad2:            raw_name = "Numpad2"; break;
+        case glvx::Key::Numpad3:            raw_name = "Numpad3"; break;
+        case glvx::Key::Numpad4:            raw_name = "Numpad4"; break;
+        case glvx::Key::Numpad5:            raw_name = "Numpad5"; break;
+        case glvx::Key::Numpad6:            raw_name = "Numpad6"; break;
+        case glvx::Key::Numpad7:            raw_name = "Numpad7"; break;
+        case glvx::Key::Numpad8:            raw_name = "Numpad8"; break;
+        case glvx::Key::Numpad9:            raw_name = "Numpad9"; break;
+        default:                            return "Key " + std::to_string(static_cast<int>(key));
+    }
+
+    std::string name;
+    for (std::size_t i = 0; raw_name[i] != '\0'; i++) {
+        if (i > 0 && raw_name[i] >= 'A' && raw_name[i] <= 'Z') {
+            name += ' ';
+        }
+        name += raw_name[i];
+    }
+    return name;
+}
+
+std::string Application::modifierNames(glvx::Modifier modifier) {
+    const int value = static_cast<int>(modifier);
+    if (value == 0) {
+        return "";
+    }
+    std::string names;
+    if (value & static_cast<int>(glvx::Modifier::Control)) {
+        if (!names.empty()) {
+            names += "+";
+        }
+        names += "Ctrl";
+    }
+    if (value & static_cast<int>(glvx::Modifier::Shift)) {
+        if (!names.empty()) {
+            names += "+";
+        }
+        names += "Shift";
+    }
+    if (value & static_cast<int>(glvx::Modifier::Alt)) {
+        if (!names.empty()) {
+            names += "+";
+        }
+        names += "Alt";
+    }
+    if (value & static_cast<int>(glvx::Modifier::System)) {
+        if (!names.empty()) {
+            names += "+";
+        }
+        names += "Sys";
+    }
+    return names;
+}
+
 void Application::init(bool minimized) {
-    m_window.create(800, 600, "GLVX sandbox", 0, minimized);
+    m_window.create(800, 670, "GLVX sandbox", 0, minimized);
     m_view.setPosition(m_window.getCenter());
     m_font_normal.openFromFile("fonts/LiberationSans-Regular.ttf");
     m_font_subpixel.openFromFile("fonts/LiberationSans-Regular.ttf", true);
@@ -370,6 +495,7 @@ void Application::init(bool minimized) {
     setupAntialiasingShowcase();
     setupShaderShowcase();
     setupCursorRow();
+    setupKeyboardShowcase();
     setupMinimap();
 }
 
@@ -689,6 +815,66 @@ void Application::setupCursorRow() {
     m_window.setMouseCursor(m_arrow_cursor);
 }
 
+void Application::setupKeyboardShowcase() {
+    const glvx::Modifier modifiers[NUM_MODIFIER_KEYS] = {
+        glvx::Modifier::Control,
+        glvx::Modifier::Shift,
+        glvx::Modifier::Alt,
+        glvx::Modifier::System
+    };
+    const char* modifier_names[NUM_MODIFIER_KEYS] = {
+        "Ctrl", "Shift", "Alt", "Sys"
+    };
+    const glvx::Key sample_keys[NUM_SAMPLE_KEYS] = {
+        glvx::Key::W, glvx::Key::A, glvx::Key::S, glvx::Key::D,
+        glvx::Key::Up, glvx::Key::Left, glvx::Key::Down, glvx::Key::Right,
+        glvx::Key::Tab, glvx::Key::Space, glvx::Key::Enter, glvx::Key::Backspace
+    };
+    const char* sample_names[NUM_SAMPLE_KEYS] = {
+        "W", "A", "S", "D",
+        "Up", "Left", "Down", "Right",
+        "Tab", "Space", "Enter", "Bksp"
+    };
+    for (int i = 0; i < NUM_MODIFIER_KEYS; i++) {
+        m_modifier_keys[i] = modifiers[i];
+    }
+    for (int i = 0; i < NUM_SAMPLE_KEYS; i++) {
+        m_sample_keys[i] = sample_keys[i];
+    }
+    for (int i = 0; i < NUM_KEY_CELLS; i++) {
+        const float cell_x = KEY_ROW_X + i * (KEY_CELL_W + KEY_CELL_GAP);
+        m_key_cells[i].setColor(glvx::Color(40, 40, 40));
+        m_key_cells[i].setSize(glvx::Vector2f(KEY_CELL_W, KEY_CELL_H));
+        m_key_cells[i].setPosition(cell_x, KEY_ROW_Y);
+
+        const char* name = (i < NUM_MODIFIER_KEYS)
+            ? modifier_names[i]
+            : sample_names[i - NUM_MODIFIER_KEYS];
+        m_key_cell_labels[i].setFont(&m_font_normal);
+        m_key_cell_labels[i].setCharacterSize(10);
+        m_key_cell_labels[i].setString(name);
+        m_key_cell_labels[i].setColor(glvx::Color::White);
+        m_key_cell_labels[i].setOrigin(
+            m_key_cell_labels[i].getWidth() / 2.0f,
+            m_key_cell_labels[i].getHeight() / 2.0f
+        );
+        m_key_cell_labels[i].setPosition(
+            cell_x + KEY_CELL_W / 2.0f,
+            KEY_ROW_Y + KEY_CELL_H / 2.0f
+        );
+    }
+
+    m_last_key_label.setFont(&m_font_normal);
+    m_last_key_label.setCharacterSize(10);
+    setLastKeyLabel();
+    m_last_char_label.setFont(&m_font_normal);
+    m_last_char_label.setCharacterSize(10);
+    setLastCharLabel();
+    const float info_y = KEY_ROW_Y + KEY_CELL_H + KEY_LABEL_GAP;
+    m_last_key_label.setPosition(KEY_ROW_X, info_y);
+    m_last_char_label.setPosition(400.0f, info_y);
+}
+
 void Application::setupMinimap() {
     layoutMinimap(m_window.getWidth(), m_window.getHeight());
 }
@@ -796,6 +982,16 @@ void Application::handleEvents() {
         }
         if (event.type == glvx::EventType::MouseWheelScrolled) {
             handleZoom(event);
+        }
+        if (event.type == glvx::EventType::KeyPressed) {
+            m_last_key = event.key.code;
+            m_last_key_modifiers = event.key.modifier;
+            m_last_key_alt_gr = event.key.alt_gr;
+            setLastKeyLabel();
+        }
+        if (event.type == glvx::EventType::TextEntered) {
+            m_last_char = event.text.unicode;
+            setLastCharLabel();
         }
     }
 }
@@ -953,6 +1149,59 @@ void Application::updateCursorRow() {
     }
 }
 
+void Application::updateKeyboardShowcase() {
+    for (int i = 0; i < NUM_KEY_CELLS; i++) {
+        bool active = false;
+        if (i < NUM_MODIFIER_KEYS) {
+            active = glvx::Keyboard::isModifierActive(m_modifier_keys[i]);
+        } else {
+            active = glvx::Keyboard::isKeyPressed(m_sample_keys[i - NUM_MODIFIER_KEYS]);
+        }
+        if (active) {
+            m_key_cells[i].setColor(glvx::Color(100, 165, 220));
+        } else {
+            m_key_cells[i].setColor(glvx::Color(40, 40, 40));
+        }
+    }
+}
+
+void Application::setLastKeyLabel() {
+    std::string text;
+    if (m_last_key == glvx::Key::Unknown) {
+        text = "Last key: none";
+    } else {
+        text = "Last key: " + keyDisplayName(m_last_key);
+        const std::string modifiers = modifierNames(m_last_key_modifiers);
+        if (!modifiers.empty()) {
+            text += "  [" + modifiers + "]";
+        }
+        if (m_last_key_alt_gr) {
+            text += "  [AltGr]";
+        }
+    }
+    m_last_key_label.setString(text);
+}
+
+void Application::setLastCharLabel() {
+    std::string text = "Last char: ";
+    if (m_last_char == 0) {
+        text += "none";
+    } else {
+        if (m_last_char >= 0x20 && m_last_char <= 0x7E) {
+            text += "'" + std::string(1, static_cast<char>(m_last_char)) + "' ";
+        }
+        uint32_t code_point = m_last_char;
+        std::string hex;
+        hex.resize(4);
+        for (int i = 3; i >= 0; i--) {
+            hex[static_cast<std::size_t>(i)] = "0123456789ABCDEF"[code_point & 0xFu];
+            code_point >>= 4;
+        }
+        text += "(U+" + hex + ")";
+    }
+    m_last_char_label.setString(text);
+}
+
 void Application::render() {
     m_window.setView(m_view);
     m_window.clear(glvx::Color::Black);
@@ -1022,6 +1271,14 @@ void Application::render() {
         m_window.draw(m_shader_cell_rects[i]);
         m_window.draw(m_shader_cell_labels[i]);
     }
+
+    updateKeyboardShowcase();
+    for (int i = 0; i < NUM_KEY_CELLS; i++) {
+        m_window.draw(m_key_cells[i]);
+        m_window.draw(m_key_cell_labels[i]);
+    }
+    m_window.draw(m_last_key_label);
+    m_window.draw(m_last_char_label);
 
     // Draw the minimap last in screen space (unit scale, view centered on the
     // window center so world coordinates equal screen pixels), so it stays

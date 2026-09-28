@@ -1,10 +1,12 @@
 #pragma once
 
 #include <chrono>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 #include "glvx/window.h"
+#include "glvx/keyboard.h"
 #include "glvx/rectangle.h"
 #include "glvx/circle.h"
 #include "glvx/convex_shape.h"
@@ -57,6 +59,15 @@ private:
     inline static const float AA_LABEL_GAP = 4.0f;
     static const int NUM_SHADER_CELLS = 2;
     inline static const float SHADER_WAVE_PERIOD_SECONDS = 2.0f;
+    static const int NUM_MODIFIER_KEYS = 4;
+    static const int NUM_SAMPLE_KEYS = 12;
+    static const int NUM_KEY_CELLS = NUM_MODIFIER_KEYS + NUM_SAMPLE_KEYS;
+    inline static const float KEY_CELL_W = 36.0f;
+    inline static const float KEY_CELL_H = 36.0f;
+    inline static const float KEY_CELL_GAP = 2.0f;
+    inline static const float KEY_ROW_X = 10.0f;
+    inline static const float KEY_ROW_Y = 600.0f;
+    inline static const float KEY_LABEL_GAP = 8.0f;
     static const int MINIMAP_MARGIN = 10;
     static const int MINIMAP_BORDER = 2;
     inline static const float MINIMAP_SCALE = 0.25f;
@@ -119,12 +130,24 @@ private:
     bool m_panning = false;
     glvx::Vector2i m_last_pan_pos{0, 0};
 
+    glvx::Modifier m_modifier_keys[NUM_MODIFIER_KEYS];
+    glvx::Key m_sample_keys[NUM_SAMPLE_KEYS];
+    glvx::Rectangle m_key_cells[NUM_KEY_CELLS];
+    glvx::Text m_key_cell_labels[NUM_KEY_CELLS];
+    glvx::Text m_last_key_label;
+    glvx::Text m_last_char_label;
+    glvx::Key m_last_key = glvx::Key::Unknown;
+    glvx::Modifier m_last_key_modifiers = glvx::Modifier::None;
+    bool m_last_key_alt_gr = false;
+    uint32_t m_last_char = 0;
+
     void setupShapes();
     void setupBlendShowcase();
     void setupTextureShowcase();
     void setupAntialiasingShowcase();
     void setupShaderShowcase();
     void setupCursorRow();
+    void setupKeyboardShowcase();
     void setupMinimap();
     void layoutMinimap(int window_width, int window_height);
     void updateMinimap();
@@ -136,6 +159,11 @@ private:
     void updateMouseArrow();
     void updateButton();
     void updateCursorRow();
+    void updateKeyboardShowcase();
+    void setLastKeyLabel();
+    void setLastCharLabel();
+    static std::string keyDisplayName(glvx::Key key);
+    static std::string modifierNames(glvx::Modifier modifier);
     bool isMouseOverButton(const glvx::Vector2f& point_world) const;
     void setButtonLabel();
     static bool loadCursorIcon(
