@@ -230,9 +230,75 @@ bool Application::loadCursorIcon(
     }
 
     if (icon_info.hbmColor == NULL) {
-        // monochrome cursors have no color bitmap
+        // Monochrome cursors (IDC_IBEAM, IDC_CROSS) have no color bitmap, only
+        // a 1bpp mask whose height is twice the cursor height. The bottom half
+        // selects which pixels the cursor draws and the top half their color
+        // (1 = black, 0 = white); composition verified against DrawIconEx
+        // output, which renders exactly the bottom-half shape.
+        BITMAP mask_bitmap = {};
+        if (!GetObjectW(icon_info.hbmMask, sizeof(BITMAP), &mask_bitmap) ||
+            mask_bitmap.bmHeight < 2) {
+            DeleteObject(icon_info.hbmMask);
+            return false;
+        }
+
+        const int width = mask_bitmap.bmWidth;
+        const int height = mask_bitmap.bmHeight / 2;
+        std::vector<unsigned char> mask_bits(
+            static_cast<std::size_t>(width) * static_cast<std::size_t>(mask_bitmap.bmHeight) * 4
+        );
+
+        HDC dc = GetDC(NULL);
+        BITMAPINFO bitmap_info = {};
+        bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        bitmap_info.bmiHeader.biWidth = width;
+        bitmap_info.bmiHeader.biHeight = -mask_bitmap.bmHeight; // top-down
+        bitmap_info.bmiHeader.biPlanes = 1;
+        bitmap_info.bmiHeader.biBitCount = 32;
+        bitmap_info.bmiHeader.biCompression = BI_RGB;
+        int retrieved = GetDIBits(
+            dc, icon_info.hbmMask, 0, mask_bitmap.bmHeight,
+            mask_bits.data(), &bitmap_info, DIB_RGB_COLORS
+        );
+        ReleaseDC(NULL, dc);
+
         DeleteObject(icon_info.hbmMask);
-        return false;
+
+        if (retrieved <= 0) {
+            return false;
+        }
+
+        // GetDIBits replicates each 1bpp pixel into all four bytes (0 or 255).
+        std::vector<unsigned char> pixels(
+            static_cast<std::size_t>(width) * static_cast<std::size_t>(height) * 4
+        );
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                const unsigned char color_bit =
+                    mask_bits[(static_cast<std::size_t>(y) * static_cast<std::size_t>(width) + x) * 4];
+                const unsigned char visible_bit =
+                    mask_bits[(static_cast<std::size_t>(y + height) * static_cast<std::size_t>(width) + x) * 4];
+                const std::size_t idx =
+                    (static_cast<std::size_t>(y) * static_cast<std::size_t>(width) + x) * 4;
+                if (visible_bit == 0) {
+                    pixels[idx + 3] = 0; // transparent
+                }
+                else if (color_bit != 0) {
+                    pixels[idx + 3] = 255; // black
+                }
+                else {
+                    pixels[idx + 0] = 255;
+                    pixels[idx + 1] = 255;
+                    pixels[idx + 2] = 255;
+                    pixels[idx + 3] = 255; // white
+                }
+            }
+        }
+
+        out_pixels = std::move(pixels);
+        out_width = width;
+        out_height = height;
+        return true;
     }
 
     BITMAP bitmap = {};
@@ -623,15 +689,22 @@ void Application::setupCursorRow() {
         m_cursor_tiles[i].setPosition(tile_x, CURSOR_ROW_Y);
         m_cursor_tiles[i].setColor(glvx::Color(40, 40, 40));
 
-        m_cursor_icon_rects[i].setSize(CURSOR_ICON_BOX, CURSOR_ICON_BOX);
-        m_cursor_icon_rects[i].setPosition(
-            tile_x + (CURSOR_TILE_W - CURSOR_ICON_BOX) / 2.0f,
-            CURSOR_ROW_Y + 4.0f
-        );
+        // Render the icon at the texture's native size so thin features (the
+        // I-beam's 1px stem) are not lost to sub-pixel minification. System
+        // cursors load at the default 32x32, which fits the 34px-wide tile.
+        m_cursor_icon_rects[i].setColor(glvx::Color::White);
+        float icon_display_h = CURSOR_ICON_BOX;
         if (m_cursor_icons[i].getID() != 0) {
+            const float icon_w = static_cast<float>(m_cursor_icons[i].getWidth());
+            const float icon_h = static_cast<float>(m_cursor_icons[i].getHeight());
+            icon_display_h = icon_h;
+            m_cursor_icon_rects[i].setSize(icon_w, icon_h);
+            m_cursor_icon_rects[i].setPosition(
+                tile_x + (CURSOR_TILE_W - icon_w) / 2.0f,
+                CURSOR_ROW_Y + 2.0f
+            );
             m_cursor_icon_rects[i].setTexture(&m_cursor_icons[i]);
         }
-        m_cursor_icon_rects[i].setColor(glvx::Color::White);
 
         m_cursor_labels[i].setFont(&m_font_subpixel);
         m_cursor_labels[i].setCharacterSize(7);
@@ -641,7 +714,7 @@ void Application::setupCursorRow() {
         m_cursor_labels[i].setOrigin(m_cursor_labels[i].getWidth() / 2.0f, 0.0f);
         m_cursor_labels[i].setPosition(
             tile_x + CURSOR_TILE_W / 2.0f,
-            CURSOR_ROW_Y + 30.0f
+            CURSOR_ROW_Y + 2.0f + icon_display_h + 4.0f
         );
     }
 
