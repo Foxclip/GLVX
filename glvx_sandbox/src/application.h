@@ -126,6 +126,7 @@ private:
     void setupShaderShowcase();
     void setupCursorRow();
     void setupMinimap();
+    void layoutMinimap(int window_width, int window_height);
     void updateMinimap();
     void handleEvents();
     void handlePanning(const glvx::Event& event);

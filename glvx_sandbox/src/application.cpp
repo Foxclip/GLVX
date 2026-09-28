@@ -2,6 +2,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 #include "application.h"
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <numbers>
@@ -649,14 +650,19 @@ void Application::setupCursorRow() {
 }
 
 void Application::setupMinimap() {
-    const int window_width = m_window.getWidth();
-    const int window_height = m_window.getHeight();
+    layoutMinimap(m_window.getWidth(), m_window.getHeight());
+}
 
+void Application::layoutMinimap(int window_width, int window_height) {
     // The minimap texture is a render target that updateMinimap() blits the
-    // window contents into on the GPU side every frame (no CPU readback).
-    const int minimap_width = static_cast<int>(std::round(static_cast<float>(window_width) * MINIMAP_SCALE));
-    const int minimap_height = static_cast<int>(std::round(static_cast<float>(window_height) * MINIMAP_SCALE));
-    m_minimap_texture.create(minimap_width, minimap_height);
+    // window contents into on the GPU side every frame (no CPU readback). Its
+    // size tracks the window at MINIMAP_SCALE, so the aspect ratio follows the
+    // window whenever it is resized.
+    const int minimap_width = std::max(1, static_cast<int>(std::round(static_cast<float>(window_width) * MINIMAP_SCALE)));
+    const int minimap_height = std::max(1, static_cast<int>(std::round(static_cast<float>(window_height) * MINIMAP_SCALE)));
+    if (m_minimap_texture.getWidth() != minimap_width || m_minimap_texture.getHeight() != minimap_height) {
+        m_minimap_texture.create(minimap_width, minimap_height);
+    }
 
     const float minimap_x = static_cast<float>(window_width) - minimap_width - MINIMAP_MARGIN;
     const float minimap_y = static_cast<float>(MINIMAP_MARGIN);
@@ -722,6 +728,9 @@ void Application::handleEvents() {
     while (m_window.pollEvent(event)) {
         if (event.type == glvx::EventType::Closed) {
             m_window.close();
+        }
+        if (event.type == glvx::EventType::Resized) {
+            layoutMinimap(static_cast<int>(event.size.width), static_cast<int>(event.size.height));
         }
         if (event.type == glvx::EventType::MouseButtonPressed) {
             if (event.mouseButton.button == glvx::Mouse::Button::Left) {
