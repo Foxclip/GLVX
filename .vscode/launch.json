@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug",
+      "name": "Tests Debug",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/glvx_tests/Debug/glvx_tests.exe",
@@ -11,10 +11,10 @@
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "externalTerminal",
-      "preLaunchTask": "CMake Build Debug"
+      "preLaunchTask": "Build Tests Debug"
     },
     {
-      "name": "Release",
+      "name": "Tests Release",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/glvx_tests/Release/glvx_tests.exe",
@@ -23,10 +23,10 @@
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "externalTerminal",
-      "preLaunchTask": "CMake Build Release"
+      "preLaunchTask": "Build Tests Release"
     },
     {
-      "name": "Sandbox",
+      "name": "Sandbox Debug",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/glvx_sandbox/Debug/glvx_sandbox.exe",
@@ -34,7 +34,7 @@
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
-      "preLaunchTask": "CMake Build Debug"
+      "preLaunchTask": "Build Sandbox Debug"
     }
   ]
 }
