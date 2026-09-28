@@ -705,7 +705,10 @@ void Application::run() {
 
 bool Application::captureScreenshot(const std::string& file_path) {
     handleEvents();
-    render();
+    // Run several frames so that minimap fills up
+    for (int i = 0; i < SCREENSHOT_WARMUP_FRAMES; i++) {
+        render();
+    }
     glvx::Image image = m_window.readPixels();
     if (!writePng(file_path, image)) {
         std::cerr << "Failed to save screenshot to " << file_path << std::endl;

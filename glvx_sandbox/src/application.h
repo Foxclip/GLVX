@@ -60,6 +60,10 @@ private:
     static const int MINIMAP_MARGIN = 10;
     static const int MINIMAP_BORDER = 2;
     inline static const float MINIMAP_SCALE = 0.25f;
+    // Frames rendered before a screenshot is taken, so the recursive minimap
+    // converges: each frame adds one mirror level at MINIMAP_SCALE, and the
+    // initial undefined minimap contents shrink away at the deepest level.
+    static const int SCREENSHOT_WARMUP_FRAMES = 8;
     inline static const float VIEW_ZOOM_FACTOR = 1.2f;
     inline static const float MIN_ZOOM = 0.1f;
     inline static const float MAX_ZOOM = 20.0f;
