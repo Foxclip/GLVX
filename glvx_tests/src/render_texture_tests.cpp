@@ -332,16 +332,17 @@ void RenderTextureTestsModule::copyFromWindowTest(test::Test& test) {
     window.setView(view);
     window.clear(Color::Black);
 
-    // The left half of the window is red, the right half is green
-    const float half_width = static_cast<float>(WINDOW_SIZE.x / 2);
-    const float full_height = static_cast<float>(WINDOW_SIZE.y);
-    Rectangle left_half(half_width, full_height);
-    left_half.setColor(Color::Red);
-    window.draw(left_half);
-    Rectangle right_half(half_width, full_height);
-    right_half.setColor(Color::Green);
-    right_half.setPosition(half_width, 0.0f);
-    window.draw(right_half);
+    // The top half of the window is red, the bottom half is green; the
+    // vertical asymmetry verifies that the copy is not flipped
+    const float full_width = static_cast<float>(WINDOW_SIZE.x);
+    const float half_height = static_cast<float>(WINDOW_SIZE.y / 2);
+    Rectangle top_half(full_width, half_height);
+    top_half.setColor(Color::Red);
+    window.draw(top_half);
+    Rectangle bottom_half(full_width, half_height);
+    bottom_half.setColor(Color::Green);
+    bottom_half.setPosition(0.0f, half_height);
+    window.draw(bottom_half);
 
     // The destination is a quarter of the window size
     const Vector2i destination_size = WINDOW_SIZE / 4;
@@ -352,15 +353,15 @@ void RenderTextureTestsModule::copyFromWindowTest(test::Test& test) {
     T_COMPARE(image.getHeight(), destination_size.y);
 
     // Skip the center boundary where linear filtering can blend the colors
-    const int boundary_x = destination_size.x / 2;
+    const int boundary_y = destination_size.y / 2;
     T_WRAP_CONTAINER(checkPixelColor(
         test, image,
-        Vector2i(0, 0), Vector2i(boundary_x - 3, destination_size.y),
+        Vector2i(0, 0), Vector2i(destination_size.x, boundary_y - 3),
         Color::Red
     ));
     T_WRAP_CONTAINER(checkPixelColor(
         test, image,
-        Vector2i(boundary_x + 3, 0), destination_size,
+        Vector2i(0, boundary_y + 3), destination_size,
         Color::Green
     ));
 }

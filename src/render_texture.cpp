@@ -107,9 +107,12 @@ void RenderTexture::copyFrom(const RenderTarget& source) {
     }
     GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, source_fbo));
     GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, getRenderTargetFbo()));
+    // Flip the destination vertically: the source framebuffer stores its
+    // bottom row at v=0, but the library's UV convention maps v=0 to the top
+    // of a shape, so this makes the copy display like an image texture does.
     GL_CALL(glBlitFramebuffer(
         0, 0, source_width, source_height,
-        0, 0, m_width, m_height,
+        0, m_height, m_width, 0,
         GL_COLOR_BUFFER_BIT,
         GL_LINEAR
     ));
