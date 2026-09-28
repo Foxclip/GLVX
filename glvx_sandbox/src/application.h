@@ -164,6 +164,7 @@ private:
     void handleEvents();
     void handlePanning(const glvx::Event& event);
     void handleZoom(const glvx::Event& event);
+    void resetView();
     void updateArrow();
     void updateShaderShowcase();
     void updateMouseArrow();

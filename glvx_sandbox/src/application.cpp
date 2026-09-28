@@ -1000,6 +1000,9 @@ void Application::handleEvents() {
             handleZoom(event);
         }
         if (event.type == glvx::EventType::KeyPressed) {
+            if (event.key.code == glvx::Key::R) {
+                resetView();
+            }
             m_last_key = event.key.code;
             m_last_key_modifiers = event.key.modifier;
             m_last_key_alt_gr = event.key.alt_gr;
@@ -1056,6 +1059,14 @@ void Application::handleZoom(const glvx::Event& event) {
         center.y + (world_at_cursor.y - center.y) * factor
     );
     m_view.setZoom(new_zoom);
+}
+
+void Application::resetView() {
+    // Return the view to its initial state (see init): centered on the window
+    // at unit zoom with no rotation.
+    m_view.setPosition(m_window.getCenter());
+    m_view.setRotation(glvx::Angle());
+    m_view.setZoom(1.0f);
 }
 
 void Application::updateArrow() {
