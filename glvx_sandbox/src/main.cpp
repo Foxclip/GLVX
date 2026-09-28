@@ -35,6 +35,5 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-// TODO: Text: highlight character under cursor
 // TODO: cursor visibility: drag a shape with cursor
 // TODO: window focus indicators

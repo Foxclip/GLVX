@@ -496,6 +496,7 @@ void Application::init(bool minimized) {
     setupShaderShowcase();
     setupCursorRow();
     setupKeyboardShowcase();
+    setupTextHighlightShowcase();
     setupMinimap();
 }
 
@@ -875,6 +876,21 @@ void Application::setupKeyboardShowcase() {
     m_last_char_label.setPosition(400.0f, info_y);
 }
 
+void Application::setupTextHighlightShowcase() {
+    m_text_highlight.setFont(&m_font_normal);
+    m_text_highlight.setCharacterSize(TEXT_HL_CHARACTER_SIZE);
+    m_text_highlight.setString("AV.To.");
+    m_text_highlight.setPosition(TEXT_HL_X, TEXT_HL_TEXT_Y);
+
+    m_text_highlight_box.setColor(glvx::Color(255, 215, 0, 160));
+
+    m_text_highlight_info.setFont(&m_font_normal);
+    m_text_highlight_info.setCharacterSize(10);
+    m_text_highlight_info.setColor(glvx::Color::White);
+    m_text_highlight_info.setPosition(TEXT_HL_X, TEXT_HL_INFO_Y);
+    m_text_highlight_info.setString("Hovered: none");
+}
+
 void Application::setupMinimap() {
     layoutMinimap(m_window.getWidth(), m_window.getHeight());
 }
@@ -1165,6 +1181,73 @@ void Application::updateKeyboardShowcase() {
     }
 }
 
+void Application::updateTextHighlight() {
+    const glvx::Vector2f mouse_world = m_window.screenToWorld(glvx::Mouse::getPosition(m_window));
+    const glvx::Vector2f text_position = m_text_highlight.getPosition();
+    // The text has no origin offset or rotation, so its local space is the
+    // world space shifted by its position.
+    const glvx::Vector2f local(mouse_world.x - text_position.x, mouse_world.y - text_position.y);
+    const std::string& text_string = m_text_highlight.getString();
+    const unsigned int character_size = m_text_highlight.getCharacterSize();
+
+    int hovered = -1;
+    float cell_left = 0.0f;
+    float cell_top = 0.0f;
+    float cell_width = 0.0f;
+    float cell_height = 0.0f;
+
+    if (!text_string.empty()) {
+        // getCharAt picks the closest character pen, so the cursor's cell is
+        // either that character or the one right before it. Test both and keep
+        // the first whose cell really contains the cursor.
+        const std::size_t closest = m_text_highlight.getCharAt(local);
+        const std::size_t candidates[2] = {closest, closest > 0 ? closest - 1 : 0};
+        for (int c = 0; c < 2; c++) {
+            const std::size_t candidate = candidates[c];
+            if (candidate >= text_string.size()) {
+                continue;
+            }
+            const glvx::Vector2f char_pos = m_text_highlight.findCharacterPos(candidate);
+            const glvx::Character& character =
+                m_font_normal.getCharacter(character_size, static_cast<unsigned char>(text_string[candidate]));
+            const float cell_right = char_pos.x + static_cast<float>(character.advance);
+            const float cell_bottom = char_pos.y +
+                static_cast<float>(std::max(0, character.glyph_height - character.top));
+            const float ascent = static_cast<float>(character_size);
+            if (local.x >= char_pos.x && local.x < cell_right &&
+                local.y >= char_pos.y - ascent && local.y <= cell_bottom) {
+                hovered = static_cast<int>(candidate);
+                cell_left = char_pos.x;
+                cell_top = char_pos.y - ascent;
+                cell_width = cell_right - char_pos.x;
+                cell_height = cell_bottom - cell_top;
+                break;
+            }
+        }
+    }
+
+    if (hovered != m_text_highlight_index) {
+        m_text_highlight_index = hovered;
+        if (hovered != -1) {
+            m_text_highlight_box.setPosition(text_position.x + cell_left, text_position.y + cell_top);
+            m_text_highlight_box.setSize(glvx::Vector2f(cell_width, cell_height));
+
+            std::string hex;
+            hex.resize(4);
+            uint32_t code_point = static_cast<unsigned char>(text_string[hovered]);
+            for (int i = 3; i >= 0; i--) {
+                hex[static_cast<std::size_t>(i)] = "0123456789ABCDEF"[code_point & 0xFu];
+                code_point >>= 4;
+            }
+            m_text_highlight_info.setString(
+                "Hovered: '" + std::string(1, text_string[hovered]) + "' (U+" + hex + ")"
+            );
+        } else {
+            m_text_highlight_info.setString("Hovered: none");
+        }
+    }
+}
+
 void Application::setLastKeyLabel() {
     std::string text;
     if (m_last_key == glvx::Key::Unknown) {
@@ -1279,6 +1362,13 @@ void Application::render() {
     }
     m_window.draw(m_last_key_label);
     m_window.draw(m_last_char_label);
+
+    updateTextHighlight();
+    if (m_text_highlight_index != -1) {
+        m_window.draw(m_text_highlight_box);
+    }
+    m_window.draw(m_text_highlight);
+    m_window.draw(m_text_highlight_info);
 
     // Draw the minimap last in screen space (unit scale, view centered on the
     // window center so world coordinates equal screen pixels), so it stays

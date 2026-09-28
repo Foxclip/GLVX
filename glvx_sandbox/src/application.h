@@ -68,6 +68,10 @@ private:
     inline static const float KEY_ROW_X = 10.0f;
     inline static const float KEY_ROW_Y = 600.0f;
     inline static const float KEY_LABEL_GAP = 8.0f;
+    static const int TEXT_HL_CHARACTER_SIZE = 20;
+    inline static const float TEXT_HL_X = 270.0f;
+    inline static const float TEXT_HL_TEXT_Y = 246.0f;
+    inline static const float TEXT_HL_INFO_Y = 278.0f;
     static const int MINIMAP_MARGIN = 10;
     static const int MINIMAP_BORDER = 2;
     inline static const float MINIMAP_SCALE = 0.25f;
@@ -141,6 +145,11 @@ private:
     bool m_last_key_alt_gr = false;
     uint32_t m_last_char = 0;
 
+    glvx::Text m_text_highlight;
+    glvx::Rectangle m_text_highlight_box;
+    glvx::Text m_text_highlight_info;
+    int m_text_highlight_index = -1;
+
     void setupShapes();
     void setupBlendShowcase();
     void setupTextureShowcase();
@@ -148,6 +157,7 @@ private:
     void setupShaderShowcase();
     void setupCursorRow();
     void setupKeyboardShowcase();
+    void setupTextHighlightShowcase();
     void setupMinimap();
     void layoutMinimap(int window_width, int window_height);
     void updateMinimap();
@@ -160,6 +170,7 @@ private:
     void updateButton();
     void updateCursorRow();
     void updateKeyboardShowcase();
+    void updateTextHighlight();
     void setLastKeyLabel();
     void setLastCharLabel();
     static std::string keyDisplayName(glvx::Key key);
