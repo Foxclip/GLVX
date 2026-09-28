@@ -112,7 +112,7 @@ AbstractTexture::~AbstractTexture() {
     GL_CALL(glDeleteTextures(1, &m_id));
 }
 
-void AbstractTexture::createTexture(int width, int height, unsigned char* data, int channels, bool is_mask, InterpolationType interp, WrappingType wrap) {
+void AbstractTexture::createTexture(int width, int height, const unsigned char* data, int channels, bool is_mask, InterpolationType interp, WrappingType wrap) {
     START_TRY
     assert(glfwGetCurrentContext() != nullptr);
     assert(width > 0);
@@ -167,6 +167,7 @@ void AbstractTexture::createTexture(int width, int height, unsigned char* data, 
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     m_width = width;
     m_height = height;
+    m_channels = channels;
     m_interpolation = interp;
     m_wrapping = wrap;
     END_TRY

@@ -57,6 +57,13 @@ private:
     inline static const float AA_LABEL_GAP = 4.0f;
     static const int NUM_SHADER_CELLS = 2;
     inline static const float SHADER_WAVE_PERIOD_SECONDS = 2.0f;
+    static const int MINIMAP_MARGIN = 10;
+    static const int MINIMAP_BORDER = 2;
+    inline static const float MINIMAP_SCALE = 0.25f;
+    // Frames rendered before a screenshot is taken, so the recursive minimap
+    // converges: each frame adds one mirror level at MINIMAP_SCALE, and the
+    // initial undefined minimap contents shrink away at the deepest level.
+    static const int SCREENSHOT_WARMUP_FRAMES = 8;
     inline static const float VIEW_ZOOM_FACTOR = 1.2f;
     inline static const float MIN_ZOOM = 0.1f;
     inline static const float MAX_ZOOM = 20.0f;
@@ -87,6 +94,10 @@ private:
     std::unique_ptr<glvx::Shader> m_shader_animated;
     glvx::Rectangle m_shader_cell_rects[NUM_SHADER_CELLS];
     glvx::Text m_shader_cell_labels[NUM_SHADER_CELLS];
+    glvx::RenderTexture m_minimap_texture;
+    glvx::Rectangle m_minimap_border;
+    glvx::Rectangle m_minimap_rect;
+    glvx::Text m_minimap_label;
     glvx::Font m_font_normal;
     glvx::Font m_font_subpixel;
     glvx::Text m_text_normal;
@@ -114,6 +125,9 @@ private:
     void setupAntialiasingShowcase();
     void setupShaderShowcase();
     void setupCursorRow();
+    void setupMinimap();
+    void layoutMinimap(int window_width, int window_height);
+    void updateMinimap();
     void handleEvents();
     void handlePanning(const glvx::Event& event);
     void handleZoom(const glvx::Event& event);

@@ -16,6 +16,8 @@ public:
     void drawRectFullTest(test::Test& test);
     void panTest(test::Test& test);
     void transparentRectangleTest(test::Test& test);
+    void copyFromTest(test::Test& test);
+    void copyFromWindowTest(test::Test& test);
 
 private:
 
