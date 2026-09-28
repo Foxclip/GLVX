@@ -7,8 +7,6 @@
 
 namespace glvx {
 
-const float VIEW_ZOOM_FACTOR = 1.2f;
-
 class View : public Transformable {
 public:
     float getZoom() const;

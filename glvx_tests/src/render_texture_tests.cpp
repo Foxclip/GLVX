@@ -14,6 +14,8 @@ RenderTextureTestsModule::RenderTextureTestsModule(
     auto draw_rect_full_test = addTest("draw_rectangle_full", { draw_rect_test }, [&](test::Test& test) { drawRectFullTest(test); });
     auto pan_test = addTest("pan", { draw_rect_full_test }, [&](test::Test& test) { panTest(test); });
     auto transparent_rect_test = addTest("transparent_rectangle", { draw_rect_full_test }, [&](test::Test& test) { transparentRectangleTest(test); });
+    auto copy_from_test = addTest("copy_from", { clear_test }, [&](test::Test& test) { copyFromTest(test); });
+    auto copy_from_window_test = addTest("copy_from_window", { clear_test }, [&](test::Test& test) { copyFromWindowTest(test); });
 }
 
 void RenderTextureTestsModule::clearTest(test::Test& test) {
@@ -278,5 +280,88 @@ void RenderTextureTestsModule::transparentRectangleTest(test::Test& test) {
         test, image_window,
         rect_size_int, WINDOW_SIZE,
         Color::Black
+    ));
+}
+
+void RenderTextureTestsModule::copyFromTest(test::Test& test) {
+    // Source: the left half is red, the right half is green
+    RenderTexture source(WINDOW_SIZE.x, WINDOW_SIZE.y);
+    View source_view;
+    source_view.setPosition(static_cast<Vector2f>(WINDOW_SIZE) / 2.0f);
+    source.setView(source_view);
+    source.clear(Color::Black);
+
+    const float half_width = static_cast<float>(WINDOW_SIZE.x / 2);
+    const float full_height = static_cast<float>(WINDOW_SIZE.y);
+    Rectangle left_half(half_width, full_height);
+    left_half.setColor(Color::Red);
+    source.draw(left_half);
+    Rectangle right_half(half_width, full_height);
+    right_half.setColor(Color::Green);
+    right_half.setPosition(half_width, 0.0f);
+    source.draw(right_half);
+
+    // The destination is a quarter of the source size
+    const Vector2i destination_size = WINDOW_SIZE / 4;
+    RenderTexture destination(destination_size.x, destination_size.y);
+    destination.copyFrom(source);
+    Image image = destination.readPixels();
+    T_COMPARE(image.getWidth(), destination_size.x);
+    T_COMPARE(image.getHeight(), destination_size.y);
+
+    // Skip the center boundary where linear filtering can blend the colors
+    const int boundary_x = destination_size.x / 2;
+    T_WRAP_CONTAINER(checkPixelColor(
+        test, image,
+        Vector2i(0, 0), Vector2i(boundary_x - 3, destination_size.y),
+        Color::Red
+    ));
+    T_WRAP_CONTAINER(checkPixelColor(
+        test, image,
+        Vector2i(boundary_x + 3, 0), destination_size,
+        Color::Green
+    ));
+}
+
+void RenderTextureTestsModule::copyFromWindowTest(test::Test& test) {
+    // The source is the window itself; depending on the window's state it is
+    // either the default framebuffer or the window's offscreen render target.
+    window.setSize(WINDOW_SIZE);
+    View view;
+    view.setPosition(static_cast<Vector2f>(WINDOW_SIZE) / 2.0f);
+    window.setView(view);
+    window.clear(Color::Black);
+
+    // The top half of the window is red, the bottom half is green; the
+    // vertical asymmetry verifies that the copy is not flipped
+    const float full_width = static_cast<float>(WINDOW_SIZE.x);
+    const float half_height = static_cast<float>(WINDOW_SIZE.y / 2);
+    Rectangle top_half(full_width, half_height);
+    top_half.setColor(Color::Red);
+    window.draw(top_half);
+    Rectangle bottom_half(full_width, half_height);
+    bottom_half.setColor(Color::Green);
+    bottom_half.setPosition(0.0f, half_height);
+    window.draw(bottom_half);
+
+    // The destination is a quarter of the window size
+    const Vector2i destination_size = WINDOW_SIZE / 4;
+    RenderTexture destination(destination_size.x, destination_size.y);
+    destination.copyFrom(window);
+    Image image = destination.readPixels();
+    T_COMPARE(image.getWidth(), destination_size.x);
+    T_COMPARE(image.getHeight(), destination_size.y);
+
+    // Skip the center boundary where linear filtering can blend the colors
+    const int boundary_y = destination_size.y / 2;
+    T_WRAP_CONTAINER(checkPixelColor(
+        test, image,
+        Vector2i(0, 0), Vector2i(destination_size.x, boundary_y - 3),
+        Color::Red
+    ));
+    T_WRAP_CONTAINER(checkPixelColor(
+        test, image,
+        Vector2i(0, boundary_y + 3), destination_size,
+        Color::Green
     ));
 }

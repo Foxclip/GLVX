@@ -16,21 +16,20 @@ public:
     virtual ~RenderTarget() = default;
 
     virtual void setView(const View& view);
-    void clear(const Color& color) const;
-    void draw(const Drawable& drawable, const RenderStates& states = RenderStates()) const;
+    virtual void clear(const Color& color) const;
+    virtual void draw(const Drawable& drawable, const RenderStates& states = RenderStates()) const;
     Vector2i worldToScreen(float x, float y) const;
     Vector2i worldToScreen(const Vector2f& worldPos) const;
     Vector2f screenToWorld(int x, int y) const;
     Vector2f screenToWorld(const Vector2i& screenPos) const;
+    virtual unsigned int getRenderTargetFbo() const = 0;
+    virtual int getRenderTargetWidth() const = 0;
+    virtual int getRenderTargetHeight() const = 0;
 
 protected:
     Matrix4 m_view;
     Matrix4 m_inv_view;
     Matrix4 m_projection;
-
-    virtual unsigned int getRenderTargetFbo() const = 0;
-    virtual int getRenderTargetWidth() const = 0;
-    virtual int getRenderTargetHeight() const = 0;
 };
 
 }

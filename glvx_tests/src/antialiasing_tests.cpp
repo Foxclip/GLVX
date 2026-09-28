@@ -17,7 +17,7 @@ AntialiasingTestsModule::AntialiasingTestsModule(
 }
 
 void AntialiasingTestsModule::beforeRunModule() {
-    aa_window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "aa window", AA_WINDOW_SAMPLES);
+    aa_window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "aa window", AA_WINDOW_SAMPLES, minimized);
 }
 
 void AntialiasingTestsModule::afterRunModule() {

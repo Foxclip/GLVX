@@ -18,5 +18,6 @@ public:
     void textureInterpolationTest(test::Test& test);
     void textureRenderingInterpolationTest(test::Test& test);
     void textureWrappingTest(test::Test& test);
+    void textureUpdateTest(test::Test& test);
 
 };

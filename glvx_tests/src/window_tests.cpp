@@ -55,7 +55,7 @@ void WindowTestsModule::windowResizeTest(test::Test& test) {
 
 void WindowTestsModule::windowRecreateTest(test::Test& test) {
     window.close();
-    window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "recreated");
+    window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "recreated", 0, minimized);
     T_CHECK(window.isOpen() == true);
     T_CHECK(window.getWidth() == WINDOW_SIZE.x);
     T_CHECK(window.getHeight() == WINDOW_SIZE.y);
@@ -67,7 +67,7 @@ void WindowTestsModule::windowDoubleCloseTest(test::Test& test) {
 }
 
 void WindowTestsModule::windowDrawAfterRecreateTest(test::Test& test) {
-    window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "post-cycle");
+    window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "post-cycle", 0, minimized);
     window.clear(Color::Black);
     const Vector2f rect_size = Vector2f(10.0f, 10.0f);
     Rectangle rect(rect_size);
@@ -80,6 +80,6 @@ void WindowTestsModule::windowDrawAfterRecreateTest(test::Test& test) {
 
 void WindowTestsModule::afterRunModule() {
     if (!window.isOpen()) {
-        window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "glvx tests");
+        window.create(WINDOW_SIZE.x, WINDOW_SIZE.y, "glvx tests", 0, minimized);
     }
 }

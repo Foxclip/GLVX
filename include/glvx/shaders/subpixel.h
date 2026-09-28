@@ -50,8 +50,13 @@ void main() {
     if (object.hasTexture) {
         vec4 texColor = texture(tex, TexCoords);
         vec3 subpixel = texColor.rgb;
+        // The subpixel atlas is an RGB texture without an alpha channel, so
+        // derive the overall coverage from the average of the three
+        // subpixel coverages and use it as the (premultiplied) alpha.
+        float coverage = (subpixel.r + subpixel.g + subpixel.b) / 3.0;
         vec4 textColor = VertexColor * colorNormalized;
-        FragColor = mix(vec4(vec3(0.0), 1.0), textColor, vec4(subpixel, 1.0));
+        vec3 color = textColor.rgb * subpixel;
+        FragColor = vec4(color, coverage * textColor.a);
     } else {
         FragColor = VertexColor * colorNormalized;
     }

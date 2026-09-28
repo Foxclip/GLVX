@@ -1,3 +1,8 @@
+#ifdef _WIN32
+#define NOMINMAX
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <windows.h>
+#endif
 #include "glvx/window.h"
 #include "glvx/shader.h"
 #include "glvx/shaders/simple.h"
@@ -6,8 +11,12 @@
 #include "glvx/image.h"
 #include "glvx/keyboard.h"
 #include "glvx/mouse.h"
+#include "glvx/render_texture.h"
 #include <stdexcept>
 #include <filesystem>
+#ifdef _WIN32
+#include <GLFW/glfw3native.h>
+#endif
 
 namespace glvx {
 
@@ -18,7 +27,7 @@ Window::~Window() {
     close();
 }
 
-void Window::create(int width, int height, const char* title, int msaa_samples) {
+void Window::create(int width, int height, const char* title, int msaa_samples, bool minimized) {
     START_TRY
     close();
 
@@ -33,17 +42,30 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, msaa_samples);
+#ifdef _WIN32
+    if (minimized) {
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    }
+#endif
 
     m_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (!m_window) {
         throw std::runtime_error("Failed to create GLFW window");
     }
 
+#ifdef _WIN32
+    if (minimized) {
+        ShowWindow(glfwGetWin32Window(m_window), SW_SHOWMINNOACTIVE);
+    }
+#endif
+
     glfwMakeContextCurrent(m_window);
 
     m_current_width = width;
     m_current_height = height;
-    m_msaa_samples = glfwGetWindowAttrib(m_window, GLFW_SAMPLES);
+    // GLFW does not expose the default framebuffer sample count through
+    // glfwGetWindowAttrib, so remember the requested count instead.
+    m_msaa_samples = msaa_samples;
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         glfwDestroyWindow(m_window);
@@ -62,6 +84,7 @@ void Window::create(int width, int height, const char* title, int msaa_samples) 
     common::default_shader = m_default_shader_uptr.get();
     m_subpixel_shader_uptr = std::make_unique<Shader>(shaders::subpixel_vert, shaders::subpixel_frag, true);
     common::subpixel_shader = m_subpixel_shader_uptr.get();
+    syncOffscreenTexture();
     ++m_active_window_count;
     END_TRY
 }
@@ -120,12 +143,43 @@ void Window::setTitle(const std::string& title) const {
     glfwSetWindowTitle(m_window, title.c_str());
 }
 
+void Window::clear(const Color& color) const {
+    if (!isOpen()) {
+        return;
+    }
+    RenderTarget::clear(color);
+}
+
+void Window::draw(const Drawable& drawable, const RenderStates& states) const {
+    if (!isOpen()) {
+        return;
+    }
+    RenderTarget::draw(drawable, states);
+}
+
 void Window::display() const {
+    if (!isOpen()) {
+        return;
+    }
+    if (m_offscreen_texture_uptr) {
+        // The window is minimized or hidden, so there is nothing to present;
+        // just resolve the offscreen texture if it uses MSAA.
+        m_offscreen_texture_uptr->display();
+        return;
+    }
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     glfwSwapBuffers(m_window);
 }
 
 Image Window::readPixels() const {
+    if (m_offscreen_texture_uptr) {
+        // The texture stores texels bottom-up, like the default framebuffer
+        // does before readback, so flip to the same top-down orientation.
+        Image image = m_offscreen_texture_uptr->readPixels();
+        image.flipY();
+        return image;
+    }
+
     std::vector<unsigned char> pixels(m_current_width * m_current_height * 4);
     GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     GL_CALL(glReadBuffer(GL_FRONT));
@@ -219,7 +273,27 @@ void Window::disableInputEvents() {
 }
 
 unsigned int Window::getRenderTargetFbo() const {
+    if (m_offscreen_texture_uptr) {
+        return m_offscreen_texture_uptr->getRenderTargetFbo();
+    }
     return 0;
+}
+
+void Window::syncOffscreenTexture() {
+    int fb_width = 0;
+    int fb_height = 0;
+    glfwGetFramebufferSize(m_window, &fb_width, &fb_height);
+    if (fb_width == 0 || fb_height == 0) {
+        // A minimized or hidden window has no default framebuffer, so render
+        // to an offscreen texture of the window's logical size instead.
+        if (!m_offscreen_texture_uptr) {
+            m_offscreen_texture_uptr = std::make_unique<RenderTexture>(m_current_width, m_current_height, m_msaa_samples);
+        } else {
+            m_offscreen_texture_uptr->resize(m_current_width, m_current_height, false);
+        }
+    } else if (m_offscreen_texture_uptr) {
+        m_offscreen_texture_uptr.reset();
+    }
 }
 
 int Window::getRenderTargetWidth() const {
@@ -231,9 +305,14 @@ int Window::getRenderTargetHeight() const {
 }
 
 void Window::processWindowSize(int width, int height) {
-    m_current_width = width;
-    m_current_height = height;
-    GL_CALL(glViewport(0, 0, m_current_width, m_current_height));
+    // A minimized or hidden window reports a 0x0 framebuffer;
+    // keep the last known logical size in that case.
+    if (width > 0 && height > 0) {
+        m_current_width = width;
+        m_current_height = height;
+        GL_CALL(glViewport(0, 0, m_current_width, m_current_height));
+    }
+    syncOffscreenTexture();
 }
 
 void Window::framebufferSizeCallback(GLFWwindow* glfw_window, int width, int height) {
@@ -354,6 +433,7 @@ void Window::close() {
     if (m_glfw_initialized) {
         glfwMakeContextCurrent(m_window);
 
+        m_offscreen_texture_uptr.reset();
         m_default_shader_uptr.reset();
         m_subpixel_shader_uptr.reset();
         m_uniform_buffer_uptr.reset();

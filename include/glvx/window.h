@@ -12,6 +12,7 @@
 #include "glvx/render_target.h"
 #include "glvx/cursor.h"
 #include "glvx/event.h"
+#include "glvx/render_texture.h"
 #include <memory>
 #include <queue>
 
@@ -30,7 +31,8 @@ public:
         int width = DEFAULT_WINDOW_WIDTH,
         int height = DEFAULT_WINDOW_HEIGHT,
         const char* title = "GLVX window",
-        int msaa_samples = 0
+        int msaa_samples = 0,
+        bool minimized = false
     );
     void close();
     bool isOpen() const;
@@ -40,6 +42,8 @@ public:
     Vector2i getSize() const;
     Vector2f getCenter() const;
     void setView(const View& view) override;
+    void clear(const Color& color) const override;
+    void draw(const Drawable& drawable, const RenderStates& states = RenderStates()) const override;
     void setSize(int width, int height);
     void setSize(const Vector2i& size);
     void setTitle(const std::string& title) const;
@@ -69,6 +73,9 @@ private:
     std::unique_ptr<Shader> m_subpixel_shader_uptr = nullptr;
     std::unique_ptr<UniformBuffer> m_uniform_buffer_uptr = nullptr;
     int m_msaa_samples = 0;
+    // used when the window has no default framebuffer
+    // (minimized or hidden window); null otherwise
+    std::unique_ptr<RenderTexture> m_offscreen_texture_uptr = nullptr;
 
     static constexpr size_t max_event_queue_size = 512;
     std::queue<Event> m_event_queue;
@@ -76,6 +83,8 @@ private:
     unsigned int getRenderTargetFbo() const override;
     int getRenderTargetWidth() const override;
     int getRenderTargetHeight() const override;
+
+    void syncOffscreenTexture();
 
     static int m_active_window_count;
     static bool m_glfw_initialized;

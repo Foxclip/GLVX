@@ -39,10 +39,11 @@ protected:
     unsigned int m_id = 0;
     int m_width = 0;
     int m_height = 0;
+    int m_channels = 0;
     InterpolationType m_interpolation = InterpolationType::Nearest;
     WrappingType m_wrapping = WrappingType::ClampToEdge;
     void createTexture(
-        int width, int height, unsigned char* data = nullptr, int channels = 4, bool is_mask = false,
+        int width, int height, const unsigned char* data = nullptr, int channels = 4, bool is_mask = false,
         InterpolationType interp = InterpolationType::Nearest,
         WrappingType wrap = WrappingType::ClampToEdge
     );

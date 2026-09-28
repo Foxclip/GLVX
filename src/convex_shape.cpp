@@ -3,7 +3,18 @@
 
 namespace glvx {
 
-ConvexShape::ConvexShape(std::size_t point_count) : Shape(PrimitiveType::TriangleFan, 0), m_points(point_count) {
+std::size_t ConvexShape::requiredVertexCount(std::size_t point_count) {
+    if (point_count < 3) {
+        return 0;
+    }
+    // + 2 for the center vertex and the repeated first point
+    return point_count + 2;
+}
+
+ConvexShape::ConvexShape(std::size_t point_count)
+    : Shape(PrimitiveType::TriangleFan,
+    static_cast<unsigned int>(requiredVertexCount(point_count))),
+    m_points(point_count) {
     updateVertices();
 }
 
@@ -31,13 +42,17 @@ const Vector2f& ConvexShape::getPoint(std::size_t index) const {
 
 void ConvexShape::updateVertices() {
     const std::size_t point_count = m_points.size();
-    if (point_count < 3) {
-        resize(0);
-        return;
+    const std::size_t required = requiredVertexCount(point_count);
+
+    // Only resize (and push to the GPU) when the vertex count actually changed,
+    // e.g. via setPointCount(). The constructor pre-allocates the buffer.
+    if (m_vertices.size() != required) {
+        resize(static_cast<unsigned int>(required));
     }
 
-    // + 2 for the center vertex and the repeated first point
-    resize(static_cast<unsigned int>(point_count) + 2u);
+    if (required == 0) {
+        return;
+    }
 
     Vector2f bounds_min = m_points[0];
     Vector2f bounds_max = m_points[0];

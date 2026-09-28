@@ -8,7 +8,8 @@
       "args": [
         "-S", ".",
         "-B", "build",
-        "-DGLVX_BUILD_TESTS=ON"
+        "-DGLVX_BUILD_TESTS=ON",
+        "-DGLVX_BUILD_SANDBOX=ON"
       ],
       "group": {
         "kind": "none",
@@ -17,7 +18,7 @@
       "problemMatcher": []
     },
     {
-      "label": "CMake Build Debug",
+      "label": "Build All Debug",
       "type": "shell",
       "command": "cmake",
       "args": ["--build", "build", "--config", "Debug"],
@@ -28,7 +29,7 @@
       "problemMatcher": ["$msCompile"]
     },
     {
-      "label": "CMake Build Release",
+      "label": "Build All Release",
       "type": "shell",
       "command": "cmake",
       "args": ["--build", "build", "--config", "Release"],
@@ -36,6 +37,27 @@
         "kind": "build",
         "isDefault": false
       },
+      "problemMatcher": ["$msCompile"]
+    },
+    {
+      "label": "Build Tests Debug",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build", "--config", "Debug", "--target", "glvx_tests"],
+      "problemMatcher": ["$msCompile"]
+    },
+    {
+      "label": "Build Tests Release",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build", "--config", "Release", "--target", "glvx_tests"],
+      "problemMatcher": ["$msCompile"]
+    },
+    {
+      "label": "Build Sandbox Debug",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build", "--config", "Debug", "--target", "glvx_sandbox"],
       "problemMatcher": ["$msCompile"]
     }
   ]

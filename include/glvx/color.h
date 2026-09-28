@@ -12,6 +12,7 @@ public:
     static const Color Red;
     static const Color Green;
     static const Color Blue;
+    static const Color Yellow;
 
     std::uint8_t r = 0;
     std::uint8_t g = 0;

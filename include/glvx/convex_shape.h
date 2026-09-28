@@ -18,6 +18,7 @@ public:
     const Vector2f& getPoint(std::size_t index) const;
 
 private:
+    static std::size_t requiredVertexCount(std::size_t point_count);
     void updateVertices();
 
     std::vector<Vector2f> m_points;
