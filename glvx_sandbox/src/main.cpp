@@ -5,34 +5,33 @@
 
 int main(int argc, char* argv[]) {
     bool minimized = false;
-    std::string screenshot_path;
+    bool screenshot = false;
     for (int i = 1; i < argc; i++) {
         if (std::strcmp(argv[i], "--minimized") == 0) {
             minimized = true;
         }
         if (std::strcmp(argv[i], "--screenshot") == 0) {
-            if (i + 1 >= argc) {
-                std::cerr << "ERROR: --screenshot requires a file path argument" << std::endl;
-                return 1;
-            }
-            i++;
-            screenshot_path = argv[i];
-            // --screenshot implies --minimized
+            screenshot = true;
             minimized = true;
         }
     }
 
     Application application;
     application.init(minimized);
-
-    if (screenshot_path.empty()) {
+    if (screenshot) {
+        if (argc < 3) {
+            std::cerr << "ERROR: --screenshot requires a file path argument" << std::endl;
+            return 1;
+        }
+        std::string screenshot_path;
+        screenshot_path = argv[2];
+        if (!application.captureScreenshot(screenshot_path)) {
+            return 1;
+        }
+    } else {
         application.run();
-        return 0;
     }
 
-    if (!application.captureScreenshot(screenshot_path)) {
-        return 1;
-    }
     return 0;
 }
 
