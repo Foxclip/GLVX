@@ -30,6 +30,10 @@ void Text::setFont(Font* font) {
         if (font->isSubpixel()) {
             setShader(common::subpixel_shader);
         }
+        // Re-layout a string that was set before the font was available.
+        if (!m_string.empty()) {
+            setString(m_string);
+        }
     } else {
         setTexture(nullptr);
         setShader(nullptr);
@@ -77,7 +81,9 @@ void Text::setMaxWidth(float max_width) {
 void Text::setString(const std::string& string) {
     m_string = string;
 
-    if (string.empty()) {
+    // Layout requires a font; without one, store the string and re-layout
+    // when a font is set (mirrors sf::Text's null-font tolerance).
+    if (string.empty() || !m_font) {
         m_vertices.clear();
         m_vertex_buffer.create(0);
         m_width = 0.0f;
