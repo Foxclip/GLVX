@@ -52,4 +52,15 @@ void FloatRect::intersects(const FloatRect& other, FloatRect& intersection) cons
     }
 }
 
+bool FloatRect::operator==(const FloatRect& other) const {
+    return position.x == other.position.x &&
+        position.y == other.position.y &&
+        size.x == other.size.x &&
+        size.y == other.size.y;
+}
+
+bool FloatRect::operator!=(const FloatRect& other) const {
+    return !(*this == other);
+}
+
 }
