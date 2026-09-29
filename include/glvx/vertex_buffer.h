@@ -16,6 +16,8 @@ enum class Usage {
 class VertexBuffer {
 public:
     VertexBuffer() = default;
+    VertexBuffer(const VertexBuffer& other);
+    VertexBuffer& operator=(const VertexBuffer& other);
     VertexBuffer(PrimitiveType type);
     VertexBuffer(Usage usage);
     VertexBuffer(PrimitiveType type, Usage usage);

@@ -16,6 +16,36 @@ VertexBuffer::VertexBuffer(PrimitiveType type, Usage usage): m_vbo(0), m_vao(0) 
     m_usage = usage;
 }
 
+VertexBuffer::VertexBuffer(const VertexBuffer& other)
+    : m_type(other.m_type),
+    m_usage(other.m_usage),
+    m_vertex_count(other.m_vertex_count),
+    m_vbo(0),
+    m_vao(0) {
+}
+
+VertexBuffer& VertexBuffer::operator=(const VertexBuffer& other) {
+    if (this != &other) {
+        if (has_active_gl_context()) {
+            if (m_vao != 0) {
+                GL_CALL(glDeleteVertexArrays(1, &m_vao));
+                m_vao = 0;
+            }
+            if (m_vbo != 0) {
+                GL_CALL(glDeleteBuffers(1, &m_vbo));
+                m_vbo = 0;
+            }
+        }
+        m_type = other.m_type;
+        m_usage = other.m_usage;
+        m_vertex_count = other.m_vertex_count;
+        m_vbo = 0;
+        m_vao = 0;
+        m_is_initialized = false;
+    }
+    return *this;
+}
+
 VertexBuffer::~VertexBuffer() {
     if (!has_active_gl_context()) {
         return;
