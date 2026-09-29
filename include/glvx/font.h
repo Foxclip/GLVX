@@ -20,6 +20,8 @@ struct Character {
     int x;
     int top;
     int advance;
+    int lsb_delta = 0;
+    int rsb_delta = 0;
 };
 
 class Font {
