@@ -22,7 +22,7 @@ class Application {
 public:
     void init(bool minimized = false);
     void run();
-    bool captureScreenshot(const std::string& file_path);
+    bool saveScreenshot(const std::string& file_path);
 
 private:
     static const int NUM_TRANSPARENT_RECTANGLES = 10;
