@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     Application application;
     application.init(minimized);
     if (screenshot) {
-        if (!application.captureScreenshot(screenshot_path)) {
+        if (!application.saveScreenshot(screenshot_path)) {
             return 1;
         }
     } else {

@@ -49,6 +49,7 @@ public:
     void setTitle(const std::string& title) const;
     void display() const;
     Image readPixels() const;
+    bool saveScreenshot(const std::string& file_path) const;
 
     void setMouseCursor(const Cursor& cursor);
     void setCursorVisible(bool visible);

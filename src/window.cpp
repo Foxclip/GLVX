@@ -193,6 +193,11 @@ Image Window::readPixels() const {
     return image;
 }
 
+bool Window::saveScreenshot(const std::string& file_path) const {
+    Image image = readPixels();
+    return image.saveToFile(file_path);
+}
+
 void Window::setMouseCursor(const Cursor& cursor) {
     if (cursor.m_glfw_cursor) {
         glfwSetCursor(m_window, cursor.m_glfw_cursor);

@@ -15,9 +15,6 @@
 #include <windows.h>
 #endif
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
 static int transparentAlpha(int index) {
     int alpha = static_cast<int>(256 / pow(2, index));
     if (index == 0) {
@@ -62,20 +59,6 @@ static void generatePatternPixels(std::vector<unsigned char>& pixels, int width,
             pixels[idx + 3] = c[3];
         }
     }
-}
-
-// Writes the image as an RGBA PNG file. readPixels() data is already
-// top-down straight-alpha RGBA, which is exactly the layout stb expects.
-static bool writePng(const std::string& file_path, const glvx::Image& image) {
-    const int stride = image.getWidth() * 4;
-    return stbi_write_png(
-        file_path.c_str(),
-        image.getWidth(),
-        image.getHeight(),
-        4,
-        image.getData().data(),
-        stride
-    ) != 0;
 }
 
 // Vertex shader shared by the custom fragment shaders below. It must declare
@@ -951,14 +934,13 @@ void Application::run() {
     }
 }
 
-bool Application::captureScreenshot(const std::string& file_path) {
+bool Application::saveScreenshot(const std::string& file_path) {
     handleEvents();
     // Run several frames so that minimap fills up
     for (int i = 0; i < SCREENSHOT_WARMUP_FRAMES; i++) {
         render();
     }
-    glvx::Image image = m_window.readPixels();
-    if (!writePng(file_path, image)) {
+    if (!m_window.saveScreenshot(file_path)) {
         std::cerr << "Failed to save screenshot to " << file_path << std::endl;
         return false;
     }
