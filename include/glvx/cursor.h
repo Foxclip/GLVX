@@ -43,6 +43,8 @@ public:
         Cross,
         Help,
         NotAllowed,
+        // Sentinel: the number of cursor types above (not a real cursor type).
+        TypeCount
     };
 
     Cursor();
@@ -57,6 +59,9 @@ public:
     // Returns false (and leaves the cursor unchanged) if pixels is null or
     // size is zero.
     bool loadFromPixels(const unsigned char* pixels, Vector2u size, Vector2u hotspot);
+
+    // Destroys the underlying cursor object, if any.
+    void release();
 
     friend class Window;
 

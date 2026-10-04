@@ -76,8 +76,13 @@ static bool createSystemCursorWin32(DWORD cursor_id, GLFWcursor** out_cursor) {
 Cursor::Cursor() { }
 
 Cursor::~Cursor() {
+    release();
+}
+
+void Cursor::release() {
     if (m_glfw_cursor) {
         glfwDestroyCursor(m_glfw_cursor);
+        m_glfw_cursor = nullptr;
     }
 }
 
