@@ -4,6 +4,10 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <filesystem>
+#include "glvx/glvx_common.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "glvx/stb_image_write.h"
 
 namespace glvx {
 
@@ -71,6 +75,17 @@ void Image::unpremultiply() {
             }
         }
     }
+}
+
+bool Image::saveToFile(const std::string& path) const {
+    START_TRY
+    std::filesystem::path file_path(path);
+    if (file_path.has_parent_path()) {
+        std::error_code ec;
+        std::filesystem::create_directories(file_path.parent_path(), ec);
+    }
+    return stbi_write_png(path.c_str(), m_width, m_height, 4, m_data.data(), m_width * 4);
+    END_TRY
 }
 
 }

@@ -15,6 +15,8 @@ public:
     void extend(const FloatRect& other);
     bool intersects(const FloatRect& other) const;
     void intersects(const FloatRect& other, FloatRect& intersection) const;
+    bool operator==(const FloatRect& other) const;
+    bool operator!=(const FloatRect& other) const;
 };
 
 }

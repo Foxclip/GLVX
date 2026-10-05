@@ -8,6 +8,7 @@
 #include "glvx/drawable.h"
 #include "glvx/shader.h"
 #include "glvx/image.h"
+#include <array>
 #include "glvx/vector.h"
 #include "glvx/render_target.h"
 #include "glvx/cursor.h"
@@ -49,9 +50,12 @@ public:
     void setTitle(const std::string& title) const;
     void display() const;
     Image readPixels() const;
+    bool saveScreenshot(const std::string& file_path) const;
 
     void setMouseCursor(const Cursor& cursor);
+    void setMouseCursor(Cursor::Type type);
     void setCursorVisible(bool visible);
+    bool isCursorHidden() const;
     void setMouseGrabEnabled(bool enabled);
 
     void setVerticalSyncEnabled(bool enabled);
@@ -66,6 +70,7 @@ private:
     friend class ::InputTestsModule;
     friend class ::ApplicationTestsModule;
 
+    std::array<Cursor, static_cast<size_t>(Cursor::Type::TypeCount)> m_system_cursors;
     GLFWwindow* m_window = nullptr;
     int m_current_width = 0;
     int m_current_height = 0;

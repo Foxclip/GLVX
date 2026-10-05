@@ -1,8 +1,9 @@
 #pragma once
 
 #include <filesystem>
-#include <map>
-#include <utility>
+#include <array>
+#include <memory>
+#include <vector>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include "glvx/texture.h"
@@ -11,6 +12,10 @@
 namespace glvx {
 
 const unsigned int FONT_DEFAULT_SIZE = 30;
+// Glyph codes are unsigned char, so the flat per-size tables cover the full
+// 0-255 range and are indexed directly (O(1)) instead of using std::map.
+const unsigned int FONT_CHARACTER_COUNT = 256;
+const unsigned int FONT_KERNING_TABLE_SIZE = FONT_CHARACTER_COUNT * FONT_CHARACTER_COUNT;
 
 struct Character {
     Vector2f uv_top_left;
@@ -20,6 +25,8 @@ struct Character {
     int x;
     int top;
     int advance;
+    int lsb_delta = 0;
+    int rsb_delta = 0;
 };
 
 class Font {
@@ -38,8 +45,10 @@ public:
 private:
     struct SizePage {
         Texture m_atlas;
-        std::map<unsigned char, Character> m_characters;
-        std::map<std::pair<unsigned char, unsigned char>, int> m_kerning;
+        // Indexed directly by character code (unsigned char).
+        std::array<Character, FONT_CHARACTER_COUNT> m_characters{};
+        // Indexed by left * FONT_CHARACTER_COUNT + right; zero means no kerning.
+        std::array<int, FONT_KERNING_TABLE_SIZE> m_kerning{};
         int m_line_height = 0;
         int m_ascender = 0;
         bool m_rasterized = false;
@@ -48,7 +57,8 @@ private:
     static bool m_is_library_initialized;
     static FT_Library m_library;
     FT_Face m_face = nullptr;
-    std::map<unsigned int, SizePage> m_sizes;
+    // Indexed by character size; null entries mean "size not loaded yet".
+    std::vector<std::unique_ptr<SizePage>> m_sizes;
     bool m_use_subpixel = false;
 
     SizePage& loadPage(unsigned int character_size);

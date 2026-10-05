@@ -44,14 +44,14 @@ void TextTestsModule::dimensionsTest(test::Test& test) {
     Font font("fonts/LiberationSans-Regular.ttf");
     Text text(&font, "A", 15);
     T_COMPARE(text.getWidth(), 10.0f);
-    T_COMPARE(text.getHeight(), 11.0f);
+    T_COMPARE(text.getHeight(), 10.0f);
 
     text.setString("AA");
     T_COMPARE(text.getWidth(), 20.0f);
-    T_COMPARE(text.getHeight(), 11.0f);
+    T_COMPARE(text.getHeight(), 10.0f);
 
     text.setString(".");
-    T_COMPARE(text.getWidth(), 2.0f);
+    T_COMPARE(text.getWidth(), 3.0f);
     T_COMPARE(text.getHeight(), 2.0f);
 
     text.setString(" ");
@@ -60,15 +60,15 @@ void TextTestsModule::dimensionsTest(test::Test& test) {
 
     text.setString("A ");
     T_COMPARE(text.getWidth(), 14.0f);
-    T_COMPARE(text.getHeight(), 11.0f);
+    T_COMPARE(text.getHeight(), 10.0f);
 
     text.setString("A A");
-    T_COMPARE(text.getWidth(), 24.0f);
-    T_COMPARE(text.getHeight(), 11.0f);
+    T_COMPARE(text.getWidth(), 23.0f);
+    T_COMPARE(text.getHeight(), 10.0f);
 
     text.setString("Q");
-    T_COMPARE(text.getWidth(), 11.0f);
-    T_COMPARE(text.getHeight(), 14.0f);
+    T_COMPARE(text.getWidth(), 12.0f);
+    T_COMPARE(text.getHeight(), 13.0f);
 }
 
 void TextTestsModule::renderCharacterATest(test::Test& test) {
@@ -95,16 +95,16 @@ void TextTestsModule::renderCharacterATest(test::Test& test) {
                 \n\
                 \n\
                 \n\
+                \n\
     ##          \n\
-   .##.         \n\
-   ++++         \n\
-   #..#         \n\
-  +#  #+        \n\
-  #+  +#        \n\
- .#.  .#.       \n\
+   +##+         \n\
+   #++#         \n\
+  .#  #.        \n\
+  ++  ++        \n\
+  #.  .#        \n\
  +######+       \n\
  #+    +#       \n\
-+#      #+      \n\
+.#      #.      \n\
 ++      ++      \n\
                 \n\
 ";
@@ -144,8 +144,8 @@ void TextTestsModule::renderCharacterDotTest(test::Test& test) {
                 \n\
                 \n\
                 \n\
- +#             \n\
- +#             \n\
+ .#             \n\
+ .#             \n\
                 \n\
 ";
     T_COMPARE_RAW(actual_ascii, expected_ascii);
@@ -175,16 +175,16 @@ void TextTestsModule::renderStringAATest(test::Test& test) {
                                 \n\
                                 \n\
                                 \n\
+                                \n\
     ##        ##                \n\
-   .##.      .##.               \n\
-   ++++      ++++               \n\
-   #..#      #..#               \n\
-  +#  #+    +#  #+              \n\
-  #+  +#    #+  +#              \n\
- .#.  .#.  .#.  .#.             \n\
+   +##+      +##+               \n\
+   #++#      #++#               \n\
+  .#  #.    .#  #.              \n\
+  ++  ++    ++  ++              \n\
+  #.  .#    #.  .#              \n\
  +######+  +######+             \n\
  #+    +#  #+    +#             \n\
-+#      #++#      #+            \n\
+.#      #..#      #.            \n\
 ++      ++++      ++            \n\
                                 \n\
 ";
@@ -217,16 +217,16 @@ void TextTestsModule::transparencyTest(test::Test& test) {
                 \n\
                 \n\
                 \n\
+                \n\
 ++  ##  ++      \n\
-.# .##. #.      \n\
- #++++++#       \n\
- +##..##+       \n\
- .##  ##.       \n\
+.# +##+ #.      \n\
+ #+#++#+#       \n\
+ +##  ##+       \n\
+  ##  +#        \n\
   ##  ##        \n\
- .##  ##.       \n\
  +######+       \n\
- #++++++#       \n\
-+# .##. #+      \n\
+ #+#++#+#       \n\
+.# .##. #.      \n\
 ++  ##  ++      \n\
                 \n\
 ";
@@ -266,16 +266,16 @@ void TextTestsModule::kerningTest(test::Test& test) {
                                 \n\
                                 \n\
                                 \n\
+                                \n\
     ##   ++      ++             \n\
-   .##.  .#      #.             \n\
-   ++++   #+    +#              \n\
-   #..#   +#    #+              \n\
-  +#  #+  .#    #.              \n\
-  #+  +#   #+  +#               \n\
- .#.  .#.  +#  #+               \n\
- +######+   #..#                \n\
+   +##+  .#      #.             \n\
+   #++#   #+    +#              \n\
+  .#  #.  +#    #+              \n\
+  ++  ++   #.  .#               \n\
+  #.  .#   ++  ++               \n\
+ +######+   #  #.               \n\
  #+    +#   ++++                \n\
-+#      #+  .##.                \n\
+.#      #.  .##.                \n\
 ++      ++   ##                 \n\
                                 \n\
 ";
@@ -304,20 +304,20 @@ void TextTestsModule::descenderTest(test::Test& test) {
                                 \n\
                                 \n\
                                 \n\
+                                \n\
     ##                          \n\
-   .##.                         \n\
-   ++++                         \n\
-   #..#     +##.#.              \n\
-  +#  #+   #+  +#.              \n\
-  #+  +#  .#    #.              \n\
- .#.  .#. .#    #.              \n\
- +######+ .#    #.              \n\
- #+    +# .#   .#.              \n\
-+#      #+ #+  +#.              \n\
-++      ++  ###.#.              \n\
-                #.              \n\
-                #.              \n\
-                #.              \n\
+   +##+                         \n\
+   #++#     +#+.#               \n\
+  .#  #.   #+  ##               \n\
+  ++  ++   #.  +#               \n\
+  #.  .#  .#   .#               \n\
+ +######+ .#   .#               \n\
+ #+    +#  #.  +#               \n\
+.#      #. #+  ##               \n\
+++      ++  ###+#               \n\
+               .#               \n\
+               .#               \n\
+               .#               \n\
                                 \n\
 ";
     T_COMPARE_RAW(actual_ascii, expected_ascii);
@@ -367,16 +367,16 @@ void TextTestsModule::multilineDimensionsTest(test::Test& test) {
 
     Font font("fonts/LiberationSans-Regular.ttf");
     Text text(&font, "A\nB", 15);
-    T_COMPARE(text.getWidth(), 10.0f);
-    T_COMPARE(text.getHeight(), 28.0f);
+    T_COMPARE(text.getWidth(), 11.0f);
+    T_COMPARE(text.getHeight(), 27.0f);
 
     text.setString("AB\nC");
-    T_COMPARE(text.getWidth(), 20.0f);
-    T_COMPARE(text.getHeight(), 28.0f);
+    T_COMPARE(text.getWidth(), 21.0f);
+    T_COMPARE(text.getHeight(), 27.0f);
 
     text.setString("A\nB\nC");
     T_COMPARE(text.getWidth(), 11.0f);
-    T_COMPARE(text.getHeight(), 45.0f);
+    T_COMPARE(text.getHeight(), 44.0f);
 }
 
 void TextTestsModule::multilineTest(test::Test& test) {
@@ -403,16 +403,16 @@ void TextTestsModule::multilineTest(test::Test& test) {
                 \n\
                 \n\
                 \n\
+                \n\
     ##          \n\
-   .##.         \n\
-   ++++         \n\
-   #..#         \n\
-  +#  #+        \n\
-  #+  +#        \n\
- .#.  .#.       \n\
+   +##+         \n\
+   #++#         \n\
+  .#  #.        \n\
+  ++  ++        \n\
+  #.  .#        \n\
  +######+       \n\
  #+    +#       \n\
-+#      #+      \n\
+.#      #.      \n\
 ++      ++      \n\
                 \n\
                 \n\
@@ -420,17 +420,17 @@ void TextTestsModule::multilineTest(test::Test& test) {
                 \n\
                 \n\
                 \n\
- +#####.        \n\
- ++   +#.       \n\
- ++    #+       \n\
- ++    #+       \n\
- ++   +#        \n\
- +#####+        \n\
- ++   .#+       \n\
- ++    .#       \n\
- ++    .#       \n\
- ++   .#+       \n\
- +#####+        \n\
+                \n\
+ .#####+        \n\
+ .#    +#       \n\
+ .#    .#       \n\
+ .#    ++       \n\
+ .######        \n\
+ .#    .#+      \n\
+ .#     .#      \n\
+ .#     .#      \n\
+ .#    .#+      \n\
+ .######+       \n\
                 \n\
 ";
     T_COMPARE_RAW(actual_ascii, expected_ascii);
@@ -455,8 +455,8 @@ void TextTestsModule::findCharacterPosTest(test::Test& test) {
     T_VEC2_APPROX_COMPARE(text.findCharacterPos(0), Vector2f(0.0f, 15.0f));
     T_VEC2_APPROX_COMPARE(text.findCharacterPos(1), Vector2f(10.0f, 15.0f));
     T_VEC2_APPROX_COMPARE(text.findCharacterPos(2), Vector2f(0.0f, 32.0f));
-    T_VEC2_APPROX_COMPARE(text.findCharacterPos(3), Vector2f(10.0f, 32.0f));
-    T_VEC2_APPROX_COMPARE(text.findCharacterPos(100), Vector2f(10.0f, 32.0f));
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(3), Vector2f(11.0f, 32.0f));
+    T_VEC2_APPROX_COMPARE(text.findCharacterPos(100), Vector2f(11.0f, 32.0f));
 
     text.setString("A\n");
     T_VEC2_APPROX_COMPARE(text.findCharacterPos(0), Vector2f(0.0f, 15.0f));

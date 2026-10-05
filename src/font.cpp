@@ -3,6 +3,7 @@
 #include "glvx/utils.h"
 #include <cassert>
 #include <vector>
+#include <memory>
 #include <cmath>
 #include <glad/glad.h>
 
@@ -64,12 +65,11 @@ const Texture& Font::getAtlas(unsigned int character_size) {
 }
 
 int Font::getKerning(unsigned int character_size, unsigned char left, unsigned char right) {
-    SizePage& page = loadMetadata(character_size);
-    auto it = page.m_kerning.find({left, right});
-    if (it != page.m_kerning.end()) {
-        return it->second;
+    if (left == 0 || right == 0) {
+        return 0;
     }
-    return 0;
+    const SizePage& page = loadPage(character_size);
+    return page.m_kerning[left * FONT_CHARACTER_COUNT + right];
 }
 
 int Font::getLineHeight(unsigned int character_size) {
@@ -89,56 +89,39 @@ Font::SizePage& Font::loadPage(unsigned int character_size) {
     try {
         rasterizePage(page);
     } catch (...) {
-        m_sizes.erase(character_size);
+        m_sizes[character_size].reset();
         throw;
     }
     return page;
 }
 
 Font::SizePage& Font::loadMetadata(unsigned int character_size) {
-    auto it = m_sizes.find(character_size);
-    if (it != m_sizes.end()) {
-        return it->second;
+    if (character_size >= m_sizes.size()) {
+        m_sizes.resize(character_size + 1);
     }
+    if (!m_sizes[character_size]) {
+        m_sizes[character_size] = std::make_unique<SizePage>();
+        try {
+            FREETYPE_CALL(FT_Set_Pixel_Sizes(m_face, 0, character_size), []() { return "Failed to set font size"; });
 
-    SizePage& page = m_sizes.try_emplace(character_size).first->second;
-    try {
-        FREETYPE_CALL(FT_Set_Pixel_Sizes(m_face, 0, character_size), []() { return "Failed to set font size"; });
-
-        // Load kerning data
-        if (FT_HAS_KERNING(m_face)) {
-            FT_Vector kern_vec;
-            for (unsigned char left = 0; left < FONT_ASCII_CHARACTER_COUNT; left++) {
-                for (unsigned char right = 0; right < FONT_ASCII_CHARACTER_COUNT; right++) {
-                    FT_UInt left_glyph = FT_Get_Char_Index(m_face, left);
-                    FT_UInt right_glyph = FT_Get_Char_Index(m_face, right);
-                    if (left_glyph && right_glyph) {
-                        FREETYPE_CALL(
-                            FT_Get_Kerning(m_face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &kern_vec),
-                            [&]() {
-                                return "Failed to get kerning for characters: " + std::to_string(left) + ", " + std::to_string(right);
-                            }
-                        );
-                        int kerning_value = kern_vec.x / FREETYPE_FIXED_POINT_SCALE;
-                        if (kerning_value != 0) {
-                            page.m_kerning[{left, right}] = kerning_value;
-                        }
-                    }
-                }
-            }
+            SizePage& page = *m_sizes[character_size];
+            page.m_line_height = m_face->size->metrics.height / FREETYPE_FIXED_POINT_SCALE;
+            page.m_ascender = m_face->ascender / FREETYPE_FIXED_POINT_SCALE;
+        } catch (...) {
+            m_sizes[character_size].reset();
+            throw;
         }
-
-        page.m_line_height = m_face->size->metrics.height / FREETYPE_FIXED_POINT_SCALE;
-        page.m_ascender = m_face->ascender / FREETYPE_FIXED_POINT_SCALE;
-    } catch (...) {
-        m_sizes.erase(character_size);
-        throw;
     }
-    return page;
+    return *m_sizes[character_size];
 }
 
 void Font::rasterizePage(SizePage& page) {
-    unsigned int load_flag = m_use_subpixel ? (FT_LOAD_TARGET_LCD | FT_LOAD_RENDER) : FT_LOAD_RENDER;
+    // Match SFML's glyph loading (FT_LOAD_TARGET_NORMAL | FT_LOAD_FORCE_AUTOHINT,
+    // rasterized) so glyph metrics and rasterization are identical to the
+    // pre-migration behavior; the subpixel path keeps its LCD target.
+    unsigned int load_flag = m_use_subpixel
+        ? (FT_LOAD_TARGET_LCD | FT_LOAD_RENDER)
+        : (FT_LOAD_TARGET_NORMAL | FT_LOAD_FORCE_AUTOHINT | FT_LOAD_RENDER);
 
     struct RasterizedGlyph {
         std::vector<unsigned char> m_data;
@@ -170,6 +153,8 @@ void Font::rasterizePage(SizePage& page) {
         ch.advance = advance / FREETYPE_FIXED_POINT_SCALE;
         ch.width = static_cast<int>(m_use_subpixel ? width / 3 : width);
         ch.glyph_height = static_cast<int>(height);
+        ch.lsb_delta = static_cast<int>(m_face->glyph->lsb_delta);
+        ch.rsb_delta = static_cast<int>(m_face->glyph->rsb_delta);
 
         if (width > 0 && height > 0 && m_face->glyph->bitmap.buffer) {
             total_area += static_cast<int>(m_use_subpixel ? width / 3 : width) * static_cast<int>(height);
@@ -181,6 +166,34 @@ void Font::rasterizePage(SizePage& page) {
                 m_face->glyph->bitmap.buffer,
                 m_face->glyph->bitmap.buffer + static_cast<size_t>(bmp.m_pitch) * height
             );
+        }
+    }
+
+    // Load kerning data. Like SFML, combine the un-fitted kerning distance
+    // with the autohinting position compensation deltas and round to the
+    // nearest pixel.
+    if (FT_HAS_KERNING(m_face)) {
+        FT_Vector kern_vec;
+        for (unsigned char left = 32; left < 126; left++) {
+            for (unsigned char right = 33; right < 127; right++) {
+                FT_UInt left_glyph = FT_Get_Char_Index(m_face, left);
+                FT_UInt right_glyph = FT_Get_Char_Index(m_face, right);
+                if (left_glyph && right_glyph) {
+                    FREETYPE_CALL(
+                        FT_Get_Kerning(m_face, left_glyph, right_glyph, FT_KERNING_UNFITTED, &kern_vec),
+                        [&]() {
+                            return "Failed to get kerning for characters: " + std::to_string(left) + ", " + std::to_string(right);
+                        }
+                    );
+                    int compensation = page.m_characters[right].lsb_delta - page.m_characters[left].rsb_delta;
+                    int kerning_value = static_cast<int>(
+                        std::floor((static_cast<float>(compensation + kern_vec.x) + 32.0f) / 64.0f)
+                    );
+                    if (kerning_value != 0) {
+                        page.m_kerning[left * FONT_CHARACTER_COUNT + right] = kerning_value;
+                    }
+                }
+            }
         }
     }
 

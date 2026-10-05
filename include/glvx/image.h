@@ -19,6 +19,8 @@ public:
     // Converts a premultiplied-alpha image (as stored in render targets) back
     // to straight alpha, in place.
     void unpremultiply();
+    // Saves the image to a file as an 8-bit RGBA PNG.
+    bool saveToFile(const std::string& path) const;
 
 private:
     int m_width;

@@ -59,6 +59,10 @@ void Window::create(int width, int height, const char* title, int msaa_samples, 
     }
 #endif
 
+    for (size_t i = 0; i < m_system_cursors.size(); ++i) {
+        m_system_cursors[i].loadFromSystem(static_cast<Cursor::Type>(i));
+    }
+
     glfwMakeContextCurrent(m_window);
 
     m_current_width = width;
@@ -193,16 +197,35 @@ Image Window::readPixels() const {
     return image;
 }
 
+bool Window::saveScreenshot(const std::string& file_path) const {
+    Image image = readPixels();
+    return image.saveToFile(file_path);
+}
+
 void Window::setMouseCursor(const Cursor& cursor) {
     if (cursor.m_glfw_cursor) {
         glfwSetCursor(m_window, cursor.m_glfw_cursor);
     } else {
-        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+}
+
+void Window::setMouseCursor(Cursor::Type type) {
+    size_t index = static_cast<size_t>(type);
+    if (index < m_system_cursors.size()) {
+        setMouseCursor(m_system_cursors[index]);
     }
 }
 
 void Window::setCursorVisible(bool visible) {
     glfwSetInputMode(m_window, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);
+}
+
+bool Window::isCursorHidden() const {
+    if (!m_window) {
+        return false;
+    }
+    return glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_HIDDEN;
 }
 
 void Window::setMouseGrabEnabled(bool enabled) {
@@ -437,6 +460,10 @@ void Window::close() {
         m_default_shader_uptr.reset();
         m_subpixel_shader_uptr.reset();
         m_uniform_buffer_uptr.reset();
+
+        for (Cursor& system_cursor : m_system_cursors) {
+            system_cursor.release();
+        }
 
         glfwDestroyWindow(m_window);
         m_window = nullptr;

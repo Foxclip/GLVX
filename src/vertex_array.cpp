@@ -64,6 +64,10 @@ void VertexArray::append(const Vertex& vertex) {
     m_vertex_buffer.update(m_vertices);
 }
 
+void VertexArray::pushBack(const Vertex& vertex) {
+    m_vertices.push_back(vertex);
+}
+
 void VertexArray::setPrimitiveType(PrimitiveType type) {
     m_vertex_buffer.setPrimitiveType(type);
 }
