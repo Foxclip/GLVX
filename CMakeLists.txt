@@ -17,6 +17,14 @@ option(GLVX_BUILD_SANDBOX "Build GLVX sandbox" OFF)
 add_subdirectory(glfw)
 add_subdirectory(glad)
 add_subdirectory(glm)
+# Freetype's CMake build enables dynamic HarfBuzz loading by default on
+# Windows (FT_DYNAMIC_HARFBUZZ=ON), which makes the autofit module call
+# LoadLibraryA("libharfbuzz-0.dll") at font initialization. The project ships
+# no harfbuzz, so on machines where PATH contains a third-party copy (e.g.
+# gnuplot's bin dir) that is unloadable, Windows shows an "entry point not
+# found" dialog on every launch. HarfBuzz only refines OpenType auto-hinting,
+# so disable it to keep the sandbox clean.
+set(FT_DISABLE_HARFBUZZ ON CACHE INTERNAL "" FORCE)
 add_subdirectory(freetype)
 if(GLVX_BUILD_TESTS)
     add_subdirectory(glvx_tests)
