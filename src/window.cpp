@@ -169,10 +169,18 @@ void Window::display() const {
         // The window is minimized or hidden, so there is nothing to present;
         // just resolve the offscreen texture if it uses MSAA.
         m_offscreen_texture_uptr->display();
-        return;
+    } else {
+        GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+        glfwSwapBuffers(m_window);
     }
-    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-    glfwSwapBuffers(m_window);
+#ifndef NDEBUG
+    // Per-frame GL error check (see glvx_common.h): drains the errors
+    // accumulated since the previous present. Skipped when per-call
+    // checking is enabled, since errors are already handled per call.
+    if (!gl_error_check_per_call) {
+        check_opengl_errors_all();
+    }
+#endif
 }
 
 Image Window::readPixels() const {
