@@ -3,6 +3,7 @@
 #include "glvx/utils.h"
 #include <cassert>
 #include <vector>
+#include <memory>
 #include <cmath>
 #include <glad/glad.h>
 
@@ -67,12 +68,8 @@ int Font::getKerning(unsigned int character_size, unsigned char left, unsigned c
     if (left == 0 || right == 0) {
         return 0;
     }
-    SizePage& page = loadPage(character_size);
-    auto it = page.m_kerning.find({left, right});
-    if (it != page.m_kerning.end()) {
-        return it->second;
-    }
-    return 0;
+    const SizePage& page = loadPage(character_size);
+    return page.m_kerning[left * FONT_CHARACTER_COUNT + right];
 }
 
 int Font::getLineHeight(unsigned int character_size) {
@@ -92,29 +89,30 @@ Font::SizePage& Font::loadPage(unsigned int character_size) {
     try {
         rasterizePage(page);
     } catch (...) {
-        m_sizes.erase(character_size);
+        m_sizes[character_size].reset();
         throw;
     }
     return page;
 }
 
 Font::SizePage& Font::loadMetadata(unsigned int character_size) {
-    auto it = m_sizes.find(character_size);
-    if (it != m_sizes.end()) {
-        return it->second;
+    if (character_size >= m_sizes.size()) {
+        m_sizes.resize(character_size + 1);
     }
+    if (!m_sizes[character_size]) {
+        m_sizes[character_size] = std::make_unique<SizePage>();
+        try {
+            FREETYPE_CALL(FT_Set_Pixel_Sizes(m_face, 0, character_size), []() { return "Failed to set font size"; });
 
-    SizePage& page = m_sizes.try_emplace(character_size).first->second;
-    try {
-        FREETYPE_CALL(FT_Set_Pixel_Sizes(m_face, 0, character_size), []() { return "Failed to set font size"; });
-
-        page.m_line_height = m_face->size->metrics.height / FREETYPE_FIXED_POINT_SCALE;
-        page.m_ascender = m_face->ascender / FREETYPE_FIXED_POINT_SCALE;
-    } catch (...) {
-        m_sizes.erase(character_size);
-        throw;
+            SizePage& page = *m_sizes[character_size];
+            page.m_line_height = m_face->size->metrics.height / FREETYPE_FIXED_POINT_SCALE;
+            page.m_ascender = m_face->ascender / FREETYPE_FIXED_POINT_SCALE;
+        } catch (...) {
+            m_sizes[character_size].reset();
+            throw;
+        }
     }
-    return page;
+    return *m_sizes[character_size];
 }
 
 void Font::rasterizePage(SizePage& page) {
@@ -192,7 +190,7 @@ void Font::rasterizePage(SizePage& page) {
                         std::floor((static_cast<float>(compensation + kern_vec.x) + 32.0f) / 64.0f)
                     );
                     if (kerning_value != 0) {
-                        page.m_kerning[{left, right}] = kerning_value;
+                        page.m_kerning[left * FONT_CHARACTER_COUNT + right] = kerning_value;
                     }
                 }
             }
