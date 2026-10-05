@@ -25,6 +25,10 @@ public:
     void clear();
     void resize(unsigned int new_size);
     void append(const Vertex& vertex);
+    // Append a vertex to the CPU-side storage only, without touching the GL
+    // buffer. Use for bulk vertex construction; the buffer is synchronized on
+    // the next render() call.
+    void pushBack(const Vertex& vertex);
     void setPrimitiveType(PrimitiveType type);
     void render(
         const Matrix4& view,

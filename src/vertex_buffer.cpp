@@ -83,16 +83,28 @@ void VertexBuffer::ensureInitialized(std::size_t size) {
     if (m_vao == 0) {
         GL_CALL(glGenVertexArrays(1, &m_vao));
     }
-    recreateBuffer(size);
+    if (m_vbo == 0) {
+        recreateBuffer(size);
+    }
 }
 
 bool VertexBuffer::update(const std::vector<Vertex>& new_vertices) {
-    ensureInitialized(new_vertices.size());
-    if (new_vertices.size() != m_vertex_count) {
-        m_vertex_count = new_vertices.size();
-        recreateBuffer(m_vertex_count);
+    const std::size_t new_count = new_vertices.size();
+    ensureInitialized(new_count);
+    if (m_vbo == 0) {
+        // No GL context (or empty vertex list): nothing to upload.
+        m_vertex_count = new_count;
+        return true;
     }
-    updateBuffer(new_vertices.data(), 0, new_vertices.size() * sizeof(Vertex));
+    // The GL buffer is only (re)created when it does not exist yet or when
+    // the vertex count changes; otherwise the existing buffer is reused and
+    // only its contents are updated. Recreating the buffer on every draw
+    // (delete + gen + bufferData + attribute setup) was a major cost source.
+    if (new_count != m_vertex_count) {
+        m_vertex_count = new_count;
+        recreateBuffer(new_count);
+    }
+    updateBuffer(new_vertices.data(), 0, new_count * sizeof(Vertex));
     return true;
 }
 
