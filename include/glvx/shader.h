@@ -2,7 +2,9 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <filesystem>
+#include <glad/glad.h>
 #include "glvx/matrix.h"
 #include "glvx/vector.h"
 
@@ -41,12 +43,24 @@ public:
     bool uniformExists(const std::string& name) const;
 
 private:
+    // Uniform locations are queried from the driver once per shader (after
+    // linking) instead of on every set* call, because glGetUniformLocation is
+    // a driver round trip and set* methods run for every drawable draw.
+    // Mutable because the setter methods are const.
+    mutable std::unordered_map<std::string, GLint> m_uniform_locations;
+
+    // Returns the location of `name` from the cache, falling back to a live
+    // query (also cached, including -1 for inactive uniforms) for names that
+    // are not active in the linked program.
+    GLint getUniformLocation(const std::string& name) const;
+
     unsigned int m_id = 0;
     bool m_use_ubo = false;
 
     int compileShader(ShaderType type, const std::filesystem::path& path);
     int compileShader(ShaderType type, const char* source);
     void linkProgram(unsigned int vertex_shader, unsigned int fragment_shader);
+    void cacheUniformLocations();
     std::string combineFragmentShader(
         const char* template_source,
         const std::vector<ShaderPart>& parts

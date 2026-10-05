@@ -51,51 +51,63 @@ void Shader::use() {
     GL_CALL(glUseProgram(m_id));
 }
 
+GLint Shader::getUniformLocation(const std::string& name) const {
+    auto it = m_uniform_locations.find(name);
+    if (it != m_uniform_locations.end()) {
+        return it->second;
+    }
+    // Not an active uniform (optimized away, or not in the linked program).
+    // Cache the -1 result so it is queried only once.
+    GLint loc = GL_CALL(glGetUniformLocation(m_id, name.c_str()));
+    m_uniform_locations.emplace(name, loc);
+    return loc;
+}
+
 void Shader::setBool(const std::string& name, bool value) const {
     assert(m_id != 0);
-    GLint loc = GL_CALL(glGetUniformLocation(m_id, name.c_str()));
+    GLint loc = getUniformLocation(name);
     if (loc == -1) return;
     GL_CALL(glUniform1i(loc, static_cast<int>(value)));
 }
 
 void Shader::setInt(const std::string& name, int value) const {
     assert(m_id != 0);
-    GLint loc = GL_CALL(glGetUniformLocation(m_id, name.c_str()));
+    GLint loc = getUniformLocation(name);
     if (loc == -1) return;
     GL_CALL(glUniform1i(loc, value));
 }
 
 void Shader::setFloat(const std::string& name, float value) const {
     assert(m_id != 0);
-    GLint loc = GL_CALL(glGetUniformLocation(m_id, name.c_str()));
+    GLint loc = getUniformLocation(name);
     if (loc == -1) return;
     GL_CALL(glUniform1f(loc, value));
 }
 
 void Shader::setVec3(const std::string &name, const Vector3& value) const {
     assert(m_id != 0);
-    GLint loc = GL_CALL(glGetUniformLocation(m_id, name.c_str()));
+    GLint loc = getUniformLocation(name);
     if (loc == -1) return;
     GL_CALL(glUniform3fv(loc, 1, &value.x));
 }
 
 void Shader::setVec4(const std::string &name, const Vector4& value) const {
     assert(m_id != 0);
-    GLint loc = GL_CALL(glGetUniformLocation(m_id, name.c_str()));
+    GLint loc = getUniformLocation(name);
     if (loc == -1) return;
     GL_CALL(glUniform4fv(loc, 1, &value.x));
 }
 
 void Shader::setMat4(const std::string& name, const Matrix4& value) const {
     assert(m_id != 0);
-    GLint loc = GL_CALL(glGetUniformLocation(m_id, name.c_str()));
+    GLint loc = getUniformLocation(name);
     if (loc == -1) return;
     GL_CALL(glUniformMatrix4fv(loc, 1, GL_FALSE, value.getData()));
 }
 
 bool Shader::uniformExists(const std::string& name) const {
     assert(m_id != 0);
-    return GL_CALL(glGetUniformLocation(m_id, name.c_str())) != -1;
+    return getUniformLocation(name) != -1;
 }
 
 void Shader::linkProgram(unsigned int vertex_shader, unsigned int fragment_shader) {
@@ -116,7 +128,22 @@ void Shader::linkProgram(unsigned int vertex_shader, unsigned int fragment_shade
 
     GL_CALL(glDeleteShader(vertex_shader));
     GL_CALL(glDeleteShader(fragment_shader));
+    cacheUniformLocations();
     END_TRY
+}
+
+void Shader::cacheUniformLocations() {
+    int uniform_count = 0;
+    GL_CALL(glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &uniform_count));
+    for (int i = 0; i < uniform_count; i++) {
+        GLsizei name_length = 0;
+        GLint uniform_size = 0;
+        GLenum uniform_type = GL_ZERO;
+        GL_CALL(glGetActiveUniform(m_id, (GLuint)i, 0, &name_length, &uniform_size, &uniform_type, nullptr));
+        std::vector<char> name(name_length + 1);
+        GL_CALL(glGetActiveUniform(m_id, (GLuint)i, (GLsizei)name.size(), &name_length, &uniform_size, &uniform_type, name.data()));
+        m_uniform_locations.emplace(std::string(name.data()), GL_CALL(glGetUniformLocation(m_id, name.data())));
+    }
 }
 
 int Shader::compileShader(ShaderType type, const std::filesystem::path& path) {
