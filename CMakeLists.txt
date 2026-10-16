@@ -77,10 +77,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${INCLUDE_DIR}
 )
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE glfw opengl32)
+    # glfw must be PUBLIC: glvx public headers (e.g. window.h) include <GLFW/glfw3.h>
+    target_link_libraries(${PROJECT_NAME} PUBLIC glfw PRIVATE opengl32)
 else()
     find_package(OpenGL REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE glfw OpenGL::GL)
+    target_link_libraries(${PROJECT_NAME} PUBLIC glfw PRIVATE OpenGL::GL)
 endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC glad)
 target_link_libraries(${PROJECT_NAME} PUBLIC glm::glm)
