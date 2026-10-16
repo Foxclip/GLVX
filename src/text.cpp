@@ -144,6 +144,8 @@ void Text::setString(const std::string& string) {
 }
 
 void Text::render(const Matrix4& view, const Matrix4& projection, const RenderStates& states) const {
+    // Upload from CPU vertices: a copied Text has an empty GPU buffer.
+    m_vertex_buffer.update(m_vertices);
     renderBase(m_shader, m_texture, m_color, getTransform(), view, projection, states);
 }
 
