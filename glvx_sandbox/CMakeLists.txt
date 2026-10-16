@@ -10,3 +10,6 @@ target_sources(glvx_sandbox PRIVATE
 )
 target_include_directories(glvx_sandbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(glvx_sandbox PRIVATE glvx)
+if(MSVC)
+    target_compile_options(glvx_sandbox PRIVATE /WX)
+endif()

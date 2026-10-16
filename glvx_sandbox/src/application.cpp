@@ -1,5 +1,9 @@
 #ifdef _WIN32
 #define _CRT_SECURE_NO_WARNINGS
+#define NOMINMAX
+// windows.h before glvx: glad/glfw define APIENTRY when undefined, and the
+// SDK's minwindef.h then redefines it unconditionally (warning C4005 under /WX)
+#include <windows.h>
 #endif
 #include "application.h"
 #include <algorithm>
@@ -9,11 +13,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-#ifdef _WIN32
-#define NOMINMAX
-#include <windows.h>
-#endif
 
 static int transparentAlpha(int index) {
     int alpha = static_cast<int>(256 / pow(2, index));

@@ -1,3 +1,6 @@
+// vendored stb_image_write.h (below) calls sprintf; must be set before any
+// include, since stdio.h bakes the C4996 deprecation in at its own include
+#define _CRT_SECURE_NO_WARNINGS
 #include "glvx/image.h"
 #include "glvx/color.h"
 #include "glvx/vector.h"

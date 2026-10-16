@@ -86,3 +86,9 @@ endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC glad)
 target_link_libraries(${PROJECT_NAME} PUBLIC glm::glm)
 target_link_libraries(${PROJECT_NAME} PUBLIC freetype)
+
+# Warnings as errors for the project's own targets (vendored deps excluded:
+# freetype emits C4267/C4244 under MSVC and would break the build)
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /WX)
+endif()

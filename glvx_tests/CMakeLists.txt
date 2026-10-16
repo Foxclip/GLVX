@@ -31,5 +31,8 @@ target_sources(glvx_tests PRIVATE
 )
 target_include_directories(glvx_tests PRIVATE ${INCLUDE_DIR})
 target_link_libraries(glvx_tests glvx test_lib)
+if(MSVC)
+    target_compile_options(glvx_tests PRIVATE /WX)
+endif()
 
 add_test(NAME glvis_test COMMAND glvx_tests)
