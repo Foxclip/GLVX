@@ -26,6 +26,16 @@ add_subdirectory(glm)
 # so disable it to keep the sandbox clean.
 set(FT_DISABLE_HARFBUZZ ON CACHE INTERNAL "" FORCE)
 add_subdirectory(freetype)
+
+# Vendored dependencies are not kept warning-clean (freetype emits C4267/
+# C4244 under MSVC); silence their warnings so the build log reflects only
+# the project's own code, which compiles with /WX
+if(MSVC)
+    foreach(dep glfw glad glm freetype)
+        target_compile_options(${dep} PRIVATE /W0)
+    endforeach()
+endif()
+
 if(GLVX_BUILD_TESTS)
     add_subdirectory(glvx_tests)
 endif()
