@@ -156,6 +156,14 @@ void Font::rasterizePage(SizePage& page) {
         ch.lsb_delta = static_cast<int>(m_face->glyph->lsb_delta);
         ch.rsb_delta = static_cast<int>(m_face->glyph->rsb_delta);
 
+        // An outline glyph with no contours (e.g. space) can rasterize to a
+        // solid full-cell square under FT_LOAD_FORCE_AUTOHINT. Mark it
+        // zero-sized so text layout emits no quad for it.
+        if (FT_IS_SCALABLE(m_face) && m_face->glyph->outline.n_contours == 0) {
+            ch.width = 0;
+            ch.glyph_height = 0;
+        }
+
         if (width > 0 && height > 0 && m_face->glyph->bitmap.buffer) {
             total_area += static_cast<int>(m_use_subpixel ? width / 3 : width) * static_cast<int>(height);
             RasterizedGlyph& bmp = bitmaps[c];
