@@ -29,6 +29,12 @@ void Text::setFont(Font* font) {
         setTexture(const_cast<Texture*>(&font->getAtlas(m_character_size)));
         if (font->isSubpixel()) {
             setShader(common::subpixel_shader);
+        } else {
+            // The subpixel shader expects an RGB subpixel atlas; on a
+            // single-channel mask atlas its derived coverage is a constant
+            // 1.0 and the text renders as solid blocks. Drop the shader so
+            // the default one is used (mirrors the null-font branch).
+            setShader(nullptr);
         }
         // Re-layout a string that was set before the font was available.
         if (!m_string.empty()) {
