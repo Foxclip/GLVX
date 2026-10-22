@@ -14,6 +14,20 @@
 #include <utility>
 #include <vector>
 
+// The 3 special cursor types have no GLFW standard shape; the library falls
+// back to the arrow cursor for them on non-Windows. The sandbox hides them
+// there so the row only shows real, distinct cursors.
+static bool isGlfwStandardCursor(glvx::Cursor::Type type) {
+    switch (type) {
+    case glvx::Cursor::Type::ArrowWait:
+    case glvx::Cursor::Type::Wait:
+    case glvx::Cursor::Type::Help:
+        return false;
+    default:
+        return true;
+    }
+}
+
 static int transparentAlpha(int index) {
     int alpha = static_cast<int>(256 / pow(2, index));
     if (index == 0) {
@@ -749,8 +763,21 @@ void Application::setupShaderShowcase() {
 }
 
 void Application::setupCursorRow() {
+    int display_index = 0;
     for (int i = 0; i < NUM_CURSOR_TYPES; i++) {
         const glvx::Cursor::Type type = static_cast<glvx::Cursor::Type>(i);
+
+#ifdef _WIN32
+        m_cursor_active[i] = true;
+#else
+        // On non-Windows, only show cursors GLFW actually provides; the 3
+        // special types fall back to the arrow and would be misleading here.
+        m_cursor_active[i] = isGlfwStandardCursor(type);
+        if (!m_cursor_active[i]) {
+            continue;
+        }
+#endif
+
         m_cursor_types[i].loadFromSystem(type);
 
         std::vector<unsigned char> pixels;
@@ -760,7 +787,7 @@ void Application::setupCursorRow() {
             m_cursor_icons[i].create(icon_width, icon_height, pixels.data(), 4);
         }
 
-        const float tile_x = CURSOR_ROW_X + i * (CURSOR_TILE_W + CURSOR_TILE_GAP);
+        const float tile_x = CURSOR_ROW_X + display_index * (CURSOR_TILE_W + CURSOR_TILE_GAP);
         m_cursor_tiles[i].setSize(CURSOR_TILE_W, CURSOR_TILE_H);
         m_cursor_tiles[i].setPosition(tile_x, CURSOR_ROW_Y);
         m_cursor_tiles[i].setColor(glvx::Color(40, 40, 40));
@@ -792,6 +819,8 @@ void Application::setupCursorRow() {
             tile_x + CURSOR_TILE_W / 2.0f,
             CURSOR_ROW_Y + 2.0f + icon_display_h + 4.0f
         );
+
+        display_index++;
     }
 
     m_arrow_cursor.loadFromSystem(glvx::Cursor::Type::Arrow);
@@ -1129,6 +1158,9 @@ void Application::updateCursorRow() {
     const glvx::Vector2f mouse_world = m_window.screenToWorld(glvx::Mouse::getPosition(m_window));
     int hovered = -1;
     for (int i = 0; i < NUM_CURSOR_TYPES; i++) {
+        if (!m_cursor_active[i]) {
+            continue;
+        }
         const glvx::Vector2f position = m_cursor_tiles[i].getPosition();
         const glvx::Vector2f size = m_cursor_tiles[i].getSize();
         if (mouse_world.x >= position.x &&
@@ -1321,6 +1353,9 @@ void Application::render() {
 
     updateCursorRow();
     for (int i = 0; i < NUM_CURSOR_TYPES; i++) {
+        if (!m_cursor_active[i]) {
+            continue;
+        }
         m_window.draw(m_cursor_tiles[i]);
         if (m_cursor_icons[i].getID() != 0) {
             m_window.draw(m_cursor_icon_rects[i]);

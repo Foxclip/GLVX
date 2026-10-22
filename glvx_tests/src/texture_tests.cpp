@@ -134,10 +134,14 @@ void TextureTestsModule::textureColorMultiplyTest(test::Test& test) {
     window.display();
 
     Image image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), Color(0, 1, 1, 255), &Color::toString);
-    T_COMPARE(image.getPixel(1, 0), Color(2, 2, 3, 255), &Color::toString);
-    T_COMPARE(image.getPixel(0, 1), Color(3, 4, 4, 255), &Color::toString);
-    T_COMPARE(image.getPixel(1, 1), Color(5, 5, 6, 255), &Color::toString);
+    // The multiply is done in the shader as float (texel * color/255) and the
+    // result is written to an 8-bit framebuffer, which GL converts using
+    // round-to-nearest (e.g. 1*128/255 = 0.502 -> 1, 3*128/255 = 1.506 -> 2).
+    // The expected values must reflect that rounding, not integer truncation.
+    T_COMPARE(image.getPixel(0, 0), Color(1, 1, 2, 255), &Color::toString);
+    T_COMPARE(image.getPixel(1, 0), Color(2, 3, 3, 255), &Color::toString);
+    T_COMPARE(image.getPixel(0, 1), Color(4, 4, 5, 255), &Color::toString);
+    T_COMPARE(image.getPixel(1, 1), Color(5, 6, 6, 255), &Color::toString);
     T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);
 }
 
@@ -163,7 +167,9 @@ void TextureTestsModule::textureResizeTest(test::Test& test) {
     // Check linear interpolation
     Image img = tex.readPixels();
     T_COMPARE(img.getPixel(0, 0), Color(0, 0, 0, 0), &Color::toString);
-    T_COMPARE(img.getPixel(1, 0), Color(127, 127, 127, 127), &Color::toString);
+    // Midpoint of (0,255) is 127.5; written to an 8-bit framebuffer GL converts
+    // it round-to-nearest -> 128 (not the 127 that integer truncation implies).
+    T_COMPARE(img.getPixel(1, 0), Color(128, 128, 128, 128), &Color::toString);
     T_COMPARE(img.getPixel(2, 0), Color(255, 255, 255, 255), &Color::toString);
 
     // Test resizing down from 3x1 to 2x1 with linear interpolation

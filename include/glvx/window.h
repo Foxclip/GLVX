@@ -78,7 +78,14 @@ private:
     std::unique_ptr<Shader> m_subpixel_shader_uptr = nullptr;
     std::unique_ptr<UniformBuffer> m_uniform_buffer_uptr = nullptr;
     int m_msaa_samples = 0;
-    // used when the window has no default framebuffer
+    // True for headless windows (--minimized / screenshot). On X11 a
+    // minimized/hidden window still keeps a non-zero default framebuffer, so
+    // the fb-size heuristic in syncOffscreenTexture() cannot detect headless
+    // mode there; we render to an offscreen FBO instead so readback never
+    // depends on glfwSwapBuffers actually presenting (it is a no-op for these
+    // windows, leaving GL_FRONT black).
+    bool m_headless = false;
+    // used when the window is headless or has no usable default framebuffer
     // (minimized or hidden window); null otherwise
     std::unique_ptr<RenderTexture> m_offscreen_texture_uptr = nullptr;
 

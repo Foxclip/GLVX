@@ -68,7 +68,7 @@ auto glCall(FuncType&& f) {
 #define START_TRY try {
 #define END_TRY \
     } catch (std::exception& e) { \
-        throw std::runtime_error(__FUNCTION__": " + std::string(e.what())); \
+        throw std::runtime_error(std::string(__func__) + ": " + std::string(e.what())); \
     }
 
 }

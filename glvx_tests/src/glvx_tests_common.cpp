@@ -1,4 +1,5 @@
 #include "glvx_tests/glvx_tests_common.h"
+#include <format>
 
 Window window;
 

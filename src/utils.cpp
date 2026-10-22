@@ -1,5 +1,6 @@
 #include "glvx/utils.h"
 #include <algorithm>
+#include <format>
 #include <cmath>
 #include <cstring>
 #include <memory>
@@ -16,7 +17,7 @@ std::string file_to_str(const std::filesystem::path& path) {
         buffer << t.rdbuf();
         return buffer.str();
     } catch (std::exception& e) {
-        throw std::runtime_error(__FUNCTION__": " + std::string(e.what()));
+        throw std::runtime_error(std::string(__func__) + ": " + std::string(e.what()));
     }
 }
 

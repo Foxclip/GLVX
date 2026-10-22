@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
-#include <corecrt_math_defines.h>
+#include <cmath>
 #include <cassert>
 #include "glvx/glvx_common.h"
 #include "glvx/texture.h"

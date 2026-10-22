@@ -9,6 +9,10 @@
 #include "glvx/texture.h"
 #include "glvx/vector.h"
 
+// Forward declaration for the friend below: the text test module lives in
+// the global namespace (glvx_tests/include/glvx_tests/text_tests.h).
+class TextTestsModule;
+
 namespace glvx {
 
 const unsigned int FONT_DEFAULT_SIZE = 30;
@@ -53,7 +57,7 @@ private:
         int m_ascender = 0;
         bool m_rasterized = false;
     };
-    friend class TextTestsModule;
+    friend class ::TextTestsModule;
     static bool m_is_library_initialized;
     static FT_Library m_library;
     FT_Face m_face = nullptr;

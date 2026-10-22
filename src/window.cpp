@@ -13,6 +13,7 @@
 #include "glvx/mouse.h"
 #include "glvx/render_texture.h"
 #include <stdexcept>
+#include <utility>
 #include <filesystem>
 #ifdef _WIN32
 #include <GLFW/glfw3native.h>
@@ -70,6 +71,7 @@ void Window::create(int width, int height, const char* title, int msaa_samples, 
     // GLFW does not expose the default framebuffer sample count through
     // glfwGetWindowAttrib, so remember the requested count instead.
     m_msaa_samples = msaa_samples;
+    m_headless = minimized;
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         glfwDestroyWindow(m_window);
@@ -314,9 +316,15 @@ void Window::syncOffscreenTexture() {
     int fb_width = 0;
     int fb_height = 0;
     glfwGetFramebufferSize(m_window, &fb_width, &fb_height);
-    if (fb_width == 0 || fb_height == 0) {
-        // A minimized or hidden window has no default framebuffer, so render
-        // to an offscreen texture of the window's logical size instead.
+    // A minimized/hidden window has no usable default framebuffer, so render
+    // to an offscreen texture of the window's logical size instead. Headless
+    // windows are always routed through the offscreen FBO as well: on X11
+    // they keep a non-zero default framebuffer, but glfwSwapBuffers does not
+    // present it, so reading GL_FRONT would return black. The FBO is read
+    // back directly, which is swap-independent (and matches the path Windows
+    // uses for its minimized test windows).
+    const bool use_offscreen = m_headless || fb_width == 0 || fb_height == 0;
+    if (use_offscreen) {
         if (!m_offscreen_texture_uptr) {
             m_offscreen_texture_uptr = std::make_unique<RenderTexture>(m_current_width, m_current_height, m_msaa_samples);
         } else {

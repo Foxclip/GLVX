@@ -130,6 +130,7 @@ private:
     glvx::Rectangle m_cursor_tiles[NUM_CURSOR_TYPES];
     glvx::Rectangle m_cursor_icon_rects[NUM_CURSOR_TYPES];
     glvx::Text m_cursor_labels[NUM_CURSOR_TYPES];
+    bool m_cursor_active[NUM_CURSOR_TYPES] = {};
     int m_current_cursor_index = -1;
     bool m_panning = false;
     glvx::Vector2i m_last_pan_pos{0, 0};

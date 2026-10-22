@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(glvx LANGUAGES CXX)
+project(glvx LANGUAGES C CXX)
 set (CMAKE_CXX_STANDARD 20)
 
 set(GLFW_BUILD_DOCS OFF CACHE INTERNAL "" FORCE)

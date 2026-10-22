@@ -1,5 +1,6 @@
 #include "glvx/shader.h"
 #include "glvx/utils.h"
+#include <format>
 #include <glad/glad.h>
 #include "glvx/glvx_common.h"
 #include <vector>

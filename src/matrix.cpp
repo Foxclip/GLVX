@@ -1,5 +1,7 @@
 #include "glvx/matrix.h"
+#include <algorithm>
 #include <cstring>
+#include <format>
 #include <cassert>
 #include <string>
 #include <glm/gtc/matrix_transform.hpp>

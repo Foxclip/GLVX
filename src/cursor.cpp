@@ -133,6 +133,13 @@ bool Cursor::loadFromSystem(Type type) {
             default:                            break;
         }
         glfw_cursor = glfwCreateStandardCursor(glfw_type);
+        // Some standard shapes (resize NWSE/NESE, not-allowed) are unavailable
+        // on minimal X11 servers; fall back to the arrow so loadFromSystem
+        // always yields a usable cursor (the 3 special types already rely on
+        // this same arrow fallback via the default case).
+        if (!glfw_cursor) {
+            glfw_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+        }
     }
 
     if (m_glfw_cursor) {
