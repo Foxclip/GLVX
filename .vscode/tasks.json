@@ -59,6 +59,20 @@
       "command": "cmake",
       "args": ["--build", "build", "--config", "Debug", "--target", "glvx_sandbox"],
       "problemMatcher": ["$msCompile"]
+    },
+    {
+      "label": "Build Tests Linux",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build-linux", "--target", "glvx_tests"],
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Build Sandbox Linux",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build-linux", "--target", "glvx_sandbox"],
+      "problemMatcher": ["$gcc"]
     }
   ]
 }

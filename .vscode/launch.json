@@ -35,6 +35,36 @@
       "cwd": "${workspaceFolder}",
       "environment": [],
       "preLaunchTask": "Build Sandbox Debug"
+    },
+    {
+      "name": "Tests (Linux)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build-linux/glvx_tests/glvx_tests",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [
+        { "name": "LIBGL_ALWAYS_SOFTWARE", "value": "1" }
+      ],
+      "MIMode": "gdb",
+      "externalConsole": false,
+      "preLaunchTask": "Build Tests Linux"
+    },
+    {
+      "name": "Sandbox (Linux)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build-linux/glvx_sandbox/glvx_sandbox",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [
+        { "name": "LIBGL_ALWAYS_SOFTWARE", "value": "1" }
+      ],
+      "MIMode": "gdb",
+      "externalConsole": false,
+      "preLaunchTask": "Build Sandbox Linux"
     }
   ]
 }
