@@ -80,13 +80,12 @@ private:
     int m_msaa_samples = 0;
     // True for headless windows (--minimized / screenshot). On X11 a
     // minimized/hidden window still keeps a non-zero default framebuffer, so
-    // the fb-size heuristic in syncOffscreenTexture() cannot detect headless
-    // mode there; we render to an offscreen FBO instead so readback never
-    // depends on glfwSwapBuffers actually presenting (it is a no-op for these
-    // windows, leaving GL_FRONT black).
+    // the fb-size check in display() alone cannot detect headless mode there;
+    // this flag suppresses the (pointless) present blit + swap for those
+    // windows, since glfwSwapBuffers is a no-op for them.
     bool m_headless = false;
-    // used when the window is headless or has no usable default framebuffer
-    // (minimized or hidden window); null otherwise
+    // The window's render target in all modes (visible and headless); see
+    // syncOffscreenTexture() for why the default framebuffer is not used.
     std::unique_ptr<RenderTexture> m_offscreen_texture_uptr = nullptr;
 
     static constexpr size_t max_event_queue_size = 512;

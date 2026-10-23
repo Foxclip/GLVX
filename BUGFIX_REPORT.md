@@ -230,3 +230,48 @@ dependencies.
 - Driver-side `GL_LINEAR` **texture filtering** (subpixel sampling during draws)
   is still done by the driver; every path the tests check now converts bytes
   explicitly, so this no longer affects the suite.
+
+---
+
+## Phase 2 — "F5 vs terminal" mystery (2026-10-23, follow-up fix)
+
+### Symptom
+After the Phase 1 fixes, `glvx_tests --minimized` passed **only when run with
+`LIBGL_ALWAYS_SOFTWARE=1` (llvmpipe)**. Under the machine's default driver
+(SVGA3D — the one VSCode F5 uses) it still crashed with
+`GL_INVALID_OPERATION` in `Window::readPixels`, i.e. the user's original
+complaint, now on a different line.
+
+### Root causes
+1. **Window-system resizes are asynchronous on X11.** `glfwGetFramebufferSize`
+   can lag behind `Window::setSize`/resize events, so a window sized from 0 to
+   N could render into a stale 0×0 (or N₀×N₀) default framebuffer.
+2. **GL_FRONT readback is unreliable on llvmpipe** (returns black/zeros), and
+   the old code read `GL_FRONT` for visible windows. The default framebuffer
+   therefore could not serve as a stable readback target on either driver.
+
+### Fix (src/window.cpp, include/glvx/window.h)
+- The window now **always renders into its offscreen FBO** (`syncOffscreenTexture`
+  creates/resizes it unconditionally; the "visible window → default framebuffer"
+  branch is gone). The FBO is resized **synchronously** by the library, so
+  `clear()`/`draw()`/`readPixels()` always operate on a stable, correctly sized
+  surface.
+- `display()` presents by blitting the offscreen FBO → default framebuffer
+  (`glBlitFramebuffer`, `GL_NEAREST`) + `glfwSwapBuffers`; the blit is skipped
+  for headless/0×0 windows. No `glReadBuffer` around the blit: the source is an
+  FBO (reads `COLOR_ATTACHMENT0`), and `glReadBuffer` with a non-default FBO
+  bound to the read point is `GL_INVALID_OPERATION`.
+- `readPixels()` always reads the offscreen FBO (+`flipY`), regardless of
+  visibility — one readback path for all modes, like Windows already was.
+
+### Verification (2026-10-23, this machine, Mesa 24.0.9)
+- `glvx_tests --minimized`, default driver (SVGA3D, same as F5):
+  **107/107 passed, 0 failed, 0 cancelled, exit 0.**
+- `glvx_tests --minimized` under `LIBGL_ALWAYS_SOFTWARE=1`: 106/107 —
+  `blend_mode_multiply` differs by 2/255 in the G channel (78,60,50 vs expected
+  78,58,50). Verified **pre-existing** (identical failure on the unmodified
+  Phase 1 build via `git stash`): llvmpipe's multiply-blend rounding differs
+  from the GPU's; the test's expected value matches real hardware.
+- `glvx_sandbox --screenshot`: 800×670, full app content rendered.
+- Live window screen-recording (xwd sequence of the visible sandbox window,
+  same binary + default driver as F5): full app content rendered, not black.

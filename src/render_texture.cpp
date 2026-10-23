@@ -112,8 +112,7 @@ void RenderTexture::copyFrom(const RenderTarget& source) {
     GLint previous_read_buffer = 0;
     if (source_fbo == 0) {
         GL_CALL(glGetIntegerv(GL_READ_BUFFER, &previous_read_buffer));
-        // Read from the back buffer, i.e. the one currently being drawn to,
-        // since Window::readPixels leaves the read buffer set to GL_FRONT.
+        // Read from the back buffer, i.e. the one currently being drawn to.
         GL_CALL(glReadBuffer(GL_BACK));
     }
     GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, source_fbo));

@@ -178,12 +178,32 @@ void Window::display() const {
         return;
     }
     if (m_offscreen_texture_uptr) {
-        // The window is minimized or hidden, so there is nothing to present;
-        // just resolve the offscreen texture if it uses MSAA.
+        // The window always renders into its offscreen FBO (see
+        // syncOffscreenTexture()); resolve MSAA if needed.
         m_offscreen_texture_uptr->display();
-    } else {
+        // Present: copy the rendered frame into the default framebuffer and
+        // swap. Skipped for headless windows and minimized/hidden windows
+        // (0x0 default framebuffer), which have nothing to present.
+        int fb_width = 0;
+        int fb_height = 0;
+        glfwGetFramebufferSize(m_window, &fb_width, &fb_height);
+        if (!m_headless && fb_width > 0 && fb_height > 0) {
+        GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, m_offscreen_texture_uptr->getRenderTargetFbo()));
+        GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
+        // No glReadBuffer here: the blit source is an FBO, so it reads
+        // COLOR_ATTACHMENT0 regardless of the read buffer (and glReadBuffer
+        // with a non-default FBO bound to the read point is
+        // GL_INVALID_OPERATION); the destination is the default framebuffer's
+        // back buffer.
+        GL_CALL(glBlitFramebuffer(
+            0, 0, m_current_width, m_current_height,
+            0, 0, fb_width, fb_height,
+            GL_COLOR_BUFFER_BIT,
+            GL_NEAREST
+        ));
         GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
         glfwSwapBuffers(m_window);
+    }
     }
 #ifndef NDEBUG
     // Per-frame GL error check (see glvx_common.h): drains the errors
@@ -196,24 +216,15 @@ void Window::display() const {
 }
 
 Image Window::readPixels() const {
-    if (m_offscreen_texture_uptr) {
-        // The texture stores texels bottom-up, like the default framebuffer
-        // does before readback, so flip to the same top-down orientation.
-        Image image = m_offscreen_texture_uptr->readPixels();
-        image.flipY();
-        return image;
+    if (!m_offscreen_texture_uptr) {
+        // No render target yet (the window was never sized or displayed).
+        return Image(0, 0, {});
     }
-
-    std::vector<unsigned char> pixels(m_current_width * m_current_height * 4);
-    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-    GL_CALL(glReadBuffer(GL_FRONT));
-    GL_CALL(glReadPixels(0, 0, m_current_width, m_current_height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data()));
-
-    Image image(m_current_width, m_current_height, std::move(pixels));
+    // The offscreen texture stores texels bottom-up, like the default
+    // framebuffer does before readback, so flip to the top-down Image
+    // orientation.
+    Image image = m_offscreen_texture_uptr->readPixels();
     image.flipY();
-    // The framebuffer stores premultiplied color; convert back to straight
-    // alpha so readback matches the colors that were set/cleared.
-    image.unpremultiply();
     return image;
 }
 
@@ -326,22 +337,23 @@ void Window::syncOffscreenTexture() {
     int fb_width = 0;
     int fb_height = 0;
     glfwGetFramebufferSize(m_window, &fb_width, &fb_height);
-    // A minimized/hidden window has no usable default framebuffer, so render
-    // to an offscreen texture of the window's logical size instead. Headless
-    // windows are always routed through the offscreen FBO as well: on X11
-    // they keep a non-zero default framebuffer, but glfwSwapBuffers does not
-    // present it, so reading GL_FRONT would return black. The FBO is read
-    // back directly, which is swap-independent (and matches the path Windows
-    // uses for its minimized test windows).
-    const bool use_offscreen = m_headless || fb_width == 0 || fb_height == 0;
-    if (use_offscreen) {
-        if (!m_offscreen_texture_uptr) {
-            m_offscreen_texture_uptr = std::make_unique<RenderTexture>(m_current_width, m_current_height, m_msaa_samples);
-        } else {
-            m_offscreen_texture_uptr->resize(m_current_width, m_current_height, false);
-        }
-    } else if (m_offscreen_texture_uptr) {
-        m_offscreen_texture_uptr.reset();
+    // The offscreen FBO is the window's render target in all modes, visible
+    // and headless. The default framebuffer cannot serve that role:
+    // window-system resizes are asynchronous and discard its contents, so
+    // rendering straight into it loses the frame whenever a resize lands
+    // between clear() and display() (and its readback is equally unreliable
+    // across drivers, e.g. GL_FRONT reads back zeros on llvmpipe). The FBO
+    // is resized synchronously by the library, so clear()/draw()/readPixels()
+    // always operate on a stable, correctly sized surface; display() copies
+    // it to the screen.
+    if (m_current_width <= 0 || m_current_height <= 0) {
+        return;
+    }
+    if (!m_offscreen_texture_uptr) {
+        m_offscreen_texture_uptr = std::make_unique<RenderTexture>(m_current_width, m_current_height, m_msaa_samples);
+    } else if (m_offscreen_texture_uptr->getWidth() != m_current_width ||
+               m_offscreen_texture_uptr->getHeight() != m_current_height) {
+        m_offscreen_texture_uptr->resize(m_current_width, m_current_height, false);
     }
 }
 
