@@ -7,8 +7,127 @@
 #include <cassert>
 #include <sstream>
 #include <algorithm>
+#include <cctype>
+#include <cstdio>
+#include <regex>
 
 namespace glvx {
+
+namespace {
+
+// "4.1.0 Core Profile ..." -> 410. Returns 0 when no context is current.
+int shading_language_context_version() {
+    const GLubyte* version_string = glGetString(GL_SHADING_LANGUAGE_VERSION);
+    if (version_string == nullptr) {
+        return 0;
+    }
+    int major = 0;
+    int minor = 0;
+    std::sscanf(reinterpret_cast<const char*>(version_string), "%d.%d", &major, &minor);
+    return major * 100 + minor;
+}
+
+// Removes the "instance." qualifier from member references
+// (object.color -> color) so the rewritten plain uniforms can be used.
+void strip_uniform_instance_qualifiers(std::string& text, const std::string& instance) {
+    const std::string pattern = instance + ".";
+    std::size_t search_from = 0;
+    while (true) {
+        const std::size_t pos = text.find(pattern, search_from);
+        if (pos == std::string::npos) {
+            return;
+        }
+        const char before = pos > 0 ? text[pos - 1] : ' ';
+        const bool preceded_by_word_char =
+            std::isalnum(static_cast<unsigned char>(before)) || before == '_';
+        if (preceded_by_word_char) {
+            search_from = pos + 1;
+            continue;
+        }
+        text.erase(pos, instance.size() + 1); // removes the instance and the dot
+        search_from = pos;
+    }
+}
+
+// Rewrites uniform blocks (layout(binding = N) uniform Name { ... } instance;)
+// into equivalent plain uniform declarations and strips the instance
+// qualifier from member references. Needed on contexts below GLSL 420, where
+// the GLSL compiler rejects the binding layout qualifier even with the ARB
+// extension enabled.
+std::string replace_uniform_blocks(const std::string& source) {
+    static const std::regex block_pattern(
+        R"(layout\s*\(\s*binding\s*=\s*\d+\s*\)\s*uniform\s+[A-Za-z_]\w*\s*\{([^{}]*)\}\s*([A-Za-z_]\w*)\s*;)"
+    );
+    std::string result;
+    result.reserve(source.size());
+    std::string rest = source;
+    while (true) {
+        std::cmatch match;
+        if (!std::regex_search(rest.c_str(), match, block_pattern)) {
+            break;
+        }
+        const std::string instance(match[2].first, match[2].second);
+        std::string plain_declarations;
+        std::istringstream members_stream(match[1]);
+        std::string member;
+        while (std::getline(members_stream, member, ';')) {
+            const auto begin = member.find_first_not_of(" \t\r\n");
+            if (begin == std::string::npos) {
+                continue;
+            }
+            const auto end = member.find_last_not_of(" \t\r\n");
+            plain_declarations += "uniform " + member.substr(begin, end - begin + 1) + ";\n";
+        }
+        result.append(rest, 0, match.position(0));
+        result += plain_declarations;
+        std::string tail(rest.begin() + match.position(0) + match.length(0), rest.end());
+        strip_uniform_instance_qualifiers(tail, instance);
+        rest = std::move(tail);
+    }
+    result += rest;
+    return result;
+}
+
+// GLSL sources carry the version they were written for. When the context's
+// maximum supported version is lower (e.g. #version 420 core on a GL 4.1
+// driver), the source is rewritten so it still compiles: the #version number
+// is written down, and uniform blocks are converted to plain uniforms (the
+// GLSL compiler here rejects the binding layout qualifier below 420).
+std::string adapt_shading_language_version(const char* source) {
+    const int context_version = shading_language_context_version();
+    const std::string src(source);
+    if (context_version == 0) {
+        return src;
+    }
+    std::string result = src;
+    const std::string directive = "#version";
+    const std::size_t directive_pos = result.find(directive);
+    if (directive_pos != std::string::npos) {
+        std::size_t number_start = directive_pos + directive.size();
+        while (number_start < result.size() && std::isspace(static_cast<unsigned char>(result[number_start]))) {
+            ++number_start;
+        }
+        if (number_start + 3 <= result.size() &&
+            std::isdigit(static_cast<unsigned char>(result[number_start])) &&
+            std::isdigit(static_cast<unsigned char>(result[number_start + 1])) &&
+            std::isdigit(static_cast<unsigned char>(result[number_start + 2]))) {
+            const int requested = std::stoi(result.substr(number_start, 3));
+            if (requested > context_version) {
+                // GLSL versions are 3-digit numbers, so the replacement keeps
+                // all offsets valid.
+                char replaced[16];
+                std::snprintf(replaced, sizeof(replaced), "%03d", context_version);
+                result.replace(number_start, 3, replaced);
+            }
+        }
+    }
+    if (context_version < 420) {
+        result = replace_uniform_blocks(result);
+    }
+    return result;
+}
+
+} // namespace
 
 Shader::Shader(const std::filesystem::path& vertex_path, const std::filesystem::path& fragment_path, bool use_ubo) : m_use_ubo(use_ubo) {
     START_TRY
@@ -44,7 +163,10 @@ unsigned int Shader::getId() const {
 }
 
 bool Shader::isUsingUBO() const {
-    return m_use_ubo;
+    // On contexts below GLSL 420 the uniform blocks in the source are
+    // compiled as plain uniforms, so the UBO draw path is unusable even when
+    // the shader was created with use_ubo=true.
+    return m_use_ubo && m_ubo_available;
 }
 
 void Shader::use() {
@@ -129,6 +251,7 @@ void Shader::linkProgram(unsigned int vertex_shader, unsigned int fragment_shade
 
     GL_CALL(glDeleteShader(vertex_shader));
     GL_CALL(glDeleteShader(fragment_shader));
+    m_ubo_available = shading_language_context_version() >= 420;
     cacheUniformLocations();
     END_TRY
 }
@@ -153,8 +276,17 @@ int Shader::compileShader(ShaderType type, const std::filesystem::path& path) {
 
 int Shader::compileShader(ShaderType type, const char* source) {
     START_TRY
+    const std::string adapted_source = adapt_shading_language_version(source);
+    { // TEMP DEBUG — remove before finishing
+        FILE* dbg = std::fopen("/tmp/dbg_shader.txt", "a");
+        if (dbg) {
+            std::fprintf(dbg, "===== %s =====\n%s\n", type == ShaderType::VERTEX ? "VERT" : "FRAG", adapted_source.c_str());
+            std::fclose(dbg);
+        }
+    }
+    const char* shader_source = adapted_source.c_str();
     unsigned int shader = GL_CALL(glCreateShader(type == ShaderType::VERTEX ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER));
-    GL_CALL(glShaderSource(shader, 1, &source, NULL));
+    GL_CALL(glShaderSource(shader, 1, &shader_source, NULL));
     GL_CALL(glCompileShader(shader));
     int success;
     GL_CALL(glGetShaderiv(shader, GL_COMPILE_STATUS, &success));

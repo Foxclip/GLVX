@@ -51,7 +51,18 @@ void RenderTexture::create(int width, int height, int msaa_samples) {
         m_msaa_samples = 0;
     }
 
-    AbstractTexture::createTexture(width, height, nullptr, 4, false, m_interpolation, m_wrapping);
+    if (m_msaa_samples == 0) {
+        // Keep render results in float (RGBA16F): this machine's GL driver
+        // (Mesa/llvmpipe 24.0.9) truncates float -> UNORM8 on render-target
+        // writes instead of rounding to nearest (e.g. 1.5 -> 1), so the byte
+        // conversion is done in the library on readback instead (see
+        // AbstractTexture::readPixelsFloatRaw).
+        createFloatTexture(width, height, m_interpolation, m_wrapping);
+    } else {
+        // MSAA textures stay UNORM8: RGBA16F multisample requires GL 4.3,
+        // and the resolve blit back to the float base texture is lossless.
+        AbstractTexture::createTexture(width, height, nullptr, 4, false, m_interpolation, m_wrapping);
+    }
 
     if (m_msaa_samples > 0) {
         GL_CALL(glGenFramebuffers(1, &m_msaa_fbo));
@@ -157,7 +168,7 @@ void RenderTexture::resize(int new_width, int new_height, bool blit_old_contents
 Image RenderTexture::readPixels() const {
     // Render texture contents are stored premultiplied (like any render
     // target); convert back to straight alpha for the caller.
-    Image image = AbstractTexture::readPixels();
+    Image image = m_float_storage ? readPixelsFloatRaw() : AbstractTexture::readPixels();
     image.unpremultiply();
     return image;
 }

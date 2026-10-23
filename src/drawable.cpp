@@ -66,10 +66,17 @@ void Drawable::renderBase(
             render_texture->bind();
         }
     } else {
+        // Shaders without UBO support (contexts below GLSL 420 compile the
+        // built-in uniform blocks as plain uniforms) get the same per-draw
+        // state here. Setters for uniforms the shader does not declare are
+        // no-ops, so old-style view/projection shaders and combined-vp
+        // shaders are both covered.
         render_shader->setVec4("color", Vector4(color.r, color.g, color.b, color.a));
         render_shader->setMat4("model", combined_model);
         render_shader->setMat4("view", view);
         render_shader->setMat4("projection", projection);
+        render_shader->setMat4("vp", projection * view);
+        render_shader->setBool("premultiplyOutput", premultiply_output);
         render_shader->setInt("tex", 0);
         if (render_texture) {
             render_shader->setBool("hasTexture", true);

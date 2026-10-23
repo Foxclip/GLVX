@@ -56,6 +56,11 @@ private:
 
     unsigned int m_id = 0;
     bool m_use_ubo = false;
+    // True when the context's GLSL version supports the uniform-block syntax
+    // the source was written with. On lower versions the blocks are compiled
+    // as plain uniforms (see Shader::compileShader), so the UBO draw path
+    // must be disabled even if m_use_ubo is set.
+    bool m_ubo_available = false;
 
     int compileShader(ShaderType type, const std::filesystem::path& path);
     int compileShader(ShaderType type, const char* source);

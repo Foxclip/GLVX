@@ -42,13 +42,22 @@ protected:
     int m_channels = 0;
     InterpolationType m_interpolation = InterpolationType::Nearest;
     WrappingType m_wrapping = WrappingType::ClampToEdge;
+    // True when the texture stores RGBA16F (see createFloatTexture).
+    bool m_float_storage = false;
     void createTexture(
         int width, int height, const unsigned char* data = nullptr, int channels = 4, bool is_mask = false,
         InterpolationType interp = InterpolationType::Nearest,
         WrappingType wrap = WrappingType::ClampToEdge
     );
+    // Creates an RGBA16F texture. Used for render targets so that render
+    // results stay in float and are converted to bytes by the library with
+    // spec round-to-nearest, instead of being quantized by the driver.
+    void createFloatTexture(int width, int height, InterpolationType interp, WrappingType wrap);
     void resizeTexture(int new_width, int new_height, bool blit_old_contents, InterpolationType interp, WrappingType wrap);
     Image readPixelsRaw() const;
+    // Like readPixelsRaw, but for float-storage textures: reads the raw
+    // float texels and converts them to UNORM8 with round-to-nearest.
+    Image readPixelsFloatRaw() const;
 
 };
 

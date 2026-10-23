@@ -173,6 +173,51 @@ void AbstractTexture::createTexture(int width, int height, const unsigned char* 
     END_TRY
 }
 
+// Bilinear sample of one channel at a texel-center coordinate (texel i
+// occupies [i - 0.5, i + 0.5)), clamping to the edge texel, matching
+// GL_LINEAR blit sampling.
+static float sample_linear_image(const std::vector<float>& src, int sw, int sh, float sx, float sy, int c) {
+    const float scx = std::clamp(sx, 0.0f, static_cast<float>(sw - 1));
+    const float scy = std::clamp(sy, 0.0f, static_cast<float>(sh - 1));
+    const int x0 = static_cast<int>(scx);
+    const int y0 = static_cast<int>(scy);
+    const int x1 = std::min(x0 + 1, sw - 1);
+    const int y1 = std::min(y0 + 1, sh - 1);
+    const float fx = scx - static_cast<float>(x0);
+    const float fy = scy - static_cast<float>(y0);
+    const float top = (1.0f - fx) * src[(size_t)(y0 * sw + x0) * 4 + c] + fx * src[(size_t)(y0 * sw + x1) * 4 + c];
+    const float bot = (1.0f - fx) * src[(size_t)(y1 * sw + x0) * 4 + c] + fx * src[(size_t)(y1 * sw + x1) * 4 + c];
+    return (1.0f - fy) * top + fy * bot;
+}
+
+// Resamples a RGBA image (values in [0, 255]) from (sw, sh) to (dw, dh) with
+// the same texel-center mapping as glBlitFramebuffer. Done on the CPU because
+// this machine's GL driver (Mesa/llvmpipe 24.0.9) truncates float -> UNORM8
+// in glBlitFramebuffer instead of rounding to nearest (e.g. 127.5 -> 127),
+// which breaks the pixel-exact values the tests expect.
+static void resample_image(
+    const std::vector<float>& src, int sw, int sh,
+    std::vector<float>& dst, int dw, int dh, InterpolationType interp
+) {
+    for (int y = 0; y < dh; ++y) {
+        const float sy = (static_cast<float>(y) + 0.5f) * (static_cast<float>(sh) / dh) - 0.5f;
+        for (int x = 0; x < dw; ++x) {
+            const float sx = (static_cast<float>(x) + 0.5f) * (static_cast<float>(sw) / dw) - 0.5f;
+            for (int c = 0; c < 4; ++c) {
+                float v;
+                if (interp == InterpolationType::Linear) {
+                    v = sample_linear_image(src, sw, sh, sx, sy, c);
+                } else {
+                    const int ix = std::clamp(static_cast<int>(std::floor(sx + 0.5f)), 0, sw - 1);
+                    const int iy = std::clamp(static_cast<int>(std::floor(sy + 0.5f)), 0, sh - 1);
+                    v = src[(size_t)(iy * sw + ix) * 4 + c];
+                }
+                dst[(size_t)(y * dw + x) * 4 + c] = v;
+            }
+        }
+    }
+}
+
 void AbstractTexture::resizeTexture(int new_width, int new_height, bool blit_old_contents, InterpolationType interp, WrappingType wrap) {
     assert(m_id != 0);
     assert(glfwGetCurrentContext() != nullptr);
@@ -187,33 +232,49 @@ void AbstractTexture::resizeTexture(int new_width, int new_height, bool blit_old
     GLuint new_texture_id;
     GL_CALL(glGenTextures(1, &new_texture_id));
     GL_CALL(glBindTexture(GL_TEXTURE_2D, new_texture_id));
-    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, new_width, new_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
+    if (m_float_storage) {
+        GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, new_width, new_height, 0, GL_RGBA, GL_HALF_FLOAT, nullptr));
+    } else {
+        GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, new_width, new_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
+    }
     GLenum filter = filterFromInterpolation(interp);
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter));
     GLenum wrap_mode = wrapFromWrapping(wrap);
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_mode));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_mode));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
     if (blit_old_contents) {
-        GLuint src_fbo, dst_fbo;
-        GL_CALL(glGenFramebuffers(1, &src_fbo));
-        GL_CALL(glGenFramebuffers(1, &dst_fbo));
+        std::vector<float> src(m_width * m_height * 4);
+        if (m_float_storage) {
+            GL_CALL(glBindTexture(GL_TEXTURE_2D, m_id));
+            GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, src.data()));
+        } else {
+            Image old = readPixelsRaw();
+            const std::vector<unsigned char>& old_data = old.getData();
+            for (size_t i = 0; i < src.size(); ++i) {
+                src[i] = static_cast<float>(old_data[i]);
+            }
+        }
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
-        GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, src_fbo));
-        GL_CALL(glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_id, 0));
-        assert(GL_CALL(glCheckFramebufferStatus(GL_READ_FRAMEBUFFER)) == GL_FRAMEBUFFER_COMPLETE);
+        std::vector<float> dst(new_width * new_height * 4);
+        resample_image(src, m_width, m_height, dst, new_width, new_height, interp);
 
-        GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dst_fbo));
-        GL_CALL(glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, new_texture_id, 0));
-
-        GLenum blit_filter = filterFromInterpolation(interp);
-        GL_CALL(glBlitFramebuffer(0, 0, m_width, m_height, 0, 0, new_width, new_height, GL_COLOR_BUFFER_BIT, blit_filter));
-
-        GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-        GL_CALL(glDeleteFramebuffers(1, &src_fbo));
-        GL_CALL(glDeleteFramebuffers(1, &dst_fbo));
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, new_texture_id));
+        if (m_float_storage) {
+            GL_CALL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, new_width, new_height, GL_RGBA, GL_HALF_FLOAT, dst.data()));
+        } else {
+            std::vector<unsigned char> bytes(dst.size());
+            for (size_t i = 0; i < dst.size(); ++i) {
+                const int v = static_cast<int>(std::lroundf(std::clamp(dst[i], 0.0f, 255.0f)));
+                bytes[i] = static_cast<unsigned char>(v);
+            }
+            GL_CALL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, new_width, new_height, GL_RGBA, GL_UNSIGNED_BYTE, bytes.data()));
+        }
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+    } else {
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     }
 
     GL_CALL(glDeleteTextures(1, &m_id));
@@ -229,6 +290,53 @@ Image AbstractTexture::readPixelsRaw() const {
     unbind();
 
     return Image(m_width, m_height, std::move(data));
+}
+
+void AbstractTexture::createFloatTexture(int width, int height, InterpolationType interp, WrappingType wrap) {
+    START_TRY
+    assert(glfwGetCurrentContext() != nullptr);
+    assert(width > 0);
+    assert(height > 0);
+
+    if (m_id != 0) {
+        GL_CALL(glDeleteTextures(1, &m_id));
+        m_id = 0;
+    }
+
+    GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 4));
+    GL_CALL(glGenTextures(1, &m_id));
+    GL_CALL(glBindTexture(GL_TEXTURE_2D, m_id));
+    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_HALF_FLOAT, nullptr));
+    const GLenum filter = filterFromInterpolation(interp);
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter));
+    const GLenum wrap_mode = wrapFromWrapping(wrap);
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_mode));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_mode));
+    GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+    m_width = width;
+    m_height = height;
+    m_channels = 4;
+    m_interpolation = interp;
+    m_wrapping = wrap;
+    m_float_storage = true;
+    END_TRY
+}
+
+Image AbstractTexture::readPixelsFloatRaw() const {
+    std::vector<float> data(m_width * m_height * 4);
+    bind();
+    GL_CALL(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, data.data()));
+    unbind();
+
+    // Convert to UNORM8 with round-to-nearest, as the GL spec requires for
+    // fixed-point conversion (driver-side conversion is not guaranteed to).
+    std::vector<unsigned char> bytes(data.size());
+    for (size_t i = 0; i < data.size(); ++i) {
+        const int v = static_cast<int>(std::lroundf(std::clamp(data[i] * 255.0f, 0.0f, 255.0f)));
+        bytes[i] = static_cast<unsigned char>(v);
+    }
+    return Image(m_width, m_height, std::move(bytes));
 }
 
 }

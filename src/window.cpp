@@ -39,8 +39,6 @@ void Window::create(int width, int height, const char* title, int msaa_samples, 
         m_glfw_initialized = true;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, msaa_samples);
 #ifdef _WIN32
@@ -49,7 +47,19 @@ void Window::create(int width, int height, const char* title, int msaa_samples, 
     }
 #endif
 
-    m_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+    // The built-in shaders use uniform buffer objects, which are core from
+    // GL 4.2, so that is the requested context. On drivers whose maximum
+    // version is lower (e.g. Mesa with GL 4.1) retry with 4.1 core; for
+    // lower-version contexts Shader::compileShader rewrites the GLSL version
+    // directive and enables the UBO extension as needed.
+    for (const int minor_version : {2, 1}) {
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor_version);
+        m_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+        if (m_window) {
+            break;
+        }
+    }
     if (!m_window) {
         throw std::runtime_error("Failed to create GLFW window");
     }

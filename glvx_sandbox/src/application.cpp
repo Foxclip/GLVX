@@ -152,8 +152,11 @@ uniform float time;
 void main() {
     vec3 colorNormalized = object.color.rgb / 255.0;
     float wave = 0.5 + 0.5 * sin(6.2831853 * (TexCoords.x * 2.0 - time));
-    vec3 color = mix(vec3(0.1, 0.2, 0.5), vec3(1.0, 0.4, 0.2), wave) * colorNormalized;
-    FragColor = vec4(color, object.color.a / 255.0);
+    // NB: the local must not be named `color` — on GL < 4.3 the library
+    // rewrites the `object` UBO into plain uniforms, and a local named `color`
+    // would shadow the `color` uniform (its `.a` swizzle does not exist).
+    vec3 blended = mix(vec3(0.1, 0.2, 0.5), vec3(1.0, 0.4, 0.2), wave) * colorNormalized;
+    FragColor = vec4(blended, object.color.a / 255.0);
     if (object.premultiplyOutput) {
         FragColor = vec4(FragColor.rgb * FragColor.a, FragColor.a);
     }
