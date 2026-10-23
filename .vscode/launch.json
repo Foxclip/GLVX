@@ -48,7 +48,7 @@
         { "name": "LIBGL_ALWAYS_SOFTWARE", "value": "1" }
       ],
       "MIMode": "gdb",
-      "externalConsole": false,
+      "externalConsole": true,
       "preLaunchTask": "Build Tests Linux"
     },
     {
