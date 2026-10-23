@@ -4,7 +4,8 @@ namespace glvx {
 namespace shaders {
 
 inline const char* simple_vert = R"(
-#version 420 core
+#version 330 core
+#extension GL_ARB_uniform_buffer_object : enable
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec4 aColor;
 layout (location = 2) in vec2 aTexCoords;
@@ -12,7 +13,7 @@ layout (location = 2) in vec2 aTexCoords;
 out vec2 TexCoords;
 out vec4 VertexColor;
 
-layout(binding = 1) uniform Object {
+uniform Object {
     mat4 vp;
     mat4 model;
     vec4 color;
@@ -28,14 +29,15 @@ void main() {
 )";
 
 inline const char* simple_frag = R"(
-#version 420 core
+#version 330 core
+#extension GL_ARB_uniform_buffer_object : enable
 
 in vec2 TexCoords;
 in vec4 VertexColor;
 
 out vec4 FragColor;
 
-layout(binding = 1) uniform Object {
+uniform Object {
     mat4 vp;
     mat4 model;
     vec4 color;

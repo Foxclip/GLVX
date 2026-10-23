@@ -117,7 +117,7 @@ void RenderStatesTestsModule::renderStatesShaderTest(test::Test& test) {
 
     // Custom shader that outputs green color
     const char* custom_vert = R"(
-        #version 420 core
+        #version 330 core
         layout (location = 0) in vec2 aPos;
         layout (location = 1) in vec4 aColor;
         layout (location = 2) in vec2 aTexCoords;
@@ -137,7 +137,7 @@ void RenderStatesTestsModule::renderStatesShaderTest(test::Test& test) {
     )";
 
     const char* custom_frag = R"(
-        #version 420 core
+        #version 330 core
 
         in vec2 TexCoords;
         in vec4 VertexColor;
