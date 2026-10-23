@@ -44,9 +44,6 @@
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
-      "environment": [
-        { "name": "LIBGL_ALWAYS_SOFTWARE", "value": "1" }
-      ],
       "MIMode": "gdb",
       "externalConsole": true,
       "preLaunchTask": "Build Tests Linux"
@@ -59,9 +56,6 @@
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
-      "environment": [
-        { "name": "LIBGL_ALWAYS_SOFTWARE", "value": "1" }
-      ],
       "MIMode": "gdb",
       "externalConsole": false,
       "preLaunchTask": "Build Sandbox Linux"

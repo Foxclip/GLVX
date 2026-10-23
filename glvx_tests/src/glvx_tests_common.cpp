@@ -1,4 +1,5 @@
 #include "glvx_tests/glvx_tests_common.h"
+#include <cstdlib>
 #include <format>
 
 Window window;
@@ -37,4 +38,11 @@ bool compareImages(test::Test& test, const Image& image1, const Image& image2) {
         }
     }
     return true;
+}
+
+bool colorTolerant(const Color& a, const Color& b) {
+    return std::abs(static_cast<int>(a.r) - b.r) <= 1 &&
+           std::abs(static_cast<int>(a.g) - b.g) <= 1 &&
+           std::abs(static_cast<int>(a.b) - b.b) <= 1 &&
+           std::abs(static_cast<int>(a.a) - b.a) <= 1;
 }
