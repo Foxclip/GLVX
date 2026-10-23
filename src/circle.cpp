@@ -4,6 +4,11 @@
 #include <stdexcept>
 #include <cmath>
 #include <cassert>
+
+#ifndef M_PI
+// MSVC only defines M_PI with _USE_MATH_DEFINES; keep this portable
+#define M_PI 3.14159265358979323846
+#endif
 #include "glvx/glvx_common.h"
 #include "glvx/texture.h"
 #include "glvx/shader.h"
