@@ -78,7 +78,8 @@ static void generatePatternPixels(std::vector<unsigned char>& pixels, int width,
 // the same object UBO as the built-in shaders so the window can supply the
 // view/projection/model matrices, color and flags (see src/drawable.cpp).
 static const char* shader_showcase_vert = R"(
-#version 420 core
+#version 330 core
+#extension GL_ARB_uniform_buffer_object : enable
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec4 aColor;
 layout (location = 2) in vec2 aTexCoords;
@@ -86,7 +87,7 @@ layout (location = 2) in vec2 aTexCoords;
 out vec2 TexCoords;
 out vec4 VertexColor;
 
-layout (binding = 1) uniform Object {
+uniform Object {
     mat4 vp;
     mat4 model;
     vec4 color;
@@ -104,14 +105,15 @@ void main() {
 // Static: a rainbow gradient computed per fragment from the texture
 // coordinates, something the built-in shader cannot do.
 static const char* shader_static_frag = R"(
-#version 420 core
+#version 330 core
+#extension GL_ARB_uniform_buffer_object : enable
 
 in vec2 TexCoords;
 in vec4 VertexColor;
 
 out vec4 FragColor;
 
-layout (binding = 1) uniform Object {
+uniform Object {
     mat4 vp;
     mat4 model;
     vec4 color;
@@ -132,14 +134,15 @@ void main() {
 // Animated: a sine wave scrolling across the cell, driven by the time uniform
 // the sandbox updates every frame.
 static const char* shader_animated_frag = R"(
-#version 420 core
+#version 330 core
+#extension GL_ARB_uniform_buffer_object : enable
 
 in vec2 TexCoords;
 in vec4 VertexColor;
 
 out vec4 FragColor;
 
-layout (binding = 1) uniform Object {
+uniform Object {
     mat4 vp;
     mat4 model;
     vec4 color;

@@ -3,7 +3,7 @@
 #include "glvx/shader.h"
 
 const char* ShaderTestsModule::vertex_shader = R"(
-    #version 420 core
+    #version 330 core
     layout (location = 0) in vec2 aPos;
     layout (location = 1) in vec4 aColor;
     layout (location = 2) in vec2 aTexCoords;
@@ -21,7 +21,7 @@ const char* ShaderTestsModule::vertex_shader = R"(
 )";
 
 const char* ShaderTestsModule::fragment_template = R"(
-    #version 420 core
+    #version 330 core
 
     in vec4 VertexColor;
 

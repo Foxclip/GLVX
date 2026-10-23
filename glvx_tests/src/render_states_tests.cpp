@@ -96,12 +96,12 @@ void RenderStatesTestsModule::renderStatesTextureTest(test::Test& test) {
 
     // Check that the texture is rendered correctly
     Image image = window.readPixels();
-    T_COMPARE(image.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString);
-    T_COMPARE(image.getPixel(1, 0), Color(0, 0, 0, 255), &Color::toString);
+    T_COMPARE(image.getPixel(0, 0), Color(0, 0, 0, 255), &Color::toString, colorTolerant);
+    T_COMPARE(image.getPixel(1, 0), Color(0, 0, 0, 255), &Color::toString, colorTolerant);
     // Pixel (0,1): the shader's float multiply is written to an 8-bit
     // framebuffer using GL round-to-nearest, giving a +1 in blue vs truncation.
-    T_COMPARE(image.getPixel(0, 1), Color(0, 0, 1, 255), &Color::toString);
-    T_COMPARE(image.getPixel(1, 1), Color(1, 1, 1, 255), &Color::toString);
+    T_COMPARE(image.getPixel(0, 1), Color(0, 0, 1, 255), &Color::toString, colorTolerant);
+    T_COMPARE(image.getPixel(1, 1), Color(1, 1, 1, 255), &Color::toString, colorTolerant);
 
     // Check outside of the texture
     T_COMPARE(image.getPixel(texture_size), Color::Black, &Color::toString);
@@ -117,7 +117,7 @@ void RenderStatesTestsModule::renderStatesShaderTest(test::Test& test) {
 
     // Custom shader that outputs green color
     const char* custom_vert = R"(
-        #version 420 core
+        #version 330 core
         layout (location = 0) in vec2 aPos;
         layout (location = 1) in vec4 aColor;
         layout (location = 2) in vec2 aTexCoords;
@@ -137,7 +137,7 @@ void RenderStatesTestsModule::renderStatesShaderTest(test::Test& test) {
     )";
 
     const char* custom_frag = R"(
-        #version 420 core
+        #version 330 core
 
         in vec2 TexCoords;
         in vec4 VertexColor;

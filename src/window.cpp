@@ -39,8 +39,8 @@ void Window::create(int width, int height, const char* title, int msaa_samples, 
         m_glfw_initialized = true;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, msaa_samples);
 #ifdef _WIN32
@@ -167,13 +167,25 @@ void Window::display() const {
     if (!isOpen()) {
         return;
     }
-    if (m_offscreen_texture_uptr) {
-        // The window is minimized or hidden, so there is nothing to present;
-        // just resolve the offscreen texture if it uses MSAA.
-        m_offscreen_texture_uptr->display();
-    } else {
-        GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-        glfwSwapBuffers(m_window);
+    // The render target is always the offscreen FBO; resolve its MSAA first.
+    m_offscreen_texture_uptr->display();
+    if (!m_headless) {
+        int fb_width = 0;
+        int fb_height = 0;
+        glfwGetFramebufferSize(m_window, &fb_width, &fb_height);
+        if (fb_width > 0 && fb_height > 0) {
+            // Visible window: present the FBO contents by blitting them into
+            // the default framebuffer, then swap. Reading GL_FRONT back from
+            // the default framebuffer is unreliable on X11 (it can return
+            // black), but the FBO read in readPixels() is not, and this keeps
+            // the window showing its content.
+            GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, m_offscreen_texture_uptr->getFBO()));
+            GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
+            GL_CALL(glBlitFramebuffer(0, 0, m_current_width, m_current_height, 0, 0, fb_width, fb_height, GL_COLOR_BUFFER_BIT, GL_NEAREST));
+            GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, 0));
+            GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
+            glfwSwapBuffers(m_window);
+        }
     }
 #ifndef NDEBUG
     // Per-frame GL error check (see glvx_common.h): drains the errors
@@ -313,25 +325,17 @@ unsigned int Window::getRenderTargetFbo() const {
 }
 
 void Window::syncOffscreenTexture() {
-    int fb_width = 0;
-    int fb_height = 0;
-    glfwGetFramebufferSize(m_window, &fb_width, &fb_height);
-    // A minimized/hidden window has no usable default framebuffer, so render
-    // to an offscreen texture of the window's logical size instead. Headless
-    // windows are always routed through the offscreen FBO as well: on X11
-    // they keep a non-zero default framebuffer, but glfwSwapBuffers does not
-    // present it, so reading GL_FRONT would return black. The FBO is read
-    // back directly, which is swap-independent (and matches the path Windows
-    // uses for its minimized test windows).
-    const bool use_offscreen = m_headless || fb_width == 0 || fb_height == 0;
-    if (use_offscreen) {
-        if (!m_offscreen_texture_uptr) {
-            m_offscreen_texture_uptr = std::make_unique<RenderTexture>(m_current_width, m_current_height, m_msaa_samples);
-        } else {
-            m_offscreen_texture_uptr->resize(m_current_width, m_current_height, false);
-        }
-    } else if (m_offscreen_texture_uptr) {
-        m_offscreen_texture_uptr.reset();
+    // Always render to an offscreen texture of the window's logical size.
+    // This makes readPixels() swap-independent and reliable: on X11 a visible
+    // window's default framebuffer is not a dependable readback source
+    // (glfwSwapBuffers may not present the front buffer in a way glReadPixels
+    // sees, so reading GL_FRONT returns black). The offscreen FBO is the
+    // single source of truth for both display (blitted to the window in
+    // display()) and readback, for headless and visible windows alike.
+    if (!m_offscreen_texture_uptr) {
+        m_offscreen_texture_uptr = std::make_unique<RenderTexture>(m_current_width, m_current_height, m_msaa_samples);
+    } else {
+        m_offscreen_texture_uptr->resize(m_current_width, m_current_height, false);
     }
 }
 
